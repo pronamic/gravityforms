@@ -141,3 +141,32 @@ run(
 run( 'gh auth status' );
 
 run( 'git push origin main' );
+
+/**
+ * GitHub release view.
+ */
+run(
+	sprintf(
+		'gh release view %s',
+		$version
+	),
+	$result_code
+);
+
+$release_not_found = ( 1 === $result_code );
+
+/**
+ * GitHub release.
+ * 
+ * @todo https://memberpress.com/wp-json/wp/v2/pages?slug=change-log
+ * @link https://cli.github.com/manual/gh_release_create
+ */
+if ( $release_not_found ) {
+	run(
+		sprintf(
+			'gh release create %s %s',
+			$version,
+			$zip_file
+		)
+	);
+}
