@@ -183,9 +183,10 @@ $release_not_found = ( 1 === $result_code );
 if ( $release_not_found ) {
 	run(
 		sprintf(
-			'gh release create %s %s',
+			'gh release create %s %s --notes-file %s',
 			$version,
-			$zip_file
+			$zip_file,
+			'change_log.txt'
 		)
 	);
 }
