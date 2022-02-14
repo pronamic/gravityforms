@@ -1,6 +1,9 @@
 name: Release
 
-on: workflow_dispatch
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
 
 jobs:
   release:
