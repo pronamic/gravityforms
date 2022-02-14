@@ -187,8 +187,6 @@ if ( false !== $heading_position ) {
 	$notes = mb_substr( $changelog, 0, $heading_position );
 }
 
-echo $notes;exit;
-
 /**
  * GitHub release.
  * 
