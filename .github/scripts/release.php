@@ -170,3 +170,13 @@ if ( $release_not_found ) {
 		)
 	);
 }
+
+/**
+ * Cleanup.
+ */
+run(
+	sprintf(
+		'rm -f -R %s',
+		escapeshellarg( $work_dir )
+	)
+);
