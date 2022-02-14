@@ -120,6 +120,25 @@ run(
 line( '::endgroup::' );
 
 /**
+ * Git user.
+ * 
+ * @link https://github.com/roots/wordpress/blob/13ba8c17c80f5c832f29cf4c2960b11489949d5f/bin/update-repo.php#L62-L67
+ */
+run(
+	sprintf(
+		'git config user.email %s',
+		escapeshellarg( 'info@gravityforms.com' )
+	)
+);
+
+run(
+	sprintf(
+		'git config user.name %s',
+		escapeshellarg( 'Gravity Forms' )
+	)
+);
+
+/**
  * Git commit.
  * 
  * @link https://git-scm.com/docs/git-commit
