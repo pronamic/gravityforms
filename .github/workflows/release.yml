@@ -12,5 +12,5 @@ jobs:
 
     - name: Release
       env:
-        GRAVITYFORM_LICENSE_KEY: ${{ secrets.GRAVITYFORM_LICENSE_KEY }}
+        GRAVITYFORMS_LICENSE_KEY: ${{ secrets.GRAVITYFORMS_LICENSE_KEY }}
       run: php .github/scripts/release.php
