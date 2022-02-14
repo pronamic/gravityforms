@@ -187,7 +187,7 @@ class GF_REST_Form_Feeds_Controller extends GF_REST_Controller {
 		$feed = $request->get_json_params();
 
 		if ( empty( $feed ) ) {
-			return new WP_Error( 'missing_feed', __( 'Missing feed JSON', 'gravityforms' ) );
+			return new WP_Error( 'missing_feed', __( 'Missing feed JSON', 'gravityforms' ), array( 'status' => 400 ) );
 		}
 
 		$url_params = $request->get_url_params();
@@ -202,17 +202,17 @@ class GF_REST_Form_Feeds_Controller extends GF_REST_Controller {
 		if ( $form_id ) {
 			$feed['form_id'] = absint( $form_id );
 		} else {
-			return new WP_Error( 'missing_form_id', __( 'Missing form id', 'gravityforms' ) );
+			return new WP_Error( 'missing_form_id', __( 'Missing form id', 'gravityforms' ), array( 'status' => 400 ) );
 		}
 
 		$addon_slug = isset( $feed['addon_slug'] ) ? $feed['addon_slug'] : $request['addon'];
 		if ( empty( $addon_slug ) ) {
-			return new WP_Error( 'missing_addon_slug', __( 'Missing add-on slug', 'gravityforms' ) );
+			return new WP_Error( 'missing_addon_slug', __( 'Missing add-on slug', 'gravityforms' ), array( 'status' => 400 ) );
 		}
 
 
 		if ( empty( $feed['meta'] ) ) {
-			return new WP_Error( 'missing_feed_meta', __( 'Missing feed meta', 'gravityforms' ) );
+			return new WP_Error( 'missing_feed_meta', __( 'Missing feed meta', 'gravityforms' ), array( 'status' => 400 ) );
 		}
 
 		return $feed;

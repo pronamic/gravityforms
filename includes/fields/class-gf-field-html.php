@@ -12,6 +12,30 @@ class GF_Field_HTML extends GF_Field {
 		return esc_attr__( 'HTML', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Places a block of free form HTML anywhere in your form.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--html-code';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'content_setting',
@@ -19,6 +43,7 @@ class GF_Field_HTML extends GF_Field {
 			'conditional_logic_field_setting',
 			'label_setting',
 			'css_class_setting',
+			'visibility_setting',
 		);
 	}
 
@@ -40,14 +65,15 @@ class GF_Field_HTML extends GF_Field {
 	}
 
 	public function get_field_content( $value, $force_frontend_label, $form ) {
-		$form_id         = $form['id'];
-		$admin_buttons   = $this->get_admin_buttons();
-		$is_entry_detail = $this->is_entry_detail();
-		$is_form_editor  = $this->is_form_editor();
-		$is_admin        = $is_entry_detail || $is_form_editor;
-		$field_label     = $this->get_field_label( $force_frontend_label, $value );
-		$field_id        = $is_admin || $form_id == 0 ? "input_{$this->id}" : 'input_' . $form_id . "_{$this->id}";
-		$field_content   = ! $is_admin ? '{FIELD}' : $field_content = sprintf( "%s<label class='gfield_label' for='%s'>%s</label>{FIELD}", $admin_buttons, $field_id, esc_html( $field_label ) );
+		$form_id             = $form['id'];
+		$admin_buttons       = $this->get_admin_buttons();
+		$is_entry_detail     = $this->is_entry_detail();
+		$is_form_editor      = $this->is_form_editor();
+		$is_admin            = $is_entry_detail || $is_form_editor;
+		$field_label         = $this->get_field_label( $force_frontend_label, $value );
+		$field_id            = $is_admin || $form_id == 0 ? "input_{$this->id}" : 'input_' . $form_id . "_{$this->id}";
+		$admin_hidden_markup = ( $this->visibility == 'hidden' ) ? $this->get_hidden_admin_markup() : '';
+		$field_content       = ! $is_admin ? '{FIELD}' : $field_content = sprintf( "%s%s<label class='gfield_label' for='%s'>%s</label>{FIELD}", $admin_buttons, $admin_hidden_markup, $field_id, esc_html( $field_label ) );
 
 		return $field_content;
 	}

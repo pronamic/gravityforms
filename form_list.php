@@ -17,8 +17,6 @@ class GFFormList {
 			return;
 		}
 
-		echo GFCommon::get_remote_message();
-
 		wp_print_styles( array( 'thickbox' ) );
 
 		add_action( 'admin_print_footer_scripts', array( __class__, 'output_form_list_script_block' ), 20 );
@@ -33,86 +31,42 @@ class GFFormList {
 		</script>
 
 		<style type="text/css">
-			body div#TB_window[style] {
-				width: 405px !important;
-				height: 340px !important;
-				margin-left: -202px !important;
-			}
 
-			body #TB_ajaxContent {
-				height: 290px !important;
-				overflow: hidden;
-			}
 
-			.gf_new_form_modal_container {
-				padding: 30px;
-			}
-
-			.gf_new_form_modal_container .setting-row {
-				margin: 0 0 10px;
-			}
-
-			.gf_new_form_modal_container .setting-row label {
-				line-height: 24px;
-			}
-
-			.gf_new_form_modal_container .setting-row input,
-			.gf_new_form_modal_container .setting-row textarea {
-				display: block;
-				width: 100%;
-			}
-
-			.gf_new_form_modal_container .setting-row textarea {
-				height: 110px;
-			}
-
-			.gf_new_form_modal_container .submit-row {
-				margin-top: 18px;
-			}
-
-			.gf_new_form_modal_container #gf_new_form_error_message {
-				margin: 0 0 18px 5px !important;
-				color: #BC0B0B;
-			}
-
-			.gf_new_form_modal_container img.gfspinner {
-				position: relative;
-				top: 5px;
-				left: 5px;
-			}
-
-			.gf_not_ready { opacity: 0.25; }
 
 		</style>
 
 		<?php if ( GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) { ?>
 
 		<div id="gf_new_form_modal" style="display:none;">
-			<form class="gf_new_form_modal_container" onsubmit="saveNewForm();return false;">
+				<div class="gform-settings__wrapper ">
+					<div class="gform-settings-panel__content">
+						<form class="gform_new_form_modal_container" onsubmit="saveNewForm();return false;">
+                            <div id="gf_new_form_error_message" ></div>
+							<div class="setting-row gform-settings-field gform-settings-field__text">
+								<label class="gform-settings-label" for="new_form_title"><?php esc_html_e( 'Form Title', 'gravityforms' ); ?>
+									<span class="gfield_required">*</span></label>
+                                <div class="gform-settings-input__container">
+                                    <input type="text" class="regular-text" value="" id="new_form_title" tabindex="9000">                                         </div>
+							</div>
 
-				<div class="setting-row">
-					<label for="new_form_title"><?php esc_html_e( 'Form Title', 'gravityforms' ); ?>
-						<span class="gfield_required">*</span></label><br />
-					<input type="text" class="regular-text" value="" id="new_form_title" tabindex="9000">
+							<div class="setting-row">
+								<label class="gform-settings-label" for="new_form_description"><?php esc_html_e( 'Form Description', 'gravityforms' ); ?></label>
+								<textarea class="regular-text" id="new_form_description" tabindex="9001"></textarea>
+							</div>
+
+							<div class="submit-row">
+								<?php
+								/**
+								 * Allows for modification of the "New Form" button HTML
+								 *
+								 * @param string The HTML rendered for the "New Form" button.
+								 */
+								echo apply_filters( 'gform_new_form_button', '<button type="submit" value="save" id="save_new_form" class="button large primary" tabindex="9002">' . esc_html__( 'Create Form', 'gravityforms' ) . '</button>' ); ?>
+							</div>
+						</form>
+					</div>
 				</div>
-
-				<div class="setting-row">
-					<label for="new_form_description"><?php esc_html_e( 'Form Description', 'gravityforms' ); ?></label><br />
-					<textarea class="regular-text" id="new_form_description" tabindex="9001"></textarea>
-				</div>
-
-				<div class="submit-row">
-					<?php
-					/**
-					 * Allows for modification of the "New Form" button HTML
-					 *
-					 * @param string The HTML rendered for the "New Form" button.
-					 */
-					echo apply_filters( 'gform_new_form_button', '<input id="save_new_form" type="submit" class="button button-large button-primary" value="' . esc_html__( 'Create Form', 'gravityforms' ) . '" tabindex="9002" />' ); ?>
-					<div id="gf_new_form_error_message" style="display:inline-block;"></div>
-				</div>
-
-			</form>
 		</div>
 
 		<?php } // - end of new form modal - // ?>
@@ -148,14 +102,13 @@ class GFFormList {
 				jQuery("#form_list_form")[0].submit();
 			}
 
-			function ToggleActive(img, form_id) {
+			function ToggleActive( btn, form_id ) {
 
 				if ( ! gfPageLoaded ) {
 					return;
 				}
 
-				var is_active = img.src.indexOf( 'active1.png' ) >= 0;
-				img.src = img.src.replace( is_active ? 'active1.png' : 'active0.png', 'spinner.gif' );
+				var is_active = jQuery( btn ).hasClass( 'gform-status--active' );
 
 				jQuery.ajax(
 					{
@@ -191,13 +144,11 @@ class GFFormList {
 				);
 
 				function setToggleInactive() {
-					img.src = img.src.replace( 'spinner.gif', 'active0.png' );
-					jQuery( img ).attr( 'title', <?php echo json_encode( esc_attr__( 'Inactive', 'gravityforms' ) ); ?> ).attr( 'alt', <?php echo json_encode( esc_attr__( 'Inactive', 'gravityforms' ) ); ?> );
+					jQuery( btn ).removeClass( 'gform-status--active' ).addClass( 'gform-status--inactive' ).find( '.gform-status-indicator-status' ).html( <?php echo wp_json_encode( esc_attr__( 'Inactive', 'gravityforms' ) ); ?> );
 				}
 
 				function setToggleActive() {
-					img.src = img.src.replace( 'spinner.gif', 'active1.png' );
-					jQuery( img ).attr( 'title', <?php echo json_encode( esc_attr__( 'Active', 'gravityforms' ) ); ?> ).attr( 'alt', <?php echo json_encode( esc_attr__( 'Active', 'gravityforms' ) ); ?> );
+					jQuery( btn ).removeClass( 'gform-status--inactive' ).addClass( 'gform-status--active' ).find( '.gform-status-indicator-status' ).html( <?php echo wp_json_encode( esc_attr__( 'Active', 'gravityforms' ) ); ?> );
 				}
 
 			}
@@ -222,44 +173,40 @@ class GFFormList {
 				return true;
 			}
 		</script>
-
-		<link rel="stylesheet" href="<?php echo esc_url( GFCommon::get_base_url() ); ?>/css/admin<?php echo $min; ?>.css?ver=<?php echo GFForms::$version ?>"/>
-		<div class="wrap <?php echo sanitize_html_class( GFCommon::get_browser_class() ); ?>">
-
-		<h2>
-			<?php esc_html_e( 'Forms', 'gravityforms' );
-			if ( GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) {
-				echo '<a class="add-new-h2" href="" onclick="return loadNewFormModal();" onkeypress="return loadNewFormModal();">' . esc_html__( 'Add New', 'gravityforms' ) . '</a>';
-			} ?>
-		</h2>
-
-		<?php
-
-		GFCommon::display_admin_message();
-		GFCommon::display_dismissible_message();
-
-		$table = new GF_Form_List_Table();
-		$table->process_action();
-		$table->views();
-		$table->prepare_items();
+        <?php
+                GFForms::admin_header( array(), false );
+                $table = new GF_Form_List_Table();
+                $table->process_action();
 		?>
-		<form id="form_list_search" method="get">
-		<input type="hidden" value="gf_edit_forms" name="page" />
-		<?php
-			if ( rgget( 'filter' ) ) {
-				echo '<input type="hidden" value="' . esc_attr( rgget( 'filter' ) ) . '" name="filter" />';
-			}
+                <div class="gform-settings-panel__content form-list">
+                    <div class="form-list-head">
+                    <h2> <?php esc_html_e( 'Forms', 'gravityforms' ); ?> </h2>
+                        <?php if ( GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) {
+                            echo '<button class="button gform-add-new-form primary add-new-h2" onclick="return loadNewFormModal();" onkeypress="return loadNewFormModal();">' . esc_html__( 'Add New', 'gravityforms' ) . '</button>';
+                        } ?>
+                    </div>
+                    <div class="form-list-nav">
+                        <?php
+                        $table->views();
+                        $table->prepare_items();
+                        ?>
+                        <form id="form_list_search" method="get">
+                    <input type="hidden" value="gf_edit_forms" name="page" />
+                    <?php
+                        if ( rgget( 'filter' ) ) {
+                            echo '<input type="hidden" value="' . esc_attr( rgget( 'filter' ) ) . '" name="filter" />';
+                        }
 
-			$table->search_box( esc_html__( 'Search Forms', 'gravityforms' ), 'form' );
-		?>
-		</form>
-		<form id="form_list_form" method="post">
-		<?php $table->display(); ?>
-
-		</form>
+                        $table->search_box( esc_html__( 'Search Forms', 'gravityforms' ), 'form' );
+                    ?>
+                    </form>
+                    </div>
+                    <form id="form_list_form" method="post">
+                    <?php $table->display(); ?>
+                    </form>
+                </div>
 	<?php
-
-
+		GFForms::admin_footer();
 	}
 
 	public static function save_new_form() {
@@ -305,39 +252,54 @@ class GFFormList {
 
 			jQuery( document ).ready( function( $ ) {
 
+				$( 'body' ).addClass( 'gform_new_form' );
 				// load new form modal on New Form page
-				<?php if ( rgget( 'page' ) == 'gf_new_form' && ! rgget( 'paged' ) ) :	?>
+				<?php if ( rgget( 'page' ) == 'gf_new_form' && ! rgget( 'paged' ) ) :    ?>
 				loadNewFormModal();
 				<?php endif; ?>
 
 				// form settings submenu support
-				$('.gf_form_action_has_submenu').hover(function(){
-					var l = jQuery(this).offset().left;
-					jQuery(this).find('.gf_submenu')
+				$( '.gf_form_action_has_submenu' ).hover( function() {
+					var $this = $( this );
+					var offset = $this.offset();
+					var docHeight = $( document ).height();
+					var $subMenu = $this.find( '.gform-form-toolbar__submenu' );
+					var menuHeight = $subMenu.height();
+					var spaceAvailable = docHeight - offset.top;
+
+					// If less space available below submenu than height of it, set height explicitly
+					// If not height is handled by a max height directive in toolbar.pcss component.
+					if ( spaceAvailable < menuHeight ) {
+						$subMenu.height( spaceAvailable - 50 );
+					}
+
+					$subMenu
 						.toggle()
-						.offset({ left: l });
-				}, function(){
-					jQuery(this).find('.gf_submenu').hide();
-				});
+						.offset( { left: offset.left } );
+				}, function() {
+					$( this ).find( '.gform-form-toolbar__submenu' )
+						.css( 'height', '' )
+						.hide();
+				} );
 
 				// enable form status icons
 				gfPageLoaded = true;
 				$( '.gform_active_icon' ).removeClass( 'gf_not_ready' );
 
-				jQuery( '#current-page-selector').keyup( function( event ) {
-					if (event.keyCode == 13) {
+				$( '#current-page-selector' ).keyup( function( event ) {
+					if ( event.keyCode == 13 ) {
 						var url = <?php echo json_encode( esc_url_raw( remove_query_arg( 'paged' ) ) ); ?>;
 						var page = parseInt( this.value );
 						document.location = url + '&paged=' + page;
 						event.preventDefault();
 					}
-				});
+				} );
 
 			} );
 
 			function loadNewFormModal() {
 				resetNewFormModal();
-				tb_show(<?php echo json_encode( esc_html__( 'Create a New Form', 'gravityforms' ) ); ?>, '#TB_inline?width=375&amp;inlineId=gf_new_form_modal');
+				tb_show(<?php echo json_encode( '<div class="tb-title"><div class="tb-title__logo"></div><div class="tb-title__text"><div class="tb-title__main">'.esc_html__( 'Create a New Form', 'gravityforms' ).'</div><div class="tb-title__sub">'.esc_html__('Provide a title and a description for this form', 'gravityforms').'</div></div></div>' ); ?>, '#TB_inline?width=490&amp;height=auto&amp;inlineId=gf_new_form_modal');
 				jQuery('#new_form_title').focus();
 
 				return false;
@@ -346,10 +308,11 @@ class GFFormList {
 			function saveNewForm() {
 
 				var createButton = jQuery('#save_new_form');
-				var spinner = new gfAjaxSpinner(createButton, gf_vars.baseUrl + '/images/spinner.gif');
+				var spinner = new gfAjaxSpinner(createButton, gf_vars.baseUrl + '/images/spinner.svg');
 
 				// clear error message
 				jQuery('#gf_new_form_error_message').html('');
+				jQuery('#gf_new_form_error_message').removeClass( 'alert error' );
 
 				var origVal = createButton.val();
 				createButton.val(<?php echo json_encode( esc_html__( 'Creating Form...', 'gravityforms' ) ); ?>);
@@ -379,7 +342,9 @@ class GFFormList {
 
 					if(respData['error']) {
 						// adding class later otherwise WP moves box up to the top of the page
+						jQuery('#gf_new_form_error_message').addClass( 'alert error' );
 						jQuery('#gf_new_form_error_message').html( respData.error );
+
 						addInputErrorIcon( '#new_form_title' );
 						createButton.val(origVal);
 					} else {
@@ -395,17 +360,19 @@ class GFFormList {
 				jQuery('#new_form_title').val('');
 				jQuery('#new_form_description').val('');
 				jQuery('#gf_new_form_error_message').html('');
-				removeInputErrorIcons( '.gf_new_form_modal_container' );
+				jQuery('#gf_new_form_error_message').html('');
+				jQuery('#gf_new_form_error_message').removeClass( 'error alert' );
+				removeInputErrorIcons( '.gform_new_form_modal_container' );
 			}
 
 			function addInputErrorIcon( elem ) {
 				var elem = jQuery(elem);
-				elem.before( '<span class="gf_input_error_icon"></span>');
+				elem.after( '<span class="gform-settings-field__feedback gform-settings-field__feedback--invalid" aria-hidden="true"></span>' );
 			}
 
 			function removeInputErrorIcons( elem ) {
 				var elem = jQuery(elem);
-				elem.find('span.gf_input_error_icon').remove();
+				elem.find('span.gform-settings-field__feedback--invalid').remove();
 			}
 
 		</script>
@@ -436,11 +403,12 @@ class GF_Form_List_Table extends WP_List_Table {
 
 	function get_sortable_columns() {
 		return array(
-			'title' => array( 'title', false ),
-			'id'    => array( 'id', false ),
-			'entry_count'    => array( 'entry_count', false ),
-			'view_count'    => array( 'view_count', false ),
-			'conversion'    => array( 'conversion', false ),
+			'is_active'   => array( 'is_active', false ),
+			'title'       => array( 'title', false ),
+			'id'          => array( 'id', false ),
+			'entry_count' => array( 'entry_count', false ),
+			'view_count'  => array( 'view_count', false ),
+			'conversion'  => array( 'conversion', false ),
 		);
 	}
 
@@ -563,13 +531,13 @@ class GF_Form_List_Table extends WP_List_Table {
 	function get_columns() {
 
 		$columns = array(
-			'cb'         => '<input type="checkbox" />',
-			'is_active'  => '',
-			'title'      => esc_html__( 'Title', 'gravityforms' ),
-			'id'         => esc_html__( 'ID', 'gravityforms' ),
+			'cb'          => '<input type="checkbox" />',
+			'is_active'   => esc_html__( 'Status', 'gravityforms' ),
+			'title'       => esc_html__( 'Title', 'gravityforms' ),
+			'id'          => esc_html__( 'ID', 'gravityforms' ),
 			'entry_count' => esc_html__( 'Entries', 'gravityforms' ),
-			'view_count' => esc_html__( 'Views', 'gravityforms' ),
-			'conversion' => esc_html__( 'Conversion', 'gravityforms' ),
+			'view_count'  => esc_html__( 'Views', 'gravityforms' ),
+			'conversion'  => esc_html__( 'Conversion', 'gravityforms' ),
 		);
 
 		$columns = apply_filters( 'gform_form_list_columns', $columns );
@@ -635,8 +603,18 @@ class GF_Form_List_Table extends WP_List_Table {
 	function _column_is_active( $form, $classes, $data, $primary ) {
 		echo '<th scope="row" class="manage-column column-is_active">';
 		if ( $this->filter !== 'trash' ) {
+			if ( $form->is_active ) {
+				$class = 'gform-status--active';
+				$text  = esc_html__( 'Active', 'gravityforms' );
+			} else {
+				$class = 'gform-status--inactive';
+				$text  = esc_html__( 'Inactive', 'gravityforms' );
+			}
 			?>
-			<img class="gform_active_icon" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/active<?php echo intval( $form->is_active ) ?>.png" style="cursor: pointer;" alt="<?php echo $form->is_active ? esc_attr__( 'Active', 'gravityforms' ) : esc_attr__( 'Inactive', 'gravityforms' ); ?>" title="<?php echo $form->is_active ? esc_attr__( 'Active', 'gravityforms' ) : esc_attr__( 'Inactive', 'gravityforms' ); ?>" onclick="ToggleActive(this, <?php echo absint( $form->id ); ?>); " onkeypress="ToggleActive(this, <?php echo absint( $form->id ); ?>); " />
+			<button type="button" class="gform-status-indicator <?php echo esc_attr( $class ); ?>" onclick="ToggleActive( this, <?php echo absint( $form->id ); ?> );" onkeypress="ToggleActive( this, <?php echo absint( $form->id ); ?> );">
+				<svg viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="2" r="1" stroke-width="2"/></svg>
+				<span class="gform-status-indicator-status"><?php echo esc_html( $text ); ?></span>
+			</button>
 			<?php
 		}
 		echo '</th>';
@@ -780,7 +758,7 @@ class GF_Form_List_Table extends WP_List_Table {
 					if ( GFCommon::current_user_can_any( 'gravityforms_delete_forms' ) ) {
 						$trashed       = RGFormsModel::trash_form( $form_id );
 						$message       = is_wp_error( $trashed ) ? $trashed->get_error_message() : __( 'Form moved to the trash.', 'gravityforms' );
-						$message_class = is_wp_error( $trashed ) ? 'error' : 'updated';
+						$message_class = is_wp_error( $trashed ) ? 'error' : 'success';
 					} else {
 						$message       = __( "You don't have adequate permission to trash forms.", 'gravityforms' );
 						$message_class = 'error';
@@ -790,7 +768,7 @@ class GF_Form_List_Table extends WP_List_Table {
 					if ( GFCommon::current_user_can_any( 'gravityforms_delete_forms' ) ) {
 						$restored      = RGFormsModel::restore_form( $form_id );
 						$message       = is_wp_error( $restored ) ? $restored->get_error_message() : __( 'Form restored.', 'gravityforms' );
-						$message_class = is_wp_error( $restored ) ? 'error' : 'updated';
+						$message_class = is_wp_error( $restored ) ? 'error' : 'success';
 					} else {
 						$message       = __( "You don't have adequate permission to restore forms.", 'gravityforms' );
 						$message_class = 'error';
@@ -800,7 +778,7 @@ class GF_Form_List_Table extends WP_List_Table {
 					if ( GFCommon::current_user_can_any( 'gravityforms_delete_forms' ) ) {
 						$deleted = RGFormsModel::delete_form( $form_id );
 					    $message = is_wp_error( $deleted ) ? $deleted->get_error_message() : __( 'Form deleted.', 'gravityforms' );
-					    $message_class = is_wp_error( $deleted ) ? 'error' : 'updated';
+					    $message_class = is_wp_error( $deleted ) ? 'error' : 'success';
 					} else {
 						$message = __( "You don't have adequate permission to delete forms.", 'gravityforms' );
 						$message_class = 'error';
@@ -810,7 +788,7 @@ class GF_Form_List_Table extends WP_List_Table {
 					if ( GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) {
 						$duplicated    = RGFormsModel::duplicate_form( $form_id );
 						$message       = is_wp_error( $duplicated ) ? $duplicated->get_error_message() : __( 'Form duplicated.', 'gravityforms' );
-						$message_class = is_wp_error( $duplicated ) ? 'error' : 'updated';
+						$message_class = is_wp_error( $duplicated ) ? 'error' : 'success';
 					} else {
 						$message       = __( "You don't have adequate permission to duplicate forms.", 'gravityforms' );
 						$message_class = 'error';
@@ -829,19 +807,19 @@ class GF_Form_List_Table extends WP_List_Table {
 					if ( GFCommon::current_user_can_any( 'gravityforms_delete_forms' ) ) {
 						$trashed       = RGFormsModel::trash_form( $form_id );
 						$message       = is_wp_error( $trashed ) ? $trashed->get_error_message() : __( 'Form moved to the trash.', 'gravityforms' );
-						$message_class = is_wp_error( $trashed ) ? 'error' : 'updated';
+						$message_class = is_wp_error( $trashed ) ? 'error' : 'success';
 					} else {
 						$message       = __( "You don't have adequate permission to trash forms.", 'gravityforms' );
 						$message_class = 'error';
 					}
-					break;				
+					break;
 				case 'duplicate' :
 					check_ajax_referer( "gf_duplicate_form_{$form_id}" );
 
 					if ( GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) {
 						$duplicated    = RGFormsModel::duplicate_form( $form_id );
 						$message       = is_wp_error( $duplicated ) ? $duplicated->get_error_message() : __( 'Form duplicated.', 'gravityforms' );
-						$message_class = is_wp_error( $duplicated ) ? 'error' : 'updated';
+						$message_class = is_wp_error( $duplicated ) ? 'error' : 'success';
 					} else {
 						$message       = __( "You don't have adequate permission to duplicate forms.", 'gravityforms' );
 						$message_class = 'error';
@@ -923,7 +901,7 @@ class GF_Form_List_Table extends WP_List_Table {
 
 		if ( ! empty( $message ) ) {
 
-			echo '<div id="message" class="' . ( isset( $message_class ) ? $message_class : 'updated' ) . ' notice is-dismissible"><p>' . $message . '</p></div>';
+			echo '<div id="message" class="alert ' . ( isset( $message_class ) ? $message_class : 'success' ) . '  "><p>' . $message . '</p></div>';
 		};
 	}
 
@@ -945,30 +923,54 @@ class GF_Form_List_Table extends WP_List_Table {
 	}
 
 	public static function compare_view_count_asc( $a, $b ) {
-	    return $a->view_count > $b->view_count;
+		if ( $a->view_count === $b->view_count ) {
+			return 0;
+		} else {
+			return $a->view_count > $b->view_count ? 1 : -1;
+		}
 	}
 
 	public static function compare_view_count_desc( $a, $b ) {
-	    return $a->view_count < $b->view_count;
+		if ( $a->view_count === $b->view_count ) {
+			return 0;
+		} else {
+			return $b->view_count > $a->view_count ? 1 : -1;
+		}
 	}
 
 	public static function compare_entry_count_asc( $a, $b ) {
-	    return $a->entry_count > $b->entry_count;
+		if ( $a->entry_count === $b->entry_count ) {
+			return 0;
+		} else {
+			return $a->entry_count > $b->entry_count ? 1 : -1;
+		}
 	}
 
 	public static function compare_entry_count_desc( $a, $b ) {
-	    return $a->entry_count < $b->entry_count;
+		if ( $a->entry_count === $b->entry_count ) {
+			return 0;
+		} else {
+			return $b->entry_count > $a->entry_count ? 1 : -1;
+		}
 	}
 
 	public static function compare_conversion_asc( $a, $b ) {
 		$a_conversion = $a->view_count > 0 ? $a->entry_count / $a->view_count : 0;
 		$b_conversion = $b->view_count > 0 ? $b->entry_count / $b->view_count : 0;
-	    return $a_conversion > $b_conversion;
+		if ( $a_conversion === $b_conversion ) {
+			return 0;
+		} else {
+			return $a_conversion > $b_conversion ? 1 : -1;
+		}
 	}
 
 	public static function compare_conversion_desc( $a, $b ) {
 	    $a_conversion = $a->view_count > 0 ? $a->entry_count / $a->view_count : 0;
 		$b_conversion = $b->view_count > 0 ? $b->entry_count / $b->view_count : 0;
-	    return $a_conversion < $b_conversion;
+		if ( $a_conversion === $b_conversion ) {
+			return 0;
+		} else {
+			return $b_conversion > $a_conversion ? 1 : -1;
+		}
 	}
 }

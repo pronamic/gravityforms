@@ -1,0 +1,20 @@
+<div class="conditional_logic_accordion {{ toggle_class }}">
+	<div class="conditional_logic_accordion__label">
+		{{ title }}
+	</div>
+	<div class="conditional_logic_accordion__status_indicator">
+		<span class="gform-status-indicator {{ active_class }}">
+			<svg viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="2" r="1" stroke-width="2"></circle></svg>
+			<span class="gform-status-indicator-status">{{ active_text }}</span>
+		</span>
+	</div>
+	<div class="conditional_logic_accordion__toggle {{ toggle_class }}">
+		<button class="conditional_logic_accordion__toggle_button">
+			<span class="screen-reader-text">{{ toggleText }}</span>
+			<i class="conditional_logic_accordion__toggle_button_icon"></i>
+		</button>
+	</div>
+	<div class="conditional_logic_accordion__desc {{ desc_class }}">
+		{{ desc }}
+	</div>
+</div>

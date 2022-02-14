@@ -73,14 +73,17 @@ class GF_Feed_Processor extends GF_Background_Process {
 	 */
 	protected function task( $item ) {
 
-		// Extract items.
-		$addon = $item['addon'];
-		$feed  = $item['feed'];
-		$entry = GFAPI::get_entry( $item['entry_id'] );
-		$form  = GFAPI::get_form( $item['form_id'] );
+		$addon     = $item['addon'];
+		$feed      = $item['feed'];
+		$feed_name = rgars( $feed, 'meta/feed_name' ) ? $feed['meta']['feed_name'] : rgars( $feed, 'meta/feedName' );
 
-		// Get feed name.
-		$feed_name  = rgars( $feed, 'meta/feed_name' ) ? $feed['meta']['feed_name'] : rgars( $feed, 'meta/feedName' );
+		if ( ! $addon instanceof GFFeedAddOn ) {
+			GFCommon::log_error( __METHOD__ . "(): attempted feed (#{$feed['id']} - {$feed_name}) for entry #{$item['entry_id']} for {$feed['addon_slug']} but add-on could not be found. Bailing." );
+
+			return false;
+		}
+
+		$entry      = GFAPI::get_entry( $item['entry_id'] );
 		$addon_slug = $addon->get_slug();
 
 		// Remove task if entry cannot be found.
@@ -109,6 +112,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 		$item = $this->increment_attempts( $item );
 
 		$max_attempts = 1;
+		$form         = GFAPI::get_form( $item['form_id'] );
 
 		/**
 		 * Allow the number of retries to be modified before the feed is abandoned.

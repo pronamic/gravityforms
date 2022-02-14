@@ -1,7 +1,7 @@
 jQuery( document ).ready(function() {
 
   // toggle the helper classes that show the form structure
-  jQuery('.toggle_helpers input[type=checkbox]').attr('checked',false);
+  jQuery( '.toggle_helpers input[type=checkbox]' ).prop( 'checked',false );
 
   jQuery('#showgrid').click(function(){
     if(jQuery(this).is(":checked")) {

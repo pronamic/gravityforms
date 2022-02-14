@@ -13,6 +13,30 @@ class GF_Field_Number extends GF_Field {
 		return esc_attr__( 'Number', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to enter a number.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--numbers-alt';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'conditional_logic_field_setting',
@@ -32,6 +56,7 @@ class GF_Field_Number extends GF_Field {
 			'description_setting',
 			'css_class_setting',
 			'calculation_setting',
+			'autocomplete_setting',
 		);
 	}
 
@@ -139,7 +164,7 @@ class GF_Field_Number extends GF_Field {
 		$numeric_min = $min;
 		$numeric_max = $max;
 
-		if( $this->numberFormat == 'decimal_comma' ){
+		if ( $this->numberFormat == 'decimal_comma' ){
 			$numeric_min = empty( $min ) ? '' : GFCommon::clean_number( $min, 'decimal_comma', '');
 			$numeric_max = empty( $max ) ? '' : GFCommon::clean_number( $max, 'decimal_comma', '');
 		}
@@ -152,8 +177,10 @@ class GF_Field_Number extends GF_Field {
 			$message = sprintf( esc_html__( 'Please enter a number greater than or equal to %s.', 'gravityforms' ), "<strong>$min</strong>" );
 		} elseif ( is_numeric( $numeric_max ) ) {
 			$message = sprintf( esc_html__( 'Please enter a number less than or equal to %s.', 'gravityforms' ), "<strong>$max</strong>" );
+		} elseif ( $this->failed_validation && $this->isRequired ) {
+			$message = ''; // Required validation will take care of adding the message here.
 		} elseif ( $this->failed_validation ) {
-			$message = esc_html__( 'Please enter a valid number', 'gravityforms' );
+			$message = esc_html__( 'Please enter a valid number.', 'gravityforms' );
 		}
 
 		return $message;
@@ -189,7 +216,7 @@ class GF_Field_Number extends GF_Field {
 				$validation_class = $this->failed_validation ? 'validation_message' : '';
 
 				if ( ! $this->failed_validation && ! empty( $message ) && empty( $this->errorMessage ) ) {
-					$instruction = "<div class='instruction $validation_class'>" . $message . '</div>';
+					$instruction = "<div class='instruction $validation_class' id='gfield_instruction_{$this->formId}_{$this->id}'>" . $message . '</div>';
 				}
 			}
 		} elseif ( rgget('view') == 'entry' ) {
@@ -209,14 +236,19 @@ class GF_Field_Number extends GF_Field {
 		$include_thousands_sep = apply_filters( 'gform_include_thousands_sep_pre_format_number', $html_input_type == 'text', $this );
 		$value                 = GFCommon::format_number( $value, $this->numberFormat, rgar( $entry, 'currency' ), $include_thousands_sep );
 
-		$placeholder_attribute = $this->get_field_placeholder_attribute();
-		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
-		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
-		$aria_describedby      = $this->get_aria_describedby();
+		$placeholder_attribute  = $this->get_field_placeholder_attribute();
+		$required_attribute     = $this->isRequired ? 'aria-required="true"' : '';
+		$invalid_attribute      = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
+
+		$range_message          = $this->get_range_message();
+		$describedby_extra_id   = empty( $range_message ) ? array() : array( "gfield_instruction_{$this->formId}_{$this->id}" );
+		$aria_describedby       = $this->get_aria_describedby( $describedby_extra_id );
+
+		$autocomplete_attribute = $this->enableAutocomplete ? $this->get_field_autocomplete_attribute() : '';
 
 		$tabindex = $this->get_tabindex();
 
-		$input = sprintf( "<div class='ginput_container ginput_container_number'><input name='input_%d' id='%s' type='{$html_input_type}' {$step_attr} {$min_attr} {$max_attr} value='%s' class='%s' {$tabindex} {$read_only} %s %s %s %s %s/>%s</div>", $id, $field_id, esc_attr( $value ), esc_attr( $class ), $disabled_text, $placeholder_attribute, $required_attribute, $invalid_attribute, $aria_describedby, $instruction );
+		$input = sprintf( "<div class='ginput_container ginput_container_number'><input name='input_%d' id='%s' type='{$html_input_type}' {$step_attr} {$min_attr} {$max_attr} value='%s' class='%s' {$tabindex} {$read_only} %s %s %s %s %s %s/>%s</div>", $id, $field_id, esc_attr( $value ), esc_attr( $class ), $disabled_text, $placeholder_attribute, $required_attribute, $invalid_attribute, $aria_describedby, $autocomplete_attribute, $instruction );
 		return $input;
 	}
 
@@ -272,19 +304,26 @@ class GF_Field_Number extends GF_Field {
 	}
 
 	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+		if ( $this->has_calculation() ) {
+			if ( empty( $lead ) ) {
+				$lead = GFFormsModel::get_lead( $lead_id );
+			}
 
-		$value = GFCommon::maybe_add_leading_zero( $value );
+			$value = GFCommon::calculate( $this, $form, $lead );
 
-		$lead  = empty( $lead ) ? RGFormsModel::get_lead( $lead_id ) : $lead;
-		$value = $this->has_calculation() ? GFCommon::round_number( GFCommon::calculate( $this, $form, $lead ), $this->calculationRounding ) : $this->clean_number( $value );
-		//return the value as a string when it is zero and a calc so that the "==" comparison done when checking if the field has changed isn't treated as false
-		if ( $this->has_calculation() && $value == 0 ) {
-			$value = '0';
+			if ( $this->numberFormat !== 'currency' ) {
+				$value = GFCommon::round_number( $value, $this->calculationRounding );
+			}
+
+			// Return the value as a string when it is zero and a calc so that the "==" comparison done when checking if the field has changed isn't treated as false.
+			if ( $value == 0 ) {
+				$value = '0';
+			}
+		} else {
+			$value = $this->clean_number( GFCommon::maybe_add_leading_zero( $value ) );
 		}
 
-		$value_safe = $this->sanitize_entry_value( $value, $form['id'] );
-
-		return $value_safe;
+		return $this->sanitize_entry_value( $value, $form['id'] );
 	}
 
 	public function sanitize_settings() {

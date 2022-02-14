@@ -115,40 +115,7 @@ class GF_System_Status {
 	 * @uses GFSystemStatus::get_subviews()
 	 */
 	public static function page_header( $title = '' ) {
-
-		// Print admin styles.
-		wp_print_styles( array( 'jquery-ui-styles', 'gform_admin', 'wp-pointer' ) );
-
-		// get view details
-		$subviews = self::get_subviews();
-
-		?>
-
-		<?php echo GFCommon::get_remote_message(); ?>
-		<div class="wrap <?php echo GFCommon::get_browser_class() ?>">
-
-			<h2><?php esc_html_e( 'System Status', 'gravityforms' ) ?></h2>
-			<?php GFCommon::display_admin_message();
-			GFCommon::display_dismissible_message(); ?>
-
-			<div id="gform_tab_group" class="gform_tab_group vertical_tabs">
-
-				<ul id="gform_tabs" class="gform_tabs">
-					<?php foreach( $subviews as $view ):
-						$query = array( 'subview' => $view['name'] );
-						if( isset( $view['query'] ) )
-							$query = array_merge( $query, $view['query'] );
-						?>
-						<li <?php echo self::get_current_subview() == $view['name'] ? 'class="active"' : '' ?>>
-							<a href="<?php echo esc_url( add_query_arg( $query ) ); ?>"><?php echo $view['label'] ?></a>
-						</li>
-					<?php endforeach; ?>
-				</ul>
-
-				<div id="gform_tab_container" class="gform_tab_container">
-					<div class="gform_tab_content" id="tab_<?php echo self::get_current_subview() ?>">
-
-						<?php
+	    GFForms::admin_header( self::get_subviews(), false );
 	}
 
 	/**
@@ -158,16 +125,6 @@ class GF_System_Status {
 	 * @access public
 	 */
 	public static function page_footer() {
-	?>
-
-					</div> <!-- / gform_tab_content -->
-				</div> <!-- / gform_tab_container -->
-			</div> <!-- / gform_tab_group -->
-
-			<br class="clear" style="clear: both;" />
-
-		</div> <!-- / wrap -->
-
-		<?php
-		}
+	    GFForms::admin_footer();
+	}
 }

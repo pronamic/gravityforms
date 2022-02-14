@@ -1,3 +1,466 @@
+### 2.5.16 | 2022-01-11
+- Fixed an issue where the select entry table columns in RTL are not displaying properly.
+- Fixed an issue where the credit card field expiration date fieldset label is not output as legend.
+- Fixed an issue where a PHP warning appears in the logs after running the daily cron.
+- Fixed an issue with total field not displaying correct amount under certain conditions.
+- Fixed an issue where the validation div on the legacy file uploads field is showing when empty.
+- Fixed an issue with gform_conditional_logic_operators filter passing the incorrect field ID.
+- Fixed an issue which causes multisites to experience a fatal error on plugin activation.
+- Fixed an issue with Dynamic Field Map on some add-ons including HubSpot Add-On and User Registration Add-On.
+- Fixed an issue with form import not properly sanitizing JSON string in some cases.
+- Fixed an issue where uploaded files are not deleted on entry deletion if a custom upload path is used.
+- Fixed an issue with Generic Map and Dynamic Field Map not being able to filter the value drop down to include or exclude field types.
+- Fixed an issue with Generic Map settings field not being able to specify a custom list of choices for mapping.
+- Fixed an issue where files uploaded via the multi-file upload field are corrupted when chunking is enabled using [gform_plupload_settings](https://docs.gravityforms.com/gform_plupload_settings/).
+- Fixed performance issue with Generic Map settings field.
+- Fixed fatal error in Generic Map settings field that can happen under certain conditions.
+
+### 2.5.15 | 2021-11-16
+- Added a prefix to section IDs in the Settings API to make it less likely that sections and fields will have the same ID.
+- Added new filter: *[gform_get_form_confirmation_filter](https://docs.gravityforms.com/gform_get_form_confirmation_filter/)*
+- Fixed an issue that prevents keyboard navigation from working in a form with multi-file upload and page fields.
+- Fixed an issue that caused Javascript errors when a form is added to the page via a custom Gutenberg block such as ACF.
+- Fixed an issue that caused sales results filters to show up on quiz, survey, and polls results pages.
+- Fixed an issue where aria-labels for name field inputs are incorrect by removing aria-labels from fieldset inputs.
+- Fixed an issue with conditional logic when targeting checkbox fields and using "is not empty" as a rule.
+- Updated invisible CAPTCHA processing to reduce chances of multiple submit button clicks generating duplicate submissions.
+
+### 2.5.14 | 2021-10-21
+- Fixed an issue which causes No Conflict mode to break Media Uploads for some WYSIWYG editors.
+- Reverted required indicator for hidden labels change made in 2.5.13 which introduced UI issues.
+
+### 2.5.13 | 2021-10-19
+- Added security enhancements.
+- Added support for Visibility settings for the HTML Field.
+- Fixed an issue where the required indicator is not displayed if the field label is hidden.
+- Fixed a PHP notice on the WordPress 5.8+ Appearance > Widgets page.
+- Fixed an issue with the Radio Buttons field on the entry detail edit page where the other input is disabled resulting in the loss of the other value on entry update.
+- Fixed an issue that caused fields with float values for IDs to break the conditional logic flyout modal.
+- Fixed the display of left-aligned labels in order to allow them to stack on smaller screen sizes.
+- Fixed an issue with the sales page displaying duplicate months when viewed on the last days of the month.
+- Fixed an issue where the form switcher redirects the user to the entries list page instead of the results page.
+- Fixed an issue where the tooltip for a date/time settings field does not display correctly.
+- Fixed an issue that causes Unit Tests to fail to output any feedback due to output buffering.
+- Fixed two instances of an incorrect text domain for translatable strings.
+- API: Fixed issues in the Settings API that prevents dependencies from working on nested fields and sections without IDs.
+
+### 2.5.12 | 2021-10-01
+- Fixed an issue with the address field merge tag when selecting the option to use the values from a previous address field
+- Fixed an issue for the list field where multi-column headers are misaligned when max rows are set to 1.
+- Fixed an issue which causes calls to the License API to occur more often than necessary.
+
+### 2.5.11 | 2021-09-29
+- Added security enhancements.
+- Added a new UI for License Settings which shows more-thorough details about your License Key.
+- Updated logo to reflect new branding.
+- Fixed an issue which causes compatibility errors when third-party code extends the Gravity API class.
+- Fixed a PHP fatal error that occurs during translation installation when the hosting environment is configured to block external requests.
+- Fixed an issue for thickbox where RTL is not being respected, but only within the context of Gravity Forms admin pages.
+- API: Updated the logic that determines when to show custom form settings fields.
+
+### 2.5.10 | 2021-09-08
+- Added alt text and title attribute for accessibility to the date field datepicker field icon.
+- Fixed an issue where the form button text doesn't properly update for page conditional logic.
+- Fixed an issue where forms with pricing fields throw PHP notices if fields are removed before the form is rendered.
+- Fixed an issue with our block script loading that breaks the Gutenberg editor in WordPress 5.8.x and up.
+- Fixed an issue that causes some screens in the admin to have JavaScript errors in WordPress versions previous to 5.0.
+- Fixed an issue which causes field calculations with references to the calculated field to infinitely loop.
+- Fixed an issue that causes the Form Switcher to break on certain Admin views.
+- Fixed an issue which causes fields with multiple inputs to have incorrect aria-validate attributes.
+- Fixed an issue for the conditional flyout logic where checkbox and radio field based conditionals are not being respected.
+- Fixed an issue which causes fields with whitespace to break certain Add-on Feeds.
+- Fixed an issue where the border for the section field type is missing for the frontend form display when legacy markup mode is not enabled.
+- Fixed an issue for the generic map settings field not rendering when editing an existing feed where the setting was previously configured.
+- Fixed an issue that causes gfCalc events to be bound to the same listener multiple times.
+- Updated the reCAPTCHA settings link for the Captcha field "To use the reCAPTCHA field" message in the form editor.
+- Updated the UI of the update button in the form editor.
+- Updated the feed settings to run on admin_init instead of init to ensure they never trigger on the front end.
+- Updated some instances of strings not being translatable for the System Status view.
+- API: Fixed an issue where field map fields don't auto populate with default options.
+- AF: Added the ability to overwrite the uninstall message.
+
+### 2.5.9 | 2021-08-10
+- Added security enhancements.
+- Fixed an issue where the header of the datepicker in legacy forms has the wrong background color and the dropdowns are not aligned correctly.
+- Fixed an issue where "This field is required" appears twice in the time field validation message.
+- Fixed an issue in the submission time performance for hosting environments where the form has lots of directories in its uploads folder.
+- Fixed an issue when submitting form in form preview where the required JS hooks are not being included.
+- AF: Fixed a display issue with poll results where the text gets cut off if labels are long.
+- AF: Fixed the display of visual radio choices in settings.
+- AF: Fixed an issue for get_icon_markup where all style implementations of font awesome are getting an additional class of "fa" prefixed to the output icon classes.
+- AF: Fixed an issue with dynamic field map settings fields that prevents options from appearing in the value dropdown.
+
+### 2.5.8 | 2021-07-28
+- Fixed an issue for inputs where Gravity Form styles are overriding and breaking WordPress admin styles for certain inputs, textareas, and selects.
+- Fixed an issue of incorrect styles for the tel input type when in the entry edit view.
+- Fixed an issue that causes invalid markup in Field Descriptions to break the Form Editor.
+- Fixed an in which javascript can be injected on pages which don't support it and cause console errors.
+- Fixed an issue that affected the performance of the forms and entries list pages.
+- Fixed an issue with the display of the datepicker field in 2021 theme.
+- Fixed an issue that causes rich text fields not render correctly in some cases in the WordPress admin.
+- Fixed an issue that causes some languages to not display correctly in the tab ui of the form editor.
+- Fixed an issue which causes datepickers in the form preview window to not respect the week starts on setting in WordPress.
+- Fixed an issue that causes long labels for form fields to cause the conditional logic rules in settings area to exceed the width of their column.
+- Fixed an issue where the personal data cron does not trash or delete entries for inactive forms.
+- Fixed an issue which causes Next Button Conditional Logic rules to break in some situations.
+- Fixed an issue where the columns of the list field are not aligned with the inputs when the legacy setting is on.
+- Fixed an issue which causes databases with an "int_" prefix to break upgrade routines.
+- Fixed an issue with form settings field map field where the first field with required input types with only one option present is not saving the value, resulting in an error for required fields.
+- Fixed an issue where the required indicator can be displayed for the consent field in the form editor when the field is not required.
+- Fixed an issue in form editor field settings where field errors and notices are not reset and updated correctly as you edit different fields.
+- Fixed a bug which causes some systems to throw a fatal error when updating to 2.5.7.x.
+- Fixed a bug which causes forms with text-only fields to break the Form Editor which was introduced in 2.5.7.2
+- Fixed a bug which causes AJAX forms to inject Hooks JS markup and break the redirect script.
+- Fixed a bug which causes programmatically-created forms to throw PHP warnings if specific values are ommitted.
+- Fixed a bug in the settings field map field that prevents it from honoring input type arguments.
+- Fixed a PHP error in the field select field.
+- Fixed a layout bug for the list field in the form entry editing view when a form has legacy mode enabled.
+- Updated conditional logic for submit button to hide it visually when it is disabled.
+- Updated form editor and form settings alerts to reflect the new alerts styling.
+- Updated front end scripts to allow for filtering of their tags in WordPress 5.7 and up.
+- Updated the file upload field in order to support mapping its values to User Meta.
+- Updated error messages for File Uploads to be translatable.
+- API: Added a new alert component; currently only used in the admin.
+- API: Added new function GFCommon::get_inline_script_tag() which allows filtering of our theme inline scripts in WordPress 5.7 and up with the 'wp_inline_script_attributes' filter.
+
+### 2.5.7 | 2021-07-07
+- Fixed an issue that sometimes causes notice level warnings on widget enabled pages.
+- Fixed an issue that causes the file upload field to have empty rows remain after a file is deleted during editing the entry.
+- Fixed an issue where a notice appears on the feed details page.
+- Fixed an issue for multi-page forms where all fields regardless of current page incorrectly validate on each page submittal.
+- Fixed an issue that causes the form switcher to not load on the entry list screen when no conflict mode is enabled.
+- Fixed an issue that causes initial values in Conditional Logic not to be saved when the form is updated.
+- Fixed a layout/display issue for legacy forms in Safari when using the .gf_list_inline ready class for checkbox or radio fields.
+- Fixed a PHP warning which can occur when determining if the form has page conditional logic.
+- Fixed a PHP notice (error in PHP8) and display issue for the date field type when using the datefield or datedropdown input types when the field inputs are missing from the form object.
+- Fixed an issue for AJAX forms on submission where if the form cannot be found the submission stalls.
+- Fixed an issue that causes the Gravity Forms block to not load in WordPress 5.8.
+- Updated sticky notifications to allow them to be translatable when the user changes their language.
+- Updated the form switcher to size dynamically to better handle forms with long titles.
+- Updated block settings icons in various themes and contexts.
+- AF: Fixed an issue that can potentially cause the add-on uninstallation screen to throw a fatal error if the add-on class does not define a `get_instance` method.
+- API: Added the card field type in the settings API.
+- API: Fixed an issue which causes valid markup to throw an error when saving a textarea settings field.
+
+### 2.5.6 | 2021-06-22
+- Fixed an issue where dynamically populated choices for choice-based fields cannot be used in conditional logic.
+- Fixed an issue with the gf_list_inline ready class for radio and checkbox fields where the labels are wrapping.
+- Fixed an issue that causes choice values that are numbers to remain unselected when attempting to use them in conditional logic.
+- Fixed an issue with the total field that causes conditional logic based on its value to no longer work.
+- Fixed an issue with the reCAPTCHA field not rendering when a form is injected by ajax.
+- Fixed an issue with radio and checkbox fields for non-legacy forms where the field count and meta are missing styles.
+- Fixed an issue that prevents legacy settings from displaying on the form notification settings page.
+- Fixed an issue for forms not outputting HTML5 where the hour and minute input's layout breaks in the time field for browsers other than Firefox.
+- Fixed display issues for the time field when using legacy markup where the field's inputs aren't always the same height and placeholder text is cut off.
+- Fixed an issue where the default value field option does not work when the choice text is entered instead of the choice value.
+- Fixed a typo in the message that displays when logging is enabled.
+- Fixed issues where translations are not always offered or installed by WordPress and the WP-CLI.
+- Fixed the form scheduling settings so that the correct start and end minutes show as selected.
+- Fixed label layout issues when using left or right label alignment for a form.
+- Fixed the display of the time field for forms in legacy mode.
+- Fixed an issue when disabling logging via the link in the warning where the logging setting is not being unchecked.
+- Fixed an issue with the form editor that makes dragging items below the bottom of the screen difficult.
+- Fixed an issue where the layout of forms with left or right aligned labels is broken in the form editor.
+- Fixed an issue where the total field is not calculated for all forms if a page has more than one form.
+- Fixed an issue where the conditional logic choice based rules fail if the choice is renamed from the default.
+- Updated the submit button on the edit entry detail page to have the primary button styles for better visual prompting.
+- Updated the form editor to include the css for legacy ready classes on legacy enabled forms.
+- Updated field labels to show the same error style as field legends when they fail validation.
+- Updated the System Report to include the Translations section, listing the current site and user locales and installed translations.
+- Updated several form settings text areas to accept valid HTML for users with the unfiltered_html capability.
+- Updated the logging warning verbiage for clarity.
+- Updated translations to respect user-specific locale.
+- Updated various elements in the form editor to use stylized scrollbars that unify the ui experience across browsers.
+- Updated more icon styles.
+- Removed the notice for suppressed admin notices.
+- AF: Fixed an issue that prevents settings from displaying on the form settings screen when add-ons have the $_multiple_feeds property set to false.
+- AF: Fixed the timing for when feed settings are initialized so the process always occurs before admin scripts are enqueued, thereby preventing some JavaScript console errors from surfacing.
+- API: Fixed the display of tooltips next to settings section titles.
+- API: Fixed an issue where the merge tag drop down is not displayed next to the value field of the generic map feed settings field.
+- API: Fixed an issue where the dynamic field map doesn't accept empty values when saving a feed.
+
+### 2.5.5 | 2021-06-02
+- Fixed the appearance of Date, List and Time fields when editing an entry.
+- Fixed an issue where price total calculations do not work or becomes unresponsive when legacy form markup is enabled.
+- Fixed an issue where the submit button's value is "Next" instead of "Submit" on the last page after evaluating page fields' conditional logic.
+- Fixed an issue which can break AMP pages generated by some AMP plugins.
+- Fixed an issue which causes conflicts with XML Sitemaps and REST API Requests.
+- Fixed an issue where the form block toolbar links do not point to the right path when WordPress is not a top level directory.
+- Fixed an issue where text-based survey fields cause errors in the form editor.
+- Fixed an issue where Beaver Builder shows an error when embedding a form.
+- Fixed an issue with the reCAPTCHA field not rendering when in a multi page form with AJAX enabled.
+- Fixed an issue with the timing of loaded events in JavaScript which causes some forms to not render correctly or have console errors.
+- Fixed an issue where the add and remove choice buttons are hidden when modifying Prefix choices on a Name field.
+- Fixed an issue where the number of items in the Entry and Form lists are not be displayed when there is only one page of items.
+- Fixed an issue where the password strength is not be preserved after a failed submission or when not on the last page of a form.
+- API: Fixed an issue where the Dynamic Field Map Settings API field allows for custom values.
+
+### 2.5.4 | 2021-05-27
+- Added the gform_force_hooks_js_output filter to allow plugins to control whether to output the hooks js in the head; defaults to true.
+- Fixed an issue which causes reCaptcha field to log errors when there are none.
+- Fixed an issue which causes forms that rely on Javascript to not render in certain contexts.
+- Fixed an issue which causes Javascript markup to be injected into some AJAX responses.
+
+### 2.5.3 | 2021-05-26
+- Added accessibility warnings to the datepicker and fields with hidden labels in the form editor.
+- Added enhanced support for plugins that concatenate scripts.
+- Added support for translations for all strings in the file upload field.
+- Fixed gf_hidden class to also apply to non legacy forms for backwards compatibility.
+- Fixed an issue where JavaScript errors which prevent form display when jQuery is included in the footer or deferred.
+- Fixed an issue which can prevent forms functioning when included by ajax after the page has loaded.
+- Fixed an issue which causes forms to become non-responsive when Total Field calculations are being performed.
+- Fixed an issue where the total field HTML does not keep the legacy markup when legacy markup is enabled for a form.
+- Fixed an issue with the choices ui that breaks its layout when more than 2 input columns are inserted.
+- Fixed an issue in JavaScript that causes errors with price calculation.
+- Fixed an issue that causes some add-ons to be unable to load the feed settings screen.
+- Fixed an issue which causes some forms to throw JavaScript errors due to missing head tag in the DOM.
+- Fixed an issue which causes JavaScript events not to fire when a form is loaded via AJAX.
+- Fixed an issue which causes some performance optimization plugins to break certain form JavaScript methods.
+- Fixed an issue where the gf_list_*col ready classes for radio and checkbox fields are showing the wrong number of columns.
+- Fixed an issue that causes sites with HTML5 disabled to have it enabled after updating to 2.5.
+- Fixed an issue which allows greater-than and less-than operators for Conditional Logic to be more useful.
+- Fixed an issue which causes custom values in the Conditional Logic flyout in the form editor to be overwritten.
+- Fixed an issue where confirmations redirect to the selected page even if page isn't selected as the redirect type.
+- Fixed an issue where a JavaScript errors on the last page of a paginated form with conditional logic.
+- Fixed an issue which prevents setting custom classes for the form editor fields' buttons.
+- API: Updated the settings API to automatically save custom form settings fields added with the gform_form_settings_fields filter.
+- API: Fixed an issue which causes some filters not to fire when on certain Admin screens.
+
+### 2.5.2 | 2021-05-19
+- Added security enhancements.
+- Added form editor sidebar settings style refinements.
+- Updated the section field so it no longer uses the description as a fallback when the label is empty.
+- Updated the frontend styles for better column alignment and better appearance in small containers.
+- Updated the section field so it no longer uses the description as a fallback when the label is empty.
+- Fixed an issue where the HTML field's content setting doesn't have a merge tags selector.
+- Fixed an issue which causes Javascript errors in the Form Editor when no Conditional Logic fields are present.
+- Fixed an issue which causes Conditional Logic to fail if the first choice for a given field is selected.
+- Fixed an issue that prevents users with unfiltered_html capabilities from saving raw markup in textarea settings.
+- Fixed an issue that prevents choice-based fields from utilizing the contains, starts with, and ends with Conditional Operators.
+- Fixed an issue which causes validation error messages in forms with legacy markup to use the incorrect classname.
+- AF: Fixed an issue which prevents payment add-ons from rendering delayed payment settings in the feed settings page.
+
+### 2.5.1 | 2021-05-11
+- Added accessibility enhancements to the form editor to improve keyboard navigation.
+- Updated the form editor to notify users that resizing is not available when the legacy markup form setting is enabled.
+- Updated form editor to not allow resizing of fields when the legacy markup form setting is enabled.
+- Fixed an accessibility issue with the multi-file upload field.
+- Fixed an issue where the form description field doesn't allow HTML tags.
+- Fixed an issue where save and continue button is triggered when pressing return/enter.
+- Fixed a PHP notice that appears for the From Email for form notifications under certain circumstances.
+- Updated the save and continue button so that it isn't triggered when pressing return/enter.
+- Updated the form description field to allow HTML tags.
+- Updated icons in the WordPress admin to Gravity Forms 2.5 variants.
+- AF: Updated the setup fee settings in the payment add-on framework so that the product field is disabled instead of hidden if setup fee isn't checked.
+- AF: Fixed PHP notices that appear when editing a feed that has no associated form.
+- Fixed accessibility issue with the multi file upload field.
+- Fixed a PHP notice that appeared for the From Email for form notifications under certain circumstances.
+- Fixed a padding issue for suppressed WP notices in the admin area at smaller viewport sizes and refined notification vertical spacing.
+- Fixed an issue that causes single line text inputs added to a legacy mode editor instance to have size medium applied.
+- Fixed an issue that can cause dragging or resizing in the form editor to break the layout and/or delete the field.
+- Fixed issue when using a custom tab index and the post image field with all meta fields enabled where the alt text and post image shared the same tabindex. Credit: Jake Jackson (@jakejackson1).
+- Fixed an issue that causes radio and select fields to show invalid Conditional Logic options.
+- Fixed form editor layout issues present with Jetpack plugin on wordpress.com sites.
+- API: Fixed an issue which causes programmatically-created forms to break in the form editor.
+
+### 2.5.0.2
+- Fixed an issue which prevents certain add-ons from displaying Plugin Settings fields.
+- Fixed an issue which prevents non-admin users from accessing Form Settings when no add-ons are enabled.
+- Fixed an issue that causes certain fields to not trigger the settings tab to open in the form editor.
+- Fixed an issue that causes the page break end settings to not be visible in the form editor.
+- API: Fixed an issue with GFCommon::is_numeric() to allow non-currency based numbers without a leading zero. Credit: The GravityView Team.
+- API: Fixed an issue which causes programmatically-created forms to break in the form editor.
+- AF: Updated the setup fee settings in the payment add-on framework so that the product field is disabled instead of hidden if setup fee isn't checked.
+- AF: Fixed PHP notices that appear when editing a feed that has no associated form.
+
+### 2.5 | 2021-04-27
+- Added security enhancements.
+- Added support for dragging and dropping fields into columns in the form editor.
+- Added a completely new and more modern design for all the admin pages.
+- Added a completely new UX/UI for the form editor that's more inline with other areas of WordPress.
+- Added drag and drop support to the form editor for touch devices.
+- Added completely new styles and markup for forms to make them easier to style and more accessible. Existing forms use the legacy markup and styles by default. Disable the legacy markup in the form settings.
+- Added warnings in the form editor and form settings when a setting may affect the accessibility of the form.
+- Added support for ready classes in the form editor so the effects of ready classes are visible immediately. Column ready classes will continue to work in the frontend but they are deprecated and will not be supported in the form editor.
+- Added messages in the form editor when new forms use deprecated ready classes. Column ready classes have been deprecated, please use the columns in the form editor instead.
+- Added support for TranslationsPress to manage translations for Gravity Forms core and add-ons. Translation files will be delivered via the WordPress translation updates system.
+- Added the 'novalidate' attribute to the form container to block default HTML5 validation. This allows Gravity Forms to provide an accessible validation message.
+- Added accessible descriptions to fieldsets by making descriptions announced on the fieldset's first input.
+- Added accessible error messages to fieldsets by making error message specify which inputs are empty.
+- Added the required attribute to required inputs in form settings to improve accessibility.
+- Added accessibility enhancements to the credit card field and the Post Custom Field.
+- Added accessibility enhancements for the Post Tags field.
+- Added alternative text to the Post Image field.
+- Added the accessibility warning when "Enhanced User Interface" is enabled.
+- Added a fall back for an empty label for better accessibility. The placeholder or description can be used as label text when no field label is set.
+- Added a form setting to control the display of a validation summary at the top of the form for greater accessibility where appropriate. Each validation error links to the respective field.
+- Added a form setting to control the required field indicator. The default is set to the word "Required" for better accessibility.
+- Added a message to the top of the form to explain the meaning of the required fields indicator. This is not displayed when the indicator is set to "Required".
+- Added the autocomplete field settings to the following fields: Single-Line Text, Drop-Down, Number, Name, Phone, Address, Email. Further details: https://docs.gravityforms.com/accessibility-for-developers/#autocomplete
+- Added a display mode screen option to set the container width on the entry list.
+- Added the {created_by} merge tag to display information about the user who created the entry. Credit: the team at Gravity PDF.
+- Added the {date_created} merge tag to display the date an entry was created. Credit: the team at Gravity PDF.
+- Added the {date_updated} merge tag to display the date an entry was last updated. Formatted using the same modifiers as {date_created}. Credit: the team at Gravity PDF.
+- Added the {payment_date} merge tag to display the date the payment was received. Formatted using the same modifiers as {date_created}. Credit: the team at Gravity PDF.
+- Added an admin notice which appears when there are admin notices from other plugins. No more admin notice clutter!
+- Added the gform_selectwoo script to the list of no conflict scripts. Credit: the team at Gravity PDF.
+- Added the [gform_has_admin_notices](https://docs.gravityforms.com/gform_has_admin_notices/) filter.
+- Added the [gform_load_bulk_choices_choice](https://docs.gravityforms.com/gform_load_bulk_choices_choice/) and [gform_insert_bulk_choices_choice](https://docs.gravityforms.com/gform_insert_bulk_choices_choice/) filters.
+- Added the [gform_disable_form_legacy_css](https://docs.gravityforms.com/gform_disable_form_legacy_css/) filter to disable legacy CSS files.
+- Added the [gform_disable_form_theme_css](https://docs.gravityforms.com/gform_disable_form_theme_css/) filter to allow users to keep the Form Theme CSS file from being enqueued.
+- Added the [gform_enable_legacy_markup](https://docs.gravityforms.com/gform_enable_legacy_markup/) filter so the legacy markup setting can be overridden.
+- Added the [gform_preview_form_link](https://docs.gravityforms.com/gform_preview_form_link/) filter for customizing the form preview link.
+- Added the [gform_field_map_choices](https://docs.gravityforms.com/gform_field_map_choices/) filter for overriding the choices in field mapping drop downs.
+- Added the [gform_form_settings_initial_values](https://docs.gravityforms.com/gform_form_settings_initial_values/) filter enabling the default setting values for the Form Settings page to be customized.
+- Added the [gform_preview_init](https://docs.gravityforms.com/gform_preview_init/) action hook which is triggered when the form preview is loading.
+- Added the [gform_pre_print_scripts](https://docs.gravityforms.com/gform_pre_print_scripts/) and [gform_print_scripts](https://docs.gravityforms.com/gform_print_scripts/) action hooks which are triggered when printing scripts and styles for the form widget.
+- Added the [gform_editor_field_settings](https://docs.gravityforms.com/gform_editor_field_settings/) filter to allow the available field settings to be modified in the form editor.
+- Added the [gform_form_validation_errors](https://docs.gravityforms.com/gform_form_validation_errors/) filter enabling the list of field validation errors to be overridden.
+- Added the [gform_form_validation_errors_markup](https://docs.gravityforms.com/gform_form_validation_errors_markup/) filter enabling the HTML for the field validation errors list to be overridden.
+- Added the [gform_confirmation_settings_fields](https://docs.gravityforms.com/gform_confirmation_settings_fields/) filter to modify confirmation settings fields to replace deprecated gform_confirmation_ui_settings filter.
+- Added the [gform_editor_sidebar_panels](https://docs.gravityforms.com/gform_editor_sidebar_panels/) filter and [gform_editor_sidebar_panel_content](https://docs.gravityforms.com/gform_editor_sidebar_panel_content/) action to add custom panels to the form editor sidebar.
+- Added the [gform_field_settings_tabs](https://docs.gravityforms.com/gform_field_settings_tabs/) filter and [gform_field_settings_tab_content](https://docs.gravityforms.com/gform_field_settings_tab_content/) action to add custom field settings tabs.
+- Added the [gform_form_settings_fields](https://docs.gravityforms.com/gform_form_settings_fields/) filter to modify form settings fields to replace the deprecated gform_form_settings filter.
+- Added the [gform_notification_settings_fields](https://docs.gravityforms.com/gform_notification_settings_fields/) filter to modify form settings fields to replace deprecated gform_notification_ui_settings filter.
+- Added the [gform_frontend_pages_evaluated](https://docs.gravityforms.com/gform_frontend_pages_evaluated/) javascript action fires after the page conditional logic on the form has been evaluated, allowing further actions to be performed.
+- Added the [gform_frontend_page_visible](https://docs.gravityforms.com/gform_frontend_page_visible/) javascript action fires after a page step turns visible, allowing further actions to be performed.
+- Added the [gform_frontend_page_hidden](https://docs.gravityforms.com/gform_frontend_page_hidden/) javascript action fires after a page step turns hidden, allowing further actions to be performed.
+- Added the [gform_required_legend](https://docs.gravityforms.com/gform_required_legend/) filter to customize the required field indicator notice.
+- Added $tab_id as the second parameter to the [gform_field_settings_tab_content](https://docs.gravityforms.com/gform_field_settings_tab_content/) filter.
+- Updated the validation message for invalid email addresses with more specific instructions to comply with accessibility guidelines.
+- Updated honeypot field to use "new-password" instead of "off" as value for autocomplete field.
+- Updated the date field to display date format as the placeholder.
+- Updated the Single Product Quantity Field to provide better Screen Reader feedback.
+- Updated the HTML Field's "Disable Default Margins" setting to only display when form labels are set to left-or-right-aligned.
+- Updated the output of the Shipping and Total fields to be more accessible to screen readers.
+- Updated the required indicator in the settings pages to improve accessibility.
+- Updated the consent field to use fieldset container for better accessibility.
+- Updated the uninstall tab to allow for uninstalling all add-ons.
+- Updated the title of the dashboard widget.
+- Updated the way translations files are distributed. They are now downloaded on demand.
+- Updated the database schema to accommodate IPV6 addresses
+- Updated the Checkbox field to use a button element for Select All toggle forbetter accessibilty.
+- Updated the HTML heading structure to improve accessibility.
+- Updated multi-input fields to use the fieldset tag to improve accessibility.
+- Updated the markup to help screen readers announce the confirmation message when the form is embedded with AJAX. This helps to improve accessibility.
+- Updated the Calculation field to announce the updated price.
+- Updated the Post image field to display the allowed file extensions to improve accessibility.
+- Updated the File Upload field to display the allowed files extensions, the maximum number of allowed fields, and maximum file sizes. This helps to improve accessibility.
+- Updated the delete file button in the File Upload field to a trash button. It is now a button element instead of an image. This helps to improve accessibility.
+- Updated the Time field to provide the required format as a placeholder.
+- Updated the progress bar and submit button to react more appropriately to conditional logic.
+- Removed support for IE11 in the admin pages. IE11 is still supported in the frontend.
+- Fixed the system report to get the correct version of MariaDB and show whether the site is using MySQL or MariaDB.
+- Fixed an issue with the accessibility of the character counter on text fields with max characters.
+- Fixed some accessibility issues with tooltips in the settings.
+- Fixed a deprecation notice with PHP 7.2+ which occurs when using the Captcha field and the reCAPTCHA keys are not configured. Credit: The Gravity PDF team.
+- Fixed an issue with column widths for MySQL 8.0.17+.
+- Fixed some strings to be translatable.
+- API: Added the "defer" attribute to all scripts.
+- API: Added a completely new Settings API that is now independent of the Add-On Framework.
+- API: Added the [gform_web_api_retrieve_form_totals](https://docs.gravityforms.com/gform_web_api_retrieve_form_totals/) and [gform_rest_api_retrieve_form_totals](https://docs.gravityforms.com/gform_rest_api_retrieve_form_totals/) filters.
+- API: Fixed an issue which results in request timeouts on some environments when getting forms using REST API v1 or v2.
+- API: Added stylelint config based on WordPress css standards and applied to admin PostCSS
+- API: Added array keys to form settings fields to allow for easy targeting within hooks of specific fields.
+- API: Added a new dropdown/listbox component; currently only used in the form switcher.
+- API: Added new JavaScript namespaces and utilities to gravityforms.js.
+- API: Added the admin icon kit as separate file for third party use.
+- API: Fixed the legacy Font Awesome kit so it won't override other Font Awesome instances found in the WordPress admin.
+- API: Updated gform_add_meta(), gform_update_meta(), and gform_delete_meta() to return the value of the database query.
+- API: Updated get_forms method to accept optional parameters to order returned forms.
+- API: Added the gchoice class to radio field output to match checkbox approach and allow addons/themes easier targeting.
+- API: Updated the classes that control the widths of fields to include a prefix.
+- API: Moved the JavaScript hooks functionality out of gravityforms.js to an inline header script to allow for scripts to be loaded in the footer on the theme.
+- API: Fixed an issue where forms can be assigned duplicate titles when using the GFAPI methods for updating forms and form properties.
+- API: Fixed an issue where the form returned by GFAPI::get_form() can include the old title when it has been updated using GFAPI::update_forms_property().
+- API: Updated the default value of the gform_init_scripts_footer filter from false to true. Init scripts are now outputted in the footer and are triggered on the DOMContentLoaded event.
+- API: Removed the gform_notification_validation filter.
+- AF: Updated the Add-On Settings API to use the new Gravity Forms Settings API. Some changes to custom settings may be required.
+- AF: Updated the prefix for the name attribute on all settings inputs from "gaddon" to "gform". This is a breaking change that can affect add-on settings if they use custom Javascript or CSS.
+- AF: Added support for Gravity Forms font icons.
+- AF: Deprecated and fixed the settings_save method in the Add-On Framework.
+- AF: Updated note type to use add-on slug when adding a note to an entry.
+- AF: Deprecated the validate_*_settings methods. Use the Settings API instead.
+
+
+### 2.4.24 | 2021-04-14
+- Added security enhancements.
+- Updated the captcha field so that it does not show autocomplete options.
+- Updated the system report to include the REST API base URL and to indicate if REST API v2 is enabled.
+- Updated the wording on the import forms page to clarify the expected file format for importing forms.
+- Updated the plugin header to include the "Requires at least" and "Requires PHP" properties.
+- Updated the minimum WordPress version (for support) on the System Status page to 5.6.
+- Fixed an issue where filters are not applied consistently to repeater field entries.  Credit: Paul V. Biron/Sparrow Hawk Computing.
+- Fixed PHP 8 issues where optional parameters are listed before required ones.
+- Fixed the text on the edit entry screen for post title so that it is translatable.
+- Fixed an issue where making a checkbox field the primary key on the entries list page throws a PHP notice.
+- Fixed an issue where sometimes users are granted `gform_full_access` permission when they shouldn't be.
+- Fixed an issue where re-running the database upgrade from the System Status page doesn't create the missing gf_rest_api_keys table.
+- Fixed the deprecation notice in the Gravity Forms Gutenberg block.
+- Fixed an issue with API V2 key generation where it's possible for the keys to generate with just a prefix and no hash.
+- AF: Updated the meets_minimum_requirements method to include an error if the installed version of Gravity Forms is older than an add-on requires.
+- API: Added GFField::filter_input_value() to apply the [gform_get_input_value](https://docs.gravityforms.com/gform_get_input_value/) filter.
+- API: Added GFAPI::get_feed() for getting a specific feed.
+- API: Updated the REST API v2 /feeds/[feed id] endpoint to support the PATCH method for updating the specified feed.
+- API: Fixed an issue with GFAPI::get_feeds() where the requested feed is not returned when inactive.
+- API: Fixed an issue with GFAPI::get_feeds() where the returned feeds do not include the feed_order property.
+- API: Fixed an issue where the REST API v2 PUT /feeds/[feed id] endpoint only updates the feed meta.
+- API: Fixed an issue where the JWT Authentication for WP REST API plugin blocks requests to REST API v2 with a 403 error.
+- API: Added GFAPI::update_feed_property() to update the specified feed with the given property value.
+- API: Added GFAPI::feed_exists() to check if a feed exists with the supplied ID.
+- API: Added the PUT /feeds/[feed id]/properties endpoint to REST API v2 to update one or more properties of the specified feed.
+- API: Added the [gform_webapi_key_user_capabilities](https://docs.gravityforms.com/gform_webapi_key_user_capabilities/) filter to override which capabilities are used to determine if a user is included in the User drop down menu on the REST API settings page.
+- API: Fixed an issue where users without the appropriate permissions appear in the User drop down menu when creating a new REST API Key.
+- API: Updated the `rand_hash()` method with a fallback to generate a hash even if `openssl_random_pseudo_bytes()` returns empty.
+
+
+### 2.4.23 | 2021-03-03
+- Added the [gform_shortcode_builder_forms](https://docs.gravityforms.com/gform_shortcode_builder_forms/) and [gform_block_form_forms](https://docs.gravityforms.com/gform_block_form_forms/) filters enabling the forms available for embedding to be overridden.
+- Updated the REST API settings page to require the settings to be updated before adding new API keys.
+- Updated the submission process to allow some payment add-ons to fix errors raised when a form includes an invisible Recaptcha.
+- Fixed an issue with jQuery 3.0 breaking multiselect conditional logic.
+- Fixed an issue with the file upload field where validation fails for certain file types.
+- Fixed an issue where the form editor block generates notices in the JavaScript console.
+- Fixed an issue that makes multi-page forms with AJAX enabled use the wrong tabindex.
+- Fixed an issue with sorting forms in PHP 8.
+- Fixed an issue with auto-updates and PHP 8.
+- Fixed an issue with the sales page when using MySQL 8+.
+- Fixed a fatal error in PHP 8 on some Gravity Forms pages.
+- Fixed checkbox and radio style issues for Twenty Twenty-One Theme.
+- Fixed an issue where dates/times on the system report and entries list page can output nothing but "at" when the date/time formats on the WordPress general settings page are empty.
+- AF: Fixed an issue where an uninformative error is displayed if the add-on feed table does not exist.
+- AF: Added a new method that allows add-ons to fix authentication issues.
+- API: Updated the `GF_Results_Cache::calculate()` method to make the $args argument optional.
+- API: Updated the [gform_file_upload_markup](https://docs.gravityforms.com/gform_file_upload_markup/) JS filter to include response as the sixth parameter.
+- API: Added a new JavaScript function "gformIsRecaptchaPending" to help resolve submission errors raised by some payment add-ons when a form includes an invisible Recaptcha.
+
+
+### 2.4.22 | 2020-12-22
+- Added security enhancements.
+- Added the [gform_rule_pre_evaluation](https://docs.gravityforms.com/gform_rule_pre_evaluation/) JS and PHP filters enabling conditional logic rules to be overridden just before they are evaluated. Credit: Gravity Wiz.
+- Updated minimum WordPress version (for support) on the System Status page to 5.5.
+- Fixed an issue with the Email Field class names in the form editor.
+- Fixed an issue where a currency formatted number field can save the wrong calculation result to the entry if the rounding setting was previously configured.
+- API: Added the /forms/{$form_id}/field-filters endpoint to REST API v2. Credit: Gravity Flow.
+- API: Fixed an issue where a database error can occur when using the GFAPI methods for managing feeds when a feed add-on has not been installed to create the required table.
+- API: Removed the truncated hashed key from the v2 API Keys list table and edit page.
+- API: Updated an authentication error logging statement for REST API v2.
+- API: Updated REST API v2 to support authentication using WordPress 5.6 application passwords.
+- AF: Removed animation from input toggles on Feed Settings page.
+- AF: Removed Setup Fee setting when trial is enabled for Payment Add-Ons.
+
+
+### 2.4.21 | 2020-10-14
+- Added security enhancements.
+- Updated background updates to work more seamlessly with WordPress's automatic updates.
+- Fixed an issue with date formats when retrieving notes by date.
+- Fixed an issue where the honeypot field description can be assigned the same id attribute as other forms on the page.
+- Fixed an issue with WordPress 5.5 where the select all checkbox on the export entries page can stop functioning.
+- API: Updated REST API for WordPress 5.5.
+- AF: Fixed a fatal error which occurs when the add-on is not active during background feed processing.
+- AF: Added the [gform_pre_delete_feed](https://docs.gravityforms.com/gform_pre_delete_feed) action hook.
+
+
 ### 2.4.20 | 2020-08-06
 - Added support for WordPress 5.5.
 - Updated background updates to be compatible with automatic updates in WordPress 5.5.

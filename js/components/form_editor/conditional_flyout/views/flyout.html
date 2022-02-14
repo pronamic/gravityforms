@@ -1,0 +1,33 @@
+<aside class="conditional_logic_flyout">
+	<button class="conditional_logic_flyout__close" data-js-close-flyout>
+		<span class="screen-reader-text">Close Conditional Logic Settings Modal</span>
+		<i class="conditional_logic_flyout__close_icon" data-js-close-flyout ></i>
+	</button>
+	<header class="conditional_logic_flyout__head">
+		<div class="conditional_logic_flyout__title">
+			{{ configure }} {{ conditionalLogic }}
+		</div>
+		<div class="conditional_logic_flyout__desc">
+			{{ desc }}
+		</div>
+	</header>
+	<article class="conditional_logic_flyout__body panel-block-tabs__body--settings" data-js="gform-simplebar">
+		<div class="conditional_logic_flyout__toggle">
+			<span class="conditional_logic_flyout__toggle_label">
+				{{ enable }} {{ conditionalLogic }}
+			</span>
+			<div class="conditional_logic_flyout__toggle_input gform-field__toggle">
+				<span class="gform-settings-input__container">
+					<input type="checkbox" class="gform-field__toggle-input" data-js-conditonal-toggle id="field_conditional_logic_{{ objectType }}_{{ fieldId }}" {{ checked }}>
+					<label class="gform-field__toggle-container" for="field_conditional_logic_{{ objectType }}_{{ fieldId }}">
+						<span class="gform-field__toggle-switch-text screen-reader-text">{{ enabledText }}</span>
+						<span class="gform-field__toggle-switch"></span>
+					</label>
+				</span>
+			</div>
+		</div>
+		<div class="conditional_logic_flyout__main">
+			{{ main }}
+		</div>
+	</article>
+</aside>

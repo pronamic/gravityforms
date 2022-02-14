@@ -148,11 +148,24 @@ class GFAsyncUpload {
 			}
 		}
 
-		$tmp_file_name = $form_unique_id . '_input_' . $field_id . '_' . $file_name;
+		$chunk         = isset( $_REQUEST['chunk'] ) ? intval( $_REQUEST['chunk'] ) : 0;
+		$chunks        = isset( $_REQUEST['chunks'] ) ? intval( $_REQUEST['chunks'] ) : 0;
+		$chunk_data    = $chunks && $file_name ? rgar( $_REQUEST, str_replace( '.', '_', $file_name ) ) : array();
+		$tmp_file_name = '';
+
+		if ( $chunk ) {
+			if ( empty( $chunk_data['hash'] ) || ( $chunk_data['hash'] !== wp_hash( $chunk_data['temp_filename'] . ( $chunk - 1 ) . $form_id . $field_id ) ) ) {
+				self::die_error( 105, __( 'Upload unsuccessful', 'gravityforms' ) . ' ' . $uploaded_filename );
+			}
+			$tmp_file_name = $chunk_data['temp_filename'];
+		}
+
+		if ( empty( $tmp_file_name ) ) {
+			$tmp_file_name = $form_unique_id . '_input_' . $field_id . '_' . GFCommon::random_str( 16 ) . '_' . $file_name;
+		}
 
 		$tmp_file_name = sanitize_file_name( $tmp_file_name );
-
-		$file_path = $target_dir . $tmp_file_name;
+		$file_path     = $target_dir . $tmp_file_name;
 
 		$cleanup_target_dir = true; // Remove old files
 		$max_file_age = 5 * 3600; // Temp file age in seconds
@@ -183,9 +196,6 @@ class GFAsyncUpload {
 		if ( isset( $_SERVER['CONTENT_TYPE'] ) ) {
 			$contentType = $_SERVER['CONTENT_TYPE'];
 		}
-
-		$chunk  = isset( $_REQUEST['chunk'] ) ? intval( $_REQUEST['chunk'] ) : 0;
-		$chunks = isset( $_REQUEST['chunks'] ) ? intval( $_REQUEST['chunks'] ) : 0;
 
 		// Handle non multipart uploads older WebKit versions didn't support multipart in HTML5
 		if ( strpos( $contentType, 'multipart' ) !== false ) {
@@ -265,6 +275,10 @@ class GFAsyncUpload {
 				'uploaded_filename' => str_replace( "\\'", "'", urldecode( $uploaded_filename ) ) //Decoding filename to prevent file name mismatch.
 			)
 		);
+
+		if ( $chunks && ( $chunk != $chunks - 1 ) ) {
+			$output['data']['hash'] = wp_hash( $tmp_file_name . $chunk . $form_id . $field_id );
+		}
 
 		$output = json_encode( $output );
 

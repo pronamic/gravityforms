@@ -220,7 +220,7 @@ class GFAutoUpgrade {
 	private function get_remote_request_params( $offering, $key, $version ) {
 		global $wpdb;
 
-		return sprintf( 'of=%s&key=%s&v=%s&wp=%s&php=%s&mysql=%s', urlencode( $offering ), urlencode( $key ), urlencode( $version ), urlencode( get_bloginfo( 'version' ) ), urlencode( phpversion() ), urlencode( $wpdb->db_version() ) );
+		return sprintf( 'of=%s&key=%s&v=%s&wp=%s&php=%s&mysql=%s', urlencode( $offering ), urlencode( $key ), urlencode( $version ), urlencode( get_bloginfo( 'version' ) ), urlencode( phpversion() ), urlencode( GFCommon::get_db_version() ) );
 	}
 
 	private function get_key() {

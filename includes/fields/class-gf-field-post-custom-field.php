@@ -12,6 +12,30 @@ class GF_Field_Post_Custom_Field extends GF_Field {
 		return esc_attr__( 'Custom Field', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to submit data that is used as a custom field value for a post.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--post-custom-field';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'post_custom_field_type_setting',

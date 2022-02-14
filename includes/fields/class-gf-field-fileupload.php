@@ -9,8 +9,128 @@ class GF_Field_FileUpload extends GF_Field {
 
 	public $type = 'fileupload';
 
+	/**
+	 * Stores the upload root dir for forms.
+	 *
+	 * @since 2.5.16
+	 *
+	 * @var string[]
+	 */
+	public static $forms_upload_roots;
+
+	/**
+	 * Stores the default upload root dir for forms.
+	 *
+	 * @since 2.5.16
+	 *
+	 * @var string[]
+	 */
+	public static $forms_default_upload_roots;
+
+	/**
+	 * Gets the file upload path information including the actual saved physical path from the entry meta if found.
+	 *
+	 * @since 2.5.16
+	 *
+	 * @param string       $file_url The file URL to look for.
+	 * @param integer|null $entry_id The entry ID.
+	 *
+	 * @return array
+	 */
+	public static function get_file_upload_path_info( $file_url, $entry_id = null ) {
+
+		$path_info = $entry_id ? gform_get_meta( $entry_id, self::get_file_upload_path_meta_key_hash( $file_url ) ) : null;
+
+		if ( empty( $path_info ) || ! is_array( $path_info ) ) {
+			return array(
+				'path' => GFFormsModel::get_upload_root(),
+				'url'  => GFFormsModel::get_upload_url_root(),
+			);
+		}
+
+		return $path_info;
+	}
+
+	/**
+	 * Gets the default upload roots using the form ID and current time.
+	 *
+	 * @since 2.5.16
+	 *
+	 * @param int $form_id  The form ID to create the root for,
+	 *
+	 * @return string[] The root path and url.
+	 */
+	public static function get_default_upload_roots( $form_id ) {
+
+		$cached_default_root = rgar( self::$forms_default_upload_roots, $form_id );
+		if ( $cached_default_root ) {
+			return $cached_default_root;
+		}
+
+		// Generate the yearly and monthly dirs
+		$time                    = current_time( 'mysql' );
+		$y                       = substr( $time, 0, 4 );
+		$m                       = substr( $time, 5, 2 );
+		$default_target_root     = GFFormsModel::get_upload_path( $form_id ) . "/$y/$m/";
+		$default_target_root_url = GFFormsModel::get_upload_url( $form_id ) . "/$y/$m/";
+
+		self::$forms_default_upload_roots[ $form_id ] = array(
+			'path' => $default_target_root,
+			'url'  => $default_target_root_url,
+			'y'    => $y,
+			'm'    => $m,
+		);
+
+		return self::$forms_default_upload_roots[ $form_id ];
+	}
+
+	/**
+	 * Returns the default file upload root and url for files stored by the provided form.
+	 *
+	 * @since 2.5.16
+	 *
+	 * @param integer $form_id The form ID of the form that will be used to generate the directory name.
+	 *
+	 * @return array
+	 */
+	public static function get_upload_root_info( $form_id ) {
+
+		$cached_root = rgar( self::$forms_upload_roots, $form_id );
+		if ( $cached_root ) {
+			return $cached_root;
+		}
+
+		$default_upload_root_info             = self::get_default_upload_roots( $form_id );
+		self::$forms_upload_roots[ $form_id ] = gf_apply_filters( array( 'gform_upload_path', $form_id ), $default_upload_root_info, $form_id );
+		return self::$forms_upload_roots[ $form_id ];
+	}
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'File Upload', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to upload a file.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--upload';
 	}
 
 	function get_form_editor_field_settings() {
@@ -98,7 +218,7 @@ class GF_Field_FileUpload extends GF_Field {
 				if ( ! empty( $info['basename'] ) && ! GFCommon::match_file_extension( rgar( $file_name, 'uploaded_filename' ), $allowed_extensions ) ) {
 					GFCommon::log_debug( __METHOD__ . '(): The file is of a type that cannot be uploaded, failing validation.' );
 					$this->failed_validation  = true;
-					$this->validation_message = empty( $this->errorMessage ) ? sprintf( esc_html__( 'The uploaded file type is not allowed. Must be one of the following: %s', 'gravityforms' ), strtolower( $this->allowedExtensions ) ) : $this->errorMessage;
+					$this->validation_message = empty( $this->errorMessage ) ? sprintf( esc_html__( 'The uploaded file type is not allowed. Must be one of the following: %s', 'gravityforms' ), strtolower( implode( ', ', GFCommon::clean_extensions( explode( ',', $this->allowedExtensions ) ) ) ) ) : $this->errorMessage;
 				}
 			}
 		}
@@ -107,7 +227,7 @@ class GF_Field_FileUpload extends GF_Field {
 
 	public function get_first_input_id( $form ) {
 
-		return $this->multipleFiles ? '' : 'input_' . $form['id'] . '_' . $this->id;
+		return $this->multipleFiles ? 'gform_browse_button_' . $form['id'] . '_' . $this->id : 'input_' . $form['id'] . '_' . $this->id;
 	}
 
 	public function get_field_input( $form, $value = '', $entry = null ) {
@@ -136,22 +256,37 @@ class GF_Field_FileUpload extends GF_Field {
 		$is_form_editor  = $this->is_form_editor();
 		$is_admin = $is_entry_detail || $is_form_editor;
 
-		$max_upload_size = ! $is_admin && $this->maxFileSize > 0 ? $this->maxFileSize * 1048576 : wp_max_upload_size();
+		// Generate upload rules messages ( allowed extensions, max no. of files, max file size ).
+		$upload_rules_messages = array();
+		// Extensions.
 		$allowed_extensions = ! empty( $this->allowedExtensions ) ? join( ',', GFCommon::clean_extensions( explode( ',', strtolower( $this->allowedExtensions ) ) ) ) : array();
 		if ( ! empty( $allowed_extensions ) ) {
-			$extensions_message = esc_attr( sprintf( __( 'Accepted file types: %s.', 'gravityforms' ), str_replace( ',', ', ', $allowed_extensions ) ) );
-		} else {
-			$extensions_message = '';
+			$upload_rules_messages[] = esc_attr( sprintf( __( 'Accepted file types: %s', 'gravityforms' ), str_replace( ',', ', ', $allowed_extensions ) ) );
+		}
+		// File size.
+		$max_upload_size = $this->maxFileSize > 0 ? $this->maxFileSize * 1048576 : wp_max_upload_size();
+		// translators: %s is replaced with a numeric string representing the maximum file size
+		$upload_rules_messages[] = esc_attr( sprintf( __( 'Max. file size: %s', 'gravityforms' ), GFCommon::format_file_size( $max_upload_size ) ) );
+		// No. of files.
+		$max_files = ( $multiple_files && $this->maxFiles > 0 ) ? $this->maxFiles : 0;
+		if ( $max_files ) {
+			// translators: %s is replaced with a numeric string representing the maximum number of files
+			$upload_rules_messages[] = esc_attr( sprintf( __( 'Max. files: %s', 'gravityforms' ), $max_files ) );
 		}
 
-		$extensions_message_id = 'extensions_message_' . $form_id . '_' . $id;
+		$rules_messages = implode( ', ', $upload_rules_messages ) . '.';
+
+		$rules_messages_id = empty( $rules_messages ) ? '' : "gfield_upload_rules_{$this->formId}_{$this->id}";
+		$describedby       = $this->get_aria_describedby( array( $rules_messages_id ) );
 
 		if ( $multiple_files ) {
 			$upload_action_url = trailingslashit( site_url() ) . '?gf_page=' . GFCommon::get_upload_page_slug();
-			$max_files         = $this->maxFiles > 0 ? $this->maxFiles : 0;
+
 			$browse_button_id  = 'gform_browse_button_' . $form_id . '_' . $id;
 			$container_id      = 'gform_multifile_upload_' . $form_id . '_' . $id;
 			$drag_drop_id      = 'gform_drag_drop_area_' . $form_id . '_' . $id;
+
+			$validation_message_id = 'gform_multifile_messages_' . $form_id . '_' . $id;
 
 			$messages_id        = "gform_multifile_messages_{$form_id}_{$id}";
 			if ( empty( $allowed_extensions ) ) {
@@ -210,16 +345,13 @@ class GF_Field_FileUpload extends GF_Field {
 			$upload             = "<div id='{$container_id}' data-settings='{$plupload_init_json}' class='gform_fileupload_multifile'>
 										<div id='{$drag_drop_id}' class='gform_drop_area'>
 											<span class='gform_drop_instructions'>{$drop_files_here_text} </span>
-											<input id='{$browse_button_id}' type='button' value='{$select_files_text}' class='button gform_button_select_files' aria-describedby='{$extensions_message_id}' {$tabindex} />
+											<button type='button' id='{$browse_button_id}' class='button gform_button_select_files' {$describedby} {$tabindex} >{$select_files_text}</button>
 										</div>
 									</div>";
-			if ( ! $is_admin ) {
-				$upload .= "<span id='{$extensions_message_id}' class='screen-reader-text'>{$extensions_message}</span>";
-				$upload .= "<div class='validation_message'>
-								<ul id='{$messages_id}'>
-								</ul>
-							</div>";
-			}
+
+			$upload .= $rules_messages ? "<span class='gform_fileupload_rules' id='{$rules_messages_id}'>{$rules_messages}</span>" : '';
+			$upload .= "<ul class='validation_message validation_message--hidden-on-empty gfield_validation_message gform-ul-reset' id='{$messages_id}'></ul> <!-- Leave <ul> empty to support CSS :empty selector. -->";
+
 
 			if ( $is_entry_detail ) {
 				$upload .= sprintf( '<input type="hidden" name="input_%d" value=\'%s\' />', $id, esc_attr( $value ) );
@@ -230,14 +362,15 @@ class GF_Field_FileUpload extends GF_Field {
 				//  MAX_FILE_SIZE > 2048MB fails. The file size is checked anyway once uploaded, so it's not necessary.
 				$upload = sprintf( "<input type='hidden' name='MAX_FILE_SIZE' value='%d' />", $max_upload_size );
 			}
-			$validation_message_id = 'validation_message_' . $form_id . '_' . $id;
-			$live_validation_message_id= 'live_validation_message_' . $form_id . '_' . $id;
-			$upload .= sprintf( "<input name='input_%d' id='%s' type='file' class='%s' aria-describedby='%s %s %s' onchange='javascript:gformValidateFileSize( this, %s );' {$tabindex} %s/>", $id, $field_id, esc_attr( $class ), $validation_message_id, $live_validation_message_id, $extensions_message_id, esc_attr( $max_upload_size ), $disabled_text );
 
-			if ( ! $is_admin ) {
-				$upload .= "<span id='{$extensions_message_id}' class='screen-reader-text'>{$extensions_message}</span>";
-				$upload .= "<div class='validation_message' id='{$live_validation_message_id}'></div>";
-			}
+			$live_validation_message_id = 'live_validation_message_' . $form_id . '_' . $id;
+
+			$upload .= sprintf( "<input name='input_%d' id='%s' type='file' class='%s' %s onchange='javascript:gformValidateFileSize( this, %s );' {$tabindex} %s/>", $id, $field_id, esc_attr( $class ), $describedby, esc_attr( $max_upload_size ), $disabled_text );
+
+
+			$upload .= $rules_messages ? "<span class='gform_fileupload_rules' id='{$rules_messages_id}'>{$rules_messages}</span>" : '';
+			$upload .= "<div class='validation_message validation_message--hidden-on-empty' id='{$live_validation_message_id}'></div>";
+
 		}
 
 		if ( $is_entry_detail && ! empty( $value ) ) { // edit entry
@@ -278,8 +411,8 @@ class GF_Field_FileUpload extends GF_Field {
 				$delete_button_url   = GFCommon::get_base_url() . '/images/delete.png';
 				$preview .= "<div id='preview_file_{$file_index}' class='ginput_preview'>
 								<a href='{$file_url}' target='_blank' aria-label='{$view_file_text}'>{$display_file_url}</a>
-								<a href='{$file_url}' target='_blank' aria-label='{$download_file_text}'>
-								<img src='{$download_button_url}' alt='' style='margin-left:10px;'/></a><a href='javascript:void(0);' aria-label='{$delete_file_text}' onclick='DeleteFile({$lead_id},{$id},this);' onkeypress='DeleteFile({$lead_id},{$id},this);' ><img src='{$delete_button_url}' alt='' style='margin-left:10px;'/></a>
+								<a href='{$file_url}' target='_blank' aria-label='{$download_file_text}' class='ginput_preview_control gform-icon gform-icon--circle-arrow-down'></a>
+								<a href='javascript:void(0);' aria-label='{$delete_file_text}' onclick='DeleteFile({$lead_id},{$id},this);' onkeypress='DeleteFile({$lead_id},{$id},this);' class='ginput_preview_control gform-icon gform-icon--circle-delete'></a>
 							</div>";
 			}
 
@@ -295,8 +428,32 @@ class GF_Field_FileUpload extends GF_Field {
 				$preview    = sprintf( "<div id='%s'>", $file_list_id );
 				$file_infos = $multiple_files ? $uploaded_files : array( $file_infos );
 				foreach ( $file_infos as $file_info ) {
-					$file_upload_markup = apply_filters( 'gform_file_upload_markup', "<img alt='" . esc_attr__( 'Delete file', 'gravityforms' ) . "' class='gform_delete' src='" . GFCommon::get_base_url() . "/images/delete.png' onclick='gformDeleteUploadedFile({$form_id}, {$id}, this);' onkeypress='gformDeleteUploadedFile({$form_id}, {$id}, this);' /> <strong>" . esc_html( $file_info['uploaded_filename'] ) . '</strong>', $file_info, $form_id, $id );
-					$preview .= "<div class='ginput_preview'>{$file_upload_markup}</div>";
+
+					if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
+						$file_upload_markup = "<img alt='" . esc_attr__( 'Delete file', 'gravityforms' ) . "' class='gform_delete' src='" . GFCommon::get_base_url() . "/images/delete.png' onclick='gformDeleteUploadedFile({$form_id}, {$id}, this);' onkeypress='gformDeleteUploadedFile({$form_id}, {$id}, this);' /> <strong>" . esc_html( $file_info['uploaded_filename'] ) . '</strong>';
+					} else {
+						$file_upload_markup = sprintf(
+							"<button class='gform_delete_file' onclick='gformDeleteUploadedFile( %d, %d, this );'><span class='dashicons dashicons-trash' aria-hidden='true'></span><span class='screen-reader-text'>%s</span></button> <strong>%s</strong>",
+							$form_id,
+							$id,
+							esc_html__( 'Delete file', 'gravityforms' ),
+							esc_html( $file_info['uploaded_filename'] )
+						);
+					}
+
+
+					/**
+					 * Modify the HTML for the Multi-File Upload "preview."
+					 *
+					 * @since Unknown
+					 *
+					 * @param string $file_upload_markup The current HTML for the field.
+					 * @param array  $file_info          Details about the file uploaded.
+					 * @param int    $form_id            The current Form ID.
+					 * @param int    $id                 The current Field ID.
+					 */
+					$file_upload_markup = apply_filters( 'gform_file_upload_markup', $file_upload_markup, $file_info, $form_id, $id );
+					$preview            .= "<div class='ginput_preview'>{$file_upload_markup}</div>";
 				}
 				$preview .= '</div>';
 				if ( ! $multiple_files ) {
@@ -354,6 +511,14 @@ class GF_Field_FileUpload extends GF_Field {
 				$uploaded_temp_files = GFFormsModel::$uploaded_files[ $form_id ][ $input_name ];
 				$uploaded_files      = array();
 				foreach ( $uploaded_temp_files as $i => $file_info ) {
+
+					// File was previously uploaded to form; do not process temp.
+					if ( ! isset( $file_info['temp_filename'] ) ) {
+						$uploaded_path        = GFFormsModel::get_file_upload_path( $form_id, $file_info['uploaded_filename'], false );
+						$uploaded_files[ $i ] = $uploaded_path['url'];
+						continue;
+					}
+
 					$temp_filepath = GFFormsModel::get_upload_path( $form_id ) . '/tmp/' . wp_basename( $file_info['temp_filename'] );
 					if ( $file_info && file_exists( $temp_filepath ) ) {
 						$uploaded_files[ $i ] = $this->move_temp_file( $form_id, $file_info );
@@ -375,9 +540,38 @@ class GF_Field_FileUpload extends GF_Field {
 			$_gf_uploaded_files[ $input_name ] = $value;
 		}
 
+		if ( ! GFCommon::is_json( $value ) ) {
+			$value = $this->get_parsed_list_of_files( $value, $form_id, $input_name );
+		}
+
 		$value_safe = $this->sanitize_entry_value( $value, $form_id );
 
 		return $value_safe;
+	}
+
+	/**
+	 * Given the comma-delimited string of file paths, get the JSON array representing
+	 * any which still exist (i.e., haven't been deleted using the UI).
+	 *
+	 * @since 2.5.8
+	 *
+	 * @param string $value      A comma-delimited list of file paths.
+	 * @param int    $form_id    The form ID for this entry.
+	 * @param string $input_name The input name holding the current list of files.
+	 *
+	 * @return false|string
+	 */
+	public function get_parsed_list_of_files( $value, $form_id, $input_name ) {
+		$parts    = explode( ',', $value );
+		$uploaded = rgars( GFFormsModel::$uploaded_files, $form_id . '/' . $input_name, array() );
+		$uploaded = wp_list_pluck( $uploaded, 'uploaded_filename' );
+		$parts    = array_filter( $parts, function ( $part ) use ( $uploaded ) {
+			$basename = wp_basename( trim( $part ) );
+
+			return in_array( $basename, $uploaded, true );
+		} );
+
+		return wp_json_encode( $parts );
 	}
 
 	public function get_single_file_value( $form_id, $input_name ) {
@@ -412,7 +606,6 @@ class GF_Field_FileUpload extends GF_Field {
 
 	public function upload_file( $form_id, $file ) {
 		GFCommon::log_debug( __METHOD__ . '(): Uploading file: ' . $file['name'] );
-
 		$target = GFFormsModel::get_file_upload_path( $form_id, $file['name'] );
 		if ( ! $target ) {
 			GFCommon::log_debug( __METHOD__ . '(): FAILED (Upload folder could not be created.)' );
@@ -689,6 +882,74 @@ class GF_Field_FileUpload extends GF_Field {
 		 * @param GF_Field_FileUpload $field        The field object for further context.
 		 */
 		return apply_filters( 'gform_secure_file_download_url', $download_url, $this );
+	}
+
+
+	/**
+	 * Stores the physical file paths as extra entry meta data.
+	 *
+	 * @since 2.5.16
+	 *
+	 * @param array $form  The form object being saved.
+	 * @param array $entry The entry object being saved.
+	 *
+	 * @return array The array that contains the file URLs and their corresponding physical paths.
+	 */
+	public function get_extra_entry_metadata( $form, $entry ) {
+
+		$value = $entry[ $this->id ];
+
+		if ( empty( $value ) ) {
+			return array();
+		}
+
+		$file_values = array();
+		$extra_meta  = array();
+		if ( $this->multipleFiles && ! empty( $value ) ) {
+			$file_values = json_decode( $value, true );
+		} else {
+			$file_values = array( $value );
+		}
+
+		foreach ( $file_values as $file_value ) {
+
+			// If file already has a stored path, skip it.
+			$stored_path_info = gform_get_meta( rgar( $entry, 'id' ), self::get_file_upload_path_meta_key_hash( $file_value ) );
+			if ( ! empty( $stored_path_info ) ) {
+				continue;
+			};
+
+			// Use the filtered path to get the actual file path.
+			$upload_root_info = self::get_upload_root_info( rgar( $form, 'id' ) );
+
+			// Default upload path to fall back to.
+			$default_upload_root_info = self::get_default_upload_roots( rgar( $form, 'id' ) );
+
+			$url            = rgar( $upload_root_info, 'url', $default_upload_root_info['url'] );
+			$path           = rgar( $upload_root_info, 'path', $default_upload_root_info['path'] );
+			$file_path_info = array(
+				'path'      => $path,
+				'url'       => $url,
+				'file_name' => wp_basename( $file_value ),
+			);
+
+			$file_url_hash                = self::get_file_upload_path_meta_key_hash( $file_value );
+			$extra_meta[ $file_url_hash ] = $file_path_info;
+		}
+		return $extra_meta;
+	}
+
+	/**
+	 * Gets a hash of the file URL to be used as the meta key when saving the file physical path to the entry meta.
+	 *
+	 * @since 2.5.16
+	 *
+	 * @param string $file_url The file URL to generate the hash for.
+	 *
+	 * @return string
+	 */
+	public static function get_file_upload_path_meta_key_hash( $file_url ) {
+		return substr( hash( 'sha512', $file_url ), 0, 254 );
 	}
 }
 

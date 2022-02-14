@@ -2,7 +2,7 @@
 var GformShortcodeUI;
 
 ( function (gfShortCodeUI, $) {
-
+    var i18n = window.gform_admin_i18n;
     var sui = window.GformShortcodeUI = {
         models: {},
         collections: {},
@@ -732,7 +732,7 @@ var GformShortcodeUI;
 
                 $('#gform-insert-shortcode').hide();
                 $('#gform-update-shortcode').show();
-                tb_show("Edit Gravity Form", "#TB_inline?inlineId=select_gravity_form&width=753&height=686", "");
+                tb_show( i18n.shortcodeUi.editForm, "#TB_inline?inlineId=select_gravity_form&width=753&height=686", "");
 
             }
         },
@@ -753,7 +753,7 @@ var GformShortcodeUI;
             var shortcode = sui.shortcodes.findWhere({shortcode_tag: 'gravityform', action_tag: ''});
             GformShortcodeUI = new sui.views.editShortcodeForm({model: shortcode, viewMode: 'insert'});
             GformShortcodeUI.render();
-            tb_show("Insert Gravity Form", "#TB_inline?inlineId=select_gravity_form&width=753&height=686", "");
+            tb_show( i18n.shortcodeUi.insertForm, "#TB_inline?inlineId=select_gravity_form&width=753&height=686", "" );
         });
 
     });

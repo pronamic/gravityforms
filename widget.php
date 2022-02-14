@@ -33,7 +33,7 @@ if ( ! class_exists( 'GFWidget' ) ) {
 
 			$description = esc_html__( 'Gravity Forms Widget', 'gravityforms' );
 
-			WP_Widget::__construct( 
+			WP_Widget::__construct(
 				'gform_widget',
 				__( 'Form', 'gravityforms' ),
 				array( 'classname' => 'gform_widget', 'description' => $description ),
@@ -58,6 +58,18 @@ if ( ! class_exists( 'GFWidget' ) ) {
 			extract( $args );
 			echo $before_widget;
 
+			if ( empty( $instance ) ) {
+				$forms = RGFormsModel::get_forms( 1, 'title' );
+				if ( empty( $forms ) ) {
+					return '';
+				}
+				$form                        = GFAPI::get_form( $forms[0]->id );
+				$instance['form_id']         = $form['id'];
+				$instance['ajax']            = false;
+				$instance['showtitle']       = false;
+				$instance['showdescription'] = false;
+			}
+
 			/**
 			 * Filters the widget title.
 			 *
@@ -68,17 +80,17 @@ if ( ! class_exists( 'GFWidget' ) ) {
 			 * @param array  $instance Saved database values for the widget.
 			 * @param mixed  $id_base  The widget ID.
 			 */
-			$title = apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base );
+			$title = apply_filters( 'widget_title', rgar( $instance, 'title' ), $instance, $this->id_base );
 
 			if ( $title ) {
 				echo $before_title . $title . $after_title;
 			}
 
-			$tabindex = is_numeric( $instance['tabindex'] ) ? $instance['tabindex'] : 0;
-
+			$tabindex = is_numeric( rgar( $instance, 'tabindex' ) ) ? $instance['tabindex'] : 0;
 			// Creating form
-			$form = RGFormsModel::get_form_meta( $instance['form_id'] );
-
+			if ( empty( $form ) ) {
+				$form = RGFormsModel::get_form_meta( $instance['form_id'] );
+			}
 			if ( empty( $instance['disable_scripts'] ) && ! is_admin() ) {
 				RGForms::print_form_scripts( $form, $instance['ajax'] );
 			}

@@ -9,6 +9,15 @@ class GF_Field_SingleShipping extends GF_Field {
 
 	public $type = 'singleshipping';
 
+	/**
+	 * Indicates if this field supports state validation.
+	 *
+	 * @since 2.5.11
+	 *
+	 * @var bool
+	 */
+	protected $_supports_state_validation = true;
+
 	function get_form_editor_field_settings() {
 		return array(
 			'base_price_setting',
@@ -33,13 +42,11 @@ class GF_Field_SingleShipping extends GF_Field {
 		if ( empty( $price ) ) {
 			$price = 0;
 		}
-
-		$price = esc_attr( $price );
+		$price = esc_attr( GFCommon::to_money( $price ) );
 
 		return "<div class='ginput_container ginput_container_singleshipping'>
-					<input type='hidden' name='input_{$id}' value='{$price}' class='gform_hidden'/>
-					<span class='ginput_shipping_price' id='{$field_id}'>" . GFCommon::to_money( $price, $currency ) . '</span>
-				</div>';
+					<input readonly class='ginput_shipping_price gform-text-input-reset' id='{$field_id}' name='input_{$id}' value='{$price}' />
+				</div>";
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {

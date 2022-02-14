@@ -13,6 +13,30 @@ class GF_Field_Website extends GF_Field {
 		return esc_attr__( 'Website', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to enter a website URL.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--link';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'conditional_logic_field_setting',
@@ -47,7 +71,7 @@ class GF_Field_Website extends GF_Field {
 
 		if ( ! empty( $value ) && ! GFCommon::is_valid_url( $value ) ) {
 			$this->failed_validation  = true;
-			$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'Please enter a valid Website URL (e.g. http://www.gravityforms.com).', 'gravityforms' ) : $this->errorMessage;
+			$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'Please enter a valid Website URL (e.g. https://gravityforms.com).', 'gravityforms' ) : $this->errorMessage;
 		}
 	}
 

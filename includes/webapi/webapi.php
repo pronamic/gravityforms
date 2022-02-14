@@ -47,7 +47,38 @@ if ( class_exists( 'GFForms' ) ) {
 		protected $_capabilities_settings_page = 'gravityforms_api_settings';
 		protected $_capabilities_uninstall = 'gravityforms_webapi_uninstall';
 
-		public function __construct() {
+		/**
+		 * Contains an instance of this class, if available.
+		 *
+		 * @since 2.4.24
+		 *
+		 * @var null|GFWebAPI $_instance If available, contains an instance of this class.
+		 */
+		private static $_instance = null;
+
+		/**
+		 * Returns the current instance of this class.
+		 *
+		 * @since 2.4.24
+		 *
+		 * @return null|GFWebAPI
+		 */
+		public static function get_instance() {
+			if ( null === self::$_instance ) {
+				self::$_instance = new self;
+			}
+
+			return self::$_instance;
+		}
+
+		public function bootstrap() {
+			add_action( 'after_setup_theme', array( $this, 'init' ), 15 );
+		}
+
+		public function init() {
+
+			parent::init();
+
 			global $_gaddon_posted_settings;
 
 			if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
@@ -69,21 +100,36 @@ if ( class_exists( 'GFForms' ) ) {
 			// Clear the settings cache because it was checked very early before other add-ons have a chance to make adjustments.
 			$_gaddon_posted_settings = null;
 
-			parent::__construct();
 		}
 
-		/***
+		/**
+		 * Triggers the db upgrade following an install, version update, or when forced from the system status page.
+		 *
+		 * @since 2.4.24
+		 *
+		 * @param string $db_version          Current Gravity Forms database version.
+		 * @param string $previous_db_version Previous Gravity Forms database version.
+		 * @param bool   $force_upgrade       True if this is a request to force an upgrade. False if this is a standard upgrade (due to version change).
+		 */
+		public function post_gravityforms_upgrade( $db_version, $previous_db_version, $force_upgrade ) {
+			$this->maybe_upgrade_schema( $force_upgrade );
+		}
+
+		/**
 		 * Updates REST API related schema when GF version changes
 		 *
-		 * @since 2.4-beta-1
+		 * @since 2.4
+		 * @since 2.4.24 Added the $force_upgrade param.
+		 *
+		 * @param bool $force_upgrade True if this is a request to force an upgrade. False if this is a standard upgrade (due to version change).
 		 */
-		public function maybe_upgrade_schema() {
+		public function maybe_upgrade_schema( $force_upgrade = false ) {
 
 			global $wpdb;
 
-			if ( $this->requires_schema_upgrade() ) {
+			if ( $force_upgrade || $this->requires_schema_upgrade() ) {
 
-				$collate = $wpdb->has_cap( 'collation' ) ? $wpdb->get_charset_collate() : '';
+				$collate    = $wpdb->has_cap( 'collation' ) ? $wpdb->get_charset_collate() : '';
 				$table_name = GFFormsModel::get_rest_api_keys_table_name();
 
 				$table = "CREATE TABLE {$table_name} (
@@ -116,6 +162,14 @@ if ( class_exists( 'GFForms' ) ) {
 		 */
 		public function requires_schema_upgrade() {
 
+			global $wpdb;
+
+			$table_exists = $wpdb->query( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( GFFormsModel::get_rest_api_keys_table_name() ) ) );
+
+			if ( ! $table_exists ) {
+				return true;
+			}
+
 			$rest_api_db_version = get_option( 'gf_rest_api_db_version' );
 
 			$upgrade_required = version_compare( GFForms::$version, $rest_api_db_version, '>' );
@@ -136,6 +190,21 @@ if ( class_exists( 'GFForms' ) ) {
 			add_action( 'wp_ajax_gfwebapi_qrcode', array( $this, 'ajax_qrcode' ) );
 
 			add_action( 'wp_ajax_delete_key', array( $this, 'ajax_delete_key' ) );
+
+			add_action( 'wp_ajax_gfwebapi_edit_key', array( $this, 'ajax_edit_key' ) );
+		}
+
+		/**
+		 * Determines if the API is enabled in the database.
+		 *
+		 * @since 2.4.23
+		 *
+		 * @return boolean True if the API is enabled, false otherwise.
+		 */
+		public function is_api_enabled() {
+			$web_api_settings = get_option( 'gravityformsaddon_gravityformswebapi_settings' );
+
+			return ( ! empty( $web_api_settings ) && $web_api_settings['enabled'] ) ? 1 : 0;
 		}
 
 		/**
@@ -208,6 +277,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 		// Scripts
 		public function scripts() {
+
 			$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
 			$scripts = array(
 				array(
@@ -243,6 +313,8 @@ if ( class_exists( 'GFForms' ) ) {
 				),
 			);
 
+			add_action( 'admin_footer', array( $this, 'output_webapi_json' ) );
+
 			return array_merge( parent::scripts(), $scripts );
 		}
 
@@ -263,163 +335,121 @@ if ( class_exists( 'GFForms' ) ) {
 			return array_merge( parent::styles(), $styles );
 		}
 
+		/**
+		 * Echo json containing webapi variables for use in the handle unsaved changes function
+		 *
+		 * @since 2.5
+		 *
+		 */
+		public function output_webapi_json() {
+			if ( !empty( $_GET['subview'] ) && $_GET['subview'] === 'gravityformswebapi' ) {
+				echo '<script>
+				var gf_webapi_vars = {
+					"api_enabled": ' . $this->is_api_enabled() . ',
+					"enable_api_checkbox_checked": ' . $this->get_setting( "enabled" ) . ',
+				};</script>';
+			}
+		}
+
 		public function render_uninstall() {
+		}
+
+		/**
+		 * Return the plugin's icon for the plugin/form settings menu.
+		 *
+		 * @since 2.5
+		 *
+		 * @return string
+		 */
+		public function get_menu_icon() {
+
+			return 'gform-icon--api';
+
 		}
 
 		// ------- Plugin settings -------
 
-		public function settings( $sections ) {
+		/**
+		 * Plugin Settings page.
+		 *
+		 * @since 2.5
+		 */
+		public function plugin_settings_page() {
 
-			if ( rgget( 'action' ) == 'edit' ) {
-				$this->api_key_edit_page();
-			} else {
-				parent::settings( $sections );
-			}
-		}
-
-		public function api_key_edit_page() {
-			$key_id = rgget( 'key_id' );
-
-			$result = $this->maybe_save_api_key();
-
-			if ( $result && ! empty( $result['consumer_key'] ) ) {
-				$this->display_api_key_confirmation( $result );
-			} else {
-
-				$this->display_api_key_edit( $key_id, $result !== false );
-			}
-		}
-
-		public function maybe_save_api_key() {
-
-			if ( rgpost( 'update_key' ) ) {
-				$key_id = rgget( 'key_id' );
-
-				$key = array(
-					'description' => sanitize_title( rgpost( 'key_description' ) ),
-					'user_id' => absint( rgpost( 'key_user' ) ),
-					'permissions' => rgpost( 'key_permission' ),
-				);
-				$result = $this->update_api_key( $key_id, $key );
-
-				return $result;
-			}
-			return false;
-		}
-
-		public function display_api_key_confirmation( $api_key ) {
+			parent::plugin_settings_page();
 
 			?>
 
-			<table class="form-table gforms_form_settings">
-				<tbody><tr id="gaddon-setting-row-public_key">
-					<th><?php esc_html_e( 'Consumer Key', 'gravityforms' )?></th>
-					<td>
-						<input type="text" name="consumer_key" id="consumer_key" value="<?php echo $api_key['consumer_key'] ?>" class="medium gaddon-setting gaddon-text">
-					</td>
-				</tr>
-				<tr>
-					<th><?php esc_html_e( 'Consumer Secret', 'gravityforms' )?></th>
-					<td>
-						<input type="text" name="consumer_secret" id="consumer_secret" value="<?php echo $api_key['consumer_secret'] ?>" class="medium gaddon-setting gaddon-text">
-					</td>
-				</tr>
-				<tr>
-					<th colspan="2">
-						<div class="alert_yellow" style="padding:15px;">
-							<?php esc_html_e( 'Make sure you have copied the consumer key and secret above. They will not be available once you leave this page', 'gravityforms' ) ?>
+			<div id="gform-webapi-edit-container" style="display: none;">
+				<form id="gform-webapi-edit" class="gform-settings__wrapper">
+					<fieldset class="gform-settings-panel__content">
+
+						<!-- Nonce -->
+						<?php wp_nonce_field( 'gf_restapi_edit_key' ); ?>
+
+						<!-- Key ID -->
+						<input id="gform-webapi-key" type="hidden" />
+
+						<!-- Description -->
+						<div class="gform-settings-field gform-settings-field__text">
+							<label class="gform-settings-label" for="gform-webapi-description"><?php esc_html_e( 'Description', 'gravityforms' ); ?></label>
+							<input id="gform-webapi-description" type="text" value="" />
 						</div>
-					</th>
-				</tr>
-				<tr>
-					<th colspan="2" class="padding-top:10px;">
-						<a href="?page=gf_settings&subview=gravityformswebapi" class="button"><?php esc_html_e( 'Back to API Settings', 'gravityforms' ) ?></a>
-					</th>
-				</tr>
-				</tbody></table>
-			<?php
-		}
 
-		public function display_api_key_edit( $key_id, $has_updated = false ) {
-
-			$key = $key_id == 0 ? false : $this->get_api_key( $key_id );
-
-			if ( $has_updated ) {?>
-				<div class="updated below-h2" style="padding:10px;"><?php esc_html_e( 'API Key successfully updated', 'gravityforms' ); ?></div>
-				<?php
-			}
-			?>
-
-			<table class="form-table gforms_form_settings">
-				<tbody><tr id="gaddon-setting-row-public_key">
-					<th><?php esc_html_e( 'Description', 'gravityforms' )?></th>
-					<td>
-						<input type="text" name="key_description" value="<?php echo rgobj( $key, 'description' ); ?>" class="medium gaddon-setting gaddon-text">
-					</td>
-				</tr>
-				<tr>
-					<th><?php esc_html_e( 'User', 'gravityforms' )?></th>
-					<td>
-						<select name="key_user" class="gaddon-setting gaddon-select">
-							<?php
-
-							$users = $this->get_users();
-
-							foreach ( $users as $user ) {
-								$selected = rgobj( $key, 'user_id' ) == $user['value'] ? ' selected' : '' ?>
-								<option value="<?php echo $user['value'] ?>" <?php echo $selected ?>><?php echo $user['label'] ?></option>
+						<!-- User -->
+						<div class="gform-settings-field gform-settings-field__select">
+							<label class="gform-settings-label" for="gform-webapi-user"><?php esc_html_e( 'User', 'gravityforms' ); ?></label>
+							<select id="gform-webapi-user">
 								<?php
-							}
-							?>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<th><?php esc_html_e( 'Permission', 'gravityforms' )?></th>
-					<td>
-						<select name="key_permission" class="gaddon-setting gaddon-select">
-							<?php
-							$permissions = array(
-								array( 'value' => 'read', 'text' => __( 'Read', 'gravityforms' ) ),
-								array( 'value' => 'write', 'text' => __( 'Write', 'gravityfroms' ) ),
-								array( 'value' => 'read_write', 'text' => __( 'Read/Write', 'gravityforms' ) ),
-							);
-							foreach ( $permissions as $permission ) {
-								$selected = rgobj( $key, 'permissions' ) === $permission['value'] ? ' selected' : '';
+								$users = $this->get_users();
+								foreach ( $users as $user ) {
+									printf(
+										'<option value="%s">%s</option>',
+										$user['value'],
+										$user['label']
+									);
+								}
 								?>
-								<option value="<?php echo esc_attr( $permission['value'] ) ?>" <?php echo $selected ?>><?php echo esc_html( $permission['text'] ) ?></option>
-								<?php
-							}
-							?>
-						</select>
-					</td>
-				</tr>
-				<?php
-				if ( $key_id != 0 ) {
-					$last_access = rgobj( $key, 'last_access' ) == '' ? __('Never Accessed', 'gravityforms') : GFCommon::format_date( rgobj( $key, 'last_access' ), true, '', true )
-					?>
-					<tr>
-						<th><?php esc_html_e( 'Key (ending in)', 'gravityforms' )?></th>
-						<td>...<?php echo substr( rgobj( $key, 'consumer_key' ), -7 ); ?></td>
-					</tr>
-					<tr>
-						<th style="padding-top:18px;"><?php esc_html_e( 'Last Access', 'gravityforms' )?></th>
-						<td style="padding-top:18px;"><?php echo esc_html( $last_access ) ?></td>
-					</tr>
-					<?php
-				}
-				$button_label = $key_id == 0 ? __( 'Add Key', 'gravityforms' ) : __( 'Update', 'gravityforms' );
-				$link_label = $has_updated ? __( 'Back to API Settings', 'gravityforms' ) : __( 'Cancel', 'gravityforms' );
-				?>
-				<tr>
-					<td colspan="2" style="padding-top:10px;">
-						<input type="submit" name="update_key" value="<?php echo $button_label ?>" class="button-primary" style="margin-right:10px; margin-left:10px;">
-						<a href="?page=gf_settings&subview=gravityformswebapi" class="button" style="margin-top:10px;"><?php echo esc_html( $link_label ) ?></a>
-					</td>
+							</select>
+						</div>
 
-				</tr>
-				</tbody></table>
+						<!-- Permissions -->
+						<div class="gform-settings-field gform-settings-field__select">
+							<label class="gform-settings-label" for="gform-webapi-permissions"><?php esc_html_e( 'Permissions', 'gravityforms' ); ?></label>
+							<select id="gform-webapi-permissions">
+								<option value="read"><?php esc_html_e( 'Read', 'gravityforms' ); ?></option>
+								<option value="write"><?php esc_html_e( 'Write', 'gravityforms' ); ?></option>
+								<option value="read_write"><?php esc_html_e( 'Read/Write', 'gravityforms' ); ?></option>
+							</select>
+						</div>
+
+						<!-- Last Updated -->
+						<div class="gform-settings-field gform-settings-field__html">
+							<label class="gform-settings-label"><?php esc_html_e( 'Last Access', 'gravityforms' ); ?></label>
+							<span id="gform-webapi-last-access"></span>
+						</div>
+
+						<!-- Consumer Key -->
+						<div class="gform-settings-field gform-settings-field__text">
+							<label class="gform-settings-label" for="gform-webapi-description"><?php esc_html_e( 'Consumer Key', 'gravityforms' ); ?></label>
+							<input id="gform-webapi-consumer-key" type="text" value="" />
+						</div>
+
+						<!-- Consumer Secret -->
+						<div class="gform-settings-field gform-settings-field__text">
+							<label class="gform-settings-label" for="gform-webapi-description"><?php esc_html_e( 'Consumer Secret', 'gravityforms' ); ?></label>
+							<input id="gform-webapi-consumer-secret" type="text" value="" />
+						</div>
+
+					</fieldset>
+
+					<button type="submit" class="button" data-add="<?php esc_html_e( 'Add', 'gravityforms' ); ?>" data-edit="<?php esc_html_e( 'Update', 'gravityforms' ); ?>"><?php esc_html_e( 'Update', 'gravityforms' ); ?></button>
+
+				</form>
+			</div>
+
 			<?php
+
 		}
 
 		public function plugin_settings_title() {
@@ -433,10 +463,61 @@ if ( class_exists( 'GFForms' ) ) {
 
 			$account_choices = array();
 			foreach ( $accounts as $account ) {
-				$account_choices[] = array( 'label' => $account->user_login, 'value' => $account->ID );
+				if ( ! $this->user_can_access_api( $account ) ) {
+					continue;
+				}
+
+				$account_choices[] = array(
+					'label' => $account->user_login,
+					'value' => $account->ID,
+				);
 			}
 
 			return $account_choices;
+		}
+
+		/**
+		 * Checks if a user has one or more capabilities to access Gravity Forms REST API endpoints.
+		 *
+		 * @since 2.4.24
+		 *
+		 * @param WP_User $user WP User object.
+		 *
+		 * @return bool
+		 */
+		private function user_can_access_api( $user ) {
+
+			/**
+			 * Filters the available capabilities used to check if a user can be added to a REST API key.
+			 *
+			 * A user only needs one capability to access the API.
+			 *
+			 * @since 2.4.24
+			 *
+			 * @param array $capabilities Array of capabilities.
+			 */
+			$capabilities = (array) apply_filters(
+				'gform_webapi_key_user_capabilities',
+				array(
+					'gform_full_access',
+					'gravityforms_create_form',
+					'gravityforms_edit_forms',
+					'gravityforms_delete_forms',
+					'gravityforms_view_entries',
+					'gravityforms_edit_entries',
+					'gravityforms_delete_entries',
+					'gravityforms_view_entry_notes',
+					'gravityforms_edit_entry_notes',
+				)
+			);
+
+			foreach ( $capabilities as $capability ) {
+				if ( $user->has_cap( $capability ) ) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		public function plugin_settings_fields() {
@@ -475,8 +556,8 @@ if ( class_exists( 'GFForms' ) ) {
 							'onclick'    => 'jQuery(this).parents("form").submit();',
 							'onkeypress' => 'jQuery(this).parents("form").submit();',
 							'choices'    => array(
-								array( 'label' => esc_html__( 'Enabled', 'gravityforms' ), 'name' => 'enabled' ),
-							)
+								array( 'label' => esc_html__( 'Enabled', 'gravityforms' ), 'name' => 'enabled', 'data-js-button' => 'enable-api' ),
+							),
 						),
 					),
 				),
@@ -544,9 +625,12 @@ if ( class_exists( 'GFForms' ) ) {
 		/***
 		 * Determines if REST API V1 is enabled.
 		 *
-		 * @param null $settings Current settings array (optional)
+		 * @since Unknown
+		 * @since 2.5     Deprecated $settings parameter.
 		 *
-		 * @return bool True if REST API V1 is enabled, false otherwise
+		 * @param array|null $settings Current settings array (optional).
+		 *
+		 * @return bool
 		 */
 		public function is_v1_enabled( $settings = null ) {
 
@@ -562,20 +646,27 @@ if ( class_exists( 'GFForms' ) ) {
 			$is_v1_enabled = apply_filters( 'gform_is_rest_api_v1_enabled', true );
 
 			return $is_api_enabled && $is_v1_enabled;
+
 		}
 
 		/***
 		 * Determines if REST API V2 is enabled.
 		 *
-		 * @param null $settings Current settings array (optional)
+		 * @since Unknown
+		 * @since 2.5     Deprecated $settings parameter.
 		 *
-		 * @return bool True if REST API V2 is enabled, false otherwise
+		 * @param array|null $settings Current settings array (optional).
+		 *
+		 * @return bool
 		 */
 		public function is_v2_enabled( $settings = null ) {
 			return $this->get_setting( 'enabled', '', $settings ) && ! is_callable( 'gf_rest_api' );
 		}
 
 		public function settings_api_keys( $section, $is_first = false ) {
+			if ( ! $this->is_v2_enabled() ) {
+				return;
+			}
 
 			$table = new GF_API_Keys_Table();
 			$table->process_action();
@@ -603,10 +694,9 @@ if ( class_exists( 'GFForms' ) ) {
 
 		public function settings_qrcode() {
 			?>
-			<button class="button-secondary"
-			        id="gfwebapi-qrbutton"><?php esc_html_e( 'Show/hide QR Code', 'gravityforms' ); ?></button>
+			<button class="button" id="gfwebapi-qrbutton"><?php esc_html_e( 'Show/hide QR Code', 'gravityforms' ); ?></button>
 			<div id="gfwebapi-qrcode-container" style="display:none;">
-				<img id="gfwebapi-qrcode" src="<?php echo GFCommon::get_base_url() ?>/images/spinner.gif"/>
+				<img id="gfwebapi-qrcode" src="<?php echo GFCommon::get_base_url() ?>/images/spinner.svg"/>
 			</div>
 
 			<?php
@@ -614,7 +704,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 		/**
 		 * Removes the REST API from the logging page.
-		 * 
+		 *
 		 * @since 2.4.11
 		 *
 		 * @param array $plugins The plugins which support logging.
@@ -956,6 +1046,90 @@ if ( class_exists( 'GFForms' ) ) {
 			$key_id = rgpost( 'key' );
 			$this->delete_api_key( $key_id );
 			die( 0 );
+
+		}
+
+		/**
+		 * Handle edit key related AJAX requests.
+		 *
+		 * @since 2.5
+		 */
+		public function ajax_edit_key() {
+			// If user does not have access to REST API settings, exit.
+			if ( ! GFCommon::current_user_can_any( $this->_capabilities_settings_page ) ) {
+				wp_send_json_error( array( 'message' => __( 'Access denied.', 'gravityforms' ) ) );
+			}
+
+			// Handle get key requests.
+			if ( rgget( 'key_id' ) ) {
+
+				// Verify nonce.
+				if ( ! wp_verify_nonce( rgget( 'nonce' ), 'gf_restapi_edit_key' ) ) {
+					wp_send_json_error( array( 'message' => __( 'Access denied.', 'gravityforms' ) ) );
+				}
+
+				// Get key.
+				$key = $this->get_api_key( absint( rgget( 'key_id' ) ) );
+
+				// If key was not found, exit.
+				if ( ! $key ) {
+					wp_send_json_error( array( 'message' => __( 'Unable to retrieve key.', 'gravityforms' ) ) );
+				}
+
+				// Return key, with truncated data.
+				wp_send_json_success(
+					array(
+						'key' => array(
+							'key_id'       => rgobj( $key, 'key_id' ),
+							'description'  => rgobj( $key, 'description' ),
+							'user_id'      => rgobj( $key, 'user_id' ),
+							'permissions'  => rgobj( $key, 'permissions' ),
+							'consumer_key' => substr( rgobj( $key, 'consumer_key' ), -7 ),
+							'last_access'  => rgobj( $key, 'last_access' ) ? GFCommon::format_date( $key->last_access ) : __( 'Never Accessed', 'gravityforms' ),
+						),
+					)
+				);
+
+			}
+
+			// Handle save key requests.
+			if ( isset( $_POST['key_id'] ) ) {
+
+				// Verify nonce.
+				if ( ! wp_verify_nonce( rgpost( 'nonce' ), 'gf_restapi_edit_key' ) ) {
+					wp_send_json_error( array( 'message' => __( 'Access denied.', 'gravityforms' ) ) );
+				}
+
+				// Prepare key data.
+				$key = array(
+					'description' => sanitize_title( rgpost( 'description' ) ),
+					'user_id'     => absint( rgpost( 'user_id' ) ),
+					'permissions' => GFCommon::whitelist( rgpost( 'permissions' ), array(
+						'read',
+						'write',
+						'read_write',
+					) ),
+				);
+
+				// If description is empty, exit.
+				if ( rgempty( 'description', $key ) ) {
+					wp_send_json_error( array( 'message' => __( 'You must provide a description.', 'gravityforms' ) ) );
+				}
+
+				// Save key.
+				$saved = $this->update_api_key( absint( $_POST['key_id'] ), $key );
+
+				if ( rgempty( 'consumer_key', $saved ) ) {
+					wp_send_json_success( array( 'message' => __( 'API Key successfully updated.', 'gravityforms' ) ) );
+				} else if ( rgar( $saved, 'consumer_key' ) ) {
+					wp_send_json_success( array( 'message' => __( 'Make sure you have copied the consumer key and secret below. They will not be available once you leave this page.', 'gravityforms' ), 'key' => $saved ) );
+				} else {
+					wp_send_json_error( array( 'message' => __( 'Unable to save API key.', 'gravityforms' ) ) );
+				}
+
+			}
+
+			wp_send_json_error( array( 'message' => __( 'Unable to process request.', 'gravityforms' ) ) );
 
 		}
 
@@ -1616,13 +1790,29 @@ if ( class_exists( 'GFForms' ) ) {
 			if ( empty( $form_ids ) ) {
 				$forms = RGFormsModel::get_forms( true );
 				foreach ( $forms as $form ) {
-					$form_id              = $form->id;
-					$totals               = GFFormsModel::get_form_counts( $form_id );
-					$form_info            = array(
-						'id'      => $form_id,
-						'title'   => $form->title,
-						'entries' => rgar( $totals, 'total' )
+
+					/**
+					 * Allows third-party code to omit form totals from the API response. This is useful for increasing
+					 * the performance of the endpoint when totals aren't required.
+					 *
+					 * @since 2.5
+					 *
+					 * @var bool   $include_totals Whether to include totals; defaults to true.
+					 * @var object $form           The current form object.
+					 */
+					$include_totals = gf_apply_filters( array( 'gform_web_api_retrieve_form_totals', $form->id ), true, $form );
+
+					$form_id   = $form->id;
+					$form_info = array(
+						'id'    => $form_id,
+						'title' => $form->title,
 					);
+
+					if ( $include_totals ) {
+						$totals               = GFFormsModel::get_form_counts( $form_id );
+						$form_info['entries'] = rgar( $totals, 'total' );
+					}
+
 					$response[ $form_id ] = $form_info;
 				}
 				if ( $schema == 'mtd' ) {
@@ -2355,15 +2545,21 @@ if ( class_exists( 'GFForms' ) ) {
 		 * Generate a rand hash.
 		 *
 		 * @since  2.4-beta-1
+		 * @since  2.5 add a fallback generation method in case openssl_random_pseudo_bytes() returns empty.
 		 *
 		 * @return string
 		 */
 		public function rand_hash() {
+			$hash = '';
 			if ( function_exists( 'openssl_random_pseudo_bytes' ) ) {
-				return bin2hex( openssl_random_pseudo_bytes( 20 ) );
-			} else {
-				return sha1( wp_rand() );
+				$hash = bin2hex( openssl_random_pseudo_bytes( 20 ) );
 			}
+
+			if ( empty( $hash ) ) {
+				$hash = sha1( wp_rand() );
+			}
+
+			return $hash;
 		}
 
 		/**
@@ -2377,8 +2573,7 @@ if ( class_exists( 'GFForms' ) ) {
 		public static function api_hash( $data ) {
 			return hash_hmac( 'sha256', $data, 'gf-api' );
 		}
-
 	}
 
-	new GFWebAPI();
+	GFWebAPI::get_instance();
 }

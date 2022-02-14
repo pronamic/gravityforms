@@ -118,3 +118,26 @@ run(
 );
 
 line( '::endgroup::' );
+
+/**
+ * Git commit.
+ * 
+ * @link https://git-scm.com/docs/git-commit
+ */
+run( 'git add --all' );
+
+run(
+	sprintf(
+		'git commit --all -m %s',
+		escapeshellarg(
+			sprintf(
+				'Updates to %s',
+				$version
+			)
+		)
+	)
+);
+
+run( 'gh auth status' );
+
+run( 'git push origin main' );

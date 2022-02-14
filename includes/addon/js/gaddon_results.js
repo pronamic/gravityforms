@@ -231,6 +231,10 @@ jQuery( window ).on( 'load', function () {
 
         jQuery("#gresults-results-filter-date-start, #gresults-results-filter-date-end").datepicker({dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true});
 
+        jQuery('.ui-datepicker-trigger').on('click', function() {
+            jQuery(this).parent().find('input').datepicker( 'show' );
+        });
+
         jQuery("#gresults-results-filter-form").submit(function (e) {
             gresults.getResults();
             return false;

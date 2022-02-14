@@ -24,6 +24,39 @@ class GF_Field_Total extends GF_Field {
 		return esc_attr__( 'Total', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--total';
+	}
+
+	/**
+	 * Returns the HTML markup for the field's containing element.
+	 *
+	 * @since 2.5
+	 *
+	 * @param array $atts Container attributes.
+	 * @param array $form The current Form object.
+	 *
+	 * @return string
+	 */
+	public function get_field_container( $atts, $form ) {
+
+		// aria-atomic and aria-live need to be added to make the change of the total announced.
+		$atts['aria-atomic'] = 'true';
+		$atts['aria-live']   = 'polite';
+
+		return parent::get_field_container( $atts, $form );
+
+	}
+
 	public function get_field_input( $form, $value = '', $entry = null ) {
 		$form_id         = absint( $form['id'] );
 		$is_entry_detail = $this->is_entry_detail();
@@ -37,12 +70,17 @@ class GF_Field_Total extends GF_Field {
 						<input type='text' name='input_{$id}' value='{$value}' />
 					</div>";
 		} else {
-			return "<div class='ginput_container ginput_container_total'>
-						<span class='ginput_total ginput_total_{$form_id}' aria-live='polite'>" . GFCommon::to_money( '0' ) . "</span>
-						<input type='hidden' name='input_{$id}' id='{$field_id}' class='gform_hidden'/>
-					</div>";
+			if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
+				return "<div class='ginput_container ginput_container_total'>
+							<span class='ginput_total ginput_total_{$form_id}'>" . GFCommon::to_money( '0' ) . "</span>
+							<input type='hidden' name='input_{$id}' id='{$field_id}' class='gform_hidden'/>
+						</div>";
+			} else {
+				return "<div class='ginput_container ginput_container_total'>
+							<input readonly name='input_{$id}' id='{$field_id}' value='" . GFCommon::to_money( '0' ) . "' class='gform-text-input-reset ginput_total ginput_total_{$form_id}' />
+						</div>";
+			}
 		}
-
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {

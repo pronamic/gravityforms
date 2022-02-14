@@ -32,15 +32,19 @@
         $container.on('change', '.gform-filter-field', function(){
             changeField(this);
         });
-        $container.on('click', '#gform-no-filters', function(e){
-			if($('.gform-field-filter').length == 0){
-				addNewFieldFilter(this);
+
+		$container.on( 'click', '#gform-no-filters', function() {
+			if ( $( '.gform-field-filter' ).length == 0 ) {
+				addNewFieldFilter( this );
 			}
-			$(this).remove();
-        });
-        $container.on('click', '.gform-add', function(){
-			addNewFieldFilter(this);
-        });
+			$( this ).remove();
+		});
+
+		$container.on( 'click', '.gform-add', function( e ) {
+			addNewFieldFilter( this );
+			e.preventDefault();
+		});
+
         $container.on('click', '.gform-remove', function(){
             removeFieldFilter(this);
         });
@@ -251,8 +255,14 @@
         if(!allowMultiple)
             return str;
 
-        str += "<img class='gform-add' src='{0}/add.png' alt='{1}' title='{2}'>".format(imagesURL, gf_vars.addFieldFilter, gf_vars.addFieldFilter);
-        str += "<img class='gform-remove' src='" + imagesURL + "/remove.png' alt='" + gf_vars.removeFieldFilter + "' title='" + gf_vars.removeFieldFilter + "'>";
+        str += "<button " +
+	        "class='gform-add add_field_choice gform-st-icon gform-st-icon--circle-plus' " +
+	        "title='{0}'" +
+	        "></button>".format(gf_vars.addFieldFilter);
+        str += "<button " +
+	        "class='gform-remove delete_field_choice gform-st-icon gform-st-icon--circle-minus' " +
+	        "title='" + gf_vars.removeFieldFilter + "'" +
+	        "></button>";
         return str;
     }
 
@@ -287,7 +297,10 @@
     function displayNoFiltersMessage () {
         var str = "";
         str += "<div id='gform-no-filters' >" + gf_vars.addFieldFilter;
-        str += "<img class='gform-add' src='{0}/add.png' alt='{1}' title='{2}'></div>".format(imagesURL, gf_vars.addFieldFilter, gf_vars.addFieldFilter);
+        str += "<button " +
+	        "class='gform-add add_field_choice gform-st-icon gform-st-icon--circle-plus' " +
+	        "title='{0}'" +
+	        "></div>".format(gf_vars.addFieldFilter);
         $("#gform-field-filters").html(str);
         if(isResizable){
             $container.css({'min-height': '', 'border-bottom': ''});
@@ -324,24 +337,25 @@
         $filterRow.after(getFilterMode());
     }
 
-    function addNewFieldFilter (el) {
-        var $el, $filterRow;
-        $el = $(el);
-        if($el.is("img"))
-            $filterRow = $el.parent();
-        else
-            $filterRow = $el;
+	function addNewFieldFilter ( el ) {
+		var $el, $filterRow;
+		$el = $( el );
+		if ( $el.is( "button" ) ) {
+			$filterRow = $el.parent();
+		} else {
+			$filterRow = $el;
+		}
 
-        $filterRow.after(getNewFilterRow());
-        $filterRow.next("div")
-            .find(".gform-filter-field").change()
-            .find(".gform-filter-operator").change();
-        if ($(".gform-field-filter").length == 1){
-            addFilterMode($filterRow);
-        }
+		$filterRow.after( getNewFilterRow() );
+		$filterRow.next( "div" )
+			.find( ".gform-filter-field" ).change()
+			.find( ".gform-filter-operator" ).change();
+		if ($( ".gform-field-filter" ).length == 1 ) {
+			addFilterMode( $filterRow );
+		}
 
-        maybeMakeResizable();
-    }
+		maybeMakeResizable();
+	}
 
     function removeFieldFilter (img) {
         $(img).parent().remove();

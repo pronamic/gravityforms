@@ -1,0 +1,12 @@
+<div class="conditional_logic_flyout__action">
+	<select id="field_action_type" data-js-state-update="actionType">
+		<option value="show" {{ showSelected }}>{{ objectShowText }}</option>
+		<option value="hide" {{ hideSelected }}>{{ objectHideText }}</option>
+	</select>
+	{{ objectTypeText }}
+	<select id="field_logic_type" data-js-state-update="logicType">
+		<option value="all" {{ allSelected }}>{{ allText }}</option>
+		<option value="any" {{ anySelected }}>{{ anyText }}</option>
+	</select>
+	{{ matchText }}
+</div>

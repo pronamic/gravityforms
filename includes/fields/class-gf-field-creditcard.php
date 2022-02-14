@@ -13,6 +13,30 @@ class GF_Field_CreditCard extends GF_Field {
 		return esc_attr__( 'Credit Card', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to enter credit card information.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--credit-card';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'conditional_logic_field_setting',
@@ -35,6 +59,47 @@ class GF_Field_CreditCard extends GF_Field {
 
 	public function get_form_editor_button() {
 		return array(); // this button is conditionally added in the form detail page
+	}
+
+	/**
+	 * Defines the IDs of required inputs.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string[]
+	 */
+	public function get_required_inputs_ids() {
+		return array( '1', '2_month', '2_year', '3' );
+	}
+
+	/**
+	 * Generates an array that contains aria-describedby attribute for each input.
+	 *
+	 * Depending on each input's validation state, aria-describedby takes the value of the validation message container ID, the description only or nothing.
+	 *
+	 * @since 2.5
+	 *
+	 * @param array        $required_inputs_ids IDs of required field inputs.
+	 * @param array|string $values              Inputs values.
+	 *
+	 * @return array
+	 */
+	public function get_inputs_describedby_attributes( $required_inputs_ids, $values ) {
+
+		$describedby_attributes = array();
+		$warning_container_id   = ! GFCommon::is_ssl() && ! ( $this->is_form_editor() || $this->is_entry_detail() ) ? "field_{$this->formId}_{$this->id}_creditcard_warning_message" : '';
+
+		foreach ( $this->inputs as $input ) {
+			$input_id    = str_replace( $this->id . '.', '', $input['id'] );
+			$input_value = GFForms::get( $input['id'], $values );
+			if ( ! empty( $_POST[ 'is_submit_' . $this->formId ] ) && $this->isRequired && in_array( $input_id, $required_inputs_ids ) &&  empty( $input_value ) ) {
+				$describedby_attributes[ $input_id ] = "aria-describedby='validation_message_{$this->formId}_{$this->id} {$warning_container_id}'";
+			} else {
+				$describedby_attributes[ $input_id ] = empty( $warning_container_id ) ? '' : "aria-describedby='{$warning_container_id}'";
+			}
+		}
+
+		return $describedby_attributes;
 	}
 
 	public function validate( $value, $form ) {
@@ -90,6 +155,54 @@ class GF_Field_CreditCard extends GF_Field {
 		return $value;
 	}
 
+	/**
+	 * Returns the HTML tag for the field container.
+	 *
+	 * @since 2.5
+	 *
+	 * @param array $form The current Form object.
+	 *
+	 * @return string
+	 */
+	public function get_field_container_tag( $form ) {
+
+		if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
+			return parent::get_field_container_tag( $form );
+		}
+
+		return 'fieldset';
+
+	}
+
+	/**
+	 * Displays an insecure page warning below the field content.
+	 *
+	 * @since 2.5
+	 *
+	 * @param string|array $value                The field value. From default/dynamic population, $_POST, or a resumed incomplete submission.
+	 * @param bool         $force_frontend_label Should the frontend label be displayed in the admin even if an admin label is configured.
+	 * @param array        $form                 The Form Object currently being processed.
+	 *
+	 * @return string
+	 */
+	public function get_field_content( $value, $force_frontend_label, $form ) {
+
+		$is_form_editor  = GFCommon::is_form_editor();
+		$is_entry_detail = GFCommon::is_entry_detail();
+		$is_admin        = $is_form_editor || $is_entry_detail;
+
+		// Get existing field content.
+		$field_content = parent::get_field_content( $value, $force_frontend_label, $form );
+
+		// If SSL is not used, display warning message.
+		if ( ! GFCommon::is_ssl() && ! $is_admin ) {
+			$field_content = "<div class='gfield_creditcard_warning_message' id='field_{$form['id']}_{$this->id}_creditcard_warning_message'><span>" . esc_html__( 'This page is unsecured. Do not enter a real credit card number! Use this field only for testing purposes. ', 'gravityforms' ) . '</span></div>' . $field_content;
+		}
+
+		return $field_content;
+
+	}
+
 	public function get_field_input( $form, $value = '', $entry = null ) {
 		$is_entry_detail = $this->is_entry_detail();
 		$is_form_editor  = $this->is_form_editor();
@@ -136,15 +249,16 @@ class GF_Field_CreditCard extends GF_Field {
 		$onchange = "onchange='{$action}'";
 		$onkeyup  = "onkeyup='{$action}'";
 
-		$card_icons = '';
-		$cards      = GFCommon::get_card_types();
-		$card_style = $this->creditCardStyle ? $this->creditCardStyle : 'style1';
+		$card_icons         = '';
+		$cards              = GFCommon::get_card_types();
+		$enabled_card_names = array();
 
 		foreach ( $cards as $card ) {
 
 			$style = '';
 			if ( $this->is_card_supported( $card['slug'] ) ) {
-				$print_card = true;
+				$print_card           = true;
+				$enabled_card_names[] = rgar( $card, 'name' );
 			} elseif ( $is_form_editor || $is_entry_detail ) {
 				$print_card = true;
 				$style      = "style='display:none;'";
@@ -167,7 +281,21 @@ class GF_Field_CreditCard extends GF_Field {
 		}
 		$checked           = rgpost( 'gform_payment_method' ) == 'creditcard' || rgempty( 'gform_payment_method' ) ? "checked='checked'" : '';
 		$card_radio_button = empty( $payment_options ) ? '' : "<input type='radio' name='gform_payment_method' id='gform_payment_method_creditcard' value='creditcard' onclick='gformToggleCreditCard();' onkeypress='gformToggleCreditCard();' {$checked}/>";
-		$card_icons        = "{$payment_options}<div class='gform_card_icon_container gform_card_icon_{$card_style}'>{$card_radio_button}{$card_icons}</div>";
+		$card_describer    = sprintf(
+			"<span class='screen-reader-text' id='field_%d_%d_supported_creditcards'>%s %s</span>",
+			$form_id,
+			$this->id,
+			esc_html__( 'Supported Credit Cards:', 'gravityforms' ),
+			implode( ', ', $enabled_card_names )
+		);
+		$card_icons        = "{$payment_options}<div class='gform_card_icon_container'>{$card_radio_button}{$card_icons}{$card_describer}</div>";
+
+		// Aria attributes.
+		$number_aria_attributes = $this->get_aria_attributes( $value, '1' );
+		$expiration_month_aria_attributes = $this->get_aria_attributes( $value, '2_month' );
+		$expiration_year_aria_attributes = $this->get_aria_attributes( $value, '2_year' );
+		$security_aria_attributes = $this->get_aria_attributes( $value, '3' );
+		$name_aria_attributes = $this->get_aria_attributes( $value, '5' );
 
 		//card number fields
 		$tabindex                = $this->get_tabindex();
@@ -181,54 +309,85 @@ class GF_Field_CreditCard extends GF_Field {
 			$card_field = "<span class='ginput_full{$class_suffix}' id='{$field_id}_1_container' >
                                     {$card_icons}
                                     <label for='{$field_id}_1' id='{$field_id}_1_label' {$sub_label_class_attribute}>{$card_number_label}</label>
-                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$html5_output} {$card_number_placeholder}/>
+                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$html5_output} {$card_number_placeholder} {$number_aria_attributes}/>
                                  </span>";
 		} else {
 			$card_field = "<span class='ginput_full{$class_suffix}' id='{$field_id}_1_container' >
                                     {$card_icons}
-                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$html5_output} {$card_number_placeholder}/>
+                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$html5_output} {$card_number_placeholder} {$number_aria_attributes}/>
                                     <label for='{$field_id}_1' id='{$field_id}_1_label' {$sub_label_class_attribute}>{$card_number_label}</label>
                                  </span>";
 		}
 
-		//expiration date field
-		$expiration_month_tab_index   = $this->get_tabindex();
-		$expiration_year_tab_index    = $this->get_tabindex();
+		// Expiration Date Inputs
+		$expiration_wrapper_tag       = $this->get_field_container_tag( $form ) === 'fieldset' ? 'fieldset' : 'span';
+		$expiration_label_tag         = $expiration_wrapper_tag === 'fieldset' ? 'legend' : 'label';
+		$expiration_label_for         = $expiration_label_tag === 'label' ? " for='{$field_id}_2_month'" : '';
 		$expiration_month_input       = GFFormsModel::get_input( $this, $this->id . '.2_month' );
-		$expiration_month_placeholder = $this->get_input_placeholder_value( $expiration_month_input );
-		$expiration_year_input        = GFFormsModel::get_input( $this, $this->id . '.2_year' );
-		$expiration_year_placeholder  = $this->get_input_placeholder_value( $expiration_year_input );
-		$expiration_months            = $this->get_expiration_months( $expiration_month, $expiration_month_placeholder );
-		$expiration_years             = $this->get_expiration_years( $expiration_year, $expiration_year_placeholder );
-		$expiration_label             = rgar( $expiration_month_input, 'customLabel' ) != '' ? $expiration_month_input['customLabel'] : esc_html__( 'Expiration Date', 'gravityforms' );
+
+		$expiration_label             = rgar( $expiration_month_input, 'customLabel' ) != '' ? esc_html( $expiration_month_input['customLabel'] ) : esc_html__( 'Expiration Date', 'gravityforms' );
 		$expiration_label             = gf_apply_filters( array( 'gform_card_expiration', $form_id ), $expiration_label, $form_id );
-		if ( $is_sub_label_above ) {
+
+		// Expiration Date: Month
+		$expiration_month_label       = $expiration_wrapper_tag === 'fieldset' ? "<label for='{$field_id}_2_month' class='screen-reader-text'>" . esc_html__( 'Month', 'gravityforms' ) . "</label>" : '';
+		$expiration_month_tab_index   = $this->get_tabindex();
+		$expiration_month_placeholder = $this->get_input_placeholder_value( $expiration_month_input );
+		$expiration_months            = $this->get_expiration_months( $expiration_month, $expiration_month_placeholder );
+
+		// Expiration Date: Year
+		$expiration_year_input        = GFFormsModel::get_input( $this, $this->id . '.2_year' );
+		$expiration_year_tab_index    = $this->get_tabindex();
+		$expiration_year_placeholder  = $this->get_input_placeholder_value( $expiration_year_input );
+		$expiration_years             = $this->get_expiration_years( $expiration_year, $expiration_year_placeholder );
+
+		if ( $expiration_wrapper_tag === 'fieldset' ) {
+			$expiration_year_label_for = $is_form_editor ? '' : $field_id . '_2_year';
+			$expiration_year_label     = "<label for='{$expiration_year_label_for}' class='screen-reader-text'>" . esc_html__( 'Year', 'gravityforms' ) . "</label>";
+		} else {
+			$expiration_year_label = '';
+		}
+
+		// legend tag should be the first child of fieldset, so we are putting out this markup for fieldset
+		// even if the sub-label is below or hidden.
+		if ( $expiration_wrapper_tag === 'fieldset' || $is_sub_label_above ) {
 			$expiration_field = "<span class='ginput_full{$class_suffix} ginput_cardextras' id='{$field_id}_2_container'>
-                                            <span class='ginput_cardinfo_left{$class_suffix}' id='{$field_id}_2_cardinfo_left'>
+                                            <{$expiration_wrapper_tag} class='ginput_cardinfo_left{$class_suffix}' id='{$field_id}_2_cardinfo_left'>
+                                            <{$expiration_label_tag}{$expiration_label_for} {$sub_label_class_attribute}>{$expiration_label}</{$expiration_label_tag}>
                                                 <span class='ginput_card_expiration_container ginput_card_field'>
-                                                    <label for='{$field_id}_2_month' {$sub_label_class_attribute}>{$expiration_label}</label>
-                                                    <select name='input_{$id}.2[]' id='{$field_id}_2_month' {$expiration_month_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_month'>
-                                                        {$expiration_months}
-                                                    </select>
-                                                    <select name='input_{$id}.2[]' id='{$field_id}_2_year' {$expiration_year_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_year'>
-                                                        {$expiration_years}
-                                                    </select>
+                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_month_container'>" : "" ) . "
+                                                       {$expiration_month_label}
+                                                       <select name='input_{$id}.2[]' id='{$field_id}_2_month' {$expiration_month_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_month' {$expiration_month_aria_attributes}>
+                                                           {$expiration_months}
+                                                       </select>
+                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "</span>" : "" ) . "
+                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_year_container'>" : "" ) . "
+                                                       {$expiration_year_label}
+                                                       <select name='input_{$id}.2[]' id='{$field_id}_2_year' {$expiration_year_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_year' {$expiration_year_aria_attributes}>
+                                                           {$expiration_years}
+                                                       </select>
+                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "</span>" : "" ) . "
                                                 </span>
-                                            </span>";
+                                            </{$expiration_wrapper_tag}>";
 
 		} else {
 			$expiration_field = "<span class='ginput_full{$class_suffix} ginput_cardextras' id='{$field_id}_2_container'>
-                                            <span class='ginput_cardinfo_left{$class_suffix}' id='{$field_id}_2_cardinfo_left'>
+                                            <{$expiration_wrapper_tag} class='ginput_cardinfo_left{$class_suffix}' id='{$field_id}_2_cardinfo_left'>
                                                 <span class='ginput_card_expiration_container ginput_card_field'>
-                                                    <select name='input_{$id}.2[]' id='{$field_id}_2_month' {$expiration_month_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_month'>
-                                                        {$expiration_months}
-                                                    </select>
-                                                    <select name='input_{$id}.2[]' id='{$field_id}_2_year' {$expiration_year_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_year'>
-                                                    {$expiration_years}
-                                                    </select>
-                                                    <label for='{$field_id}_2_month' {$sub_label_class_attribute}>{$expiration_label}</label>
+                                                    " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_month_container'>" : "" ) . "
+                                                       <select name='input_{$id}.2[]' id='{$field_id}_2_month' {$expiration_month_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_month' {$expiration_month_aria_attributes}>
+                                                           {$expiration_months}
+                                                       </select>
+                                                       {$expiration_month_label}
+                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "</span>" : "" ) . "
+                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_year_container'>" : "" ) . "
+                                                       <select name='input_{$id}.2[]' id='{$field_id}_2_year' {$expiration_year_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_year' {$expiration_year_aria_attributes}>
+                                                           {$expiration_years}
+                                                       </select>
+                                                       {$expiration_year_label}
+                                                       " . ( $expiration_wrapper_tag === 'fieldset' ? "</span>" : "" ) . "
                                                 </span>
-                                            </span>";
+                                                 <{$expiration_label_tag}{$expiration_label_for} {$sub_label_class_attribute}>{$expiration_label}</{$expiration_label_tag}>
+                                            </{$expiration_wrapper_tag}>";
 		}
 		//security code field
 		$tabindex                  = $this->get_tabindex();
@@ -240,13 +399,13 @@ class GF_Field_CreditCard extends GF_Field {
 		if ( $is_sub_label_above ) {
 			$security_field = "<span class='ginput_cardinfo_right{$class_suffix}' id='{$field_id}_2_cardinfo_right'>
                                                 <label for='{$field_id}_3' {$sub_label_class_attribute}>$security_code_label</label>
-                                                <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$html5_output} {$security_code_placeholder} />
+                                                <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$html5_output} {$security_code_placeholder} {$security_aria_attributes}/>
                                                 <span class='ginput_card_security_code_icon'>&nbsp;</span>
                                              </span>
                                         </span>";
 		} else {
 			$security_field = "<span class='ginput_cardinfo_right{$class_suffix}' id='{$field_id}_2_cardinfo_right'>
-                                                <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$html5_output} {$security_code_placeholder}/>
+                                                <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$html5_output} {$security_code_placeholder} {$security_aria_attributes}/>
                                                 <span class='ginput_card_security_code_icon'>&nbsp;</span>
                                                 <label for='{$field_id}_3' {$sub_label_class_attribute}>$security_code_label</label>
                                              </span>
@@ -262,11 +421,11 @@ class GF_Field_CreditCard extends GF_Field {
 		if ( $is_sub_label_above ) {
 			$card_name_field = "<span class='ginput_full{$class_suffix}' id='{$field_id}_5_container'>
                                             <label for='{$field_id}_5' id='{$field_id}_5_label' {$sub_label_class_attribute}>{$card_name_label}</label>
-                                            <input type='text' name='input_{$id}.5' id='{$field_id}_5' value='{$card_name}' {$tabindex} {$disabled_text} {$card_name_placeholder}/>
+                                            <input type='text' name='input_{$id}.5' id='{$field_id}_5' value='{$card_name}' {$tabindex} {$disabled_text} {$card_name_placeholder} {$name_aria_attributes}/>
                                         </span>";
 		} else {
 			$card_name_field = "<span class='ginput_full{$class_suffix}' id='{$field_id}_5_container'>
-                                            <input type='text' name='input_{$id}.5' id='{$field_id}_5' value='{$card_name}' {$tabindex} {$disabled_text} {$card_name_placeholder}/>
+                                            <input type='text' name='input_{$id}.5' id='{$field_id}_5' value='{$card_name}' {$tabindex} {$disabled_text} {$card_name_placeholder} {$name_aria_attributes}/>
                                             <label for='{$field_id}_5' id='{$field_id}_5_label' {$sub_label_class_attribute}>{$card_name_label}</label>
                                         </span>";
 		}
@@ -275,15 +434,27 @@ class GF_Field_CreditCard extends GF_Field {
 
 	}
 
-	public function get_field_label_class(){
-		return 'gfield_label gfield_label_before_complex';
-	}
-
+	/**
+	 * Get the options for the Expiration Date Month drop down.
+	 *
+	 * @since Unknown
+	 * @since 2.5 Added $included_placeholder parameter.
+	 *
+	 * @param string $selected_month The currently selected month.
+	 * @param string $placeholder    Placeholder text.
+	 *
+	 * @return string
+	 */
 	private function get_expiration_months( $selected_month, $placeholder ) {
+
+		$str = '';
+
 		if ( empty( $placeholder ) ) {
 			$placeholder = esc_html__( 'Month', 'gravityforms' );
 		}
-		$str = "<option value=''>{$placeholder}</option>";
+
+		$str .= "<option value=''>{$placeholder}</option>";
+
 		for ( $i = 1; $i < 13; $i ++ ) {
 			$selected = intval( $selected_month ) == $i ? "selected='selected'" : '';
 			$month    = str_pad( $i, 2, '0', STR_PAD_LEFT );
@@ -291,20 +462,39 @@ class GF_Field_CreditCard extends GF_Field {
 		}
 
 		return $str;
+
 	}
 
+	/**
+	 * Get the options for the Expiration Date Year drop down.
+	 *
+	 * @since Unknown
+	 * @since 2.5 Added $included_placeholder parameter.
+	 *
+	 * @param string $selected_year The currently selected year.
+	 * @param string $placeholder   Placeholder text.
+	 *
+	 * @return string
+	 */
 	private function get_expiration_years( $selected_year, $placeholder ) {
+
+		$str = '';
+
 		if ( empty( $placeholder ) ) {
 			$placeholder = esc_html__( 'Year', 'gravityforms' );
 		}
-		$str  = "<option value=''>{$placeholder}</option>";
+
+		$str .= "<option value=''>{$placeholder}</option>";
+
 		$year = intval( date( 'Y' ) );
+
 		for ( $i = $year; $i < ( $year + 20 ); $i ++ ) {
 			$selected = intval( $selected_year ) == $i ? "selected='selected'" : '';
 			$str .= "<option value='{$i}' {$selected}>{$i}</option>";
 		}
 
 		return $str;
+
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {

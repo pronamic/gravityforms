@@ -26,6 +26,30 @@ class GF_Field_Shipping extends GF_Field {
 		return esc_attr__( 'Shipping', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows a shipping fee to be added to the form total.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--shipping';
+	}
+
 }
 
 GF_Fields::register( new GF_Field_Shipping() );

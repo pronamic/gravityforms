@@ -314,12 +314,12 @@ class GF_REST_Form_Entries_Controller extends GF_REST_Controller {
 				),
 				'date_created' => array(
 					'description' => __( 'The date the entry was created, in UTC.', 'gravityforms' ),
-					'type'        => 'date-time',
+					'type'        => 'string',
 					'readonly'    => false,
 				),
 				'date_updated' => array(
 					'description' => __( 'The date the entry was updated, in UTC.', 'gravityforms' ),
-					'type'        => 'date-time',
+					'type'        => 'string',
 					'readonly'    => false,
 				),
 				'is_starred' => array(

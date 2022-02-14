@@ -36,6 +36,7 @@ class GF_REST_Form_Results_Controller extends GF_REST_Controller {
 		register_rest_route( $namespace, '/' . $base . '/schema', array(
 			'methods'         => WP_REST_Server::READABLE,
 			'callback'        => array( $this, 'get_public_item_schema' ),
+			'permission_callback' => '__return_true',
 		) );
 	}
 

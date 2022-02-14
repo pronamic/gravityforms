@@ -9,9 +9,43 @@ class GF_Field_Select extends GF_Field {
 
 	public $type = 'select';
 
+	/**
+	 * Indicates if this field supports state validation.
+	 *
+	 * @since 2.5.11
+	 *
+	 * @var bool
+	 */
+	protected $_supports_state_validation = true;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Drop Down', 'gravityforms' );
 	}
+
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to select one option from a list.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--dropdown';
+	}
+
 
 	function get_form_editor_field_settings() {
 		return array(
@@ -31,6 +65,7 @@ class GF_Field_Select extends GF_Field {
 			'duplicate_setting',
 			'description_setting',
 			'css_class_setting',
+			'autocomplete_setting',
 		);
 	}
 
@@ -46,16 +81,19 @@ class GF_Field_Select extends GF_Field {
 		$id       = $this->id;
 		$field_id = $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
 
-		$size               = $this->size;
-		$class_suffix       = $is_entry_detail ? '_admin' : '';
-		$class              = $size . $class_suffix;
-		$css_class          = trim( esc_attr( $class ) . ' gfield_select' );
-		$tabindex           = $this->get_tabindex();
-		$disabled_text      = $is_form_editor ? 'disabled="disabled"' : '';
-		$required_attribute = $this->isRequired ? 'aria-required="true"' : '';
-		$invalid_attribute  = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
+		$size                   = $this->size;
+		$class_suffix           = $is_entry_detail ? '_admin' : '';
+		$class                  = $size . $class_suffix;
+		$css_class              = trim( esc_attr( $class ) . ' gfield_select' );
+		$tabindex               = $this->get_tabindex();
+		$disabled_text          = $is_form_editor ? 'disabled="disabled"' : '';
+		$required_attribute     = $this->isRequired ? 'aria-required="true"' : '';
+		$invalid_attribute      = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
+		$describedby_attribute = $this->get_aria_describedby();
+		$autocomplete_attribute = $this->enableAutocomplete ? $this->get_field_autocomplete_attribute() : '';
 
-		return sprintf( "<div class='ginput_container ginput_container_select'><select name='input_%d' id='%s' class='%s' $tabindex %s %s %s>%s</select></div>", $id, $field_id, $css_class, $disabled_text, $required_attribute, $invalid_attribute, $this->get_choices( $value ) );
+		return sprintf( "<div class='ginput_container ginput_container_select'><select name='input_%d' id='%s' class='%s' $tabindex $describedby_attribute %s %s %s %s>%s</select></div>", $id, $field_id, $css_class, $disabled_text, $required_attribute, $invalid_attribute, $autocomplete_attribute, $this->get_choices( $value ) );
+
 	}
 
 	public function get_choices( $value ) {

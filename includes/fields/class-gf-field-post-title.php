@@ -13,6 +13,30 @@ class GF_Field_Post_Title extends GF_Field {
 		return esc_attr__( 'Title', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to submit the title for a post.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--title';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'conditional_logic_field_setting',

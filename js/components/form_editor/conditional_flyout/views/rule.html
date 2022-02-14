@@ -1,0 +1,14 @@
+<div class="conditional_logic_flyout__rule" data-js-rule-idx="{{ rule_idx }}">
+	<select id="field_rule_field_{{ rule_idx }}" data-js-rule-input="fieldId"  class="gfield_rule_select">
+		{{ fieldOptions }}
+	</select>
+	<select id="field_rule_operator_{{ rule_idx }}" data-js-rule-input="operator"  class="gfield_rule_select" >
+		{{ operatorOptions }}
+	</select>
+
+	{{ valueMarkup }}
+	<div class="conditional_logic_flyout__rule-controls">
+		<button type="button" class="add_field_choice gform-st-icon gform-st-icon--circle-plus" data-js-add-rule title="{{ addRuleText }}"></button>
+		<button type="button" class="delete_field_choice gform-st-icon gform-st-icon--circle-minus {{ deleteClass }}" data-js-delete-rule title="{{ removeRuleText }}"></button>
+	</div>
+</div>

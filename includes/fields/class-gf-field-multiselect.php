@@ -31,6 +31,30 @@ class GF_Field_MultiSelect extends GF_Field {
 	}
 
 	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to select multiple options available in the multi select box.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--multi-select';
+	}
+
+	/**
 	 * Returns the class names of the settings which should be available on the field in the form editor.
 	 *
 	 * @since  Unknown
@@ -108,6 +132,9 @@ class GF_Field_MultiSelect extends GF_Field {
 		$css_class     = trim( $class . ' gfield_select' );
 		$tabindex      = $this->get_tabindex();
 		$disabled_text = $is_form_editor ? 'disabled="disabled"' : '';
+		$required_attribute = $this->isRequired ? 'aria-required="true"' : '';
+		$invalid_attribute  = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
+		$describedby_attribute = $this->get_aria_describedby();
 
 
 		/**
@@ -132,7 +159,7 @@ class GF_Field_MultiSelect extends GF_Field {
 		}
 		$size = esc_attr( $size );
 
-		return sprintf( "<div class='ginput_container ginput_container_multiselect'><select multiple='multiple' {$placeholder} size='{$size}' name='input_%d[]' id='%s' class='%s' $tabindex %s>%s</select></div>", $id, esc_attr( $field_id ), $css_class, $disabled_text, $this->get_choices( $value ) );
+		return sprintf( "<div class='ginput_container ginput_container_multiselect'><select multiple='multiple' {$placeholder} size='{$size}' name='input_%d[]' id='%s' class='%s' $tabindex %s %s %s %s>%s</select></div>", $id, esc_attr( $field_id ), $css_class, $disabled_text, $invalid_attribute, $required_attribute, $describedby_attribute, $this->get_choices( $value ) );
 	}
 
 	/**

@@ -26,11 +26,12 @@ function Button(){
 
 function Field(id, type){
     this.id = id;
+    this.formId = window.form.id;
     this.label = "";
     this.adminLabel = "";
     this.type = type;
     this.isRequired = false;
-    this.size = "medium";
+    this.size = "large";
     this.errorMessage = "";
     this.visibility = "visible";
     //NOTE: other properties will be added dynamically using associative array syntax
@@ -43,10 +44,24 @@ function Choice(text, value, price){
     this.price = price ? price : "";
 }
 
-function Input(id, label){
+/**
+ * Create a form Input object.
+ *
+ * @since unknown
+ * @since 2.5
+ *
+ * @param {string|int} id                      The input ID.
+ * @param {string}     label                   The input label.
+ * @param {string}     [autocompleteAttribute] The autocomplete attribute value.
+ */
+function Input( id, label, autocompleteAttribute ) {
     this.id = id;
     this.label = label;
     this.name = "";
+
+    if ( typeof autocompleteAttribute !== "undefined" ) {
+        this.autocompleteAttribute = autocompleteAttribute;
+    }
 }
 
 function ConditionalLogic(){

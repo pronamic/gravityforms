@@ -379,4 +379,58 @@ abstract class GF_REST_Controller extends WP_REST_Controller {
 		return $result;
 	}
 
+	/**
+	 * Recursively patches the given item with the supplied changes (deletions, updates, and additions).
+	 *
+	 * @since 2.4.24
+	 *
+	 * @param mixed $current The existing item to be modified (e.g. feed).
+	 * @param mixed $changes The changes to be applied.
+	 *
+	 * @return mixed
+	 */
+	public function patch_array_recursive( $current, $changes ) {
+		if ( ! $this->is_assoc_array( $changes ) ) {
+			return $changes;
+		}
+
+		if ( ! $this->is_assoc_array( $current ) ) {
+			$current = array();
+		}
+
+		foreach ( $changes as $key => $value ) {
+			if ( is_null( $value ) ) {
+				unset( $current[ $key ] );
+				continue;
+			}
+
+			$current[ $key ] = $this->patch_array_recursive( rgar( $current, $key ), $value );
+		}
+
+		return $current;
+	}
+
+	/**
+	 * Determines if the passed variable is an associative array.
+	 *
+	 * @since 2.4.24
+	 *
+	 * @param mixed $array The variable to be checked.
+	 *
+	 * @return bool
+	 */
+	private function is_assoc_array( $array ) {
+		if ( ! is_array( $array ) ) {
+			return false;
+		}
+
+		foreach ( array_keys( $array ) as $key ) {
+			if ( $key !== (int) $key ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }

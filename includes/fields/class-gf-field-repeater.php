@@ -631,13 +631,15 @@ class GF_Field_Repeater extends GF_Field {
 	 * Builds the repeater's array of items.
 	 *
 	 * @since 2.4
+	 * @since 2.5 Added the $apply_filters parameter.
 	 *
-	 * @param $entry
+	 * @param      $entry
+	 * @param bool $apply_filters Whether to apply the filter_input_value filter to the entry.
 	 *
 	 * @return mixed
 	 */
-	public function hydrate( $entry ) {
-		$entry[ $this->id ] = $this->get_repeater_items( $entry );
+	public function hydrate( $entry, $apply_filters = false ) {
+		$entry[ $this->id ] = $this->get_repeater_items( $entry, '', '', $apply_filters );
 		return $entry;
 	}
 
@@ -646,15 +648,16 @@ class GF_Field_Repeater extends GF_Field {
 	 * of items.
 	 *
 	 * @since 2.4
+	 * @since 2.5 Added the $apply_filters parameter.
 	 *
 	 * @param array             $entry
 	 * @param GF_Field_Repeater $repeater_field
 	 * @param string            $index
+	 * @param bool              $apply_filters Whether to apply the filter_input_value filter to the entry.
 	 *
 	 * @return array
 	 */
-	public function get_repeater_items( &$entry, $repeater_field = null, $index = '' ) {
-
+	public function get_repeater_items( &$entry, $repeater_field = null, $index = '', $apply_filters = false ) {
 		if ( ! $repeater_field ) {
 			$repeater_field = $this;
 		}
@@ -686,7 +689,11 @@ class GF_Field_Repeater extends GF_Field {
 
 						// Don't add new item if max indexes is 0 and value is empty.
 						if ( $field->isRequired || $max_indexes[ $field->id ] > 0 || ( $max_indexes[ $field->id ] === 0 && $value !== '' ) ) {
-							$items[ $i ][ $input_id ] = $value;
+							if ( $apply_filters ) {
+								$items[ $i ][ $input_id ] = $field->filter_input_value( $value, $entry );
+							} else {
+								$items[ $i ][ $input_id ] = $value;
+							}
 						}
 
 						if ( isset( $entry[ $key ] ) ) {
@@ -700,7 +707,11 @@ class GF_Field_Repeater extends GF_Field {
 					$value = isset( $entry[ $key ] ) ? $entry[ $key ] : '';
 
 					if ( $field->isRequired || $max_indexes[ $field->id ] > 0 || ( $max_indexes[ $field->id ] === 0 && $value !== '' ) ) {
-						$items[ $i ][ $field->id ] = $value;
+						if ( $apply_filters ) {
+							$items[ $i ][ $field->id ] = $field->filter_input_value( $value, $entry );
+						} else {
+							$items[ $i ][ $field->id ] = $value;
+						}
 					}
 
 					if ( isset( $entry[ $key ] ) ) {

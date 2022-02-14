@@ -42,7 +42,7 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 
 				if ( ( $char >= '0' && $char <= '9' ) || $char == $this->currency['decimal_separator'] ) {
 					$clean_number .= $char;
-				} else if ( $char == '-' ) {
+				} elseif ( $char == '-' ) {
 					$is_negative = true;
 				}
 			}
@@ -57,7 +57,7 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 
 				if ( $char >= '0' && $char <= '9' ) {
 					$float_number .= $char;
-				} else if ( $char == $decimal_separator ) {
+				} elseif ( $char == $decimal_separator ) {
 					$float_number .= '.';
 				}
 			}
@@ -87,7 +87,7 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 
 			$money = number_format( $number, $this->currency['decimals'], $this->currency['decimal_separator'], $this->currency['thousand_separator'] );
 
-			if ( $money == '0.00' ){
+			if ( $money == '0.00' ) {
 				$negative = '';
 			}
 
@@ -113,33 +113,267 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 			return empty( $this->currency['decimals'] );
 		}
 
+		/**
+		 * Returns an array that contains all the supported currencies and their configurations.
+		 *
+		 * @since unknown.
+		 * @since 2.5.13 add currency code to the configuration array.
+		 *
+		 * @return array
+		 */
 		public static function get_currencies() {
 			$currencies = array(
-				'USD' => array( 'name' => esc_html__( 'U.S. Dollar', 'gravityforms' ), 'symbol_left' => '$', 'symbol_right' => '', 'symbol_padding' => '', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'GBP' => array( 'name' => esc_html__( 'Pound Sterling', 'gravityforms' ), 'symbol_left' => '&#163;', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'EUR' => array( 'name' => esc_html__( 'Euro', 'gravityforms' ), 'symbol_left' => '', 'symbol_right' => '&#8364;', 'symbol_padding' => ' ', 'thousand_separator' => '.', 'decimal_separator' => ',', 'decimals' => 2 ),
-				'AUD' => array( 'name' => esc_html__( 'Australian Dollar', 'gravityforms' ), 'symbol_left' => '$', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'BRL' => array( 'name' => esc_html__( 'Brazilian Real', 'gravityforms' ), 'symbol_left' => 'R$', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => '.', 'decimal_separator' => ',', 'decimals' => 2 ),
-				'CAD' => array( 'name' => esc_html__( 'Canadian Dollar', 'gravityforms' ), 'symbol_left' => '$', 'symbol_right' => 'CAD', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'CZK' => array( 'name' => esc_html__( 'Czech Koruna', 'gravityforms' ), 'symbol_left' => '', 'symbol_right' => '&#75;&#269;', 'symbol_padding' => ' ', 'thousand_separator' => ' ', 'decimal_separator' => ',', 'decimals' => 2 ),
-				'DKK' => array( 'name' => esc_html__( 'Danish Krone', 'gravityforms' ), 'symbol_left' => '', 'symbol_right' => 'kr.', 'symbol_padding' => ' ', 'thousand_separator' => '.', 'decimal_separator' => ',', 'decimals' => 2 ),
-				'HKD' => array( 'name' => esc_html__( 'Hong Kong Dollar', 'gravityforms' ), 'symbol_left' => 'HK$', 'symbol_right' => '', 'symbol_padding' => '', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'HUF' => array( 'name' => esc_html__( 'Hungarian Forint', 'gravityforms' ), 'symbol_left' => '', 'symbol_right' => 'Ft', 'symbol_padding' => ' ', 'thousand_separator' => '.', 'decimal_separator' => ',', 'decimals' => 2 ),
-				'ILS' => array( 'name' => esc_html__( 'Israeli New Sheqel', 'gravityforms' ), 'symbol_left' => '&#8362;', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'JPY' => array( 'name' => esc_html__( 'Japanese Yen', 'gravityforms' ), 'symbol_left' => '&#165;', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '', 'decimals' => 0 ),
-				'MYR' => array( 'name' => esc_html__( 'Malaysian Ringgit', 'gravityforms' ), 'symbol_left' => '&#82;&#77;', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'MXN' => array( 'name' => esc_html__( 'Mexican Peso', 'gravityforms' ), 'symbol_left' => '$', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'NOK' => array( 'name' => esc_html__( 'Norwegian Krone', 'gravityforms' ), 'symbol_left' => 'Kr', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => '.', 'decimal_separator' => ',', 'decimals' => 2 ),
-				'NZD' => array( 'name' => esc_html__( 'New Zealand Dollar', 'gravityforms' ), 'symbol_left' => '$', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'PHP' => array( 'name' => esc_html__( 'Philippine Peso', 'gravityforms' ), 'symbol_left' => 'Php', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'PLN' => array( 'name' => esc_html__( 'Polish Zloty', 'gravityforms' ), 'symbol_left' => '&#122;&#322;', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => '.', 'decimal_separator' => ',', 'decimals' => 2 ),
-				'RUB' => array( 'name' => esc_html__( 'Russian Ruble', 'gravityforms' ), 'symbol_left' => '', 'symbol_right' => 'pyб', 'symbol_padding' => ' ', 'thousand_separator' => ' ', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'SGD' => array( 'name' => esc_html__( 'Singapore Dollar', 'gravityforms' ), 'symbol_left' => '$', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'ZAR' => array( 'name' => esc_html__( 'South African Rand', 'gravityforms' ), 'symbol_left' => 'R', 'symbol_right' => '', 'symbol_padding' => '', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'SEK' => array( 'name' => esc_html__( 'Swedish Krona', 'gravityforms' ), 'symbol_left' => '', 'symbol_right' => 'Kr', 'symbol_padding' => ' ', 'thousand_separator' => ' ', 'decimal_separator' => ',', 'decimals' => 2 ),
-				'CHF' => array( 'name' => esc_html__( 'Swiss Franc', 'gravityforms' ), 'symbol_left' => 'CHF', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => "'", 'decimal_separator' => '.', 'decimals' => 2, 'symbol_old' => 'Fr.' ),
-				'TWD' => array( 'name' => esc_html__( 'Taiwan New Dollar', 'gravityforms' ), 'symbol_left' => '$', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
-				'THB' => array( 'name' => esc_html__( 'Thai Baht', 'gravityforms' ), 'symbol_left' => '&#3647;', 'symbol_right' => '', 'symbol_padding' => ' ', 'thousand_separator' => ',', 'decimal_separator' => '.', 'decimals' => 2 ),
+				'USD' => array(
+					'name'               => esc_html__( 'U.S. Dollar', 'gravityforms' ),
+					'symbol_left'        => '$',
+					'symbol_right'       => '',
+					'symbol_padding'     => '',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'USD',
+				),
+				'GBP' => array(
+					'name'               => esc_html__( 'Pound Sterling', 'gravityforms' ),
+					'symbol_left'        => '&#163;',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'GBP',
+				),
+				'EUR' => array(
+					'name'               => esc_html__( 'Euro', 'gravityforms' ),
+					'symbol_left'        => '',
+					'symbol_right'       => '&#8364;',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => '.',
+					'decimal_separator'  => ',',
+					'decimals'           => 2,
+					'code'               => 'EUR',
+				),
+				'AUD' => array(
+					'name'               => esc_html__( 'Australian Dollar', 'gravityforms' ),
+					'symbol_left'        => '$',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'AUD',
+				),
+				'BRL' => array(
+					'name'               => esc_html__( 'Brazilian Real', 'gravityforms' ),
+					'symbol_left'        => 'R$',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => '.',
+					'decimal_separator'  => ',',
+					'decimals'           => 2,
+					'code'               => 'BRL',
+				),
+				'CAD' => array(
+					'name'               => esc_html__( 'Canadian Dollar', 'gravityforms' ),
+					'symbol_left'        => '$',
+					'symbol_right'       => 'CAD',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'CAD',
+				),
+				'CZK' => array(
+					'name'               => esc_html__( 'Czech Koruna', 'gravityforms' ),
+					'symbol_left'        => '',
+					'symbol_right'       => '&#75;&#269;',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ' ',
+					'decimal_separator'  => ',',
+					'decimals'           => 2,
+					'code'               => 'CZK',
+				),
+				'DKK' => array(
+					'name'               => esc_html__( 'Danish Krone', 'gravityforms' ),
+					'symbol_left'        => '',
+					'symbol_right'       => 'kr.',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => '.',
+					'decimal_separator'  => ',',
+					'decimals'           => 2,
+					'code'               => 'DKK',
+				),
+				'HKD' => array(
+					'name'               => esc_html__( 'Hong Kong Dollar', 'gravityforms' ),
+					'symbol_left'        => 'HK$',
+					'symbol_right'       => '',
+					'symbol_padding'     => '',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'HKD',
+				),
+				'HUF' => array(
+					'name'               => esc_html__( 'Hungarian Forint', 'gravityforms' ),
+					'symbol_left'        => '',
+					'symbol_right'       => 'Ft',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => '.',
+					'decimal_separator'  => ',',
+					'decimals'           => 2,
+					'code'               => 'HUF',
+				),
+				'ILS' => array(
+					'name'               => esc_html__( 'Israeli New Sheqel', 'gravityforms' ),
+					'symbol_left'        => '&#8362;',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'ILS',
+				),
+				'JPY' => array(
+					'name'               => esc_html__( 'Japanese Yen', 'gravityforms' ),
+					'symbol_left'        => '&#165;',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '',
+					'decimals'           => 0,
+					'code'               => 'JPY',
+				),
+				'MYR' => array(
+					'name'               => esc_html__( 'Malaysian Ringgit', 'gravityforms' ),
+					'symbol_left'        => '&#82;&#77;',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'MYR',
+				),
+				'MXN' => array(
+					'name'               => esc_html__( 'Mexican Peso', 'gravityforms' ),
+					'symbol_left'        => '$',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'MXN',
+				),
+				'NOK' => array(
+					'name'               => esc_html__( 'Norwegian Krone', 'gravityforms' ),
+					'symbol_left'        => 'Kr',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => '.',
+					'decimal_separator'  => ',',
+					'decimals'           => 2,
+					'code'               => 'NOK',
+				),
+				'NZD' => array(
+					'name'               => esc_html__( 'New Zealand Dollar', 'gravityforms' ),
+					'symbol_left'        => '$',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'NZD',
+				),
+				'PHP' => array(
+					'name'               => esc_html__( 'Philippine Peso', 'gravityforms' ),
+					'symbol_left'        => 'Php',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'PHP', // bun not intended.
+				),
+				'PLN' => array(
+					'name'               => esc_html__( 'Polish Zloty', 'gravityforms' ),
+					'symbol_left'        => '&#122;&#322;',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => '.',
+					'decimal_separator'  => ',',
+					'decimals'           => 2,
+					'code'               => 'PLN',
+				),
+				'RUB' => array(
+					'name'               => esc_html__( 'Russian Ruble', 'gravityforms' ),
+					'symbol_left'        => '',
+					'symbol_right'       => 'pyб',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ' ',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'RUB',
+				),
+				'SGD' => array(
+					'name'               => esc_html__( 'Singapore Dollar', 'gravityforms' ),
+					'symbol_left'        => '$',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'SGD',
+				),
+				'ZAR' => array(
+					'name'               => esc_html__( 'South African Rand', 'gravityforms' ),
+					'symbol_left'        => 'R',
+					'symbol_right'       => '',
+					'symbol_padding'     => '',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'ZAR',
+				),
+				'SEK' => array(
+					'name'               => esc_html__( 'Swedish Krona', 'gravityforms' ),
+					'symbol_left'        => '',
+					'symbol_right'       => 'Kr',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ' ',
+					'decimal_separator'  => ',',
+					'decimals'           => 2,
+					'code'               => 'SEK',
+				),
+				'CHF' => array(
+					'name'               => esc_html__( 'Swiss Franc', 'gravityforms' ),
+					'symbol_left'        => 'CHF',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => "'",
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'symbol_old'         => 'Fr.',
+					'code'               => 'CHF',
+				),
+				'TWD' => array(
+					'name'               => esc_html__( 'Taiwan New Dollar', 'gravityforms' ),
+					'symbol_left'        => '$',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'TWD',
+				),
+				'THB' => array(
+					'name'               => esc_html__( 'Thai Baht', 'gravityforms' ),
+					'symbol_left'        => '&#3647;',
+					'symbol_right'       => '',
+					'symbol_padding'     => ' ',
+					'thousand_separator' => ',',
+					'decimal_separator'  => '.',
+					'decimals'           => 2,
+					'code'               => 'THB',
+				),
 			);
 
 			return apply_filters( 'gform_currencies', $currencies );

@@ -47,6 +47,8 @@ class GF_REST_API_Bootstrap {
 		require_once( $dir . '/includes/controllers/class-controller-entry-notifications.php' );
 		require_once( $dir . '/includes/controllers/class-controller-entry-properties.php' );
 		require_once( $dir . '/includes/controllers/class-controller-forms.php' );
+		require_once( $dir . '/includes/controllers/class-controller-form-field-filters.php' );
+		require_once( $dir . '/includes/controllers/class-controller-feed-properties.php' );
 
 		return GF_REST_API::get_instance();
 	}

@@ -13,6 +13,30 @@ class GF_Field_Email extends GF_Field {
 		return esc_attr__( 'Email', 'gravityforms' );
 	}
 
+	/**
+	 * Returns the field's form editor description.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_description() {
+		return esc_attr__( 'Allows users to enter a valid email address.', 'gravityforms' );
+	}
+
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.5
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--mail';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'conditional_logic_field_setting',
@@ -30,6 +54,7 @@ class GF_Field_Email extends GF_Field {
 			'placeholder_setting',
 			'description_setting',
 			'css_class_setting',
+			'autocomplete_setting',
 		);
 	}
 
@@ -39,6 +64,25 @@ class GF_Field_Email extends GF_Field {
 
 	public function get_entry_inputs() {
 		return null;
+	}
+
+	/**
+	 * Returns the HTML tag for the field container.
+	 *
+	 * @since 2.5
+	 *
+	 * @param array $form The current Form object.
+	 *
+	 * @return string
+	 */
+	public function get_field_container_tag( $form ) {
+
+		if ( GFCommon::is_legacy_markup_enabled( $form ) || ! $this->emailConfirmEnabled ) {
+			return parent::get_field_container_tag( $form );
+		}
+
+		return 'fieldset';
+
 	}
 
 	/**
@@ -58,7 +102,7 @@ class GF_Field_Email extends GF_Field {
 
 		if ( ! $is_blank && ! GFCommon::is_valid_email( $email ) ) {
 			$this->failed_validation  = true;
-			$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'Please enter a valid email address.', 'gravityforms' ) : $this->errorMessage;
+			$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'The email address entered is invalid, please check the formatting (e.g. email@domain.com).', 'gravityforms' ) : $this->errorMessage;
 		} elseif ( $this->emailConfirmEnabled && ! empty( $email ) ) {
 			$confirm = is_array( $value ) ? rgar( $value, 1 ) : $this->get_input_value_submission( 'input_' . $this->id . '_2' );
 			if ( $confirm != $email ) {
@@ -111,38 +155,42 @@ class GF_Field_Email extends GF_Field {
 		$enter_email_placeholder_attribute   = $this->get_input_placeholder_attribute( $enter_email_field_input );
 		$confirm_email_placeholder_attribute = $this->get_input_placeholder_attribute( $confirm_field_input );
 
+		$single_autocomplete_attribute        = $this->get_field_autocomplete_attribute();
+		$enter_email_autocomplete_attribute   = $this->get_input_autocomplete_attribute( $enter_email_field_input );
+		$confirm_email_autocomplete_attribute = $this->get_input_autocomplete_attribute( $confirm_field_input );
+
 		if ( $is_form_editor ) {
 			$single_style  = $this->emailConfirmEnabled ? "style='display:none;'" : '';
 			$confirm_style = $this->emailConfirmEnabled ? '' : "style='display:none;'";
 
 			if ( $is_sub_label_above ) {
 				return "<div class='ginput_container ginput_container_email ginput_single_email' {$single_style}>
-                            <input name='input_{$id}' type='{$html_input_type}' class='" . esc_attr( $class ) . "' disabled='disabled' {$single_placeholder_attribute} {$required_attribute} {$invalid_attribute} />
+                            <input name='input_{$id}' type='{$html_input_type}' class='" . esc_attr( $class ) . "' disabled='disabled' {$single_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$single_autocomplete_attribute} />
                             <div class='gf_clear gf_clear_complex'></div>
                         </div>
                         <div class='ginput_complex ginput_container ginput_container_email ginput_confirm_email' {$confirm_style} id='{$field_id}_container'>
                             <span id='{$field_id}_1_container' class='ginput_left'>
                                 <label for='{$field_id}' {$sub_label_class_attribute}>{$enter_email_label}</label>
-                                <input class='{$class}' type='text' name='input_{$id}' id='{$field_id}' disabled='disabled' {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} />
+                                <input class='{$class}' type='text' name='input_{$id}' id='{$field_id}' disabled='disabled' {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$enter_email_autocomplete_attribute} />
                             </span>
                             <span id='{$field_id}_2_container' class='ginput_right'>
                                 <label for='{$field_id}_2' {$sub_label_class_attribute}>{$confirm_email_label}</label>
-                                <input class='{$class}' type='text' name='input_{$id}_2' id='{$field_id}_2' disabled='disabled' {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} />
+                                <input class='{$class}' type='text' name='input_{$id}_2' id='{$field_id}_2' disabled='disabled' {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$confirm_email_autocomplete_attribute} />
                             </span>
                             <div class='gf_clear gf_clear_complex'></div>
                         </div>";
 			} else {
 				return "<div class='ginput_container ginput_container_email ginput_single_email' {$single_style}>
-                            <input class='{$class}' name='input_{$id}' type='{$html_input_type}' class='" . esc_attr( $class ) . "' disabled='disabled' {$single_placeholder_attribute} {$required_attribute} {$invalid_attribute} />
+                            <input name='input_{$id}' type='{$html_input_type}' class='" . esc_attr( $class ) . "' disabled='disabled' {$single_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$single_autocomplete_attribute} />
                             <div class='gf_clear gf_clear_complex'></div>
                         </div>
                         <div class='ginput_complex ginput_container ginput_container_email ginput_confirm_email' {$confirm_style} id='{$field_id}_container'>
                             <span id='{$field_id}_1_container' class='ginput_left'>
-                                <input class='{$class}' type='text' name='input_{$id}' id='{$field_id}' disabled='disabled' {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} />
+                                <input class='{$class}' type='text' name='input_{$id}' id='{$field_id}' disabled='disabled' {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$enter_email_autocomplete_attribute} />
                                 <label for='{$field_id}' {$sub_label_class_attribute}>{$enter_email_label}</label>
                             </span>
                             <span id='{$field_id}_2_container' class='ginput_right'>
-                                <input class='{$class}' type='text' name='input_{$id}_2' id='{$field_id}_2' disabled='disabled' {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} />
+                                <input class='{$class}' type='text' name='input_{$id}_2' id='{$field_id}_2' disabled='disabled' {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$confirm_email_autocomplete_attribute} />
                                 <label for='{$field_id}_2' {$sub_label_class_attribute}>{$confirm_email_label}</label>
                             </span>
                             <div class='gf_clear gf_clear_complex'></div>
@@ -162,22 +210,22 @@ class GF_Field_Email extends GF_Field {
 					return "<div class='ginput_complex ginput_container ginput_container_email' id='{$field_id}_container'>
                                 <span id='{$field_id}_1_container' class='ginput_left'>
                                     <label for='{$field_id}'>" . $enter_email_label . "</label>
-                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}' id='{$field_id}' value='{$email_value}' {$first_tabindex} {$disabled_text} {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute}/>
+                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}' id='{$field_id}' value='{$email_value}' {$first_tabindex} {$disabled_text} {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$enter_email_autocomplete_attribute}/>
                                 </span>
                                 <span id='{$field_id}_2_container' class='ginput_right'>
                                     <label for='{$field_id}_2' {$sub_label_class_attribute}>{$confirm_email_label}</label>
-                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}_2' id='{$field_id}_2' value='{$confirmation_value}' {$last_tabindex} {$confirmation_disabled} {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute}/>
+                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}_2' id='{$field_id}_2' value='{$confirmation_value}' {$last_tabindex} {$confirmation_disabled} {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$confirm_email_autocomplete_attribute}/>
                                 </span>
                                 <div class='gf_clear gf_clear_complex'></div>
                             </div>";
 				} else {
 					return "<div class='ginput_complex ginput_container ginput_container_email' id='{$field_id}_container'>
                                 <span id='{$field_id}_1_container' class='ginput_left'>
-                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}' id='{$field_id}' value='{$email_value}' {$first_tabindex} {$disabled_text} {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute}/>
+                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}' id='{$field_id}' value='{$email_value}' {$first_tabindex} {$disabled_text} {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$enter_email_autocomplete_attribute}/>
                                     <label for='{$field_id}' {$sub_label_class_attribute}>{$enter_email_label}</label>
                                 </span>
                                 <span id='{$field_id}_2_container' class='ginput_right'>
-                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}_2' id='{$field_id}_2' value='{$confirmation_value}' {$last_tabindex} {$confirmation_disabled} {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute}/>
+                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}_2' id='{$field_id}_2' value='{$confirmation_value}' {$last_tabindex} {$confirmation_disabled} {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$confirm_email_autocomplete_attribute}/>
                                     <label for='{$field_id}_2' {$sub_label_class_attribute}>{$confirm_email_label}</label>
                                 </span>
                                 <div class='gf_clear gf_clear_complex'></div>
@@ -189,14 +237,10 @@ class GF_Field_Email extends GF_Field {
 				$class    = esc_attr( $class );
 
 				return "<div class='ginput_container ginput_container_email'>
-                            <input name='input_{$id}' id='{$field_id}' type='{$html_input_type}' value='$value' class='{$class}' {$tabindex} {$disabled_text} {$single_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby}/>
+                            <input name='input_{$id}' id='{$field_id}' type='{$html_input_type}' value='$value' class='{$class}' {$tabindex} {$disabled_text} {$single_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$single_autocomplete_attribute}/>
                         </div>";
 			}
 		}
-	}
-
-	public function get_field_label_class(){
-		return $this->emailConfirmEnabled ? 'gfield_label gfield_label_before_complex' : 'gfield_label';
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {

@@ -655,7 +655,7 @@ if ( ! function_exists( 'rest_sanitize_request_arg' ) ) {
 
 		if ( isset( $args['format'] ) ) {
 			switch ( $args['format'] ) {
-				case 'date-time' :
+				case 'string' :
 					return sanitize_text_field( $value );
 
 				case 'email' :

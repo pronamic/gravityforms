@@ -112,10 +112,16 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * WordPress dependencies
  */
-const { PanelBody, Placeholder, SelectControl, ServerSideRender, TextControl, TextareaControl, ToggleControl } = wp.components;
-const { InspectorControls } = wp.editor;
+const { PanelBody, Placeholder, SelectControl, TextControl, TextareaControl, ToggleControl, ToolbarButton, Tooltip } = wp.components;
+const { InspectorControls, BlockControls } = wp.hasOwnProperty('blockEditor') ? wp.blockEditor : wp.editor;
 const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
+const { addQueryArgs } = wp.url;
+
+let { ServerSideRender } = wp.components;
+if (wp.hasOwnProperty('serverSideRender')) {
+	ServerSideRender = wp.serverSideRender;
+}
 
 /**
  * Internal dependencies
@@ -202,9 +208,74 @@ class Edit extends Component {
 		return options;
 	}
 
+	openAdminPage(e, params) {
+		e.preventDefault();
+
+		const url = addQueryArgs(gform_block_form.adminURL, params);
+
+		window.open(url, '_blank', 'noopener');
+	}
+
+	externalControls() {
+		let { formId } = this.props.attributes;
+
+		if (!formId) {
+			return null;
+		}
+
+		const editParams = {
+			page: 'gf_edit_forms',
+			id: formId
+		};
+
+		const settingsParams = {
+			page: 'gf_edit_forms',
+			id: formId,
+			view: 'settings'
+		};
+
+		return React.createElement(
+			BlockControls,
+			{ key: 'gform-block-custom-controls' },
+			React.createElement(
+				ToolbarButton,
+				{
+					key: 'gform-block-edit-form-buttton',
+					title: __('Edit Form', 'gravityforms'),
+					onClick: e => {
+						this.openAdminPage(e, editParams);
+					},
+					className: 'gform-block__toolbar-button'
+				},
+				React.createElement(
+					Tooltip,
+					{ text: __('Edit Form', 'gravityforms') },
+					React.createElement('i', { className: 'gform-icon gform-icon--create' })
+				)
+			),
+			React.createElement(
+				ToolbarButton,
+				{
+					key: 'gform-block-form-settings-button',
+					label: __('Form Settings', 'gravityforms'),
+					title: __('Form Settings', 'gravityforms'),
+					onClick: e => {
+						this.openAdminPage(e, settingsParams);
+					},
+					className: 'gform-block__toolbar-button'
+				},
+				React.createElement(
+					Tooltip,
+					{ text: __('Form Settings', 'gravityforms') },
+					React.createElement('i', { className: 'gform-icon gform-icon--cog' })
+				)
+			)
+		);
+	}
+
 	render() {
 
-		let { formId, title, description, ajax, tabindex, formPreview, fieldValues } = this.props.attributes;
+		let { formId, title, description, ajax, tabindex, formPreview, fieldValues, imgPreview } = this.props.attributes;
 
 		const { setAttributes, isSelected } = this.props;
 
@@ -217,7 +288,15 @@ class Edit extends Component {
 
 		const setFormIdFromPlaceholder = e => this.setFormId(e.target.value);
 
-		const controls = [isSelected && gform_block_form.forms && gform_block_form.forms.length > 0 && React.createElement(
+		if (imgPreview) {
+			return React.createElement(
+				Fragment,
+				null,
+				React.createElement('img', { src: gform_block_form.preview, style: { margin: '0 auto', display: 'block' } })
+			);
+		}
+
+		const controls = [this.externalControls(), isSelected && gform_block_form.forms && gform_block_form.forms.length > 0 && React.createElement(
 			InspectorControls,
 			{ key: 'inspector' },
 			React.createElement(
@@ -406,8 +485,8 @@ const { registerBlockType } = wp.blocks;
 
 registerBlockType('gravityforms/form', {
 
-	title: __('Form', 'gravityforms'),
-	description: __('Select a form below to add it to your page.', 'gravityforms'),
+	title: __('Gravity Forms', 'gravityforms'),
+	description: __('Select and display one of your forms.', 'gravityforms'),
 	category: 'embed',
 	supports: {
 		customClassName: false,
@@ -415,6 +494,11 @@ registerBlockType('gravityforms/form', {
 		html: false
 	},
 	keywords: ['gravity forms', 'newsletter', 'contact'],
+	example: {
+		attributes: {
+			imgPreview: true
+		}
+	},
 	attributes: {
 		formId: {
 			type: 'string'
@@ -440,6 +524,10 @@ registerBlockType('gravityforms/form', {
 		formPreview: {
 			type: 'boolean',
 			default: true
+		},
+		imgPreview: {
+			type: 'boolean',
+			default: false
 		}
 	},
 	icon: _icon__WEBPACK_IMPORTED_MODULE_1__["default"],

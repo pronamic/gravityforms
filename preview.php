@@ -22,6 +22,15 @@ if ( ! GFCommon::current_user_can_any( array( 'gravityforms_edit_forms', 'gravit
 	die( esc_html__( "You don't have adequate permission to preview forms.", 'gravityforms' ) );
 }
 
+/**
+ * Fires when a Form Preview is loaded.
+ *
+ * The hook fires when a Form Preview is initialized and before it is rendered.
+ *
+ * @since 2.5
+ */
+do_action( 'gform_preview_init' );
+
 // Load form display class.
 require_once( GFCommon::get_base_path() . '/form_display.php' );
 
@@ -30,9 +39,6 @@ $form_id = absint( rgget( 'id' ) );
 
 // Get form object.
 $form = RGFormsModel::get_form_meta( $_GET['id'] );
-
-// Determine if we're loading minified scripts.
-$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -53,7 +59,23 @@ $min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] 
 
 		wp_print_head_scripts();
 
-		$styles = apply_filters( 'gform_preview_styles', array(), $form );
+		$styles = array();
+
+		/**
+		 * Filters Form Preview Styles.
+		 *
+		 * This filter modifies the enqueued styles for the Form Preview. Any handles returned in the array
+		 * will be loaded in the Preview header (if they've been registered with wp_register_style).
+		 *
+		 * @since 2.4
+		 *
+		 * @param array $styles An empty array representing the currently-active styles.
+		 * @param array $form An array representing the current Form.
+		 *
+		 * @return array An array of handles to enqueue in the header.
+		 */
+		$styles = apply_filters( 'gform_preview_styles', $styles, $form );
+
 		if ( ! empty( $styles ) ) {
 			wp_print_styles( $styles );
 		}
@@ -68,9 +90,8 @@ $min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] 
 		do_action( 'gform_preview_header', $form_id );
 
 	?>
-
 </head>
-<body>
+<body <?php body_class(); ?>>
 <?php
 /**
  * Fire after the opening <body> tag of the preview page.
@@ -114,9 +135,6 @@ do_action( 'gform_preview_body_open', $form_id );
 </div>
 <div id="browser_size_info"></div>
 
-<!-- load up the styles -->
-
-<link rel='stylesheet' href='<?php echo GFCommon::get_base_url() ?>/css/reset<?php echo $min; ?>.css' type='text/css' />
 <?php
 
 wp_print_footer_scripts();
@@ -128,10 +146,6 @@ wp_print_footer_scripts();
  */
 do_action( 'gform_preview_footer', $form_id );
 ?>
-
-<?php if ( is_rtl() ) { ?><link rel='stylesheet' href='<?php echo GFCommon::get_base_url() ?>/css/rtl<?php echo $min; ?>.css' type='text/css' /><?php } ?>
-<link rel='stylesheet' href='<?php echo GFCommon::get_base_url() ?>/css/preview<?php echo $min; ?>.css' type='text/css' />
-
 
 </body>
 </html>
