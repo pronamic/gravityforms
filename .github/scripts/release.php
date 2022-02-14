@@ -50,11 +50,28 @@ line( 'Version: ' . $version );
 line( '::endgroup::' );
 
 /**
+ * Files.
+ */
+$work_dir = tempnam( sys_get_temp_dir(), '' );
+
+unlink( $work_dir );
+
+mkdir( $work_dir );
+
+$archives_dir = $work_dir . '/archives';
+$plugins_dir  = $work_dir . '/plugins';
+
+mkdir( $archives_dir );
+mkdir( $plugins_dir );
+
+$plugin_dir = $plugins_dir . '/gravityforms';
+
+$zip_file = $archives_dir . '/gravityforms-' . $version . '.zip';
+
+/**
  * Download ZIP.
  */
 line( '::group::Download Gravity Forms' );
-
-$zip_file = tempnam( sys_get_temp_dir(), '' );
 
 run(
 	sprintf(
@@ -65,15 +82,6 @@ run(
 );
 
 line( '::endgroup::' );
-
-/**
- * Plugin directory.
- */
-$plugins_dir = tempnam( sys_get_temp_dir(), '' );
-
-$plugin_dir = $plugins_dir . '/gravityforms';
-
-unlink( $plugins_dir );
 
 /**
  * Unzip.
