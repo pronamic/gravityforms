@@ -11,4 +11,4 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Release
-      run: echo Release
+      run: php .github/scripts/release.php
