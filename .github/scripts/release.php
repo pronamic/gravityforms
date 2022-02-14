@@ -175,6 +175,21 @@ run(
 $release_not_found = ( 1 === $result_code );
 
 /**
+ * Notes.
+ */
+$notes = '';
+
+$changelog = file_get_contents( 'change_log.txt' );
+
+$heading_position = mb_strpos( $changelog, '###', 1 );
+
+if ( false !== $heading_position ) {
+	$notes = mb_substr( $changelog, 0, $heading_position );
+}
+
+echo $notes;exit;
+
+/**
  * GitHub release.
  * 
  * @todo https://memberpress.com/wp-json/wp/v2/pages?slug=change-log
@@ -183,10 +198,10 @@ $release_not_found = ( 1 === $result_code );
 if ( $release_not_found ) {
 	run(
 		sprintf(
-			'gh release create %s %s --notes-file %s',
+			'gh release create %s %s --notes %s',
 			$version,
 			$zip_file,
-			'change_log.txt'
+			escapeshellarg( $notes )
 		)
 	);
 }
