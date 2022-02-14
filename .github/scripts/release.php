@@ -100,9 +100,10 @@ line( '::group::Synchronize Gravity Forms' );
 
 run(
 	sprintf(
-		'rsync --archive --delete-before --exclude=%s --exclude=%s --verbose %s %s',
+		'rsync --archive --delete-before --exclude=%s --exclude=%s --exclude=%s --verbose %s %s',
 		escapeshellarg( '.git' ),
 		escapeshellarg( '.github' ),
+		escapeshellarg( 'composer.json' ),
 		escapeshellarg( $plugin_dir . '/' ),
 		escapeshellarg( '.' )
 	)
