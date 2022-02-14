@@ -54,13 +54,56 @@ line( '::endgroup::' );
  */
 line( '::group::Download Gravity Forms' );
 
-$zip_file = tempnam( sys_get_temp_dir(), 'gravityforms' );
+$zip_file = tempnam( sys_get_temp_dir(), '' );
 
 run(
 	sprintf(
 		'curl %s --output %s',
 		escapeshellarg( $url ),
 		$zip_file
+	)
+);
+
+line( '::endgroup::' );
+
+/**
+ * Plugin directory.
+ */
+$plugins_dir = tempnam( sys_get_temp_dir(), '' );
+
+$plugin_dir = $plugins_dir . '/gravityforms';
+
+unlink( $plugins_dir );
+
+/**
+ * Unzip.
+ */
+line( '::group::Unzip Gravity Forms' );
+
+run(
+	sprintf(
+		'unzip %s -d %s',
+		escapeshellarg( $zip_file ),
+		escapeshellarg( $plugins_dir )
+	)
+);
+
+line( '::endgroup::' );
+
+/**
+ * Synchronize.
+ * 
+ * @link http://stackoverflow.com/a/14789400
+ * @link http://askubuntu.com/a/476048
+ */
+line( '::group::Synchronize Gravity Forms' );
+
+run(
+	sprintf(
+		'rsync --archive --delete-before --exclude=%s --verbose %s %s',
+		escapeshellarg( '.github' ),
+		escapeshellarg( $plugin_dir . '/' ),
+		escapeshellarg( '.' )
 	)
 );
 
