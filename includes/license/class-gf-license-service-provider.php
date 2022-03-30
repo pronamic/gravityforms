@@ -17,7 +17,7 @@ use Gravity_Forms\Gravity_Forms\Util\GF_Util_Service_Provider;
  */
 class GF_License_Service_Provider extends GF_Service_Provider {
 
-	const GF_API                = 'gf_api';
+	const GRAVITY_API           = 'gravity_api';
 	const RESPONSE_FACTORY      = 'gf_license_response_factory';
 	const LICENSE_API_CONNECTOR = 'license_api_connector';
 
@@ -37,7 +37,7 @@ class GF_License_Service_Provider extends GF_Service_Provider {
 		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-license-api-response.php' );
 		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-license-api-response-factory.php' );
 
-		$container->add( self::GF_API, function () {
+		$container->add( self::GRAVITY_API, function () {
 			return \Gravity_Api::get_instance();
 		} );
 
@@ -46,7 +46,7 @@ class GF_License_Service_Provider extends GF_Service_Provider {
 		} );
 
 		$container->add( self::LICENSE_API_CONNECTOR, function () use ( $container ) {
-			return new GF_License_API_Connector( $container->get( self::GF_API ), $container->get( GF_Util_Service_Provider::GF_CACHE ), $container->get( self::RESPONSE_FACTORY ) );
+			return new GF_License_API_Connector( $container->get( self::GRAVITY_API ), $container->get( GF_Util_Service_Provider::GF_CACHE ), $container->get( self::RESPONSE_FACTORY ) );
 		} );
 	}
 }

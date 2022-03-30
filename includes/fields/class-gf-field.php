@@ -459,19 +459,21 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		// Parse the provided attributes.
 		$atts = wp_parse_args( $atts, array(
-			'id'               => '',
-			'class'            => '',
-			'style'            => '',
-			'tabindex'         => '',
-			'aria-atomic'      => '',
-			'aria-live'        => '',
-			'data-field-class' => '',
+			'id'                  => '',
+			'class'               => '',
+			'style'               => '',
+			'tabindex'            => '',
+			'aria-atomic'         => '',
+			'aria-live'           => '',
+			'data-field-class'    => '',
+			'data-field-position' => '',
 		) );
 
 		$tabindex_string = (rgar( $atts, 'tabindex' ) ) === '' ?  '' : ' tabindex="' . esc_attr( $atts['tabindex'] ) . '"';
-
+		$disable_ajax_reload = $this->disable_ajax_reload();
+		$ajax_reload_id      = $disable_ajax_reload === 'skip' || $disable_ajax_reload === 'true' || $disable_ajax_reload === true ? 'true' : esc_attr( rgar( $atts, 'id' ) );
 		return sprintf(
-			'<%1$s id="%2$s" class="%3$s" %4$s%5$s%6$s%7$s%8$s>{FIELD_CONTENT}</%1$s>',
+			'<%1$s id="%2$s"  class="%3$s" %4$s%5$s%6$s%7$s%8$s%9$s data-js-reload="%10$s">{FIELD_CONTENT}</%1$s>',
 			$tag,
 			esc_attr( rgar( $atts, 'id' ) ),
 			esc_attr( rgar( $atts, 'class' ) ),
@@ -479,7 +481,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 			( rgar( $atts, 'tabindex' ) ) === false ? '' : $tabindex_string,
 			rgar( $atts, 'aria-atomic' ) ? ' aria-atomic="' . esc_attr( $atts['aria-atomic'] ) . '"' : '',
 			rgar( $atts, 'aria-live' ) ? ' aria-live="' . esc_attr( $atts['aria-live'] ) . '"' : '',
-			rgar( $atts, 'data-field-class' ) ? ' data-field-class="' . esc_attr( $atts['data-field-class'] ) . '"' : ''
+			rgar( $atts, 'data-field-class' ) ? ' data-field-class="' . esc_attr( $atts['data-field-class'] ) . '"' : '',
+			rgar( $atts, 'data-field-position' ) ? ' data-field-position="' . esc_attr( $atts['data-field-position'] ) . '"' : '',
+			$ajax_reload_id
 		);
 
 	}
@@ -1067,7 +1071,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * @return array
 	 */
 	public function get_selected_choice( $value ) {
-		if ( empty( $value ) || is_array( $value ) || empty( $this->choices ) ) {
+		if ( rgblank( $value ) || is_array( $value ) || empty( $this->choices ) ) {
 			return array();
 		}
 
@@ -1393,7 +1397,8 @@ class GF_Field extends stdClass implements ArrayAccess {
 			'post_excerpt',
 			'total',
 			'shipping',
-			'creditcard'
+			'creditcard',
+			'submit',
 		);
 		$duplicate_field_link = '';
 		if(  ! in_array( $this->type, $duplicate_disabled ) ) {
@@ -1437,6 +1442,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 				<span class='gfield-field-action__description' aria-hidden='true'>" . esc_html__( 'Delete', 'gravityforms' ) . "</span>
 			</button>";
 
+		if( 'submit' == $this->type ) {
+			$delete_field_link = '';
+		}
+
 		/**
 		 * This filter allows for modification of a form field delete link. This will change the link for all fields
 		 *
@@ -1469,6 +1478,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 				<i class="gform-icon gform-icon--drag-indicator"></i>
 				<span class="gfield-field-action__description">' . esc_html__( 'Move', 'gravityforms' ) . '</span>
 			</span>';
+
+		if( 'submit' == $this->type ) {
+			$drag_handle = '';
+		}
 
 		$field_icon = '<span class="gfield-field-action gfield-icon">' . GFCommon::get_icon_markup( array( 'icon' => $this->get_form_editor_field_icon() ) ) . '</span>';
 
@@ -1960,10 +1973,12 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * Get the appropriate CSS Grid class for the column span of the field.
 	 *
 	 * @since 2.5
+	 * @since 2.6 Added $form parameter
 	 *
+	 * @param array $form
 	 * @return string
 	 */
-	public function get_css_grid_class() {
+	public function get_css_grid_class( $form = '' ) {
 		switch ( $this->layoutGridColumnSpan ) {
 			case 12:
 				$class = 'gfield--width-full';
@@ -2546,6 +2561,17 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 */
 	public function get_extra_entry_metadata( $form, $entry ) {
 		return array();
+	}
+
+	/**
+	 * Decides if the field markup should not be reloaded after AJAX save.
+	 *
+	 * @since 2.6
+	 *
+	 * @return boolean
+	 */
+	public function disable_ajax_reload() {
+		return false;
 	}
 
 }

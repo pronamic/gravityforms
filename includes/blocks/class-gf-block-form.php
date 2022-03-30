@@ -93,6 +93,7 @@ class GF_Block_Form extends GF_Block {
 			'wp-element',
 			'wp-components',
 			'wp-i18n',
+			'gform_gravityforms_admin',
 		);
 
 		global $pagenow;
@@ -104,9 +105,9 @@ class GF_Block_Form extends GF_Block {
 			array(
 				'handle'    => $this->script_handle,
 				'in_footer' => true,
-				'src'       => GFCommon::get_base_url() . "/js/blocks{$min}.js",
+				'src'       => GFCommon::get_base_url() . "/assets/js/dist/blocks{$min}.js",
 				'deps'      => $deps,
-				'version'   => $min ? GFForms::$version : filemtime( GFCommon::get_base_path() . '/js/blocks.js' ),
+				'version'   => $min ? GFForms::$version : filemtime( GFCommon::get_base_path() . '/assets/js/dist/blocks.js' ),
 				'callback'  => array( $this, 'localize_script' ),
 			),
 		);
@@ -168,12 +169,14 @@ class GF_Block_Form extends GF_Block {
 			}
 		}
 
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+
 		return array(
 			array(
 				'handle'  => $this->style_handle,
-				'src'     => GFCommon::get_base_url() . '/css/blocks.min.css',
+				'src'     => GFCommon::get_base_url() . "/assets/css/dist/blocks{$min}.css",
 				'deps'    => $deps,
-				'version' => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? filemtime( GFCommon::get_base_path() . '/css/blocks.min.css' ) : GFForms::$version,
+				'version' => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? filemtime( GFCommon::get_base_path() . "/assets/css/dist/blocks{$min}.css" ) : GFForms::$version,
 			),
 		);
 

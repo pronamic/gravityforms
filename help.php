@@ -24,12 +24,14 @@ class GFHelp {
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
 
 		?>
-		<link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin<?php echo $min; ?>.css" />
+        <link rel="stylesheet" href="<?php echo GFCommon::get_base_url(); ?>/assets/css/dist/admin<?php echo $min; ?>.css" />
 		<div class="wrap gforms_help <?php echo GFCommon::get_browser_class() ?>">
 
 			<h2><?php esc_html_e( 'How can we help you?', 'gravityforms' ); ?></h2>
 
-			<div class="gf_help_content"><p><?php printf( esc_html__( "Please review the %sdocumentation%s first. If you still can't find the answer %sopen a support ticket%s and we will be happy to answer your questions and assist you with any problems.", 'gravityforms' ), '<a href="https://docs.gravityforms.com/" target="_blank">', '</a>', '<a href="https://www.gravityforms.com/support/" target="_blank">', '</a>' ); ?></p></div>
+			<div class="gf_help_content">
+				<p><?php printf( esc_html__( "Please review the %sdocumentation%s first. If you still can't find the answer %sopen a support ticket%s and we will be happy to answer your questions and assist you with any problems.", 'gravityforms' ), '<a href="https://docs.gravityforms.com/" target="_blank">', '</a>', '<a href="https://www.gravityforms.com/support/" target="_blank">', '</a>' ); ?></p>
+			</div>
 
 			<form id="gf_help_page_search" action="https://docs.gravityforms.com" target="_blank">
 				<div class="search_box">

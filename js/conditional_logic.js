@@ -16,9 +16,12 @@ function gf_apply_rules(formId, fields, isInit){
 	jQuery(document).trigger( 'gform_pre_conditional_logic', [ formId, fields, isInit ] );
 	for(var i=0; i < fields.length; i++){
 		gf_apply_field_rule(formId, fields[i], isInit, function(){
-			jQuery(document).trigger('gform_post_conditional_logic', [formId, fields, isInit]);
-			if(window["gformCalculateTotalPrice"]){
-				window["gformCalculateTotalPrice"](formId);
+			var is_last_field = ( i >= fields.length - 1 );
+			if( is_last_field ) {
+				jQuery(document).trigger('gform_post_conditional_logic', [formId, fields, isInit]);
+				if(window["gformCalculateTotalPrice"]){
+					window["gformCalculateTotalPrice"](formId);
+				}
 			}
 		});
 	}

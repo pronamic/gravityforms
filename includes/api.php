@@ -1771,18 +1771,18 @@ class GFAPI {
 	/**
 	 * Returns all the feeds for the given criteria.
 	 *
-	 * @since  1.8
-	 * @access public
-	 * @global $wpdb
+	 * @since 1.8
+	 * @since 2.4.24 Updated $is_active to support using null to return both active and inactive feeds.
+	 * @since 2.6.1  Updated $form_ids to support an array of IDs.
 	 *
-	 * @param mixed       $feed_ids   The ID of the Feed or an array of Feed IDs.
-	 * @param null|int    $form_id    The ID of the Form to which the Feeds belong.
-	 * @param null|string $addon_slug The slug of the add-on to which the Feeds belong.
-	 * @param bool|null   $is_active  Indicates if only active or inactive feeds should be returned. Use null to return both.
+	 * @param mixed          $feed_ids   The ID of the Feed or an array of Feed IDs.
+	 * @param null|int|int[] $form_ids   The ID of the Form to which the Feeds belong or array of Form IDs.
+	 * @param null|string    $addon_slug The slug of the add-on to which the Feeds belong.
+	 * @param bool|null      $is_active  Indicates if only active or inactive feeds should be returned. Use null to return both.
 	 *
 	 * @return array|WP_Error Either an array of Feed objects or a WP_Error instance.
 	 */
-	public static function get_feeds( $feed_ids = null, $form_id = null, $addon_slug = null, $is_active = true ) {
+	public static function get_feeds( $feed_ids = null, $form_ids = null, $addon_slug = null, $is_active = true ) {
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'gf_addon_feed';
@@ -1795,8 +1795,14 @@ class GFAPI {
 		if ( null !== $is_active ) {
 			$where_arr[] = $wpdb->prepare( 'is_active=%d', $is_active );
 		}
-		if ( false === empty( $form_id ) ) {
-			$where_arr[] = $wpdb->prepare( 'form_id=%d', $form_id );
+		if ( false === empty( $form_ids ) ) {
+			if ( ! is_array( $form_ids ) ) {
+				$where_arr[] = $wpdb->prepare( 'form_id=%d', $form_ids );
+			} else {
+				$in_str_arr  = array_fill( 0, count( $form_ids ), '%d' );
+				$in_str      = join( ',', $in_str_arr );
+				$where_arr[] = $wpdb->prepare( "form_id IN ($in_str)", $form_ids );
+			}
 		}
 		if ( false === empty( $addon_slug ) ) {
 			$where_arr[] = $wpdb->prepare( 'addon_slug=%s', $addon_slug );

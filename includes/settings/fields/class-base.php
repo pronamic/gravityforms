@@ -371,11 +371,13 @@ class Base implements ArrayAccess {
 		}
 
 		// Adding default attributes: create new attribute or prepend to existing.
-		foreach ( $default_attributes as $attr_name => $attr_value ) {
-			if ( isset( $atts[ $attr_name ] ) ) {
-				$atts[ $attr_name ] = str_replace( "{$attr_name}='", "{$attr_name}='{$attr_value}", $atts[ $attr_name ] );
-			} else {
-				$atts[ $attr_name ] = "{$attr_name}='" . esc_attr( $attr_value ) . "'";
+		if ( is_array( $default_attributes ) ) {
+			foreach ( $default_attributes as $attr_name => $attr_value ) {
+				if ( isset( $atts[ $attr_name ] ) ) {
+					$atts[ $attr_name ] = str_replace( "{$attr_name}='", "{$attr_name}='{$attr_value}", $atts[ $attr_name ] );
+				} else {
+					$atts[ $attr_name ] = "{$attr_name}='" . esc_attr( $attr_value ) . "'";
+				}
 			}
 		}
 

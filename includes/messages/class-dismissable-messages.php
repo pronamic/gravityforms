@@ -4,8 +4,6 @@ namespace Gravity_Forms\Gravity_Forms\Messages;
 
 class Dismissable_Messages {
 
-	const UPGRADE_MESSAGE_2_5 = 'gravityforms_update_2_5';
-
 	private static $dismissible_messages = array();
 
 	/**
@@ -258,9 +256,7 @@ class Dismissable_Messages {
 	 * @return array[]
 	 */
 	private function internal_messages_map() {
-		return array(
-			self::UPGRADE_MESSAGE_2_5 => array( $this, 'update_2_5_message' ),
-		);
+		return array();
 	}
 
 	/**
@@ -280,23 +276,5 @@ class Dismissable_Messages {
 		}
 
 		return call_user_func( $map[ $key ] );
-	}
-
-	/**
-	 * Retrieve formatted message for updating to 2.5.
-	 *
-	 * @since 2.5.7
-	 *
-	 * @return string
-	 */
-	public function update_2_5_message() {
-		$message = sprintf(
-			'%s <a href="https://www.gravityforms.com/two-five/" target="_blank" rel="noopener noreferrer">%s</a> %s',
-			esc_html__( 'Welcome to Gravity Forms 2.5!', 'gravityforms' ),
-			esc_html__( 'Learn more', 'gravityforms' ),
-			esc_html__( 'about all the new features and updates included in this version.', 'gravityforms' )
-		);
-
-		return $message;
 	}
 }

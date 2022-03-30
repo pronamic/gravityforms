@@ -190,7 +190,6 @@ class GFAutoUpgrade {
 			'Content-Type'   => 'application/x-www-form-urlencoded; charset=' . get_option( 'blog_charset' ),
 			'Content-Length' => strlen( $body ),
 			'User-Agent'     => 'WordPress/' . get_bloginfo( 'version' ),
-			'Referer'        => get_bloginfo( 'url' ),
 		);
 
 		$raw_response = GFCommon::post_to_manager( 'changelog.php', $this->get_remote_request_params( $this->_slug, $key, $this->_version ), $options );

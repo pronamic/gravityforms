@@ -126,8 +126,8 @@ Class GFNotification {
 	 *
 	 * @since 2.5
 	 *
-	 * @param array $notification Notificationbeing edited.
-	 * @param array $form         The Form object.
+	 * @param array $notification Notification being edited.
+	 * @param array $form        The Form object.
 	 *
 	 * @return array
 	 */

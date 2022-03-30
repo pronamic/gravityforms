@@ -17,11 +17,20 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 			}
 		}
 
+		/**
+		 * Removes currency formatting from a value.
+		 *
+		 * @since unknown
+		 *
+		 * @param string|float|int $text The value to be cleaned of currency formatting.
+		 *
+		 * @return false|float|int
+		 */
 		public function to_number( $text ) {
 			$text = strval( $text );
 
 			if ( is_numeric( $text ) ) {
-				return floatval( $text );
+				return $this->convert_number( $text );
 			}
 
 			//Making sure symbol is in unicode format (i.e. &#4444;)
@@ -66,7 +75,24 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 				$float_number = '-' . $float_number;
 			}
 
-			return is_numeric( $float_number ) ? floatval( $float_number ) : false;
+			if ( ! is_numeric( $float_number ) ) {
+				return false;
+			}
+
+			return $this->convert_number( $float_number );
+		}
+
+		/**
+		 * Returns the given value as an integer or float based on the decimal configuration of the current currency.
+		 *
+		 * @since 2.6.1
+		 *
+		 * @param string $value The value to be converted.
+		 *
+		 * @return float|int
+		 */
+		private function convert_number( $value ) {
+			return $this->is_zero_decimal() ? intval( $value ) : floatval( $value );
 		}
 
 		public function to_money( $number, $do_encode = false ) {

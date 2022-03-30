@@ -666,6 +666,7 @@ gform.options = {
      */
 
     jqEditorAccordions: {
+    	header: 'button:not(.choices-ui__trigger):not(.conditional_logic_wrapper)',
         heightStyle: 'content',
         collapsible: true,
         animate: false,
@@ -675,7 +676,19 @@ gform.options = {
         activate: function( event ) {
             gform.tools.setAttr( '.ui-accordion-header', 'tabindex', '0', event.target, 100 );
         },
-    }
+    },
+
+	jqAddFieldAccordions: {
+		heightStyle: 'content',
+		collapsible: true,
+		animate: false,
+		create: function( event ) {
+			gform.tools.setAttr( '.ui-accordion-header', 'tabindex', '0', event.target, 100 );
+		},
+		activate: function( event ) {
+			gform.tools.setAttr( '.ui-accordion-header', 'tabindex', '0', event.target, 100 );
+		},
+	},
 };
 
 //------------------------------------------------
@@ -1184,7 +1197,6 @@ function gformCalculateProductPrice(form_id, productFieldId){
 
 
 function gformGetProductQuantity(formId, productFieldId) {
-
     //If product is not selected
     if (!gformIsProductSelected(formId, productFieldId)) {
         return 0;
@@ -1620,6 +1632,7 @@ function gformDeleteListItem( deleteButton, max ) {
 
     gformToggleIcons( $container, max );
     gformAdjustClasses( $container );
+    gformAdjustRowAttributes( $container );
 
     gform.doAction( 'gform_list_post_item_delete', $container );
 
@@ -1651,7 +1664,10 @@ function gformAdjustRowAttributes( $container ) {
     $container.find( '.gfield_list_group' ).each( function( i ) {
 
         var $input = jQuery( this ).find( 'input, select, textarea' );
-        $input.attr( 'aria-label', $input.data( 'aria-label-template' ).format( i + 1 ) );
+        $input.each( function( index, input ) {
+            var $this = jQuery( input );
+            $this.attr( 'aria-label', $this.data( 'aria-label-template' ).format( i + 1 ) );
+        } );
 
         var $remove = jQuery( this ).find( '.delete_list_item' );
         $remove.attr( 'aria-label', $remove.data( 'aria-label-template' ).format( i + 1 ) );

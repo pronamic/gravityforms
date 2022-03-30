@@ -279,61 +279,9 @@ class GFFormSettings {
 				'title'  => esc_html__( 'Form Button', 'gravityforms' ),
 				'fields' => array(
 					array(
-						'name'          => 'buttonType',
-						'label'         => esc_html__( 'Input Type', 'gravityforms' ),
-						'type'          => 'radio',
-						'default_value' => 'text',
-						'horizontal'    => true,
-						'choices'       => array(
-							array(
-								'label' => esc_html__( 'Text', 'gravityforms' ),
-								'value' => 'text',
-							),
-							array(
-								'label' => esc_html__( 'Image', 'gravityforms' ),
-								'value' => 'image',
-							),
-						),
-					),
-					array(
-						'name'       => 'buttonText',
-						'type'       => 'text',
-						'label'      => esc_html__( 'Button Text', 'gravityforms' ),
-						'tooltip'    => gform_tooltip( 'form_button_text', '', true ),
-						'dependency' => array(
-							'live'   => true,
-							'fields' => array(
-								array(
-									'field'  => 'buttonType',
-									'values' => array( 'text' ),
-								),
-							),
-						),
-					),
-					array(
-						'name'       => 'buttonImageURL',
-						'type'       => 'text',
-						'label'      => esc_html__( 'Button Image URL', 'gravityforms' ),
-						'tooltip'    => gform_tooltip( 'form_button_image', '', true ),
-						'dependency' => array(
-							'live'   => true,
-							'fields' => array(
-								array(
-									'field'  => 'buttonType',
-									'values' => array( 'image' ),
-								),
-							),
-						),
-					),
-					array(
-						'name'        => 'form_button_conditional_logic',
-						'label'       => esc_html__( 'Conditional Logic', 'gravityforms ' ),
-						'type'        => 'conditional_logic',
-						'object_type' => 'form_button',
-						'checkbox'    => array(
-							'label'  => esc_html__( 'Enable conditional logic', 'gravityforms' ),
-							'hidden' => false,
-						),
+						'name' => 'deprecated',
+						'type' => 'html',
+						'html' => esc_html__( 'Form button settings are now located in the form editor! To edit the button settings, go to the form editor and click on the submit button.', 'gravityforms' ),
 					),
 				),
 			),

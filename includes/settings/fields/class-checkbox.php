@@ -26,7 +26,16 @@ class Checkbox extends Base {
 	 */
 	public $choices = array();
 
-
+	/**
+	 * Data Format.
+	 *
+	 * Set this to "array" to return an array of values.
+	 *
+	 * @since 2.6
+	 *
+	 * @var string
+	 */
+	public $data_format = 'bool';
 
 
 
@@ -40,6 +49,10 @@ class Checkbox extends Base {
 	 * @return string
 	 */
 	public function markup() {
+
+		if ( $this->data_format === 'array' ) {
+			return $this->array_markup();
+		}
 
 		// Get choices, determine if choices have icon, display direction, default choice attributes.
 		$choices                   = $this->get_choices();
@@ -123,18 +136,101 @@ class Checkbox extends Base {
 	}
 
 	/**
-	 * Returns markup for an individual checkbox input and its label.
+	 * Get the markup for array-style checkbox inputs.
 	 *
-	 * @since 2.5
-	 *
-	 * @param array  $choice     Choice array with all configured properties.
-	 * @param array  $attributes Array containing all the attributes for the input tag.
-	 * @param string $value      Currently selection (1 if field has been checked. 0 or null otherwise).
-	 * @param string $tooltip    Tooltip for this checkbox item.
+	 * @since 2.6
 	 *
 	 * @return string
 	 */
-	public static function render_input( $choice, $attributes = array(), $value = null, $tooltip = '' ) {
+	public function array_markup() {
+		// Get choices, determine if choices have icon, display direction, default choice attributes.
+		$choices                   = $this->get_choices();
+		$have_icon                 = self::has_icons( $choices );
+		$horizontal_class          = rgobj( $this, 'horizontal' ) || $have_icon ? ' gform-settings-choice--inline' : '';
+		$default_choice_attributes = '';
+
+		// If no choices exist, return.
+		if ( $choices === false || empty( $choices ) ) {
+			return '';
+		}
+
+		// Display description.
+		$html = $this->get_description();
+
+		$html .= '<span class="' . esc_attr( $this->get_container_classes() ) . '">';
+
+		// Display checkboxes.
+		foreach ( array_values( $choices ) as $i => $choice ) {
+
+			// Prepare choice ID, attributes, value and tooltip.
+			$choice['id'] = $choice['name'];
+			$value        = $this->settings->get_value( $this->name );
+
+			$choice_attributes          = self::get_choice_attributes( $choice, $this->get_attributes(), $default_choice_attributes );
+			$choice_attributes['name']  = 'name="_gform_setting_' . $this->name . '[]"';
+			$choice_attributes['value'] = 'value="' . $choice['name'] . '"';
+
+			$tooltip = $this->settings->maybe_get_tooltip( $choice );
+
+			// Add icon to choice, if choices have icon and icon is missing.
+			if ( $have_icon && ! rgar( $choice, 'icon' ) ) {
+				$choice['icon'] = 'fag-cog';
+			}
+
+			// Open choice container.
+			$html .= sprintf(
+				'<div id="gform-settings-checkbox-choice-%s" class="gform-settings-choice%s%s">',
+				esc_attr( $choice['id'] ),
+				$horizontal_class,
+				rgar( $choice, 'icon' ) ? ' gform-settings-choice--visual' : ''
+			);
+
+			// Prepare choice markup.
+			if ( is_callable( array( $this, 'checkbox_input_' . $choice['name'] ) ) ) {
+				$html .= call_user_func( array(
+					$this,
+					'checkbox_input_' . $choice['name'],
+				), $choice, $choice_attributes, $value, $tooltip );
+			} else {
+				$html .= self::render_input( $choice, $choice_attributes, $value, $tooltip, 'array' );
+			}
+
+			// Close container.
+			$html .= '</div>';
+
+		}
+
+		$html .= '</span>';
+
+		// Wrap visual choices with container.
+		if ( $have_icon ) {
+			$html = sprintf(
+				'<div class="gform-settings-choices--visual">%s</div>',
+				$html
+			);
+		}
+
+		// Display error.
+		$html .= $this->get_error_icon();
+
+		return $html;
+	}
+
+	/**
+	 * Returns markup for an individual checkbox input and its label.
+	 *
+	 * @since 2.5
+	 * @since 2.6 Added $data_as_array attribute
+	 *
+	 * @param array  $choice        Choice array with all configured properties.
+	 * @param array  $attributes    Array containing all the attributes for the input tag.
+	 * @param string $value         Currently selection (1 if field has been checked. 0 or null otherwise).
+	 * @param string $tooltip       Tooltip for this checkbox item.
+	 * @param string $data_as_array Whether the data should be formatted for array values.
+	 *
+	 * @return string
+	 */
+	public static function render_input( $choice, $attributes = array(), $value = null, $tooltip = '', $data_as_array = false ) {
 
 		// Initialize icon, label strings.
 		$icon_string = $label_string = '';
@@ -165,10 +261,16 @@ class Checkbox extends Base {
 			);
 		}
 
+		if ( $data_as_array ) {
+			$checked = is_array( $value ) && in_array( $choice['name'], $value ) ? 'checked="checked"' : '';
+		} else {
+			$checked = checked( $value, '1', false );
+		}
+
 		// Prepare checkbox markup.
 		return sprintf(
 			'<input type="checkbox" %s %s />%s',
-			checked( $value, '1', false ),
+			$checked,
 			implode( ' ', $attributes ),
 			$label_string
 		);
@@ -190,6 +292,10 @@ class Checkbox extends Base {
 	 * @param array $value Posted field value.
 	 */
 	public function do_validation( $value ) {
+
+		if ( $this->data_format === 'array' ) {
+			return $this->do_array_validation( $value );
+		}
 
 		// Get choices.
 		$choices = $this->get_choices();
@@ -224,6 +330,50 @@ class Checkbox extends Base {
 			$this->set_error( rgobj( $this, 'error_message' ) );
 		}
 
+	}
+
+	/**
+	 * Validate posted array field value.
+	 *
+	 * @since 2.6
+	 *
+	 * @param array $value Posted field value.
+	 */
+	public function do_array_validation( $value ) {
+		// Get choices.
+		$choices = $this->get_choices();
+
+		if ( empty( $value ) ) {
+			$value = $this->get_value( $this->name, array() );
+		}
+
+		// If field does not have choices defined, exit.
+		if ( $choices === false || empty( $choices ) ) {
+			return;
+		}
+
+		$selected = 0;
+
+		// get list of acceptable choices.
+		$whitelist = array();
+
+		foreach ( $choices as $choice ) {
+			$whitelist[] = $choice['name'];
+		}
+
+		foreach ( $value as $checked ) {
+			if ( ! in_array( $checked, $whitelist ) ) {
+				$this->set_error( esc_html__( 'Invalid selection.', 'gravityforms' ) );
+
+				return;
+			}
+			$selected++;
+		}
+
+		// If field is required and no choices were selected, set field error.
+		if ( $this->required && $selected < 1 ) {
+			$this->set_error( rgobj( $this, 'error_message' ) );
+		}
 	}
 
 }

@@ -1,3 +1,68 @@
+### 2.6.1 | 2022-03-24
+- Added security enhancements.
+- Added a fallback save method if AJAX save fails.
+- Added the {today} merge tag to output the current date and/or time. Credit: The Gravity PDF team.
+- Fixed an issue where saving the form fails if the form contains any backslashes.
+- Fixed an issue where the save form button in the form editor is stuck in the saving state if form validation fails.
+- Fixed an issue where dropdowns in the Embed Form flyout are not correctly displaying their content.
+- Fixed several display issues in the form editor.
+- Fixed an issue where our IE11 admin stylesheet is being being loaded everywhere in the admin.
+- Fixed some issues where text on the 2.6 splash page can't be translated.
+- Fixed an issue which causes admin pages to visually break when No Conflict mode is enabled.
+- Fixed the duplicated output of the core admin stylesheet for the add-on results screen.
+- Fixed the core admin stylesheet path for the help screen.
+- Updated the label styles for disabled radio and checkbox inputs to better indicate the option is disabled.
+- AF: Added ability to specify and use custom font icon with the addition of GFAddOn::get_icon_namespace().
+- AF: Added additional support for Font Awesome icon styles for GFCommon::get_icon_markup().
+- AF: Fixed an issue where payment fails when using Japanese Yen with the Stripe Card field and Stripe Add-On v4.2.
+- API: Added ability to specify custom font icon namespace for GFCommon::get_icon_markup().
+- API: Updated the $form_ids arg of GFAPI:get_feeds() to support an array of IDs. Credit: The GravityView team.
+- API: Fixed an issue where RGCurrency::to_number() returns a float instead of an integer for zero-decimal currencies.
+- API: Fixed an issue that causes Live Dependency fields with custom display properties to render incorrectly.  Credit: The ForGravity team.
+
+
+### 2.6 | 2022-03-14
+- Added the embed flyout to easily embed forms into a post or page directly from the form editor.
+- Added the submit button to the form editor instead of the form settings page, with new settings to display it inline.
+- Added the choices flyout to provide more space for editing field choices in the form editor.
+- Added enhancements to the form editor so that it saves without reloading the page.
+- Added enhancements to the submission process to further reduce the risk of duplicate entries.
+- Added a notice in the form editor for forms that have legacy markup enabled.
+- Added a splash page to tell users about new features.
+- Added enhancements to the design of the form editor.
+- Added a loading indicator to settings pages to improve usability.
+- Added accessibility enhancements to the product field.
+- Added accessibility enhancements to the time field to ensure that the AM/PM selector has a label.
+- Added accessibility enhancements to the list field so that the aria labels for new rows match column headers.
+- Added performance enhancements to speed the loading of entries with encrypted fields.
+- Added performance enhancements to long forms with conditional logic.
+- Updated how notes are displayed on the entry detail page so that HTML is no longer completely removed.
+- Updated the styling of the order summary table in the entry detail page.
+- Updated the minimum WordPress version on the System Status page to 5.8.
+- Fixed an issue where conditional logic is not duplicated when a confirmation is duplicated.
+- Fixed an issue where vertical alignment can be incorrect in complex fields if some inputs don't have sub-labels.
+- Fixed an issue that prevented the date picker icon from displaying on settings pages.
+- Fixed an issue that causes the address field inputs to be misaligned when hiding sub-fields.
+- Fixed an issue where checkboxes without labels are checked by default.
+- Fixed a fatal error with PHP 8 when editing an entry that includes an empty date drop-down field.
+- Fixed an issue with the license validation request that can result in too many sites being counted towards a license's site limit in certain situations.
+- Fixed an issue where setting the time field sub-label placement to hidden does not hide the sub-labels.
+- Fixed an issue with the address field where the zip code autocomplete attribute does not appear if the sub-labels are above the inputs.
+- Fixed an issue where the next, previous, and submit buttons are not showing the pointer cursor when hovering over them.
+- Fixed an issue where the show country field setting for the address field is not being respected in the form editor.
+- Fixed an issue where license validation is being performed too many times when license key is left blank.
+- Fixed an issue where the all_fields merge tag renders the radio choice value instead of choice label when the value is 0.
+- AF: Fixed an issue where the trial discount or a custom trial amount does not appear in the order summary.
+- API: Fixed an issue with the "select" settings field where empty option groups are being rendered as selectable options.
+- API: Added admin component for popup notifications throughout the UI.
+- API: Added the ability to remove the merge tags ui from rich text fields in the Settings API.
+- API: Added the ability to use Gravity Forms JavaScript components anywhere in the admin.
+- API: Added the [gform_settings_display_license_details](https://docs.gravityforms.com/gform_settings_display_license_details/) filter to hide the license details on the settings page.
+- API: Added the [gform_plugin_settings_fields](https://docs.gravityforms.com/gform_plugin_settings_fields/) filter.
+- API: Added the [gform_field_filter_from_post](https://docs.gravityforms.com/gform_field_filter_from_post/) filter to allow filter settings for the form fields, entry properties, and entry meta used in conditional logic for entry export, entry list, results pages, and some add-on to be overridden when the filters are being processed. Complements the *[gform_field_filters](https://docs.gravityforms.com/gform_field_filters/)* filter.
+- API: Fixed an issue where the form editor tooltip is rendering CSS classes incorrectly.
+- API: Fixed an issue which causes some file uploads to fail when chunking is enabled.
+
 ### 2.5.16 | 2022-01-11
 - Fixed an issue where the select entry table columns in RTL are not displaying properly.
 - Fixed an issue where the credit card field expiration date fieldset label is not output as legend.

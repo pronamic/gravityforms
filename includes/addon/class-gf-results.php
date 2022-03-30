@@ -213,8 +213,6 @@ if ( ! class_exists( 'GFResults' ) ) {
 				}
 				$init_vars['filters'] = $filters;
 			}
-			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
-			$admin_css_url = GFCommon::get_base_url() . "/css/admin{$min}.css?ver=" . GFForms::$version;
 			?>
 			<script type="text/javascript">
 				var gresultsFields = <?php echo json_encode( $all_fields ); ?>;
@@ -225,9 +223,6 @@ if ( ! class_exists( 'GFResults' ) ) {
 				<?php GFCommon::gf_vars() ?>
 			</script>
 
-			<link rel="stylesheet"
-			      href="<?php echo esc_url( $admin_css_url ); ?>"
-			      type="text/css"/>
 			<div class="wrap gforms_edit_form <?php echo GFCommon::get_browser_class() ?>">
 
 				<?php //GFCommon::form_page_title( $form ); ?>

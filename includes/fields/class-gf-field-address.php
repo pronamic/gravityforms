@@ -365,7 +365,7 @@ class GF_Field_Address extends GF_Field {
 				if ( $is_sub_label_above ) {
 					$zip = "<span class='ginput_{$zip_location}{$class_suffix} address_zip ginput_address_zip' id='{$field_id}_5_container' {$style}>
                                     <label for='{$field_id}_5' id='{$field_id}_5_label' {$sub_label_class_attribute}>{$address_zip_sub_label}</label>
-                                    <input type='text' name='input_{$id}.5' id='{$field_id}_5' value='{$zip_value}' {$tabindex} {$disabled_text} {$zip_placeholder_attribute} {$zip_aria_attributes} {$this->maybe_add_aria_describedby( $address_zip_field_input, $field_id, $this['formId'] )}/>
+                                    <input type='text' name='input_{$id}.5' id='{$field_id}_5' value='{$zip_value}' {$tabindex} {$disabled_text} {$zip_placeholder_attribute} {$zip_aria_attributes} {$address_zip_autocomplete} {$this->maybe_add_aria_describedby( $address_zip_field_input, $field_id, $this['formId'] )}/>
                                 </span>";
 				} else {
 					$zip = "<span class='ginput_{$zip_location}{$class_suffix} address_zip ginput_address_zip' id='{$field_id}_5_container' {$style}>

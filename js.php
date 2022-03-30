@@ -3,8 +3,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
 ?>
-
-	<script type="text/javascript">
+<script type="text/javascript" data-js-reload="editor-footer-js">
 	var gforms_dragging = 0;
 	var gforms_original_json;
 
@@ -422,7 +421,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 		}
 
 		var message = '<div id="gfield-warning-deprecated" class="gform-alert gform-alert--notice gform-alert--inline" role="alert">';
-			message += '<span class="gform-alert__icon gform-icon gform-icon--circle-notice" aria-hidden="true"></span>';
+			message += '<span class="gform-alert__icon gform-icon gform-icon--circle-notice-fine" aria-hidden="true"></span>';
 			message += '<div class="gform-alert__message-wrap">';
 			message += '<p class="gform-alert__message">' + deprecatedClass + ' ' + <?php echo json_encode( esc_html__( 'is no longer necessary.', 'gravityforms' ) ); ?> + ' <a href="https://docs.gravityforms.com/working-with-columns/" target="_blank" title="' + <?php echo json_encode( esc_attr__( 'Working with Columns in the Form Editor in Gravity Forms 2.5', 'gravityforms' ) ); ?> + '">' + <?php echo json_encode( esc_html__( 'Learn more', 'gravityforms' ) ); ?> + '</a></p>';
 			message += '</div>';
@@ -460,7 +459,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 
 		jQuery("#gform_no_product_field_message").remove();
 		if (productFields.length < 1) {
-			jQuery("#product_field").hide().after('<div id="gform_no_product_field_message" class="gform-alert gform-alert--error gform-alert--inline"><span class="gform-alert__icon gform-icon gform-icon--circle-close" aria-hidden="true"></span><div class="gform-alert__message-wrap"><p class="gform-alert__message">' + <?php echo json_encode( esc_html__( 'This field is not associated with a product. Please add a Product Field to the form.', 'gravityforms' ) ); ?> + '</p></div></div>');
+			jQuery("#product_field").hide().after('<div id="gform_no_product_field_message" class="gform-alert gform-alert--error gform-alert--inline"><span class="gform-alert__icon gform-icon gform-icon--circle-error-fine" aria-hidden="true"></span><div class="gform-alert__message-wrap"><p class="gform-alert__message">' + <?php echo json_encode( esc_html__( 'This field is not associated with a product. Please add a Product Field to the form.', 'gravityforms' ) ); ?> + '</p></div></div>');
 		}
 		else {
 			var product_field = jQuery("#product_field");
@@ -486,6 +485,10 @@ if ( ! class_exists( 'GFForms' ) ) {
 
 	function LoadFieldConditionalLogic(isEnabled, objectType) {
 		var obj = GetConditionalObject(objectType);
+
+		if( 'button' === objectType ) {
+			obj.id = 'submit';
+		}
 
 		new generateGFConditionalLogic( obj.id, objectType );
 	}
@@ -1490,11 +1493,12 @@ if ( ! class_exists( 'GFForms' ) ) {
 	 */
 	function SetFieldAccessibilityWarning( fieldSetting, position, message ) {
 		var predefinedMessages = {
-			post_category_field_type_setting: <?php echo json_encode( esc_html__( 'Hey! The Multi Select field type is hard to use for people who cannot use a mouse. Please select a different field type to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
+			post_category_field_type_setting: <?php echo json_encode( esc_html__( 'The Multi Select field type is hard to use for people who cannot use a mouse. Please select a different field type to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
 			date_format_placement_setting: <?php echo json_encode( esc_html__( 'Users can enter a date in the field without using the date picker. Display the date format so they know what is the specified format.', 'gravityforms' ) ); ?>,
 			date_input_type_setting: <?php echo json_encode( esc_html__( 'The datepicker is not accessible for users who rely on the keyboard or screen reader. Please select a different input type to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
 			enable_enhanced_ui_setting: <?php echo json_encode( esc_html__( 'The Enhanced User Interface is not accessible for screen reader users and people who cannot use a mouse.', 'gravityforms' ) ); ?>,
-			label_placement_setting: <?php echo json_encode( esc_html__( 'Hiding the label can make it difficult for users to fill out your form.  Please keep the label visible to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
+			label_placement_setting: <?php echo json_encode( esc_html__( 'Hiding the label can make it difficult for users to fill out your form. Please keep the label visible to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
+			submit_type_setting: <?php echo json_encode( esc_html__( 'The image button is not accessible for users who rely on a screen reader. Please use a text button to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
 			label_setting:
 			<?php
 			/* translators: 1. Open abbr tag 2. Close abbr tag */
@@ -1571,8 +1575,47 @@ if ( ! class_exists( 'GFForms' ) ) {
 		return message;
 	}
 
+	/**
+	 * Set a Notification for a field setting.
+	 *
+	 * @since 2.6
+	 *
+	 * @param {string} fieldSetting The field setting class name.
+	 * @param {string} position     The position to put the notification, can be 'above' or 'below'.
+	 * @param {string} [message]    The message to be set in the notification.
+	 */
+	function SetFieldNotification( fieldSetting, position, message ) {
+		var predefinedMessages = {
+			submit_location_setting: <?php echo json_encode( esc_html__( 'The submit button can\'t be placed inline on multi-page forms.', 'gravityforms' ) ); ?>,
+			submit_image_setting: <?php echo json_encode( esc_html__( 'If a valid image url is not present a text-only submit button will be used.', 'gravityforms' ) ); ?>
+		};
+
+		var notificationMessage = message !== undefined ? message : '';
+		notificationMessage = ! notificationMessage && predefinedMessages.hasOwnProperty( fieldSetting ) ? predefinedMessages[ fieldSetting ] : '';
+
+		if ( ! notificationMessage ) {
+			return;
+		}
+
+		var notificationDiv = '<div class="gform-alert gform-alert--notice gform-alert--inline">';
+		notificationDiv += '<span class="gform-alert__icon gform-icon gform-icon--circle-notice-fine" aria-hidden="true"></span>';
+		notificationDiv += '<div class="gform-alert__message-wrap"><p class="gform-alert__message">' + notificationMessage + '</p></div>';
+		notificationDiv += '</div>';
+
+		var fieldSetting = jQuery( '.' + fieldSetting );
+		if ( position === 'above' ) {
+			fieldSetting.prevAll( '.gform-alert--notice' ).remove();
+			fieldSetting.before( notificationDiv );
+		} else {
+			fieldSetting.nextAll( '.gform-alert--notice' ).remove();
+			fieldSetting.after( notificationDiv );
+		}
+	}
+
 	</script>
 
 <?php wp_print_scripts( array( 'gform_form_editor' ) ); ?>
 
-<?php do_action( 'gform_editor_js' ); ?>
+<span id="gform_editor_js_action_output_wrapper">
+	<?php do_action( 'gform_editor_js' ); ?>
+</span>

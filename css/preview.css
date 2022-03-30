@@ -268,8 +268,11 @@ div#preview_form_container .gfield input[type="checkbox"] {
 .gform_footer input[type=button],
 .gform_page_footer input.button,
 .gform_page_footer input[type=button],
-.form_saved_message_emailform input[type=submit] {
+.form_saved_message_emailform input[type=submit],
+#field_submit input.button,
+#field_submit input[type=button] {
 	border: none;
+	cursor: pointer;
     font-size: 1em;
     text-decoration: none;
     color: #FFF;
@@ -278,6 +281,22 @@ div#preview_form_container .gfield input[type="checkbox"] {
     padding: 12px 24px;
     border-radius: 6px;
     -webkit-appearance: none !important;
+}
+
+.gform_footer input.button.gform_image_button,
+.gform_footer input[type=image],
+.gform_page_footer input.button.gform_image_button,
+.gform_page_footer input[type=image],
+.form_saved_message_emailform input[type=image],
+#field_submit input.button.gform_image_button,
+#field_submit input[type=image] {
+	background: none;
+	padding: 0;
+	border-radius: 0;
+}
+
+.gform-button--width-full {
+	width: 100%;
 }
 
 #preview_form_container .gform_save_link.button,

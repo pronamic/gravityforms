@@ -1502,6 +1502,8 @@ AND ( meta_key REGEXP '^[0-9|.]+$'
 			$entries[ $meta['entry_id'] ][ $meta['meta_key'] . $meta['item_index'] ] = $meta['meta_value'];
 		}
 
+		$entries_with_encrypted_fields = GFFormsModel::get_openssl_encrypted_fields_by_entries( $ids );
+
 		foreach ( $entryset as $entry ) {
 			if ( isset( $cache['form_meta'][ $entry['form_id'] ] ) ) {
 				$form = $cache['form_meta'][ $entry['form_id'] ];
@@ -1509,7 +1511,7 @@ AND ( meta_key REGEXP '^[0-9|.]+$'
 				$form = $cache['form_meta'][ $entry['form_id'] ] = RGFormsModel::get_form_meta( $entry['form_id'] );
 			}
 
-			$openssl_encrypted_fields = GFFormsModel::get_openssl_encrypted_fields( $entry['id'] );
+			$openssl_encrypted_fields = isset( $entries_with_encrypted_fields[ $entry['id'] ] ) ? $entries_with_encrypted_fields[ $entry['id'] ] : array();
 
 			foreach ( $form['fields'] as $field ) {
 				/* @var GF_Field $field */

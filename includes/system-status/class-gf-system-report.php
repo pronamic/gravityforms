@@ -53,16 +53,15 @@ class GF_System_Report {
 		?>
 		<div class="alert info">
 			<p><?php _e( 'The following is a system report containing useful technical information for troubleshooting issues. If you need further help after viewing the report, click on the "Copy System Report" button below to copy the report and paste it in your message to support.', 'gravityforms' ); ?></p>
-			<button class="button" onclick="function (e) { e.preventDefault() }" id="gf_copy_report" data-clipboard-target="#gf_system_report"><?php _e( 'Copy System Report', 'gravityforms' ); ?> <i aria-hidden="true" class="dashicons dashicons-arrow-right-alt" ></i></button>
+			<button class="button" type="button" id="gf_copy_report" data-clipboard-target="#gf_system_report"><?php _e( 'Copy System Report', 'gravityforms' ); ?> <i aria-hidden="true" class="dashicons dashicons-arrow-right-alt" ></i></button>
 
-			<div class="gf_copy_message inline" id="gf_copy_error_message">
+			<div class="gf_copy_message" id="gf_copy_error_message">
 				<p><span class="dashicons dashicons-yes"></span><?php esc_html_e( 'Report generated!', 'gravityforms' ); echo ' <b>Press Ctrl+C to copy it.</b>'; ?></p>
 			</div>
 
-			<div class="gf_copy_message inline" id="gf_copy_success">
+			<div class="gf_copy_message" id="gf_copy_success">
 				<p><span class="dashicons dashicons-yes"></span><?php esc_html_e( 'Report Copied!', 'gravityforms' ) ?></p>
 			</div>
-
 
 			<textarea id="gf_system_report" readonly="readonly" ><?php echo esc_html( $system_report_text ) ?></textarea>
 		</div>

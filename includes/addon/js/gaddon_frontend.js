@@ -15,7 +15,7 @@ var GFFrontendFeeds = function( args ) {
 		self.triggerInputIds = self.getTriggerInputIds( self.options.feeds );
 
 		self.activeFeeds = [];
-		
+
 		self.evaluateFeeds();
 
 		self.bindEvents();

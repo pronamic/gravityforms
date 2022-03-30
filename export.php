@@ -492,7 +492,7 @@ class GFExport {
 				if (!formId)
 					return;
 
-				gfSpinner = new gfAjaxSpinner(jQuery('select#export_form'), gf_vars.baseUrl + '/images/spinner.svg', 'position: relative; top: 2px; left: 5px;');
+				gform.utils.trigger( { event: 'gform/page_loader/show' } );
 
 				var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' )?>");
 				mysack.execute = 1;
@@ -509,8 +509,7 @@ class GFExport {
 			}
 
 			function EndSelectExportForm(aryFields, filterSettings) {
-
-				gfSpinner.destroy();
+				gform.utils.trigger( { event: 'gform/page_loader/hide' } );
 
 				if (aryFields.length == 0) {
 					jQuery("#export_field_container, #export_date_container, #export_submit_container").hide()
@@ -593,7 +592,7 @@ class GFExport {
 		</script>
 
         <div class="gform-settings__content">
-            <form method="post" id="gform_export" class="gform_settings_form">
+            <form method="post" id="gform_export" class="gform_settings_form" data-js="page-loader">
 	            <?php echo wp_nonce_field( 'rg_start_export', 'rg_start_export_nonce' ); ?>
                 <div class="gform-settings-panel gform-settings-panel--full">
                     <header class="gform-settings-panel__header"><legend class="gform-settings-panel__title"><?php esc_html_e( 'Export Entries', 'gravityforms' ) ;?></legend></header>

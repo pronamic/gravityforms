@@ -4,6 +4,10 @@ if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
 
+
+use Gravity_Forms\Gravity_Forms\Save_Form\GF_Save_Form_Service_Provider;
+use Gravity_Forms\Gravity_Forms\Save_Form\GF_Form_CRUD_Handler;
+
 class GFFormDetail {
 
 	public static function forms_page( $form_id ) {
@@ -15,7 +19,10 @@ class GFFormDetail {
 		}
 
 		self::update_recent_forms( $form_id );
-
+		/**
+		* @var Gravity_Forms\Gravity_Forms\Save_Form\GF_Save_Form_Helper $save_form_helper
+ 		*/
+		$save_form_helper = GFForms::get_service_container()->get( GF_Save_Form_Service_Provider::GF_SAVE_FROM_HELPER );
 		$update_result = '';
 		if ( rgpost( 'operation' ) == 'trash' ) {
 			check_admin_referer( 'gforms_trash_form', 'gforms_trash_form' );
@@ -30,11 +37,18 @@ class GFFormDetail {
 			</script>
 			<?php
 			exit;
-		} else if ( ! rgempty( 'gform_meta' ) ) {
+		} elseif ( ! rgempty( 'gform_meta' ) && $save_form_helper->is_ajax_save_action() === false ) {
 			check_admin_referer( "gforms_update_form_{$form_id}", 'gforms_update_form' );
 
 			$update_result = self::save_form_info( $form_id, rgpost( 'gform_meta', false ) );
+
+			?>
+			<script type="text/javascript">
+				var updateFormResult = <?php echo json_encode( $update_result ) ?>;
+			</script>
+			<?php
 		}
+
 
 		wp_print_styles( array( 'thickbox' ) );
 
@@ -45,12 +59,12 @@ class GFFormDetail {
 
 		?>
 
-		<script type="text/javascript">
+		<script type="text/javascript" data-js-reload="gforms-scripts-globals">
 			<?php GFCommon::gf_global(); ?>
 			<?php GFCommon::gf_vars(); ?>
 		</script>
 
-		<script type="text/javascript">
+		<script type="text/javascript"  data-js-reload="gforms-scripts-form-scripts" >
 
 			function has_entry(fieldNumber) {
 				var submitted_fields = [<?php echo RGFormsModel::get_submitted_fields( $form_id ); ?>];
@@ -107,17 +121,26 @@ class GFFormDetail {
 			$form['fields'] = array();
 		}
 
+		if ( GFCommon::is_form_editor() ) {
+			self::maybe_add_submit_button( $form );
+		}
+
 		$form = gf_apply_filters( array( 'gform_admin_pre_render', $form_id ), $form );
 
 		if ( isset( $form['id'] ) ) {
-			echo "<script type=\"text/javascript\">var form = " . json_encode( $form ) . ';</script>';
+
+			// Unset notifications and confirmations to reduce payload size.
+			unset( $form['notifications'] );
+			unset( $form['confirmations'] );
+
+			echo "<script type=\"text/javascript\" data-js-reload=\"gforms-scripts-form-object\">var form = " . json_encode( $form ) . ';</script>';
 		} else {
-			echo "<script type=\"text/javascript\">var form = new Form();</script>";
+			echo "<script data-js-reload=\"gforms-scripts-form-object\" type=\"text/javascript\">var form = new Form();</script>";
 		}
 
 		?>
         <!-- Legacy Container allow old addons js to find legacy elements in a hidden container so they don't break other js code -->
-		<div id="legacy_field_settings_container">
+		<div id="legacy_field_settings_container" data-js-reload="gforms-legacy-elements-container">
 			<div id="field_settings">
 				<ul>
 					<li style="width:100px; padding:0px;">
@@ -144,7 +167,7 @@ class GFFormDetail {
 		</div>
         <!-- End legacy container -->
 
-		<div class="wrap gforms_edit_form <?php echo GFCommon::get_browser_class() ?>">
+		<div class="wrap gforms_edit_form <?php echo GFCommon::get_browser_class() ?>" data-js="form-editor-wrapper">
         <?php
         $forms         = RGFormsModel::get_forms( null, 'title' );
         $id            = rgempty( 'id', $_GET ) ? count( $forms ) > 0 ? $forms[0]->id : '0' : rgget( 'id' );
@@ -159,7 +182,7 @@ class GFFormDetail {
 				</a>
 			</div>
 
-			<div class="gform-form-toolbar__form-title gform-form-toolbar__form-title--form-editor">
+			<div class="gform-form-toolbar__form-title gform-form-toolbar__form-title--form-editor" data-js-reload="gforms-form-switcher">
 				<?php GFForms::form_switcher( $form['title'] ); ?>
 			</div>
 
@@ -182,13 +205,44 @@ class GFFormDetail {
 			</ul>
 
 			<div id="gf_toolbar_buttons_container" class="gf_toolbar_buttons_container">
+
+
+				<?php
+				/**
+				 * Allow users to perform actions before toolbar buttons are displayed.
+				 *
+				 * @since 2.6
+				 */
+				do_action( 'gform_before_toolbar_buttons' );
+				?>
+
 				<?php
 				$preview_args = array(
 					'form_id' => $form_id,
 				);
 				echo GFCommon::get_preview_link( $preview_args );
 
-				$save_button = '<button aria-disabled="false" aria-expanded="false" class="update-form gform-button gform-button--primary gform-button--icon-leading " onclick="SaveForm();" onkeypress="SaveForm();"> <i class="gform-button__icon gform-icon gform-icon--floppy-disk"></i>' . esc_html__( 'Save Form', 'gravityforms' ) . '</button>';
+				$ajax_save_disabled = $save_form_helper->is_ajax_save_disabled( $form_id );
+				if ( $ajax_save_disabled ) {
+					$save_button = '<button aria-disabled="false" aria-expanded="false" class="update-form gform-button gform-button--primary gform-button--icon-leading " onclick="SaveForm();" onkeypress="SaveForm();"> <i class="gform-button__icon gform-icon gform-icon--floppy-disk"></i>' . esc_html__( 'Save Form', 'gravityforms' ) . '</button>';
+				} else {
+					$save_button = '<button
+						id="ajax-save-form-menu-bar"
+						data-js="ajax-save-form"
+						aria-disabled="false" 
+						aria-expanded="false" 
+						class="update-form update-form-ajax gform-button gform-button--primary gform-button--interactive gform-button--active-type-loader gform-button--icon-leading"
+					>
+						<i class="gform-button__icon gform-button__icon--inactive gform-icon gform-icon--floppy-disk" data-js="button-icon"></i>
+						<span class="gform-button__text gform-button__text--inactive" data-js="button-inactive-text">
+							' . esc_html__( 'Save Form', 'gravityforms' ) . '
+						</span>
+						<span class="gform-button__text gform-button__text--active" data-js="button-active-text">
+							' . esc_html__( 'Saving', 'gravityforms' ) . '
+						</span>
+					</button>';
+				}
+
 
 				/**
 				* A filter to allow you to modify the Form Save button.
@@ -225,15 +279,16 @@ class GFFormDetail {
 		</div>
 
 		<?php
-			$no_conflict_mode   = get_option( 'gform_enable_noconflict' );
-			$no_conflict_class  = $no_conflict_mode ? ' form_editor_no_conflict' : '';
-			$no_fields_class    = empty( $form['fields'] ) ? ' form_editor_fields_no_fields' : '';
+			$no_conflict_mode  = get_option( 'gform_enable_noconflict' );
+			$no_conflict_class = $no_conflict_mode ? ' form_editor_no_conflict' : '';
+			$no_fields_class   = empty( $form['fields'] ) ? ' form_editor_fields_no_fields' : '';
 			$form_editor_class = sprintf( 'form_editor_fields_container gform-show-if-not-ie%s%s', $no_fields_class, $no_conflict_class );
 		?>
 
 		<div
 			id="form_editor_fields_container"
 			class="<?php esc_attr_e( $form_editor_class ); ?>"
+			data-js="form-editor"
 			<?php if ( ! $no_conflict_mode ) { ?>
 			<?php echo ! empty( $form['fields'] ) ? 'data-simplebar' : ''; ?>
 			<?php echo ! empty( $form['fields'] ) && is_rtl() ? 'data-simplebar-direction="rtl"' : ''; ?>
@@ -381,7 +436,7 @@ class GFFormDetail {
 
 					<!-- this field allows us to force onblur events for field setting inputs that are otherwise not triggered
 									when closing the field settings UI -->
-					<input type="text" id="gform_force_focus" style="position:absolute;left:-9999em;" />
+					<input type="text" id="gform_force_focus" style="position:absolute;left:-9999em;" data-js="force-focus" />
 
 					<form method="post" id="gform_update">
 						<?php wp_nonce_field( "gforms_update_form_{$form_id}", 'gforms_update_form' ); ?>
@@ -401,7 +456,7 @@ class GFFormDetail {
 						<button tabindex="0" id="general_tab_toggle" class="panel-block-tabs__toggle">
 							<?php esc_html_e( 'General', 'gravityforms' ); ?>
 						</button>
-						<ul id="general_tab" class="panel-block-tabs__body panel-block-tabs__body--settings">
+						<ul id="general_tab" class="panel-block-tabs__body panel-block-tabs__body--settings" data-js="form-editor-general-settings">
 							<li class="pagination_setting">
 								<label for="pagination_type_container" class="section_label">
 									<?php esc_html_e( 'Progress Indicator', 'gravityforms' ); ?>
@@ -520,6 +575,31 @@ class GFFormDetail {
 								</label>
 								<input type="text" id="field_label"/>
 							</li>
+							<li class="submit_type_setting field_setting">
+								<label for="submit_type" class="section_label">
+									<?php esc_html_e( 'Submit Input Type', 'gravityforms' ); ?>
+								</label>
+								<div>
+									<input type="radio" name="submit_type" id="submit_type_text" value="text" onclick="return ToggleSubmitType( false );" onkeypress="return ToggleSubmitType( false );"/>
+									<label for="submit_type_text" class="inline"><?php esc_html_e( 'Text', 'gravityforms' ); ?></label>
+
+									<input type="radio" name="submit_type" id="submit_type_image" value="image" onclick="return ToggleSubmitType( false );" onkeypress="return ToggleSubmitType( false );"/>
+									<label for="submit_type_image" class="inline"><?php esc_html_e( 'Image', 'gravityforms' ); ?></label>
+								</div>
+							</li>
+							<li class="submit_text_setting field_setting">
+								<label for="submit_text" class="section_label">
+									<?php esc_html_e( 'Submit Button Text', 'gravityforms' ); ?>
+								</label>
+								<input type="text" id="submit_text"/>
+							</li>
+							<li class="submit_image_setting field_setting">
+								<label for="submit_image" class="section_label">
+									<?php esc_html_e( 'Submit Button Image URL', 'gravityforms' ); ?>
+								</label>
+								<input type="text" id="submit_image"/>
+							</li>
+
 							<?php
 							do_action( 'gform_field_standard_settings', 5, $form_id );
 							?>
@@ -1012,7 +1092,7 @@ class GFFormDetail {
 								<input type="radio" id="gfield_category_select" name="gfield_category" value="select" onclick="ToggleCategory();" onkeypress="ToggleCategory();"/>
 								<label for="gfield_category_select" class="inline"><?php esc_html_e( 'Select Categories', 'gravityforms' ); ?></label>
 
-								<div id="gfield_settings_category_container">
+								<div id="gfield_settings_category_container" data-js-reload="gfield_settings_category_container">
 									<table cellpadding="0" cellspacing="5">
 										<?php
 										$categories = get_categories( array( 'hide_empty' => 0 ) );
@@ -1433,27 +1513,58 @@ class GFFormDetail {
 							<?php
 							do_action( 'gform_field_standard_settings', 1350, $form_id );
 							?>
-							<li class="choices_setting field_setting">
-
-								<div style="float:right;">
-									<input type="checkbox" id="field_choice_values_enabled" onclick="SetFieldProperty('enableChoiceValue', this.checked); ToggleChoiceValue(); SetFieldChoices();" onkeypress="SetFieldProperty('enableChoiceValue', this.checked); ToggleChoiceValue(); SetFieldChoices();"/>
-									<label for="field_choice_values_enabled" class="inline gfield_value_label"><?php esc_html_e( 'show values', 'gravityforms' ) ?></label>
-								</div>
-
-								<label for="choices" class="section_label"><?php echo apply_filters( 'gform_choices_setting_title', __( 'Choices', 'gravityforms' ) ); ?>
-									<?php gform_tooltip( 'form_field_choices' ); ?>
-								</label>
+							<li class="choices-ui__trigger-section">
+								<span class="section_label" data-js="choices-ui-trigger-label"><?php esc_html_e( 'Choices', 'gravityforms' ); ?></span>
+								<button
+									class="choices-ui__trigger gform-button gform-button--size-r gform-button--white gform-button--icon-leading"
+									data-js="choices-ui-trigger"
+									style="display:none;"
+								>
+									<span class="gform-button__icon gform-icon gform-icon--cog choices-ui__trigger-icon"></span>
+									<?php esc_html_e( 'Edit Choices', 'gravityforms' ); ?>
+								</button>
+							</li>
+							<li class="choices_setting field_setting" data-js="choices-ui-setting" data-type="main">
 
 								<div id="gfield_settings_choices_container">
-									<label class="gfield_choice_header_label"><?php esc_html_e( 'Label', 'gravityforms' ) ?></label><label class="gfield_choice_header_value"><?php esc_html_e( 'Value', 'gravityforms' ) ?></label><label class="gfield_choice_header_price"><?php esc_html_e( 'Price', 'gravityforms' ) ?></label>
+									<label class="gfield_choice_header_label" data-js="choices-ui-label"><?php esc_html_e( 'Label', 'gravityforms' ) ?></label>
+									<label class="gfield_choice_header_value" data-js="choices-ui-label"><?php esc_html_e( 'Value', 'gravityforms' ) ?></label>
+									<label class="gfield_choice_header_price" data-js="choices-ui-label"><?php esc_html_e( 'Price', 'gravityforms' ) ?></label>
 									<ul id="field_choices"></ul>
+								</div>
+
+								<div class="choices-ui__section" data-js="choices-ui-section" data-type="options">
+									<h6 class="choices-ui__section-label"><?php esc_html_e( 'Options', 'gravityforms' ) ?></h6>
+									<ul class="choices-ui__options-list" data-js="choices-ui-option-list">
+										<li class="choices-ui__options-list-item">
+											<input
+												type="checkbox"
+												id="field_choice_values_enabled"
+												onclick="SetFieldProperty('enableChoiceValue', this.checked); ToggleChoiceValue(); SetFieldChoices();"
+												onkeypress="SetFieldProperty('enableChoiceValue', this.checked); ToggleChoiceValue(); SetFieldChoices();"
+											/>
+											<label
+												for="field_choice_values_enabled"
+												class="inline gfield_value_label"
+											><?php esc_html_e( 'Show Values', 'gravityforms' ) ?></label>
+										</li>
+									</ul>
 								</div>
 
 								<?php
 								$window_title = esc_html__( 'Bulk Add / Predefined Choices', 'gravityforms' );
 								$modal = json_encode( "<div class='tb-title'><div class='tb-title__logo'></div><div class='tb-title__text'><div class='tb-title__main'>" . $window_title . "</div><div class='tb-title__sub'>" . esc_html__( 'Select a category and customize the predefined choices or paste your own list to bulk add choices.', 'gravityforms' ) . "</div></div></div>" );
 								?>
-								<input type='button' value='<?php echo esc_attr( $window_title ) ?>' onclick="tb_show(<?php echo esc_js( $modal ); ?>, '#TB_inline?height=460&amp;width=600&amp;inlineId=gfield_bulk_add', '');" onkeypress="tb_show(<?php echo esc_js( $modal ); ?>, '#TB_inline?height=460&amp;width=600&amp;inlineId=gfield_bulk_add', '');" class="button"/>
+								<div class="choices-ui__section" data-js="choices-ui-section" data-type="bulk-choices">
+									<h6 class="choices-ui__section-label"><?php esc_html_e( 'Add Bulk Choices', 'gravityforms' ) ?></h6>
+									<input
+										type='button'
+										value='<?php echo esc_attr( $window_title ) ?>'
+										onclick="tb_show(<?php echo esc_js( $modal ); ?>, '#TB_inline?height=460&amp;width=600&amp;inlineId=gfield_bulk_add', '');"
+										onkeypress="tb_show(<?php echo esc_js( $modal ); ?>, '#TB_inline?height=460&amp;width=600&amp;inlineId=gfield_bulk_add', '');"
+										class="gform-button gform-button--white gform-button--size-sm"
+									/>
+								</div>
 
 								<div id="gfield_bulk_add" style="display:none;">
 									<div class="gform_column_wrapper">
@@ -1552,12 +1663,16 @@ class GFFormDetail {
 							do_action( 'gform_field_standard_settings', 1360, $form_id );
 							?>
 
-							<li class="select_all_choices_setting field_setting">
+							<li class="select_all_choices_setting field_setting" data-js="choices-ui-setting" data-type="option">
 
-								<input type="checkbox" id="field_select_all_choices" onclick="var value = jQuery(this).is(':checked'); SetFieldProperty('enableSelectAll', value); RefreshSelectedFieldPreview();" onkeypress="var value = jQuery(this).is(':checked'); SetFieldProperty('enableSelectAll', value); RefreshSelectedFieldPreview();"/>
+								<input
+									type="checkbox"
+									id="field_select_all_choices"
+									onclick="var value = jQuery(this).is(':checked'); SetFieldProperty('enableSelectAll', value); RefreshSelectedFieldPreview();"
+									onkeypress="var value = jQuery(this).is(':checked'); SetFieldProperty('enableSelectAll', value); RefreshSelectedFieldPreview();"
+								/>
 								<label for="field_select_all_choices" class="inline">
 									<?php esc_html_e( 'Enable "Select All" choice', 'gravityforms' ); ?>
-
 								</label>
 
 							</li>
@@ -1565,9 +1680,14 @@ class GFFormDetail {
 							do_action( 'gform_field_standard_settings', 1362, $form_id );
 							?>
 
-							<li class="other_choice_setting field_setting">
+							<li class="other_choice_setting field_setting" data-js="choices-ui-setting" data-type="option">
 
-								<input type="checkbox" id="field_other_choice" onclick="var value = jQuery(this).is(':checked'); SetFieldProperty('enableOtherChoice', value); UpdateFieldChoices(GetInputType(field));" onkeypress="var value = jQuery(this).is(':checked'); SetFieldProperty('enableOtherChoice', value); UpdateFieldChoices(GetInputType(field));"/>
+								<input
+									type="checkbox"
+									id="field_other_choice"
+									onclick="var value = jQuery(this).is(':checked'); SetFieldProperty('enableOtherChoice', value); UpdateFieldChoices(GetInputType(field));"
+									onkeypress="var value = jQuery(this).is(':checked'); SetFieldProperty('enableOtherChoice', value); UpdateFieldChoices(GetInputType(field));"
+								/>
 								<label for="field_other_choice" class="inline">
 									<?php esc_html_e( 'Enable "other" choice', 'gravityforms' ); ?>
 									<?php gform_tooltip( 'form_field_other_choice' ); ?>
@@ -2050,6 +2170,44 @@ class GFFormDetail {
 							do_action( 'gform_field_appearance_settings', 250, $form_id );
 							?>
 
+							<li class="submit_width_setting field_setting">
+								<label for="submit_width" class="section_label">
+									<?php esc_html_e( 'Submit Button Width', 'gravityforms' ); ?>
+								</label>
+								<div>
+									<input type="radio" name="submit_width" id="submit_width_auto" value="auto" onclick="return SetSubmitWidth( this.value );" onkeypress="return SetSubmitWidth( this.value );"/>
+									<label for="submit_width_auto" class="inline"><?php esc_html_e( 'Auto', 'gravityforms' ); ?></label>
+
+									<input type="radio" name="submit_width" id="submit_width_full" value="full" onclick="return SetSubmitWidth( this.value );" onkeypress="return SetSubmitWidth( this.value );"/>
+									<label for="submit_width_full" class="inline"><?php esc_html_e( 'Fill Container', 'gravityforms' ); ?></label>
+								</div>
+							</li>
+
+							<?php
+							$disable_location = '';
+							if ( $form['fields'] ) {
+								foreach ( $form['fields'] as $field ) {
+									if ( $field['type'] === 'page' ) {
+										$disable_location = 'disabled';
+									}
+								}
+							}
+							 ?>
+
+							<li class="submit_location_setting field_setting">
+								<label for="submit_location" class="section_label">
+									<?php esc_html_e( 'Submit Button Location', 'gravityforms' ); ?>
+								</label>
+								<div>
+									<input type="radio" name="submit_location" id="submit_location_bottom" value="bottom" onclick="return SetSubmitLocation( this.value );" onkeypress="return SetSubmitLocation( this.value );"/>
+									<label for="submit_location_bottom" class="inline"><?php esc_html_e( 'End of the form', 'gravityforms' ); ?></label>
+
+									<input type="radio" name="submit_location" id="submit_location_inline" value="inline" <?php echo $disable_location ?> onclick="return SetSubmitLocation( this.value );" onkeypress="return SetSubmitLocation( this.value );"/>
+									<label for="submit_location_inline" class="inline"><?php esc_html_e( 'End of the last row', 'gravityforms' ); ?></label>
+								</div>
+							</li>
+
+
 							<li class="css_class_setting field_setting">
 								<label for="field_css_class" class="section_label">
 									<?php esc_html_e( 'Custom CSS Class', 'gravityforms' ); ?>
@@ -2445,6 +2603,14 @@ class GFFormDetail {
 							<?php
 							do_action( 'gform_field_advanced_settings', 550, $form_id );
 							?>
+							<div class="conditional_logic_submit_setting field_setting">
+								<input type="checkbox" id="submit_conditional_logic" onclick="SetSubmitConditionalLogic(this.checked); ToggleConditionalLogic( false, 'button' );" onkeypress="SetSubmitConditionalLogic(this.checked); ToggleConditionalLogic( false, 'button' );"/>
+								<label for="submit_conditional_logic" class="inline"><?php esc_html_e( 'Enable Submit Button Conditional Logic', 'gravityforms' ) ?><?php gform_tooltip( 'form_submit_conditional_logic' ); ?></label>
+								<br/>
+								<div id="submit_conditional_logic_container" style="display:none; padding-top:10px;">
+									<!-- content dynamically created from js.php -->
+								</div>
+							</div>
 							<div class="conditional_logic_nextbutton_setting field_setting">
 								<input type="checkbox" id="next_button_conditional_logic" onclick="SetNextButtonConditionalLogic(this.checked); ToggleConditionalLogic( false, 'next_button' );" onkeypress="SetNextButtonConditionalLogic(this.checked); ToggleConditionalLogic( false, 'next_button' );"/>
 								<label for="next_button_conditional_logic" class="inline"><?php esc_html_e( 'Enable Next Button Conditional Logic', 'gravityforms' ) ?><?php gform_tooltip( 'form_nextbutton_conditional_logic' ); ?></label>
@@ -2457,6 +2623,7 @@ class GFFormDetail {
 					</div>
 					<div class="conditional_logic_flyout_container" id="conditional_logic_flyout_container"></div>
 					<div class="conditional_logic_flyout_container" id="conditional_logic_next_button_flyout_container"></div>
+					<div class="conditional_logic_flyout_container" id="conditional_logic_submit_flyout_container"></div>
 				</div>
 				<?php
 				foreach ( $setting_panels as $panel ) {
@@ -2489,42 +2656,6 @@ class GFFormDetail {
 
 
 		</div>
-
-<?php
-switch ( rgar( $update_result, 'status' ) ) {
-case 'invalid_json' :
-?>
-<div class="gf_editor_error gforms_force_editor_display gf-notice">
-	<div class="error_message">
-		<?php esc_html_e( 'There was an error while saving your form.', 'gravityforms' ) ?>
-						<?php printf( __( 'Please %scontact our support team%s.', 'gravityforms' ), '<a href="https://www.gravityforms.com/support/">', '</a>' ) ?>
-                    </div>
-                    <button type="button" aria-label="Dismiss this notice" class="error_dismiss"><svg aria-hidden="true" role="img" focusable="false" class="dashicon dashicons-no-alt" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M14.95 6.46L11.41 10l3.54 3.54-1.41 1.41L10 11.42l-3.53 3.53-1.42-1.42L8.58 10 5.05 6.47l1.42-1.42L10 8.58l3.54-3.53z"></path></svg></button>
-                </div>
-				<?php
-				break;
-			case 'duplicate_title' :
-				?>
-                <div class="gf_editor_error gforms_force_editor_display">
-                    <div class="error_message">
-						<?php esc_html_e( 'The form title you have entered is already taken. Please enter a unique form title.', 'gravityforms' ) ?>
-                    </div>
-                    <button type="button" aria-label="Dismiss this notice" class="error_dismiss"><svg aria-hidden="true" role="img" focusable="false" class="dashicon dashicons-no-alt" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M14.95 6.46L11.41 10l3.54 3.54-1.41 1.41L10 11.42l-3.53 3.53-1.42-1.42L8.58 10 5.05 6.47l1.42-1.42L10 8.58l3.54-3.53z"></path></svg></button>
-                </div>
-				<?php
-				break;
-			default :
-				if ( ! empty( $update_result ) ) {
-					?>
-                    <div class="gf_editor_status gforms_force_editor_display">
-	                    <?php esc_html_e( 'Form updated.', 'gravityforms' ); ?><a target="_blank" href="<?php echo trailingslashit( site_url() ) . '?gf_page=preview&id=' . $form_id;?>"> <?php esc_html_e('View form', 'gravityforms'); ?></a>
-                    </div>
-					<?php
-				}
-				break;
-		}
-		?>
-
 		<!-- // including form setting hooks as a temporary fix to prevent issues where users using the "gform_before_update" hook are expecting
             form settings to be included on the form editor page -->
 		<div>
@@ -2843,6 +2974,11 @@ case 'invalid_json' :
 	//Ajax calls
 	public static function add_field() {
 		check_ajax_referer( 'rg_add_field', 'rg_add_field' );
+
+		if ( ! GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
+			wp_die( -1, 403 );
+		}
+
 		$field_json = stripslashes_deep( $_POST['field'] );
 
 		$field_properties = GFCommon::json_decode( $field_json, true );
@@ -2889,6 +3025,11 @@ case 'invalid_json' :
 
 	public static function change_input_type() {
 		check_ajax_referer( 'rg_change_input_type', 'rg_change_input_type' );
+
+		if ( ! GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
+			wp_die( -1, 403 );
+		}
+
 		$field_json       = stripslashes_deep( $_POST['field'] );
 		$field_properties = GFCommon::json_decode( $field_json, true );
 		$field            = GF_Fields::create( $field_properties );
@@ -2939,170 +3080,41 @@ case 'invalid_json' :
 	/**
 	 * Saves form meta. Note the special requirements for the meta string.
 	 *
+	 * @since unknown
+	 *
+	 * @since 2.6 Use GF_Form_CRUD_Handler To save the form.
+	 *
 	 * @param int    $id
 	 * @param string $form_json A valid JSON string. The JSON is manipulated before decoding and is designed to work together with jQuery.toJSON() rather than json_encode. Avoid using json_encode as it will convert unicode characters into their respective entities with slashes. These slashes get stripped so unicode characters won't survive intact.
 	 *
 	 * @return array
 	 */
 	public static function save_form_info( $id, $form_json ) {
+		$form_crud_handler = GFForms::get_service_container()->get( GF_Save_Form_Service_Provider::GF_FORM_CRUD_HANDLER );
+		$result            = $form_crud_handler->save( $id, $form_json );
 
-		global $wpdb;
-
-		// Clean up form meta JSON.
-		$form_json = stripslashes( $form_json );
-		$form_json = nl2br( $form_json );
-
-		GFCommon::log_debug( 'GFFormDetail::save_form_info(): Form meta json: ' . $form_json );
-
-		// Convert form meta JSON to array.
-		$form_meta = json_decode( $form_json, true );
-		$form_meta = GFFormsModel::convert_field_objects( $form_meta );
-
-		// Set version of Gravity Forms form was created with.
-		if ( $id === 0 ) {
-			$form_meta['version'] = GFForms::$version;
+		// For backwards compatibility, status used to have the value of the form id if update was successful,
+		// and the negative value of the form id if it was a successful insert.
+		if ( rgar( $result, 'status' ) === GF_Form_CRUD_Handler::STATUS_SUCCESS ) {
+			$saved_form_id    = rgars( $result, 'meta/id', 0 );
+			$saved_form_id    = rgar( $result, 'is_new' ) ? $saved_form_id * -1 : $saved_form_id;
+			$result['status'] = $saved_form_id;
 		}
 
-		// Sanitize form settings.
-		$form_meta = GFFormsModel::maybe_sanitize_form_settings( $form_meta );
+		$save_form_helper = GFForms::get_service_container()->get( GF_Save_Form_Service_Provider::GF_SAVE_FROM_HELPER );
+		if ( $save_form_helper->is_ajax_save_action() === false ) {
 
-		// Extract deleted field IDs.
-		$deleted_fields = rgar( $form_meta, 'deletedFields' );
-		unset( $form_meta['deletedFields'] );
-
-		GFCommon::log_debug( 'GFFormDetail::save_form_info(): Form meta => ' . print_r( $form_meta, true ) );
-
-		// If form meta is not found, exit.
-		if ( ! $form_meta ) {
-			return array( 'status' => 'invalid_json', 'meta' => null );
-		}
-
-		// Get form table name.
-		$form_table_name = GFFormsModel::get_form_table_name();
-
-		// Get all forms.
-		$forms = GFFormsModel::get_forms();
-
-		// Loop through forms.
-		foreach ( $forms as $form ) {
-
-			// If form has a duplicate title, exit.
-			if ( strtolower( $form->title ) == strtolower( $form_meta['title'] ) && rgar( $form_meta, 'id' ) != $form->id ) {
-				return array( 'status' => 'duplicate_title', 'meta' => $form_meta );
-			}
-
-		}
-
-		// If an ID exists, update existing form.
-		if ( $id > 0 ) {
-
-			// Trim form meta values.
-			$form_meta = GFFormsModel::trim_form_meta_values( $form_meta );
-
-			// Delete fields.
-			if ( ! empty( $deleted_fields ) ) {
-
-				// Loop through fields.
-				foreach ( $deleted_fields as $deleted_field ) {
-
-					// Delete field.
-					$form_meta = GFFormsModel::delete_field( $form_meta, $deleted_field, false );
-
-				}
-
-			}
-
-			// Save form meta.
-			GFFormsModel::update_form_meta( $id, $form_meta );
-
-			// Update form title.
-			GFAPI::update_form_property( $id, 'title', $form_meta['title'] );
-
-			// Get form meta.
-			$form_meta = RGFormsModel::get_form_meta( $id );
-
-			if ( ! empty( $deleted_fields ) ) {
-				// Remove logic/routing rules based on deleted fields from confirmations and notifications.
-				foreach ( $deleted_fields as $deleted_field ) {
-					$form_meta = GFFormsModel::delete_field_from_confirmations( $form_meta, $deleted_field );
-					$form_meta = GFFormsModel::delete_field_from_notifications( $form_meta, $deleted_field );
+			foreach ( $result['actions_markup'] as $action_name => $action_markup ) {
+				if  ( ! empty ( $action_markup ) ) {
+					echo $action_markup;
 				}
 			}
 
-            /**
-             * Fires after a form is saved
-             *
-             * Used to run additional actions after the form is saved
-             *
-             * @since 2.4.6.1 Added the $deleted_fields param.
-             * @since unknown
-             *
-             * @param array $form_meta      The form meta
-             * @param bool  false           Returns false if the form ID already exists.
-             * @param array $deleted_fields The IDs of any fields which have been deleted.
-             */
-			do_action( 'gform_after_save_form', $form_meta, false, $deleted_fields );
-
-			return array( 'status' => $id, 'meta' => $form_meta );
-
-		} else {
-
-			//inserting form
-			$id = RGFormsModel::insert_form( $form_meta['title'] );
-
-			//updating object's id property
-			$form_meta['id'] = $id;
-
-			//creating default notification
-			if ( apply_filters( 'gform_default_notification', true ) ) {
-
-				$default_notification = array(
-					'id'       => uniqid(),
-					'isActive' => true,
-					'to'       => '{admin_email}',
-					'name'     => __( 'Admin Notification', 'gravityforms' ),
-					'event'    => 'form_submission',
-					'toType'   => 'email',
-					'subject'  => __( 'New submission from', 'gravityforms' ) . ' {form_title}',
-					'message'  => '{all_fields}',
-				);
-
-				$notifications = array( $default_notification['id'] => $default_notification );
-
-				//updating notifications form meta
-				RGFormsModel::save_form_notifications( $id, $notifications );
-			}
-
-			// Add default confirmation when saving a new form.
-			$confirmation  = GFFormsModel::get_default_confirmation();
-			$confirmations = array( $confirmation['id'] => $confirmation );
-			GFFormsModel::save_form_confirmations( $id, $confirmations );
-
-			// Adding markup version. Increment this when we make breaking changes to form markup.
-			$form_meta['markupVersion'] = 2;
-
-			//updating form meta
-			GFFormsModel::update_form_meta( $id, $form_meta );
-
-			// Get form meta.
-			$form_meta = GFFormsModel::get_form_meta( $id );
-
-            /**
-             * Fires after a form is saved
-             *
-             * Used to run additional actions after the form is saved
-             *
-             * @since 2.4.6.1 Added the $deleted_fields param.
-             * @since unknown
-             *
-             * @param array $form_meta      The form meta
-             * @param bool  true            Returns true if this is a new form.
-             * @param array $deleted_fields The IDs of any fields which have been deleted.
-             */
-			do_action( 'gform_after_save_form', $form_meta, true, array() );
-
-			return array( 'status' => $id * - 1, 'meta' => $form_meta );
+			unset( $result['actions_markup'] );
+			unset( $result['is_new'] );
 		}
+
+		return $result;
 	}
 
 	public static function save_form() {
@@ -3149,15 +3161,16 @@ case 'invalid_json' :
 		$script_str = '';
 		$conditional_logic_fields = array();
 		$field_settings = array();
-
 		foreach ( GF_Fields::get_all() as $gf_field ) {
 			$settings_arr = $gf_field->get_form_editor_field_settings();
 			if ( ! is_array( $settings_arr ) || empty( $settings_arr ) ) {
 				continue;
 			}
+
 			$settings = join( ', .', $settings_arr );
 			$settings = '.' . $settings;
 			$field_settings[ $gf_field->type ] = $settings;
+
 			if ( $gf_field->is_conditional_logic_supported() ) {
 				$conditional_logic_fields[] = $gf_field->type;
 			}
@@ -3174,7 +3187,7 @@ case 'invalid_json' :
 
 
 		if ( ! empty( $script_str ) ) {
-			$script_str = sprintf( '<script type="text/javascript">%s</script>', $script_str );
+			$script_str = sprintf( '<script data-js-reload="gforms-fields-inline-scripts" type="text/javascript">%s</script>', $script_str );
 			if ( $echo ) {
 				echo $script_str;
 			}
@@ -3194,43 +3207,48 @@ case 'invalid_json' :
 	}
 
 	/**
-	 * Display a notice at the top of the form editor.
-	 *
-	 * In the future, this can be expanded to show other messages.
+	 * Display notices at the top of the form editor.
 	 *
 	 * @since 2.5
 	 *
 	 * @param array $form
 	 */
 	public static function editor_notices( $form ) {
-		if ( GFFormDetail::need_deprecated_class_message( $form ) ) {
-			?>
-				<div class="gform-alert" data-js="gform-alert" data-gform-alert-cookie="gform-alert-editor-deprecated-classes">
-					<span class="gform-alert__icon gform-icon gform-icon--campaign" aria-hidden="true"></span>
-					<div class="gform-alert__message-wrap">
-						<p class="gform-alert__message" tabindex="0">
-							<?php echo esc_html_e( 'This form uses deprecated Ready Classes. Adding columns is easier than ever with the new Drag and Drop Layout Editor.', 'gravityforms' ); ?>
-						</p>
-						<a
-							class="gform-alert__cta gform-button gform-button--white gform-button--size-xs"
-							href="https://docs.gravityforms.com/working-with-columns/"
-							target="_blank"
-							title="<?php esc_attr_e( 'Working with Columns in the Form Editor in Gravity Forms 2.5', 'gravityforms' ); ?>"
-						>
-							<?php esc_html_e( 'Learn More', 'gravityforms' ); ?>
-						</a>
-					</div>
-					<button
-						class="gform-alert__dismiss"
-						aria-label="<?php esc_html_e( 'Dismiss notification', 'gravityforms' ); ?>"
-						title="<?php esc_html_e( 'Dismiss notification', 'gravityforms' ); ?>"
-						data-js="gform-alert-dismiss-trigger"
-					>
-						<span class="gform-icon gform-icon--delete"></span>
-					</button>
-				</div>
-			<?php
+		GFFormDetail::editor_notice_for_legacy_form( $form );
+		GFFormDetail::editor_notice_for_deprecated_ready_classes( $form );
+	}
+
+	/**
+	 * Display editor notice for form with legacy mode enabled.
+	 *
+	 * @since 2.6
+	 *
+	 * @param array $form
+	 */
+	public static function editor_notice_for_legacy_form( $form ) {
+		if ( ! GFCommon::is_legacy_markup_enabled( $form['id'] ) ) {
+			return '';
 		}
+
+		?>
+		<div class="gform-alert" data-js="gform-alert" role="status">
+		    <span
+		        class="gform-alert__icon gform-icon gform-icon--campaign"
+		        aria-hidden="true"
+		    ></span>
+		    <div class="gform-alert__message-wrap">
+		        <p class="gform-alert__message"><?php echo esc_html_e( 'This form has legacy markup enabled, which may prevent some new features from functioning.', 'gravityforms' ); ?></p>
+			    <a
+		            class="gform-alert__cta gform-button gform-button--white gform-button--size-xs"
+			        href="https://docs.gravityforms.com/about-legacy-markup"
+			        target="_blank"
+			        aria-label="<?php echo esc_html_e( 'Learn more about form legacy markup', 'gravityforms' ); ?>"
+			    >
+			        <?php echo esc_html_e( 'Learn More', 'gravityforms' ); ?>
+			    </a>
+		    </div>
+		</div>
+		<?php
 	}
 
 	/**
@@ -3276,6 +3294,74 @@ case 'invalid_json' :
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Display editor notice for deprecated ready classes.
+	 *
+	 * @since 2.6
+	 *
+	 * @param array $form
+	 */
+	public static function editor_notice_for_deprecated_ready_classes( $form ) {
+		if ( ! GFFormDetail::need_deprecated_class_message( $form ) ) {
+			return '';
+		}
+
+		?>
+		<div class="gform-alert" data-js="gform-alert" data-gform-alert-cookie="gform-alert-editor-deprecated-classes">
+			<span class="gform-alert__icon gform-icon gform-icon--campaign" aria-hidden="true"></span>
+			<div class="gform-alert__message-wrap">
+				<p class="gform-alert__message" tabindex="0">
+					<?php echo esc_html_e( 'This form uses deprecated Ready Classes. Adding columns is easier than ever with the new Drag and Drop Layout Editor.', 'gravityforms' ); ?>
+				</p>
+				<a
+					class="gform-alert__cta gform-button gform-button--white gform-button--size-xs"
+					href="https://docs.gravityforms.com/working-with-columns/"
+					target="_blank"
+					title="<?php esc_attr_e( 'Working with Columns in the Form Editor in Gravity Forms 2.5', 'gravityforms' ); ?>"
+				>
+					<?php esc_html_e( 'Learn More', 'gravityforms' ); ?>
+				</a>
+			</div>
+			<button
+				class="gform-alert__dismiss"
+				aria-label="<?php esc_html_e( 'Dismiss notification', 'gravityforms' ); ?>"
+				title="<?php esc_html_e( 'Dismiss notification', 'gravityforms' ); ?>"
+				data-js="gform-alert-dismiss-trigger"
+			>
+				<span class="gform-icon gform-icon--delete"></span>
+			</button>
+		</div>
+		<?php
+	}
+
+	/**
+ 	 * Adds the submit button field to the form if it's not already there.
+ 	 *
+ 	 * @since 2.6.0
+	 *
+ 	 * @param array $form The form object.
+ 	 * @returns array $form The form object.
+	 */
+	private static function maybe_add_submit_button( &$form ) {
+		// If we already have a submit button, don't add it again.
+		if ( empty( $form['fields'] ) ) {
+			return $form;
+		}
+		foreach ( $form['fields'] as $field ) {
+			if ( $field instanceof GF_Field_Submit ) {
+				return $form;
+			}
+		}
+		$submit_button_props = array(
+			'type'  => 'submit',
+			'id'    => GFFormsModel::get_next_field_id( $form['fields'] ),
+		);
+
+		array_push( $form['fields'], GF_Fields::create( $submit_button_props ) );
+
+		return $form;
 	}
 
 }

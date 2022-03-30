@@ -1548,16 +1548,6 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Output the styles
-	 */
-	function output_styles() {
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
-		?>
-		<link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin<?php echo $min; ?>.css?ver=<?php echo GFForms::$version ?>" type="text/css" />
-		<?php
-	}
-
-	/**
 	 * Output scripts
 	 */
 	function output_scripts() {

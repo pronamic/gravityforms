@@ -1,8 +1,10 @@
 <?php
-
 if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
+
+use  Gravity_Forms\Gravity_Forms\Orders\Summaries\GF_Order_Summary;
+use  Gravity_Forms\Gravity_Forms\Orders\Factories\GF_Order_Factory;
 
 class GFEntryDetail {
 
@@ -897,7 +899,7 @@ class GFEntryDetail {
 
                     </div>
 
-                    <div class="note-content <?php echo implode( ' ', $classes ); ?>"><?php echo nl2br( esc_html( $note->value ) ) ?></div>
+                    <div class="note-content <?php echo implode( ' ', $classes ); ?>"><?php echo nl2br( wp_kses_post( $note->value ) ) ?></div>
 
                 </div>
 		        <?php
@@ -1078,101 +1080,14 @@ class GFEntryDetail {
 
 			$products = array();
 			if ( $has_product_fields ) {
-				$products = GFCommon::get_product_fields( $form, $lead, false, true );
-				if ( ! empty( $products['products'] ) ) {
-				    ob_start();
-					?>
-					<tr>
-						<td colspan="2" class="entry-view-field-name"><?php echo esc_html( gf_apply_filters( array( 'gform_order_label', $form_id ), __( 'Order', 'gravityforms' ), $form_id ) ); ?></td>
-					</tr>
-					<tr>
-						<td colspan="2" class="entry-view-field-value lastrow">
-							<table class="entry-products" cellspacing="0" width="97%">
-								<colgroup>
-									<col class="entry-products-col1" />
-									<col class="entry-products-col2" />
-									<col class="entry-products-col3" />
-									<col class="entry-products-col4" />
-								</colgroup>
-								<thead>
-								<th scope="col"><?php echo gf_apply_filters( array( 'gform_product', $form_id ), __( 'Product', 'gravityforms' ), $form_id ); ?></th>
-								<th scope="col" class="textcenter"><?php echo esc_html( gf_apply_filters( array( 'gform_product_qty', $form_id ), __( 'Qty', 'gravityforms' ), $form_id ) ); ?></th>
-								<th scope="col"><?php echo esc_html( gf_apply_filters( array( 'gform_product_unitprice', $form_id ), __( 'Unit Price', 'gravityforms' ), $form_id ) ); ?></th>
-								<th scope="col"><?php echo esc_html( gf_apply_filters( array( 'gform_product_price', $form_id ), __( 'Price', 'gravityforms' ), $form_id ) ); ?></th>
-								</thead>
-								<tbody>
-								<?php
-
-								$total = 0;
-								foreach ( $products['products'] as $product ) {
-									?>
-									<tr>
-										<td>
-											<div class="product_name"><?php echo esc_html( $product['name'] ); ?></div>
-											<ul class="product_options">
-												<?php
-												$price = GFCommon::to_number( $product['price'], $lead['currency'] );
-												if ( is_array( rgar( $product, 'options' ) ) ) {
-													$count = sizeof( $product['options'] );
-													$index = 1;
-													foreach ( $product['options'] as $option ) {
-														$price += GFCommon::to_number( $option['price'], $lead['currency'] );
-														$class = $index == $count ? " class='lastitem'" : '';
-														$index ++;
-														?>
-														<li<?php echo $class ?>><?php echo $option['option_label'] ?></li>
-														<?php
-													}
-												}
-												$quantity = GFCommon::to_number( $product['quantity'], $lead['currency'] );
-
-												$subtotal = $quantity * $price;
-												$total += $subtotal;
-												?>
-											</ul>
-										</td>
-										<td class="textcenter"><?php echo esc_html( $product['quantity'] ); ?></td>
-										<td><?php echo GFCommon::to_money( $price, $lead['currency'] ) ?></td>
-										<td><?php echo GFCommon::to_money( $subtotal, $lead['currency'] ) ?></td>
-									</tr>
-									<?php
-								}
-								$total += floatval( $products['shipping']['price'] );
-								?>
-								</tbody>
-								<tfoot>
-								<?php
-								if ( ! empty( $products['shipping']['name'] ) ) {
-									?>
-									<tr>
-										<td colspan="2" rowspan="2" class="emptycell">&nbsp;</td>
-										<td class="textright shipping"><?php echo esc_html( $products['shipping']['name'] ); ?></td>
-										<td class="shipping_amount"><?php echo GFCommon::to_money( $products['shipping']['price'], $lead['currency'] ) ?>&nbsp;</td>
-									</tr>
-									<?php
-								}
-								?>
-								<tr>
-									<?php
-									if ( empty( $products['shipping']['name'] ) ) {
-										?>
-										<td colspan="2" class="emptycell">&nbsp;</td>
-										<?php
-									}
-									?>
-									<td class="textright grandtotal"><?php esc_html_e( 'Total', 'gravityforms' ) ?></td>
-									<td class="grandtotal_amount"><?php echo GFCommon::to_money( $total, $lead['currency'] ) ?></td>
-								</tr>
-								</tfoot>
-							</table>
-						</td>
-					</tr>
-					<?php
+				$products             = GFCommon::get_product_fields( $form, $lead, false, true );
+				$order_summary_markup = GF_Order_Summary::render( $form, $lead, 'order-summary', false, true );
+				if ( $order_summary_markup ) {
 					/**
 					 * Filter the markup of the order summary which appears on the Entry Detail, the {all_fields} merge tag and the {pricing_fields} merge tag.
-                     *
-                     * @since 2.1.2.5
-                     * @see   https://docs.gravityforms.com/gform_order_summary/
+					 *
+					 * @since 2.1.2.5
+					 * @see   https://docs.gravityforms.com/gform_order_summary/
 					 *
 					 * @var string $markup          The order summary markup.
 					 * @var array  $form            Current form object.
@@ -1180,8 +1095,9 @@ class GFEntryDetail {
 					 * @var array  $products        Current order summary object.
 					 * @var string $format          Format that should be used to display the summary ('html' or 'text').
 					 */
-                    $order_summary = gf_apply_filters( array( 'gform_order_summary', $form['id'] ), trim( ob_get_clean() ), $form, $lead, $products, 'html' );
-                    echo $order_summary;
+					$order_summary_markup = gf_apply_filters( array( 'gform_order_summary', $form['id'] ), trim( $order_summary_markup ), $form, $lead, $products, 'html' );
+
+					echo $order_summary_markup;
 				}
 			}
 			?>
@@ -1288,6 +1204,28 @@ class GFEntryDetail {
 							<span id='gform_payment_amount'><?php echo $payment_amount; // May contain HTML ?></span>
 						</div>
 						<?php
+					}
+
+
+
+					$order      = GF_Order_Factory::create_from_entry( $form, $entry );
+					$trial_item = $order->get_item_by_property( 'is_trial', true );
+					if ( $trial_item && $trial_item->description ) {
+						/**
+						 * Filter through the way the trial description is rendered.
+						 *
+						 * @param string $trial_description The trial description.
+						 * @param array  $form              The Form object to filter through
+						 * @param array  $entry             The lead object to filter through
+						 */
+						$trial_description = apply_filters( 'gform_subscription_details_trial_description', $trial_item->description, $form, $entry );
+						if ( ! rgblank( $trial_description ) ) {
+							?>
+							<div id="gf_trial_description" class="gf_payment_detail">
+								<?php echo esc_html( $trial_description ); ?>
+							</div>
+							<?php
+						}
 					}
 				}
 

@@ -315,6 +315,8 @@ class GF_Upgrade {
 		// Clear all transients to make sure the new version doesn't use cached results.
 		GFCache::flush( true );
 
+		$this->remove_obsolete_admin_notices();
+
 		$this->add_post_upgrade_admin_notices();
 
 		GFCommon::log_debug( __METHOD__ . '(): Upgrade Completed.' );
@@ -1848,19 +1850,20 @@ HAVING count(*) > 1;" );
 	}
 
 	/**
+	 * Removes notices from previous versions that are no longer relevant.
+	 *
+	 * @since 2.6
+	 */
+	public function remove_obsolete_admin_notices() {
+		GFCommon::remove_dismissible_message( 'gravityforms_update_2_5' );
+	}
+
+	/**
 	 * Adds dismissible admin notices.
 	 *
 	 * @since 2.3
 	 */
 	public function add_post_upgrade_admin_notices() {
-		$previous_version = get_option( 'rg_form_version' );
-
-		if ( version_compare( $previous_version, '2.5', '>=' ) ) {
-			require_once( GFCommon::get_base_path() . '/includes/messages/class-dismissable-messages.php' );
-			$dismissable = new \Gravity_Forms\Gravity_Forms\Messages\Dismissable_Messages();
-			$dismissable->add_internal('gravityforms_update_2_5', 'success', false, true, null );
-		}
-
 		$previous_db_version = get_option( 'gf_previous_db_version' );
 
 		$key = sanitize_key( 'gravityforms_outdated_addons_2.3' );

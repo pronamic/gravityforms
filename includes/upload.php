@@ -124,30 +124,6 @@ class GFAsyncUpload {
 			}
 		}
 
-		/**
-		 * Allows the disabling of file upload whitelisting
-		 *
-		 * @param bool false Set to 'true' to disable whitelisting.  Defaults to 'false'.
-		 */
-		$whitelisting_disabled = apply_filters( 'gform_file_upload_whitelisting_disabled', false );
-
-		if ( ! $whitelisting_disabled ) {
-			// Whitelist the file type
-			$valid_uploaded_filename = GFCommon::check_type_and_ext( $_FILES['file'], $uploaded_filename );
-
-			if ( is_wp_error( $valid_uploaded_filename ) ) {
-				GFCommon::log_debug( sprintf( '%s(): %s; %s; %s', __METHOD__, $uploaded_filename, $valid_uploaded_filename->get_error_code(), $valid_uploaded_filename->get_error_message() ) );
-				self::die_error( $valid_uploaded_filename->get_error_code(), $valid_uploaded_filename->get_error_message() );
-			}
-
-			$valid_file_name = GFCommon::check_type_and_ext( $_FILES['file'], $file_name );
-
-			if ( is_wp_error( $valid_file_name ) ) {
-				GFCommon::log_debug( sprintf( '%s(): %s; %s; %s', __METHOD__, $file_name, $valid_file_name->get_error_code(), $valid_file_name->get_error_message() ) );
-				self::die_error( $valid_file_name->get_error_code(), $valid_file_name->get_error_message() );
-			}
-		}
-
 		$chunk         = isset( $_REQUEST['chunk'] ) ? intval( $_REQUEST['chunk'] ) : 0;
 		$chunks        = isset( $_REQUEST['chunks'] ) ? intval( $_REQUEST['chunks'] ) : 0;
 		$chunk_data    = $chunks && $file_name ? rgar( $_REQUEST, str_replace( '.', '_', $file_name ) ) : array();
@@ -166,6 +142,40 @@ class GFAsyncUpload {
 
 		$tmp_file_name = sanitize_file_name( $tmp_file_name );
 		$file_path     = $target_dir . $tmp_file_name;
+
+		// Only validate if chunking is disabled, or if the final chunk has been uploaded.
+		$check_chunk = $chunks === 0 || $chunk === ( $chunks - 1 );
+
+		/**
+		 * Allows the disabling of file upload whitelisting
+		 *
+		 * @param bool false Set to 'true' to disable whitelisting.  Defaults to 'false'.
+		 */
+		$whitelisting_disabled = apply_filters( 'gform_file_upload_whitelisting_disabled', false );
+
+		if ( ! $whitelisting_disabled && $check_chunk ) {
+
+			$file_array = $_FILES['file'];
+
+			if ( $chunks ) {
+				$file_array['tmp_name'] = $file_path;
+			}
+
+			// Whitelist the file type
+			$valid_uploaded_filename = GFCommon::check_type_and_ext( $file_array, $uploaded_filename );
+
+			if ( is_wp_error( $valid_uploaded_filename ) ) {
+				GFCommon::log_debug( sprintf( '%s(): %s; %s; %s', __METHOD__, $uploaded_filename, $valid_uploaded_filename->get_error_code(), $valid_uploaded_filename->get_error_message() ) );
+				self::die_error( $valid_uploaded_filename->get_error_code(), $valid_uploaded_filename->get_error_message() );
+			}
+
+			$valid_file_name = GFCommon::check_type_and_ext( $file_array, $file_name );
+
+			if ( is_wp_error( $valid_file_name ) ) {
+				GFCommon::log_debug( sprintf( '%s(): %s; %s; %s', __METHOD__, $file_name, $valid_file_name->get_error_code(), $valid_file_name->get_error_message() ) );
+				self::die_error( $valid_file_name->get_error_code(), $valid_file_name->get_error_message() );
+			}
+		}
 
 		$cleanup_target_dir = true; // Remove old files
 		$max_file_age = 5 * 3600; // Temp file age in seconds

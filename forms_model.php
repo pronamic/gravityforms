@@ -128,6 +128,19 @@ class GFFormsModel {
 	}
 
 	/**
+	 * Removes a form from the data stored within GFFormsModel::$_current_form.
+	 *
+	 * @since 2.6
+	 *
+	 * @var string $key The key of the form to clear from the current forms array.
+	 *
+	 * @return void
+	 */
+	public static function flush_current_form( $key ) {
+		self::$_current_forms[ $key ] = null;
+	}
+
+	/**
 	 * Flushes the data stored within GFFormsModel::$_confirmations
 	 *
 	 * @since  Unknown
@@ -2293,7 +2306,6 @@ class GFFormsModel {
 	}
 
 	public static function delete_field( $form_or_id, $field_id, $save_form = true ) {
-
 		$form = is_numeric( $form_or_id ) ? self::get_form_meta( $form_or_id ) : $form_or_id;
 
 		if ( empty( $form['id'] ) || ! isset( $form['fields'] ) || ! is_array( $form['fields'] ) ) {
@@ -7426,6 +7438,33 @@ class GFFormsModel {
 
 		if ( empty( $encrypted_fields ) ) {
 			$encrypted_fields = array();
+		}
+
+		return $encrypted_fields;
+	}
+
+	/**
+	 * Returns the encrypted field IDs for each entry_id specified in the $entry_ids array.
+	 *
+	 * @since 2.6
+	 *
+	 * @param array $entry_ids An array of entry IDs.
+	 *
+	 * @return array Returns an array with entry_id as the key and an array of field IDs (that have been encrypted using GFCommon::openssl_encrypt()) as the value.
+	 */
+	public static function get_openssl_encrypted_fields_by_entries( $entry_ids ) {
+		global $wpdb;
+
+		$entry_ids        = array_unique( $entry_ids );
+		$placeholders     = implode( ',', array_fill( 0, count( $entry_ids ), '%d' ) );
+		$entry_meta_table = self::get_entry_meta_table_name();
+
+		$sql     = sprintf( "SELECT entry_id, meta_value from $entry_meta_table WHERE meta_key = '_openssl_encrypted_fields' AND entry_id IN(%s)", $placeholders );
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, $entry_ids ), ARRAY_A );
+
+		$encrypted_fields = array();
+		foreach ( $results as $row ) {
+			$encrypted_fields[ $row['entry_id'] ] = maybe_unserialize( $row['meta_value'] );
 		}
 
 		return $encrypted_fields;

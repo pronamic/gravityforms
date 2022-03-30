@@ -2,6 +2,7 @@
 
 namespace Gravity_Forms\Gravity_Forms\Settings\Fields;
 
+use GFCommon;
 use Gravity_Forms\Gravity_Forms\Settings\Fields;
 
 defined( 'ABSPATH' ) || die();
@@ -130,8 +131,9 @@ class Date_Time extends Base {
 						{
 							showOn: 'both',
 							changeMonth: true,
-							changeYear: true,
-							buttonText: '<span class=\"screen-reader-text\">%s</span><svg width=\"18\" height=\"18\" fill=\"#9092B2\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M13.0909 1.6364V1.231C13.0909.5513 13.6357 0 14.3182 0c.6778 0 1.2273.5468 1.2273 1.2311v.4053h.8254c.8997 0 1.6291.7349 1.6291 1.6288v13.106C18 17.2707 17.2721 18 16.3709 18H1.6291C.7294 18 0 17.2651 0 16.3712V3.2652c0-.8996.728-1.6288 1.6291-1.6288h.8254V1.231C2.4545.5513 2.9993 0 3.6818 0c.6778 0 1.2273.5468 1.2273 1.2311v.4053h2.4545V1.231C7.3636.5513 7.9084 0 8.591 0c.6778 0 1.2273.5468 1.2273 1.2311v.4053h3.2727zM1.6364 7.3636v9h14.7272v-9H1.6364z\" /></svg>',
+							changeYear: true, 
+							buttonImage: '%s',
+							buttonText: '%s',
 							dateFormat: 'mm/dd/yy'
 						}
 					);
@@ -139,6 +141,7 @@ class Date_Time extends Base {
 			</script>",
 			$this->settings->get_input_name_prefix(),
 			$this->inputs['date']->name,
+			GFCommon::get_image_url( 'datepicker/datepicker.svg' ),
 			esc_html__( 'Open Date Picker', 'gravityforms' )
 		);
 

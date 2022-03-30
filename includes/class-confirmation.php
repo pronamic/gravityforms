@@ -459,9 +459,8 @@ class GF_Confirmation {
 		}
 
 		// Reset confirmation ID, default status, conditional logic.
-		$confirmation['id']               = null;
-		$confirmation['isDefault']        = false;
-		$confirmation['conditionalLogic'] = null;
+		$confirmation['id']        = null;
+		$confirmation['isDefault'] = false;
 
 		// Check for confirmation count in confirmation name.
 		preg_match_all( '/(\\(([0-9])*\\))$/mi', $confirmation['name'], $count_exists_in_name );
@@ -840,6 +839,20 @@ class GF_Confirmation {
 
 		return $text;
 
+	}
+
+	/**
+	 * Output the duplicate conditional logic confirmation notice.
+	 *
+	 * @since  2.6
+	 */
+	public static function output_duplicate_confirmation_notice() {
+		echo '<div class="gform-alert gform-alert--notice" data-js="gform-alert">
+				<span class="gform-alert__icon gform-icon gform-icon--circle-notice" aria-hidden="true"></span>
+  				<div class="gform-alert__message-wrap">
+    				<p class="gform-alert__message">In order to avoid conflicts with other confirmations on this form, please ensure these conditional logic rules are unique.</p>
+  				</div>
+			</div>';
 	}
 
 }
