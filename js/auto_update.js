@@ -14,7 +14,7 @@ jQuery( document ).ready( function( $ ) {
 
 		$.post( url, data, function ( response ) {
 			if ( ! response.success ) {
-				$( '.gf-auto-update-notice' ).html( response.data ).show();
+				$( '.gf-auto-update-notice' ).html( gform.utils.escapeScripts( response.data ) ).show();
 			} else {
 				var enabled        = $( '.auto-update-enabled span' );
 				var disabled       = $( '.auto-update-disabled span' );
@@ -23,12 +23,12 @@ jQuery( document ).ready( function( $ ) {
 
 				if ( 'enable-gf-updates' == task ) {
 					$( '.gf-toggle-auto-update' ).attr( 'data-gfaction', 'disable-gf-updates' );
-					$( '.gf-update-label' ).html( gf_update_ajax.disable_text );
+					$( '.gf-update-label' ).html( gform.utils.escapeScripts( gf_update_ajax.disable_text ) );
 					++enabledNumber;
 					--disabledNumber;
 				} else {
 					$( '.gf-toggle-auto-update' ).attr( 'data-gfaction', 'enable-gf-updates' );
-					$( '.gf-update-label' ).html( gf_update_ajax.enable_text );
+					$( '.gf-update-label' ).html( gform.utils.escapeScripts( gf_update_ajax.enable_text ) );
 					--enabledNumber;
 					++disabledNumber;
 				}

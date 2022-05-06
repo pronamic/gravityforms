@@ -147,13 +147,22 @@ abstract class GF_API_Response implements \JsonSerializable, \Serializable {
 	 * @return string
 	 */
 	public function serialize() {
-		return serialize(
-			array(
-				'data'   => $this->data,
-				'errors' => $this->errors,
-				'status' => $this->status,
-				'meta'   => $this->meta,
-			)
+		return serialize( $this->__serialize() );
+	}
+
+	/**
+	 * Prepares the object for serializing.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @return array
+	 */
+	public function __serialize() {
+		return array(
+			'data'   => $this->data,
+			'errors' => $this->errors,
+			'status' => $this->status,
+			'meta'   => $this->meta,
 		);
 	}
 
@@ -163,12 +172,23 @@ abstract class GF_API_Response implements \JsonSerializable, \Serializable {
 	 * @param string $serialized
 	 */
 	public function unserialize( $serialized ) {
-		$parsed = unserialize( $serialized );
+		$this->__unserialize( unserialize( $serialized ) );
+	}
 
-		$this->data   = $parsed['data'];
-		$this->errors = $parsed['errors'];
-		$this->status = $parsed['status'];
-		$this->meta   = $parsed['meta'];
+	/**
+	 * Hydrates the object when unserializing.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @param array $data The unserialized data.
+	 *
+	 * @return void
+	 */
+	public function __unserialize( $data ) {
+		$this->data   = $data['data'];
+		$this->errors = $data['errors'];
+		$this->status = $data['status'];
+		$this->meta   = $data['meta'];
 	}
 
 	/**
@@ -176,6 +196,7 @@ abstract class GF_API_Response implements \JsonSerializable, \Serializable {
 	 *
 	 * @return array
 	 */
+	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 
 		$response = array();

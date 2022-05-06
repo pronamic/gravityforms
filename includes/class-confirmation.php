@@ -204,27 +204,6 @@ class GF_Confirmation {
 	 */
 	private static function settings_fields( $confirmation, $form ) {
 
-		// Initialize page choices array.
-		$page_choices = array(
-			array(
-				'label' => esc_html__( 'Select a Page', 'gravityforms' ),
-				'value' => '',
-			),
-		);
-
-		// Get pages.
-		$pages = get_pages( array( 'depth' => 0, 'child_of' => 0 ) );
-
-		// Loop through pages, add as choices.
-		if ( is_array( $pages ) && ! empty( $pages ) ) {
-			foreach ( $pages as $page ) {
-				$page_choices[] = array(
-					'label' => esc_html( $page->post_title ),
-					'value' => esc_attr( $page->ID ),
-				);
-			}
-		}
-
 		// Build confirmation settings fields.
 		$fields = array(
 			array(
@@ -304,8 +283,7 @@ class GF_Confirmation {
 					array(
 						'name'       => 'page',
 						'label'      => esc_html__( 'Page', 'gravityforms' ),
-						'type'       => 'select',
-						'choices'    => $page_choices,
+						'type'       => 'post_select',
 						'required'   => true,
 						'dependency' => array(
 							'live'     => true,

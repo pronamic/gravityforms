@@ -22,7 +22,10 @@ class GF_Config_Block_Editor extends GF_Config {
 	 * @return array[]
 	 */
 	public function data() {
-		$is_editor = function_exists( 'get_current_screen' ) && null !== get_current_screen() ? get_current_screen()->is_block_editor() : false;
+		$is_editor = function_exists( 'get_current_screen' ) && is_callable( array(
+				get_current_screen(),
+				'is_block_editor'
+			) ) && get_current_screen()->is_block_editor();
 
 		return array(
 			'block_editor' => array(

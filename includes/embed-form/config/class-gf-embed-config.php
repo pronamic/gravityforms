@@ -15,6 +15,17 @@ class GF_Embed_Config extends GF_Config {
 	protected $script_to_localize = 'gform_gravityforms_admin_vendors';
 
 	/**
+	 * Determine if the config should enqueue its data.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @return bool
+	 */
+	public function should_enqueue() {
+		return \GFCommon::is_form_editor();
+	}
+
+	/**
 	 * Config data.
 	 *
 	 * @return array[]
@@ -51,14 +62,21 @@ class GF_Embed_Config extends GF_Config {
 	 * @return array
 	 */
 	private function get_urls() {
-		$posts     = get_posts( array( 'post_type' => 'any', 'post_status' => 'publish', 'posts_per_page' => 1 ) );
 		$edit_link = '';
 
-		if ( ! empty( $posts ) ) {
-			$first     = $posts[0];
-			$edit_link = get_edit_post_link( $first->ID, 'url' );
-			$edit_link = preg_replace( '/(post=)([0-9]+)/', 'post=%1$s', $edit_link );
+		$post_type_object = get_post_type_object( 'page' );
+		if ( ! empty( $post_type_object->_edit_link ) ) {
+			$edit_link = admin_url( str_replace( '%d', '%1$s', $post_type_object->_edit_link ) . '&action=edit' );
 		}
+
+		/**
+		 * Allows the edit post link to be customized.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param string $link The edit link. Use %1$s as the placeholder for the ID.
+		 */
+		$edit_link = apply_filters( 'gform_embed_edit_post_link', $edit_link );
 
 		return [
 			'edit_post'      => [

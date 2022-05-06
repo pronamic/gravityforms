@@ -353,9 +353,16 @@ class GFCommon {
 		return plugins_url( '', __FILE__ );
 	}
 
-	//Returns the physical path of the plugin's root folder
+	/**
+	 * Returns the physical path of the plugin's root folder, without trailing slash.
+	 *
+	 * @since unknown
+	 * @since 2.6.2 Updated to use GF_PLUGIN_DIR_PATH.
+	 *
+	 * @return string
+	 */
 	public static function get_base_path() {
-		return dirname( __FILE__ );
+		return untrailingslashit( GF_PLUGIN_DIR_PATH );
 	}
 
 	/**
@@ -4557,7 +4564,17 @@ Content-Type: text/html;
 		return $post_id;
 	}
 
-	public static function evaluate_conditional_logic( $logic, $form, $lead ) {
+	/**
+	 * Evaluates conditional logic based on the specified $logic variable. This method is used when evaluating non-field conditional logic such as Notification, Confirmation and Feeds.
+	 * NOTE: There is a future refactoring opportunity to reduce code duplication by merging this method with GFFormsModel::evaluate_conditional_logic(), which currently handles field conditional logic.
+	 *
+	 * @param array $logic The conditional logic configuration array with all the specified rules.
+	 * @param array $form  The current Form object.
+	 * @param array $entry The current Entry object.
+	 *
+	 * @return bool         Returns true if the conditional logic passes, false otherwise.
+	 */
+	public static function evaluate_conditional_logic( $logic, $form, $entry ) {
 
 		if ( ! $logic || ! is_array( rgar( $logic, 'rules' ) ) ) {
 			return true;
@@ -4568,13 +4585,45 @@ Content-Type: text/html;
 		if ( is_array( $logic['rules'] ) ) {
 			foreach ( $logic['rules'] as $rule ) {
 
-				if ( in_array( $rule['fieldId'], $entry_meta_keys ) ) {
-					$is_value_match = GFFormsModel::is_value_match( rgar( $lead, $rule['fieldId'] ), $rule['value'], $rule['operator'], null, $rule, $form );
-				} else {
-					$source_field   = GFFormsModel::get_field( $form, $rule['fieldId'] );
-					$field_value    = empty( $lead ) ? GFFormsModel::get_field_value( $source_field, array() ) : GFFormsModel::get_lead_field_value( $lead, $source_field );
-					$is_value_match = GFFormsModel::is_value_match( $field_value, $rule['value'], $rule['operator'], $source_field, $rule, $form );
+				try {
+					/**
+					 * Filter the conditional logic rule before it is evaluated.
+					 *
+					 * @since 2.6.2
+					 *
+					 * @param array $rule         The conditional logic rule about to be evaluated.
+					 * @param array $form         The current form meta.
+					 * @param array $logic        All details required to evaluate an objects conditional logic.
+					 * @param array $field_values The default field values for this form (if available).
+					 * @param array $entry        The current entry object.
+					 */
+					$rule = apply_filters( 'gform_rule_pre_evaluation', $rule, $form, $logic, array(), $entry );
+				} catch ( Error $e ) {
+					self::log_error( __METHOD__ . '(): Error from function hooked to gform_rule_pre_evaluation. ' . $e->getMessage() );
 				}
+
+				if ( in_array( $rule['fieldId'], $entry_meta_keys ) ) {
+					$source_field = null;
+					$source_value = rgar( $entry, $rule['fieldId'] );
+				} else {
+					$source_field = GFFormsModel::get_field( $form, $rule['fieldId'] );
+					$source_value = empty( $entry ) ? GFFormsModel::get_field_value( $source_field, array() ) : GFFormsModel::get_lead_field_value( $entry, $source_field );
+				}
+
+				/**
+				 * Filter the source value of a conditional logic rule before it is compared with the target value.
+				 *
+				 * @since 2.6.2
+				 *
+				 * @param int|string $source_value The value of the rule's configured field ID, entry meta, or custom property.
+				 * @param array      $rule         The conditional logic rule that is being evaluated.
+				 * @param array      $form         The current form meta.
+				 * @param array      $logic        All details required to evaluate an objects conditional logic.
+				 * @param array      $entry        The current entry object (if available).
+				 */
+				$source_value = apply_filters( 'gform_rule_source_value', $source_value, $rule, $form, $logic, $entry );
+
+				$is_value_match = GFFormsModel::is_value_match( $source_value, $rule['value'], $rule['operator'], $source_field, $rule, $form );
 
 				if ( $is_value_match ) {
 					$match_count ++;
@@ -7305,19 +7354,25 @@ class GFCache {
 		}
 
 		if ( is_multisite() ) {
-			$sql = "
+			$sql = $wpdb->prepare( "
                  DELETE FROM $wpdb->sitemeta
-                 WHERE meta_key LIKE '\_site\_transient\_timeout\_GFCache\_%' OR
-                 meta_key LIKE '_site_transient_GFCache_%'
-                ";
+                 WHERE meta_key LIKE %s OR
+                 meta_key LIKE %s
+                ",
+				'\_site\_transient\_timeout\_GFCache\_%',
+				'_site_transient_GFCache_%'
+			);
 		} else {
-			$sql = "
+			$sql = $wpdb->prepare( "
                  DELETE FROM $wpdb->options
-                 WHERE option_name LIKE '\_transient\_timeout\_GFCache\_%' OR
-                 option_name LIKE '\_transient\_GFCache\_%'
-                ";
-
+                 WHERE option_name LIKE %s OR
+                 option_name LIKE %s
+                ",
+				'\_transient\_timeout\_GFCache\_%',
+				'_transient_GFCache_%'
+			);
 		}
+
 		$rows_deleted = $wpdb->query( $sql );
 
 		$success = $rows_deleted !== false ? true : false;

@@ -512,7 +512,7 @@ class GF_Field_Time extends GF_Field {
 	 */
 	public function get_form_editor_inline_script_on_page_render() {
 		// No support for custom sub AM/PM sub label.
-		return "gform.addAction( 'gform_post_load_field_settings' , function( [ field, form ] ) { jQuery('.field_custom_input_row_input_' + field.id + '_3').hide(); } );";
+		return "gform.addAction( 'gform_post_load_field_settings' , function( [ field, form ] ) { if( GetInputType( field ) === 'time' ) { jQuery('.field_custom_input_row_input_' + field.id + '_3').hide(); } } );";
 	}
 
 	/**

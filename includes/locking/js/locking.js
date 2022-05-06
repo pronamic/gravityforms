@@ -20,8 +20,8 @@
     };
 
     function lock_request_timedout() {
-        $("#gform-lock-request-status").html(strings.noResponse);
-        $("#gform-lock-request-button").attr("disabled", false).text(strings.requestAgain);
+        $("#gform-lock-request-status").html( gform.utils.escapeHtml( strings.noResponse ) );
+        $("#gform-lock-request-button").attr("disabled", false).text( strings.requestAgain );
         lockRequestInProgress = false;
         rejectionRequestTimeout = true;
         rejectionCountdown = false;
@@ -40,11 +40,11 @@
             rejectionCountdown = setTimeout(lock_request_timedout, 120000);
             $.getJSON(ajaxurl, { action: "gf_lock_request_" + objectType, object_id: objectID })
                 .done(function (json) {
-                    $("#gform-lock-request-status").html(json.html);
+                    $("#gform-lock-request-status").html( gform.utils.escapeScripts( json.html ) );
                 })
                 .fail(function (jqxhr, textStatus, error) {
                     var err = textStatus + ', ' + error;
-                    $("#gform-lock-request-status").html(strings.requestError + ": " + err);
+                    $("#gform-lock-request-status").html( gform.utils.escapeScripts( strings.requestError + ": " + err ) );
                 });
         });
 
@@ -55,7 +55,7 @@
                 })
                 .fail(function (jqxhr, textStatus, error) {
                     var err = textStatus + ', ' + error;
-                    $("#gform-lock-request-status").html(strings.requestError + ": " + err);
+                    $("#gform-lock-request-status").html( gform.utils.escapeScripts( strings.requestError + ": " + err ) );
                     $('#gform-lock-dialog').hide();
                 });
         });
@@ -142,7 +142,7 @@
                                 wrap.show().find('.currently-editing').text(received.lock_error.text);
                             }
                         } else if (received.lock_request) {
-                            $("#gform-lock-request-status").html(received.lock_request.text);
+                            $("#gform-lock-request-status").html( gform.utils.escapeScripts( received.lock_request.text ) );
                         }
 
                     }

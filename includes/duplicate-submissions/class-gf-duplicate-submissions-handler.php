@@ -117,10 +117,7 @@ class GF_Duplicate_Submissions_Handler {
 	 * Redirect to a $_GET request if we detect a dupe submission from Safari.
 	 */
 	public function maybe_handle_safari_redirect() {
-
-		$needs_protection = filter_input( INPUT_GET, self::SAFARI_REDIRECT_PARAM, FILTER_SANITIZE_STRING );
-
-		if ( empty( $needs_protection ) || ! $this->is_enabled() ) {
+		if ( rgget( self::SAFARI_REDIRECT_PARAM ) != '1' || ! $this->is_enabled() ) {
 			return;
 		}
 

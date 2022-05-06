@@ -18,6 +18,17 @@ class GF_Embed_Endpoints_Config extends GF_Config {
 	protected $overwrite          = false;
 
 	/**
+	 * Determine if the config should enqueue its data.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @return bool
+	 */
+	public function should_enqueue() {
+		return \GFCommon::is_form_editor();
+	}
+
+	/**
 	 * Config data.
 	 *
 	 * @return array[]

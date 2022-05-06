@@ -655,7 +655,7 @@ gform.a11y = {};
 //------------------------------------------------
 
 /**
- * Options namespace to house common plugin and custom options objects for reuse across out JavaScript.
+ * Options namespace to house common plugin and custom options objects for reuse across our JavaScript.
  */
 
 gform.options = {
@@ -666,7 +666,7 @@ gform.options = {
      */
 
     jqEditorAccordions: {
-    	header: 'button:not(.choices-ui__trigger):not(.conditional_logic_wrapper)',
+    	header: 'button.panel-block-tabs__toggle',
         heightStyle: 'content',
         collapsible: true,
         animate: false,

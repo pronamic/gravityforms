@@ -34,6 +34,7 @@ class GF_Form_Editor_Form_Save_Config extends GF_Admin_Form_Save_Config {
 					'formUpdated'                      => __( 'Form Updated', 'gravityforms' ),
 					'viewForm'                         => __( 'View Form', 'gravityforms' ),
 					'genericError'                     => __( 'An error occurred while saving the form.', 'gravityforms' ),
+					'networkError'                     => __( 'Request failed due to a network error. Please check your internet connection.', 'gravityforms' ),
 					'genericSuccess'                   => __( 'Form was updated successfully.', 'gravityforms' ),
 					'saveInProgress'                   => __( 'Saving', 'gravityforms' ),
 					'saveForm'                         => __( 'Save Form', 'gravityforms' ),
@@ -41,8 +42,7 @@ class GF_Form_Editor_Form_Save_Config extends GF_Admin_Form_Save_Config {
 					'ajaxErrorDialogCancelButtonText'  => __( 'Cancel', 'gravityforms' ),
 					'ajaxErrorDialogCloseButtonTitle'  => __( 'Close', 'gravityforms' ),
 					'ajaxErrorDialogConfirmButtonText' => __( 'Save', 'gravityforms' ),
-					// Translators: 1. Opening <a> tag with link to the form export page, 2. closing <a> tag.
-					'ajaxErrorDialogContent'           => sprintf( __( 'There was an error saving your form. To avoid losing your work, click the Save button to save your form and reload the page. If you continue to encounter this error, you can %1$sexport your form%2$s to include in your support request.', 'gravityforms' ), '<a href="' . admin_url( 'admin.php?page=gf_export&subview=export_form' ) . '">', '</a>' ),
+					'ajaxErrorDialogContent'           => __( 'There was an error saving your form. To avoid losing your work, click the Save button to save your form and reload the page.' ),
 					'ajaxErrorDialogTitle'             => __( 'Save Error.', 'gravityforms' ),
 				),
 			),

@@ -4,8 +4,6 @@ if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
 
-require_once( ABSPATH . WPINC . '/post.php' );
-
 /**
  * Class GF_Forms_Model_Legacy
  *

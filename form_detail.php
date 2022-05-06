@@ -441,6 +441,7 @@ class GFFormDetail {
 					<form method="post" id="gform_update">
 						<?php wp_nonce_field( "gforms_update_form_{$form_id}", 'gforms_update_form' ); ?>
 						<input type="hidden" id="gform_meta" name="gform_meta" />
+						<input type="hidden" id="gform_export" name="gform_export" value="false"/>
 					</form>
 				</div>
 				<div class="sidebar__panel sidebar__panel--settings" id="field_settings_container" data-active-field-class="">
@@ -3215,7 +3216,49 @@ class GFFormDetail {
 	 */
 	public static function editor_notices( $form ) {
 		GFFormDetail::editor_notice_for_legacy_form( $form );
+		GFFormDetail::editor_notice_for_ajax_save_failure( $form );
 		GFFormDetail::editor_notice_for_deprecated_ready_classes( $form );
+	}
+
+	/**
+	 * Display editor notice for forms that failed AJAX save.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @param array $form
+	 */
+	public static function editor_notice_for_ajax_save_failure( $form ) {
+		if ( ! rgar( $_POST, 'gform_export', false ) ) {
+			return '';
+		}
+
+		?>
+		<div class="gform-alert" data-js="gform-alert" data-gform-alert-cookie="gform-alert-editor-deprecated-classes">
+			<span class="gform-alert__icon gform-icon gform-icon--campaign" aria-hidden="true"></span>
+			<div class="gform-alert__message-wrap">
+				<p class="gform-alert__message" tabindex="0">
+					<?php
+						echo sprintf(
+							// Translators: 1. Opening <a> tag with link to the form export page, 2. closing <a> tag, 3. Opening <a> tag for documentation link, 4. Closing <a> tag.
+							esc_html__( 'If you continue to encounter this error, you can %1$sexport your form%2$s to include in your support request. You can also disable AJAX saving for this form. %3$sLearn more%4$s.', 'gravityforms' ),
+							'<a target="_blank" href="' . admin_url( 'admin.php?page=gf_export&subview=export_form&export_form_ids=' . rgget( 'id' ) ) . '" rel="noopener noreferrer" class="gform-export-form">',
+							'</a>',
+							'<a target="_blank" href="https://docs.gravityforms.com/gform_disable_ajax_save/" rel="noopener noreferrer">',
+							'</a>'
+						);
+					?>
+				</p>
+			</div>
+			<button
+				class="gform-alert__dismiss"
+				aria-label="<?php esc_attr_e( 'Dismiss notification', 'gravityforms' ); ?>"
+				title="<?php esc_attr_e( 'Dismiss notification', 'gravityforms' ); ?>"
+				data-js="gform-alert-dismiss-trigger"
+			>
+				<span class="gform-icon gform-icon--delete"></span>
+			</button>
+		</div>
+		<?php
 	}
 
 	/**
@@ -3363,5 +3406,4 @@ class GFFormDetail {
 
 		return $form;
 	}
-
 }

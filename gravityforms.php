@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.6.1
+Version: 2.6.2
 Requires at least: 4.0
 Requires PHP: 5.6
 Author: Gravity Forms
@@ -123,6 +123,14 @@ define( 'GF_SUPPORTED_WP_VERSION', version_compare( get_bloginfo( 'version' ), G
  */
 define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '5.8' );
 
+/**
+ * The filesystem path of the directory that contains the plugin, includes trailing slash.
+ *
+ * @since 2.6.2
+ *
+ * @var string
+ */
+define( 'GF_PLUGIN_DIR_PATH', plugin_dir_path( __FILE__ ) );
 
 if ( ! defined( 'GRAVITY_MANAGER_URL' ) ) {
 	/**
@@ -133,36 +141,36 @@ if ( ! defined( 'GRAVITY_MANAGER_URL' ) ) {
 	define( 'GRAVITY_MANAGER_URL', 'https://gravityapi.com/wp-content/plugins/gravitymanager' );
 }
 
-require_once( plugin_dir_path( __FILE__ ) . '/includes/class-gf-service-container.php' );
-require_once( plugin_dir_path( __FILE__ ) . '/includes/class-gf-service-provider.php' );
-require_once( plugin_dir_path( __FILE__ ) . '/includes/transients/interface-gf-transient-strategy.php' );
-require_once( plugin_dir_path( __FILE__ ) . '/includes/transients/class-gf-wp-transient-strategy.php' );
-require_once( plugin_dir_path( __FILE__ ) . '/includes/external-api/interface-gf-api-response-factory.php' );
-require_once( plugin_dir_path( __FILE__ ) . '/includes/external-api/class-gf-api-connector.php' );
-require_once( plugin_dir_path( __FILE__ ) . '/includes/external-api/class-gf-api-response.php' );
+require_once GF_PLUGIN_DIR_PATH . 'includes/class-gf-service-container.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/class-gf-service-provider.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/transients/interface-gf-transient-strategy.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/transients/class-gf-wp-transient-strategy.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/external-api/interface-gf-api-response-factory.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/external-api/class-gf-api-connector.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/external-api/class-gf-api-response.php';
 
-require_once( plugin_dir_path( __FILE__ ) . 'currency.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'common.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'forms_model.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'form_detail.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'widget.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/api.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/webapi/webapi.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fields/class-gf-fields.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/class-gf-download.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/query/class-gf-query.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/assets/class-gf-asset.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/assets/class-gf-script-asset.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/assets/class-gf-style-asset.php' );
-require_once( plugin_dir_path( __FILE__ ) . '/includes/trait-redirects-on-save.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/class-translationspress-updater.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/messages/class-dismissable-messages.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/orders/factories/class-gf-order-factory.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/orders/summaries/class-gf-order-summary.php' );
+require_once GF_PLUGIN_DIR_PATH . 'currency.php';
+require_once GF_PLUGIN_DIR_PATH . 'common.php';
+require_once GF_PLUGIN_DIR_PATH . 'forms_model.php';
+require_once GF_PLUGIN_DIR_PATH . 'form_detail.php';
+require_once GF_PLUGIN_DIR_PATH . 'widget.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/api.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/webapi/webapi.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/fields/class-gf-fields.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/class-gf-download.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/query/class-gf-query.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/assets/class-gf-asset.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/assets/class-gf-script-asset.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/assets/class-gf-style-asset.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/trait-redirects-on-save.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/class-translationspress-updater.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/messages/class-dismissable-messages.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/orders/factories/class-gf-order-factory.php';
+require_once GF_PLUGIN_DIR_PATH . 'includes/orders/summaries/class-gf-order-summary.php';
 
 // Load Logging if Logging Add-On is not active.
 if ( ! GFCommon::is_logging_plugin_active() ) {
-	require_once( plugin_dir_path( __FILE__ ) . 'includes/logging/logging.php' );
+	require_once GF_PLUGIN_DIR_PATH . 'includes/logging/logging.php';
 }
 
 // GFCommon::$version is deprecated, set it to current version for backwards compatibility
@@ -228,7 +236,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.6.1';
+	public static $version = '2.6.2';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -269,7 +277,7 @@ class GFForms {
 
 		if ( defined( 'OSDXP_DASHBOARD_VER' ) ) {
 			// Integration with osDXP.
-			require_once  plugin_dir_path( __FILE__ ) . 'includes/class-gf-osdxp.php';
+			require_once  GF_PLUGIN_DIR_PATH . 'includes/class-gf-osdxp.php';
 		}
 	}
 
@@ -305,18 +313,18 @@ class GFForms {
 	* @return \Gravity_Forms\Gravity_Forms\GF_Service_Container
 	*/
 	public static function get_service_container() {
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/license/class-gf-license-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/duplicate-submissions/class-gf-duplicate-submissions-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/util/class-gf-util-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/config/class-gf-config-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/embed-form/class-gf-embed-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/form-editor/class-gf-form-editor-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/splash-page/class-gf-splash-page-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/query/batch-processing/class-gf-batch-operations-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/save-form/class-gf-save-form-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/merge-tags/class-gf-merge-tags-service-provider.php' );
-        require_once( plugin_dir_path( __FILE__ ) . '/includes/settings/class-gf-settings-service-provider.php' );
-		require_once( plugin_dir_path( __FILE__ ) . '/includes/assets/class-gf-asset-service-provider.php' );
+		require_once GF_PLUGIN_DIR_PATH . 'includes/license/class-gf-license-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/duplicate-submissions/class-gf-duplicate-submissions-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/util/class-gf-util-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/config/class-gf-config-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/embed-form/class-gf-embed-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/form-editor/class-gf-form-editor-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/splash-page/class-gf-splash-page-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/query/batch-processing/class-gf-batch-operations-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/save-form/class-gf-save-form-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/merge-tags/class-gf-merge-tags-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/settings/class-gf-settings-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/assets/class-gf-asset-service-provider.php';
 
 		if ( ! empty( self::$container ) ) {
 			return self::$container;
@@ -386,7 +394,7 @@ class GFForms {
 		self::init_background_upgrader();
 
 		// Run background feed processing.
-		require_once( plugin_dir_path( __FILE__ ) . 'includes/addon/class-gf-feed-processor.php' );
+		require_once GF_PLUGIN_DIR_PATH . 'includes/addon/class-gf-feed-processor.php';
 
 		gf_feed_processor();
 
@@ -402,7 +410,7 @@ class GFForms {
 
 			// Load block framework.
 			if ( ! class_exists( 'GF_Blocks' ) ) {
-				require_once plugin_dir_path( __FILE__ ) . 'includes/blocks/class-gf-blocks.php';
+				require_once GF_PLUGIN_DIR_PATH . 'includes/blocks/class-gf-blocks.php';
 			}
 
 			// Load included Blocks.
@@ -2576,6 +2584,9 @@ class GFForms {
 	 */
 	public static function dashboard_update_message() {
 		$version_info = GFCommon::get_version_info();
+		if ( empty( $version_info['version'] ) ) {
+			return;
+		}
 
 		//don't display a message if use has dismissed the message for this version
 		$ary_dismissed = get_option( 'gf_dismissed_upgrades' );
@@ -2586,7 +2597,7 @@ class GFForms {
 			return;
 		}
 
-		if ( version_compare( GFCommon::$version, $version_info['version'], '<' ) ) {
+		if ( version_compare( GFForms::$version, $version_info['version'], '<' ) ) {
 			$message = sprintf( esc_html__( 'There is an update available for Gravity Forms. %sView Details%s', 'gravityforms' ), "<a href='admin.php?page=gf_system_status&subview=updates'>", '</a>' );
 			?>
 			<div class='updated' style='padding:15px; position:relative;' id='gf_dashboard_message'><?php echo $message ?>
@@ -4119,10 +4130,6 @@ class GFForms {
 	public static function update_form_active() {
 		check_ajax_referer( 'rg_update_form_active', 'rg_update_form_active' );
 
-		if ( ! GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
-			wp_die( -1, 403 );
-		}
-
 		if ( GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
 			GFFormsModel::update_form_active( $_POST['form_id'], $_POST['is_active'] );
 		} else {
@@ -4143,10 +4150,6 @@ class GFForms {
 	public static function update_notification_active() {
 		check_ajax_referer( 'rg_update_notification_active', 'rg_update_notification_active' );
 
-		if ( ! GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
-			wp_die( -1, 403 );
-		}
-
 		if ( GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
 			GFFormsModel::update_notification_active( $_POST['form_id'], $_POST['notification_id'], $_POST['is_active'] );
 		} else {
@@ -4166,10 +4169,6 @@ class GFForms {
 	 */
 	public static function update_confirmation_active() {
 		check_ajax_referer( 'rg_update_confirmation_active', 'rg_update_confirmation_active' );
-
-		if ( ! GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
-			wp_die( -1, 403 );
-		}
 
 		if ( GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
 			GFFormsModel::update_confirmation_active( $_POST['form_id'], $_POST['confirmation_id'], $_POST['is_active'] );
@@ -4443,7 +4442,7 @@ class GFForms {
 	public static function select_export_form() {
 		check_ajax_referer( 'rg_select_export_form', 'rg_select_export_form' );
 
-		if ( ! GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
+		if ( ! GFCommon::current_user_can_any( 'gravityforms_export_entries' ) ) {
 			wp_die( -1, 403 );
 		}
 
@@ -6570,7 +6569,7 @@ class GFForms {
 	 */
 	public static function init_background_upgrader() {
 		if ( empty( self::$background_upgrader ) ) {
-			require_once( plugin_dir_path( __FILE__ ) . 'includes/class-gf-background-upgrader.php' );
+			require_once GF_PLUGIN_DIR_PATH . 'includes/class-gf-background-upgrader.php';
 			self::$background_upgrader = new GF_Background_Upgrader();
 		}
 	}

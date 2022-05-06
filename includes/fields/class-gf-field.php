@@ -84,18 +84,31 @@ class GF_Field extends stdClass implements ArrayAccess {
 	}
 
 	/**
-	 * Handles array notation
+	 * Whether or not an offset exists.
 	 *
-	 * @param mixed $offset
+	 * @since 1.9
+	 *
+	 * @param mixed $offset The offset to check for.
 	 *
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists( $offset ) {
 		$this->maybe_fire_array_access_deprecation_notice( $offset );
 
 		return isset( $this->$offset );
 	}
 
+	/**
+	 * Returns the value at specified offset.
+	 *
+	 * @since 1.9
+	 *
+	 * @param mixed $offset The offset to retrieve.
+	 *
+	 * @return mixed
+	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet( $offset ) {
 		$this->maybe_fire_array_access_deprecation_notice( $offset );
 		if ( ! isset( $this->$offset ) ) {
@@ -105,6 +118,17 @@ class GF_Field extends stdClass implements ArrayAccess {
 		return $this->$offset;
 	}
 
+	/**
+	 * Assigns a value to the specified offset.
+	 *
+	 * @since 1.9
+	 *
+	 * @param mixed $offset The offset to assign the value to.
+	 * @param mixed $data   The value to set.
+	 *
+	 * @return void
+	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet( $offset, $data ) {
 		$this->maybe_fire_array_access_deprecation_notice( $offset );
 		if ( $offset === null ) {
@@ -114,6 +138,16 @@ class GF_Field extends stdClass implements ArrayAccess {
 		}
 	}
 
+	/**
+	 * Unsets an offset.
+	 *
+	 * @since 1.9
+	 *
+	 * @param mixed $offset The offset to unset.
+	 *
+	 * @return void
+	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset( $offset ) {
 		$this->maybe_fire_array_access_deprecation_notice( $offset );
 		unset( $this->$offset );

@@ -4,18 +4,16 @@ function loadBillingLength(setting_name){
         return;
 
     var unit = jQuery("#" + setting_name + "_unit").val();
-    var min = intervals[unit]["min"];
-    var max = intervals[unit]["max"];
-
+    var min =  gform.utils.escapeHtml( intervals[unit]["min"] );
+    var max =  gform.utils.escapeHtml( intervals[unit]["max"] );
     var lengthField = jQuery("#" + setting_name + "_length");
     var length = lengthField.val();
-
     var str = "";
     for(var i=min; i<=max; i++){
         var selected = length == i ? "selected='selected'" : "";
         str += "<option value='" + i + "' " + selected + ">" + i + "</option>";
     }
-    lengthField.html(str);
+    lengthField.html( str );
 }
 
 function cancel_subscription( entryId ) {
@@ -35,7 +33,7 @@ function cancel_subscription( entryId ) {
 		function ( response ) {
 			jQuery( "#subscription_cancel_spinner" ).hide();
 			if ( response.success === true ) {
-				jQuery( "#gform_payment_status" ).html( gaddon_payment_strings.subscriptionCanceled );
+				jQuery( "#gform_payment_status" ).html( gform.utils.escapeHtml( gaddon_payment_strings.subscriptionCanceled ) );
 				jQuery( "#cancelsub" ).hide();
 			} else {
 				jQuery( "#cancelsub" ).prop( "disabled", false );

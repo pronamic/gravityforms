@@ -1,3 +1,25 @@
+### 2.6.2 | 2022-05-05
+- Added security enhancements.
+- Added performance improvements to the confirmation settings page for sites with lots of pages.
+- Added a performance improvement to the AJAX save process in the form editor that increases performance significantly, especially for forms that contain a large number of fields.
+- Added improvements to the message that appears when saving a form fails.
+- Fixed a bug that sometimes prevents entries from being updated.  Credit: GravityView.
+- Fixed an issue where the forms list is not in alphabetical order.
+- Fixed a performance issue where queries are being run on admin pages that do not need them.
+- Fixed an issue where the submit button settings are reset to their default values when saving the form settings.
+- Fixed the "Allowed memory exhausted in gravityforms.php on line 147" fatal error that is impacting a small number of sites.
+- Fixed an issue with the license detail section displaying an inaccurate renewal date for certain licenses.
+- Fixed a few dozen PHP 8.1 deprecation notices. Note: WordPress won’t be compatible with PHP 8.1 until version 6.0 at the earliest, so there are still many notices from WP functions.
+- Fixed a bug that prevents users without form editing capabilities from exporting entries.
+- Fixed a bug that prevents editing the First Name and City sublabels.
+- Fixed a fatal error that occurs on plugin activation with WordPress 4.9 and earlier.
+- Fixed a bug that causes form editor settings panels to close when any button in the sidebar is clicked.
+- Fixed an issue where field values that contain non-Latin characters are not displayed correctly after AJAX save in the form editor.
+- API: Added the [gform_abort_conditional_logic_do_action](https://docs.gravityforms.com/gform_abort_conditional_logic_do_action/) javascript filter to allow add-ons to abort the conditional logic action before fields are displayed or hidden.
+- API: Added the [gform_embed_edit_post_link](https://docs.gravityforms.com/gform_embed_edit_post_link/) filter.
+- API: Added the [gform_rule_source_value](https://docs.gravityforms.com/gform_rule_source_value/) filter to allow the source value of a conditional logic rule to be filtered.
+
+
 ### 2.6.1 | 2022-03-24
 - Added security enhancements.
 - Added a fallback save method if AJAX save fails.
@@ -6,7 +28,7 @@
 - Fixed an issue where the save form button in the form editor is stuck in the saving state if form validation fails.
 - Fixed an issue where dropdowns in the Embed Form flyout are not correctly displaying their content.
 - Fixed several display issues in the form editor.
-- Fixed an issue where our IE11 admin stylesheet is being being loaded everywhere in the admin.
+- Fixed an issue where our IE11 admin stylesheet is being loaded everywhere in the admin.
 - Fixed some issues where text on the 2.6 splash page can't be translated.
 - Fixed an issue which causes admin pages to visually break when No Conflict mode is enabled.
 - Fixed the duplicated output of the core admin stylesheet for the add-on results screen.

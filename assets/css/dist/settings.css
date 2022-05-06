@@ -2259,6 +2259,17 @@ html[dir="rtl"] .sales th:first-child, html[dir="rtl"] .sales td:first-child {
 		padding-right: 1.375rem;
 	}
 
+/* ---------------------------------------------------
+	Over-rides to make components match settings styles
+--------------------------------------------------- */
+
+.gform-admin .gform-settings-field__post_select .gform-dropdown__control {
+		border: 1px solid #9092b2;
+		box-shadow: none;
+		color: #242748;
+		height: 2.75rem;
+	}
+
 /* Pages */
 
 /*

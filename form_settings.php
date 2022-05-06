@@ -622,12 +622,6 @@ class GFFormSettings {
 					$form['customRequiredIndicator'] = rgar( $values, 'customRequiredIndicator' );
 					$form['cssClass']                = rgar( $values, 'cssClass' );
 
-					// Form Button
-					$form['button']['type']             = GFCommon::whitelist( rgar( $values, 'buttonType' ), array( 'text', 'image' ) );
-					$form['button']['text']             = rgar( $values, 'buttonText' );
-					$form['button']['imageUrl']         = rgar( $values, 'buttonImageURL' );
-					$form['button']['conditionalLogic'] = rgar( $values, 'form_button_conditional_logic' ) ? rgar( $values, 'form_button_conditional_logic_object' ) : null;
-
 					// Save and Continue
 					$form['save']['enabled']        = (bool) rgar( $values, 'saveEnabled' );
 					$form['save']['button']['type'] = 'link';

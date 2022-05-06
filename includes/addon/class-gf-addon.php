@@ -5814,13 +5814,7 @@ abstract class GFAddOn {
 			return true;
 		}
 
-		if ( class_exists( 'GFCommon' ) ) {
-			$is_correct_version = version_compare( GFCommon::$version, $min_gravityforms_version, '>=' );
-
-			return $is_correct_version;
-		} else {
-			return false;
-		}
+		return version_compare( GFForms::$version, $min_gravityforms_version, '>=' );
 	}
 
 	/**

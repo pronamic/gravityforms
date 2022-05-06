@@ -15,6 +15,17 @@ class GF_Embed_Config_I18N extends GF_Config {
 	protected $script_to_localize = 'gform_gravityforms_admin_vendors';
 
 	/**
+	 * Determine if the config should enqueue its data.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @return bool
+	 */
+	public function should_enqueue() {
+		return \GFCommon::is_form_editor();
+	}
+
+	/**
 	 * Config data.
 	 *
 	 * @return array[]
