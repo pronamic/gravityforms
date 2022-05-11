@@ -1,3 +1,7 @@
+### 2.6.3 | 2022-05-10
+- Fixed bug that sometimes results in a fatal error when the license key is empty.
+
+
 ### 2.6.2 | 2022-05-05
 - Added security enhancements.
 - Added performance improvements to the confirmation settings page for sites with lots of pages.

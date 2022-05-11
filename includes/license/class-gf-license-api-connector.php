@@ -86,15 +86,21 @@ class GF_License_API_Connector extends GF_API_Connector {
 	 * @return GF_API_Response
 	 */
 	public function check_license( $key = false, $cache = true ) {
-		$key          = $key ? trim( $key ) : $this->strategy->get_key();
-		$license_info = $this->cache->get( 'rg_gforms_license_info_' . $key );
+		$license_info      = false;
+		$key               = $key ? trim( $key ) : $this->strategy->get_key();
+		$license_info_data = $this->cache->get( 'rg_gforms_license_info_' . $key );
 
 		if ( $this->is_debug() ) {
 			$cache = false;
 		}
 
-		if ( $license_info && $cache ) {
-			return unserialize( $license_info );
+		if ( $license_info_data && $cache ) {
+			$license_info = GFCommon::safe_unserialize( $license_info_data, GF_API_Response::class );
+			if ( $license_info ) {
+				return $license_info;
+			} else {
+				$this->clear_cache_for_key( $key );
+			}
 		}
 
 		$license_info = $this->response_factory->create(
@@ -105,40 +111,6 @@ class GF_License_API_Connector extends GF_API_Connector {
 		if ( $license_info->can_be_used() ) {
 			$this->cache->set( 'rg_gforms_license_info_' . $key, serialize( $license_info ), true, DAY_IN_SECONDS );
 		}
-
-		return $license_info;
-	}
-
-	/**
-	 * Get the license info.
-	 *
-	 * @since 2.5.11
-	 *
-	 * @param string $key
-	 * @param bool   $cache
-	 *
-	 * @return GF_API_Response
-	 */
-	public function get_license_info_for_site( $cache = true, $key = false ) {
-		$key          = $key ? $key : $this->strategy->get_key();
-		$license_info = $this->cache->get( 'rg_gforms_license_' . $key );
-
-		if ( $this->is_debug() ) {
-			$cache = false;
-		}
-
-		if ( $license_info && $cache ) {
-			return unserialize( $license_info );
-		}
-
-		$license_info = $this->response_factory->create(
-			$this->strategy->check_license( $key )
-		);
-
-		if ( $license_info->is_valid() ) {
-			$this->cache->set( 'rg_gforms_license_' . $key, serialize( $license_info ), true, DAY_IN_SECONDS );
-		}
-
 
 		return $license_info;
 	}

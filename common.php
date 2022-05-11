@@ -2810,7 +2810,7 @@ Content-Type: text/html;
 		}
 
 		return array(
-			'is_valid_key' => ! is_wp_error( $license_info ) && $license_info->can_be_used(),
+			'is_valid_key' => ! is_wp_error( $license_info ) && is_a( $license_info, Gravity_Forms\Gravity_Forms\License\GF_License_API_Response::class ) && $license_info->can_be_used(),
 			'reason'       => $license_info->get_error_message(),
 			'version'      => rgars( $plugins, 'gravityforms/version' ),
 			'url'          => rgars( $plugins, 'gravityforms/url' ),
@@ -7208,6 +7208,28 @@ Content-Type: text/html;
 	 */
 	public static function form_has_fields( $form ) {
 		return ! empty( $form['fields'] ) && is_array( $form['fields'] );
+	}
+
+	/**
+	 * Unserializes a string while suppressing errors, checks if the result is of the expected type.
+	 *
+	 * @since 2.6.2.1
+	 *
+	 * @param string $string   The string to be unserialized.
+	 * @param string $expected The expected type after unserialization.
+	 * @param bool   $default  The default value to return if unserialization failed.
+	 *
+	 * @return false|mixed
+	 */
+	public static function safe_unserialize( $string, $expected, $default = false ) {
+
+		$data = @unserialize( $string );
+
+		if ( is_a( $data, $expected ) ) {
+			return $data;
+		}
+
+		return $default;
 	}
 
 }
