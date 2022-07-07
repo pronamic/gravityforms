@@ -177,7 +177,7 @@ class GFAsyncUpload {
 			}
 		}
 
-		$cleanup_target_dir = true; // Remove old files
+		$cleanup_target_dir = apply_filters( 'gform_cleanup_target_dir', true ); // Remove old files
 		$max_file_age = 5 * 3600; // Temp file age in seconds
 
 		// Remove old temp files

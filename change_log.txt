@@ -1,3 +1,19 @@
+### 2.6.4 | 2022-07-06
+- Added the [gform_cleanup_target_dir](https://docs.gravityforms.com/gform_cleanup_target_dir/) filter to support async uploads on servers with opendir() disabled.
+- Fixed an issue where the REST request to get additional pages fails on translated sites when configuring the form confirmation.
+- Fixed an accessibility issue by adding an alert role to the notice on the uninstall page.
+- Fixed an accessibility issue where the search field in the form detail has no connected label.
+- Fixed several PHP 8.1 deprecation notices. Note: There are still a number of notices from WordPress 6.0.
+- Updated the minimum WordPress version on the System Status page to 5.9.
+- Updated the database upgrade and System Status page to check for and fix auto increment issues which can cause "duplicate entry 0" errors.
+- AF: Updated `GFPaymentAddOn::maybe_validate()` to include `$context` as the second parameter.
+- API: Added gform/merge_tag/initialize event to allow merge tag drop downs to be manually initialized after page load.
+- API: Updated the REST API v2 [forms/[FORM_ID]/submissions](https://docs.gravityforms.com/submitting-forms-with-rest-api-v2/) endpoint to support the `?_validate_only=1` query argument.
+- API: Added [GFAPI::validate_form()](https://docs.gravityforms.com/validating-forms-with-the-gfapi/) to validate form field values without triggering other submission events such as saving the entry, sending notifications, add-on feeds, or confirmations.
+- API: Added the [forms/[FORM_ID]/submissions/validation](https://docs.gravityforms.com/validating-forms-with-rest-api-v2/) endpoint to REST API v2.
+- API: Updated the `gform_field_validation` and `gform_validation` filters to include a new `$context` parameter indicating how the current request was triggered: form-submit, api-submit, or api-validate.
+
+
 ### 2.6.3 | 2022-05-10
 - Fixed bug that sometimes results in a fatal error when the license key is empty.
 

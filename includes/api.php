@@ -1652,34 +1652,20 @@ class GFAPI {
 		}
 
 		$form_id = absint( $form_id );
-		$form    = GFAPI::get_form( $form_id );
+		$form    = self::get_submission_form( $form_id );
 
-		if ( empty( $form ) || ! $form['is_active'] || $form['is_trash'] ) {
-			return new WP_Error( 'form_not_found', __( 'Your form could not be found', 'gravityforms' ) );
+		if ( is_wp_error( $form ) ) {
+			return $form;
 		}
 
-		$input_values[ 'is_submit_' . $form_id ]                = true;
-		$input_values['gform_submit']                           = $form_id;
-		$input_values[ 'gform_target_page_number_' . $form_id ] = absint( $target_page );
-		$input_values[ 'gform_source_page_number_' . $form_id ] = absint( $source_page );
-		$input_values['gform_field_values']                     = $field_values;
-
-		require_once( GFCommon::get_base_path() . '/form_display.php' );
-
-		if ( ! isset( $_POST ) ) {
-			$_POST = array();
-		}
-
-		$_POST = array_merge_recursive( $_POST, $input_values );
+		self::hydrate_post( $form_id, $input_values, $field_values, $target_page, $source_page );
 
 		// Ensure that confirmation handler doesn't send a redirect header or add redirect JavaScript.
 		add_filter( 'gform_suppress_confirmation_redirect', '__return_true' );
 
-		// Ensure the state field is in the submission.
-		add_filter( 'gform_pre_validation', array( 'GFAPI', 'submit_form_filter_gform_pre_validation' ), 50 );
-
 		try {
-			GFFormDisplay::process_form( $form_id );
+			require_once GFCommon::get_base_path() . '/form_display.php';
+			GFFormDisplay::process_form( $form_id, GFFormDisplay::SUBMISSION_INITIATED_BY_API );
 		} catch ( Exception $ex ) {
 			remove_filter( 'gform_suppress_confirmation_redirect', '__return_true' );
 			remove_filter( 'gform_pre_validation', array( 'GFAPI', 'submit_form_filter_gform_pre_validation' ), 50 );
@@ -1704,13 +1690,7 @@ class GFAPI {
 		$result['is_valid'] = $submission_details['is_valid'];
 
 		if ( $result['is_valid'] == false ) {
-			$validation_messages = array();
-			foreach ( $submission_details['form']['fields'] as $field ) {
-				if ( $field->failed_validation ) {
-					$validation_messages[ $field->id ] = $field->validation_message;
-				}
-			}
-			$result['validation_messages'] = $validation_messages;
+			$result['validation_messages'] = self::get_field_validation_errors( $submission_details['form'] );
 		}
 
 		$result['page_number']          = $submission_details['page_number'];
@@ -1744,6 +1724,167 @@ class GFAPI {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Validates the field values.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param int   $form_id      The ID of the form this submission belongs to.
+	 * @param array $input_values Optional. An associative array containing the values to be validated using the field input names as the keys. Will be merged into the $_POST.
+	 * @param array $field_values Optional. An array of dynamic population parameter keys with their corresponding values used to populate the fields. Overwrites `$_POST['gform_field_values']`.
+	 * @param int   $target_page  Optional. For multi-page forms; indicates which page would be loaded next if the current page passes validation. Overwrites `$_POST[ 'gform_target_page_number_' . $form_id ]`.
+	 * @param int   $source_page  Optional. For multi-page forms; indicates which page was active when the values were submitted for validation. Overwrites `$_POST[ 'gform_source_page_number_' . $form_id ]`.
+	 *
+	 * @return WP_Error|array
+	 */
+	public static function validate_form( $form_id, $input_values = array(), $field_values = array(), $target_page = 0, $source_page = 1 ) {
+
+		$form_id = absint( $form_id );
+		$form    = self::get_submission_form( $form_id );
+
+		if ( is_wp_error( $form ) ) {
+			return $form;
+		}
+
+		/**
+		 * Allows the form logged in user requirement to be overridden.
+		 *
+		 * @since 2.4
+		 *
+		 * @param bool  $require_login Indicates if the user must be logged in to use the current form.
+		 * @param array $form          The form currently being validated.
+		 */
+		$require_login = gf_apply_filters( array( 'gform_require_login', $form_id, ), (bool) rgar( $form, 'requireLogin' ), $form );
+
+		if ( $require_login && ! is_user_logged_in() ) {
+			return new WP_Error( 'login_required', __( 'You must be logged in to use this form.', 'gravityforms' ) );
+		}
+
+		self::hydrate_post( $form_id, $input_values, $field_values, $target_page, $source_page );
+
+		// Support validation of multi-file enabled fields by getting the details from the gform_uploaded_files input.
+		GFFormsModel::set_uploaded_files( $form_id );
+
+		$failed_validation_page = $source_page;
+
+		require_once GFCommon::get_base_path() . '/form_display.php';
+		GFFormDisplay::$submission_initiated_by = GFFormDisplay::SUBMISSION_INITIATED_BY_API_VALIDATION;
+
+		$is_valid = GFFormDisplay::validate( $form, $field_values, $source_page, $failed_validation_page );
+		remove_filter( 'gform_pre_validation', array( 'GFAPI', 'submit_form_filter_gform_pre_validation' ), 50 );
+
+		$result = array(
+			'is_valid'            => $is_valid,
+			'validation_messages' => array(),
+			'page_number'         => $is_valid ? $target_page : $failed_validation_page,
+			'source_page_number'  => $source_page,
+		);
+
+		if ( $is_valid ) {
+			if ( $target_page === 0 ) {
+				$result['is_spam'] = GFCommon::is_spam_entry( GFFormsModel::create_lead( $form ), $form );
+			}
+
+			return $result;
+		}
+
+		$form_restriction_error = rgars( GFFormDisplay::$submission, $form_id . '/form_restriction_error' );
+		if ( $form_restriction_error ) {
+			return new WP_Error( 'form_restriction_error', $form_restriction_error );
+		}
+
+		$result['validation_messages'] = self::get_field_validation_errors( $form );
+
+		return $result;
+	}
+
+	/**
+	 * Returns the form to be used to process the submission or an error if the form doesn't exist or isn't accepting submissions.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param int $form_id The ID of the form this submission belongs to.
+	 *
+	 * @return array|WP_Error
+	 */
+	private static function get_submission_form( $form_id ) {
+		$form = GFAPI::get_form( $form_id );
+
+		if ( empty( $form ) || ! $form['is_active'] || $form['is_trash'] ) {
+			return new WP_Error( 'form_not_found', __( 'Your form could not be found', 'gravityforms' ) );
+		}
+
+		if ( ! GFCommon::form_has_fields( $form ) ) {
+			return new WP_Error( 'no_fields', __( "Your form doesn't have any fields.", 'gravityforms' ) );
+		}
+
+		return $form;
+	}
+
+	/**
+	 * Populates the $_POST with the form submission values.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param int   $form_id      The ID of the form this submission belongs to.
+	 * @param array $input_values An associative array containing the submitted values using the field input names as the keys.
+	 * @param array $field_values An array of dynamic population parameter keys with their corresponding values used to populate the fields.
+	 * @param int   $target_page  Indicates which page would be loaded next if the current page passes validation.
+	 * @param int   $source_page  Indicates which page was active when the values were submitted.
+	 */
+	private static function hydrate_post( $form_id, $input_values, $field_values, $target_page, $source_page ) {
+		if ( ! isset( $_POST ) ) {
+			$_POST = array();
+		}
+
+		if ( ! empty( $input_values ) ) {
+			$_POST = array_merge_recursive( $_POST, $input_values );
+		}
+
+		self::normalize_post_keys();
+
+		$_POST[ 'is_submit_' . $form_id ]                = true;
+		$_POST['gform_submit']                           = $form_id;
+		$_POST[ 'gform_target_page_number_' . $form_id ] = absint( $target_page );
+		$_POST[ 'gform_source_page_number_' . $form_id ] = absint( $source_page );
+		$_POST['gform_field_values']                     = $field_values;
+
+		// Adds the state to the $_POST, if missing.
+		add_filter( 'gform_pre_validation', array( 'GFAPI', 'submit_form_filter_gform_pre_validation' ), 50 );
+	}
+
+	/**
+	 * Ensures the $_POST input names use underscores (e.g. input_1_1) instead of the periods used on the front-end (e.g. input_1.1).
+	 *
+	 * @since 2.6.4
+	 */
+	private static function normalize_post_keys() {
+		$_POST = array_combine( array_map( function ( $key ) {
+			return str_replace( '.', '_', $key );
+		}, array_keys( $_POST ) ), array_values( $_POST ) );
+	}
+
+	/**
+	 * Creates an array using the field IDs as keys to the validation error messages.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param array $form The form that was validated.
+	 *
+	 * @return array
+	 */
+	private static function get_field_validation_errors( $form ) {
+		$errors = array();
+
+		foreach ( $form['fields'] as $field ) {
+			if ( $field->failed_validation ) {
+				$errors[ (string) $field->id ] = $field->validation_message;
+			}
+		}
+
+		return $errors;
 	}
 
 	/**

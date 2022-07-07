@@ -1032,9 +1032,14 @@ class GF_System_Report {
 				$value                     = false;
 				$validation_message        = __( 'Table does not exist', 'gravityforms' );
 				$validation_message_export = 'Table does not exist';
-
+				// If table does not have auto-increment set on id field, set validation message.
+			} elseif ( ! gf_upgrade()->is_auto_increment_enabled( $table_name ) ) {
+				$has_failed_tables         = true;
+				$value                     = false;
+				$validation_message        = __( 'Table has incorrect auto-increment settings.', 'gravityforms' );
+				$validation_message_export = 'Table has incorrect auto-increment settings.';
+				// If table schema is incorrect, set validation message.
 			} elseif ( ! gf_upgrade()->check_table_schema( $table_name ) ) {
-
 				$has_failed_tables         = true;
 				$value                     = false;
 				$validation_message        = __( 'Table has not been upgraded successfully.', 'gravityforms' );
@@ -1445,7 +1450,8 @@ class GF_System_Report {
 	 * Determine if there are any active Add-Ons that extend a specific class.
 	 *
 	 * @since  2.2
-	 * @access private
+ 	 * @since  2.6 access changed to public
+	 * @access public
 	 *
 	 * @param string $class_name Class name to check if Add-Ons are a subclass of.
 	 *
@@ -1454,7 +1460,7 @@ class GF_System_Report {
 	 *
 	 * @return bool
 	 */
-	private static function has_addons_of( $class_name ) {
+	public static function has_addons_of( $class_name ) {
 
 		// Get active Add-Ons.
 		$gf_addons = GFAddOn::get_registered_addons();
@@ -1485,7 +1491,8 @@ class GF_System_Report {
 	 * Determine if there are any active Add-Ons with a payment callback.
 	 *
 	 * @since  2.2
-	 * @access private
+ 	 * @since  2.6 access changed to public
+	 * @access public
 	 *
 	 * @uses GFAddOn::get_instance()
 	 * @uses GFAddOn::get_registered_addons()
@@ -1493,7 +1500,7 @@ class GF_System_Report {
 	 *
 	 * @return bool
 	 */
-	private static function has_payment_callback_addons() {
+	public static function has_payment_callback_addons() {
 
 		// Get active Add-Ons.
 		$gf_addons = GFAddOn::get_registered_addons();

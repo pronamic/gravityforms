@@ -66,7 +66,7 @@ class GF_Block_Form extends GF_Block {
 	public static function get_instance() {
 
 		if ( null === self::$_instance ) {
-			self::$_instance = new self;
+			self::$_instance = new self();
 		}
 
 		return self::$_instance;
@@ -202,7 +202,7 @@ class GF_Block_Form extends GF_Block {
 		$description  = isset( $attributes['description'] ) ? $attributes['description'] : true;
 		$ajax         = isset( $attributes['ajax'] ) ? $attributes['ajax'] : false;
 		$tabindex     = isset( $attributes['tabindex'] ) ? intval( $attributes['tabindex'] ) : 0;
-		$field_values = isset( $attributes['fieldValues'] ) ? $attributes['fieldValues'] : null;
+		$field_values = isset( $attributes['fieldValues'] ) ? $attributes['fieldValues'] : '';
 
 		// If form ID was not provided or form does not exist, return.
 		if ( ! $form_id || ( $form_id && ! GFAPI::get_form( $form_id ) ) ) {
@@ -238,10 +238,10 @@ class GF_Block_Form extends GF_Block {
 		$field_values = htmlspecialchars( $field_values );
 		$field_values = str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), $field_values );
 
-		// If no field values are set, set field values to null.
+		// If no field values are set, set field values to a empty string
 		parse_str( $field_values, $field_value_array );
 		if ( empty( $field_value_array ) ) {
-			$field_values = null;
+			$field_values = '';
 		}
 
 		return sprintf( '[gravityforms id="%d" title="%s" description="%s" ajax="%s" tabindex="%d" field_values="%s"]', $form_id, ( $title ? 'true' : 'false' ), ( $description ? 'true' : 'false' ), ( $ajax ? 'true' : 'false' ), $tabindex, $field_values );

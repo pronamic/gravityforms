@@ -382,7 +382,8 @@ class GFFormDetail {
 			<aside class="sidebar ui-tabs" role="region" >
 				<div class="sidebar__nav-wrapper">
 					<div class="search-button">
-						<input type="text" class="search-button__input" placeholder="<?php echo esc_attr__( 'Search for a field', 'gravityforms' ); ?>">
+						<label for="form_editor_search_input" class="gform-visually-hidden"><?php echo esc_attr__( 'Search a form field by name', 'gravityforms' ); ?></label>
+						<input id="form_editor_search_input" type="text" class="search-button__input" placeholder="<?php echo esc_attr__( 'Search for a field', 'gravityforms' ); ?>">
 						<span class="clear-button"></span>
 					</div>
 					<ul class="sidebar__nav ui-tabs-nav">

@@ -10,11 +10,27 @@ class GFFormDisplay {
 	public static $init_scripts = array();
 	public static $hooks_js_printed = false;
 	public static $sidebar_has_widget = false;
+	public static $submission_initiated_by = '';
 
 	const ON_PAGE_RENDER       = 1;
 	const ON_CONDITIONAL_LOGIC = 2;
 
-	public static function process_form( $form_id ) {
+	const SUBMISSION_INITIATED_BY_WEBFORM = 1;
+	const SUBMISSION_INITIATED_BY_API = 2;
+	const SUBMISSION_INITIATED_BY_API_VALIDATION = 3;
+
+	/**
+	 * Starting point for the form submission process. Handles the following tasks: Form validation, save for later logic, entry creation, notification and confirmation.
+	 *
+	 * @since unknown
+	 * @since 2.6.4 Added the $initiated_by param.
+	 *
+	 * @param int $form_id      The form ID being submitted.
+	 * @param int $initiated_by What process initiated the form submission. Possible options are self::SUBMISSION_INITIATED_BY_WEBFORM = 1 or self::SUBMISSION_INITIATED_BY_API = 2.
+	 */
+	public static function process_form( $form_id, $initiated_by = self::SUBMISSION_INITIATED_BY_API ) {
+
+		self::$submission_initiated_by = $initiated_by;
 
 		GFCommon::log_debug( "GFFormDisplay::process_form(): Starting to process form (#{$form_id}) submission." );
 
@@ -1917,6 +1933,25 @@ class GFFormDisplay {
 	}
 
 	/**
+	 * Returns the context for the current submission.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @return string
+	 */
+	public static function get_submission_context() {
+		switch ( self::$submission_initiated_by ) {
+			case self::SUBMISSION_INITIATED_BY_WEBFORM:
+				return 'form-submit';
+
+			case self::SUBMISSION_INITIATED_BY_API_VALIDATION:
+				return 'api-validate';
+		}
+
+		return 'api-submit';
+	}
+
+	/**
 	 * Determines if the current form submission is valid.
 	 *
 	 * @since unknown
@@ -1952,6 +1987,8 @@ class GFFormDisplay {
 		if ( empty( $_POST[ 'is_submit_' . $form['id'] ] ) ) {
 			return false;
 		}
+
+		$context = self::get_submission_context();
 
 		$is_valid     = true;
 		$is_last_page = self::get_target_page( $form, $page_number, $field_values ) == '0';
@@ -2015,13 +2052,30 @@ class GFFormDisplay {
 				}
 			}
 
-			$custom_validation_result = gf_apply_filters( array( 'gform_field_validation', $form['id'], $field->id ), array(
+			/**
+			 * Allows custom validation of the field value.
+			 *
+			 * @since Unknown
+			 * @since 2.6.4 Added the $context param.
+			 *
+			 * @param array    $result  {
+			 *    An array containing the validation result properties.
+			 *
+			 *    @type bool  $is_valid The field validation result.
+			 *    @type array $message  The field validation message.
+			 * }
+			 * @param mixed    $value   The field value currently being validated.
+			 * @param array    $form    The form currently being validated.
+			 * @param GF_Field $field   The field currently being validated.
+			 * @param string   $context The context for the current submission. Possible values: form-submit, api-submit, api-validate.
+			 */
+			$result = gf_apply_filters( array( 'gform_field_validation', $form['id'], $field->id ), array(
 				'is_valid' => $field->failed_validation ? false : true,
 				'message'  => $field->validation_message
-			), $value, $form, $field );
+			), $value, $form, $field, $context );
 
-			$field->failed_validation  = rgar( $custom_validation_result, 'is_valid' ) ? false : true;
-			$field->validation_message = rgar( $custom_validation_result, 'message' );
+			$field->failed_validation  = rgar( $result, 'is_valid' ) ? false : true;
+			$field->validation_message = rgar( $result, 'message' );
 
 			if ( $field->failed_validation ) {
 				$is_valid = false;
@@ -2041,7 +2095,22 @@ class GFFormDisplay {
 			}
 		}
 
-		$validation_result      = gf_apply_filters( array( 'gform_validation', $form['id'] ), array( 'is_valid' => $is_valid, 'form' => $form, 'failed_validation_page' => $failed_validation_page ) );
+		/**
+		 * Allows custom validation of the form.
+		 *
+		 * @since Unknown
+		 * @since 2.6.4 Added the $context param.
+		 *
+		 * @param array  $validation_result {
+		 *    An array containing the validation properties.
+		 *
+		 *    @type bool  $is_valid               The validation result.
+		 *    @type array $form                   The form currently being validated.
+		 *    @type int   $failed_validation_page The number of the page that failed validation or the current page if the form is valid.
+		 * }
+		 * @param string $context           The context for the current submission. Possible values: form-submit, api-submit, api-validate.
+		 */
+		$validation_result      = gf_apply_filters( array( 'gform_validation', $form['id'] ), array( 'is_valid' => $is_valid, 'form' => $form, 'failed_validation_page' => $failed_validation_page ), $context );
 		$is_valid               = $validation_result['is_valid'];
 		$form                   = $validation_result['form'];
 		$failed_validation_page = $validation_result['failed_validation_page'];
@@ -3891,7 +3960,10 @@ class GFFormDisplay {
 			$entry_count = GFAPI::count_entries( $form['id'], $search_criteria );
 
 			if ( $entry_count >= $form['limitEntriesCount'] ) {
-				return empty( $form['limitEntriesMessage'] ) ? "<div class='gf_submission_limit_message'><p>" . esc_html__( 'Sorry. This form is no longer accepting new submissions.', 'gravityforms' ) . '</p></div>' : '<p>' . GFCommon::gform_do_shortcode( $form['limitEntriesMessage'] ) . '</p>';
+				$error = empty( $form['limitEntriesMessage'] ) ? "<div class='gf_submission_limit_message'><p>" . esc_html__( 'Sorry. This form is no longer accepting new submissions.', 'gravityforms' ) . '</p></div>' : '<p>' . GFCommon::gform_do_shortcode( $form['limitEntriesMessage'] ) . '</p>';
+				self::set_submission_if_null( $form['id'], 'form_restriction_error', $error );
+
+				return $error;
 			}
 		}
 
@@ -3908,9 +3980,15 @@ class GFFormDisplay {
 			$now              = current_time( 'timestamp' );
 
 			if ( ! empty( $form['scheduleStart'] ) && $now < $timestamp_start ) {
-				return empty( $form['schedulePendingMessage'] ) ? '<p>' . esc_html__( 'This form is not yet available.', 'gravityforms' ) . '</p>' : '<p>' . GFCommon::gform_do_shortcode( $form['schedulePendingMessage'] ) . '</p>';
+				$error = empty( $form['schedulePendingMessage'] ) ? '<p>' . esc_html__( 'This form is not yet available.', 'gravityforms' ) . '</p>' : '<p>' . GFCommon::gform_do_shortcode( $form['schedulePendingMessage'] ) . '</p>';
+				self::set_submission_if_null( $form['id'], 'form_restriction_error', $error );
+
+				return $error;
 			} elseif ( ! empty( $form['scheduleEnd'] ) && $now > $timestamp_end ) {
-				return empty( $form['scheduleMessage'] ) ? '<p>' . esc_html__( 'Sorry. This form is no longer available.', 'gravityforms' ) . '</p>' : '<p>' . GFCommon::gform_do_shortcode( $form['scheduleMessage'] ) . '</p>';
+				$error = empty( $form['scheduleMessage'] ) ? '<p>' . esc_html__( 'Sorry. This form is no longer available.', 'gravityforms' ) . '</p>' : '<p>' . GFCommon::gform_do_shortcode( $form['scheduleMessage'] ) . '</p>';
+				self::set_submission_if_null( $form['id'], 'form_restriction_error', $error );
+
+				return $error;
 			}
 		}
 

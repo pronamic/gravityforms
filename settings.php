@@ -241,7 +241,7 @@ class GFSettings {
 			update_option( 'recently_activated', array( $plugin => time() ) + (array) get_option( 'recently_activated' ) );
 
 			?>
-			<div class="updated fade gf-notice notice-success"><?php echo sprintf( esc_html__( 'Gravity Forms has been successfully uninstalled. It can be re-activated from the %splugins page%s.', 'gravityforms' ), "<a href='plugins.php'>", '</a>' ) ?></div>
+			<div class="updated fade gf-notice notice-success" role="alert"><?php echo sprintf( esc_html__( 'Gravity Forms has been successfully uninstalled. It can be re-activated from the %splugins page%s.', 'gravityforms' ), "<a href='plugins.php'>", '</a>' ) ?></div>
 			<?php
 			return;
 		}

@@ -151,13 +151,14 @@ class GF_Field_FileUpload extends GF_Field {
 	}
 
 	public function validate( $value, $form ) {
+		$file_names = array();
 		$input_name = 'input_' . $this->id;
 		GFCommon::log_debug( __METHOD__ . '(): Validating field ' . $input_name );
 
 		$allowed_extensions = ! empty( $this->allowedExtensions ) ? GFCommon::clean_extensions( explode( ',', strtolower( $this->allowedExtensions ) ) ) : array();
 		if ( $this->multipleFiles ) {
 			$file_names = isset( GFFormsModel::$uploaded_files[ $form['id'] ][ $input_name ] ) ? GFFormsModel::$uploaded_files[ $form['id'] ][ $input_name ] : array();
-		} else {
+		} elseif ( ! empty( $_FILES[ $input_name ] ) ) {
 			$max_upload_size_in_bytes = isset( $this->maxFileSize ) && $this->maxFileSize > 0 ? $this->maxFileSize * 1048576 : wp_max_upload_size();
 			$max_upload_size_in_mb    = $max_upload_size_in_bytes / 1048576;
 			if ( ! empty( $_FILES[ $input_name ]['name'] ) && $_FILES[ $input_name ]['error'] > 0 ) {

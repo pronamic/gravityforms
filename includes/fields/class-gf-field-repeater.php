@@ -81,6 +81,8 @@ class GF_Field_Repeater extends GF_Field {
 		/* @var GF_Field[] $fields */
 		$fields = $this->fields;
 
+		$context = GFFormDisplay::get_submission_context();
+
 		foreach ( $items as $i => $item ) {
 			foreach ( $fields as $field ) {
 
@@ -105,11 +107,28 @@ class GF_Field_Repeater extends GF_Field {
 					$field->validate( $field_value, $form );
 				}
 
-				$custom_validation_result = gf_apply_filters( array( 'gform_field_validation', $form['id'], $field->id ), array(
+				/**
+				 * Allows custom validation of the field value.
+				 *
+				 * @since Unknown
+				 * @since 2.6.4 Added the $context param.
+				 *
+				 * @param array    $result  {
+				 *    An array containing the validation result properties.
+				 *
+				 *    @type bool   $is_valid The field validation result.
+				 *    @type array  $message  The field validation message.
+				 * }
+				 * @param mixed    $value   The field value currently being validated.
+				 * @param array    $form    The form currently being validated.
+				 * @param GF_Field $field   The field currently being validated.
+				 * @param string   $context The context for the current submission. Possible values: form-submit, api-submit, api-validate.
+				 */
+				$result = gf_apply_filters( array( 'gform_field_validation', $form['id'], $field->id ), array(
 					'is_valid' => $field->failed_validation ? false : true,
 					'message'  => $field->validation_message
-				), $field_value, $form, $field );
-				$this->failed_validation  = rgar( $custom_validation_result, 'is_valid' ) ? false : true;
+				), $field_value, $form, $field, $context );
+				$this->failed_validation  = rgar( $result, 'is_valid' ) ? false : true;
 
 				// Reset the field validation and item index.
 				$field->failed_validation = false;

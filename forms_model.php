@@ -4232,6 +4232,11 @@ class GFFormsModel {
 	}
 
 	public static function maybe_trim_input( $value, $form_id, $field ) {
+		
+		if ( is_null( $value ) ) {
+			return $value;
+		}
+		
 		$trim_value = apply_filters( 'gform_trim_input_value', true, $form_id, $field );
 
 		if ( $trim_value ) {

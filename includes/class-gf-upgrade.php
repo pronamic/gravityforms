@@ -13,6 +13,7 @@ class GF_Upgrade {
 
 	private $versions = null;
 
+	private $auto_increment_tables_cache_key = 'gf_tables_auto_increment_settings';
 	/**
 	 * Contains all DB versions that require a manual upgrade via the upgrade wizard.
 	 *
@@ -157,6 +158,8 @@ class GF_Upgrade {
 
 		// Upgrading schema
 		$this->upgrade_schema();
+
+		$this->test_auto_increment();
 
 		// Start upgrade routine
 		if ( $force_upgrade || ! ( defined( 'GFORM_AUTO_DB_MIGRATION_DISABLED' ) && GFORM_AUTO_DB_MIGRATION_DISABLED ) ) {
@@ -320,6 +323,153 @@ class GF_Upgrade {
 		$this->add_post_upgrade_admin_notices();
 
 		GFCommon::log_debug( __METHOD__ . '(): Upgrade Completed.' );
+	}
+
+	/**
+	 * Make sure tables have the correct auto_increment settings.
+	 *
+	 * @since 2.6.4
+	 */
+	private function test_auto_increment() {
+		global $wpdb;
+
+		GFCommon::log_debug( __METHOD__ . '(): Testing whether tables have auto_increment set correctly.' );
+
+		$table_rows = $this->get_auto_increment_tables();
+
+		foreach ( $table_rows as $row ) {
+
+			$is_auto_increment = $this->is_auto_increment_enabled( $row['table'], $row['auto_increment_flag'] );
+			if ( ! $is_auto_increment ) {
+				$this->fix_auto_increment( $row['table'], $row['column_data_type'] );
+			}
+		}
+	}
+
+	/**
+	 * Determines if the especified table has auto_increment enabled for the id column.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param string $table_name The table name.
+	 * @param string $extra The "extra" column of the information_schema.colums table. If not specified, will lookup the value.
+	 *
+	 * @return bool Returns true if the specified table has auto_increment enabled. Returns false otherwise.
+	 */
+	public function is_auto_increment_enabled( $table_name, $extra = null ) {
+		if ( $extra === null ) {
+			// Lookup extra from schema info table.
+			$extra = $this->get_auto_increment_setting( $table_name );
+		}
+
+		return $extra === null || strpos( $extra, 'auto_increment' ) !== false;
+	}
+
+	/**
+	 * Gets the auto_increment setting of a specific table.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param string $table_name The table name.
+	 *
+	 * @return string|null Returns the "extra" column of the information_schema.colums table. Or returns null if table does not exist in the database.
+	 */
+	private function get_auto_increment_setting( $table_name ) {
+		$tables = $this->get_auto_increment_tables();
+
+		foreach ( $tables as $table ) {
+			if ( rgar( $table, 'table' ) == $table_name ) {
+				return $table['auto_increment_flag'];
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the auto increment setting for all GF tables.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @return array Returns an array with table name and "extra" column of the information_schema.colums table.
+	 */
+	private function get_auto_increment_tables() {
+		global $wpdb;
+
+		$table_rows = GFCache::get( $this->auto_increment_tables_cache_key );
+
+		// Check cache first.
+		if ( ! empty( $table_rows ) ) {
+			return $table_rows;
+		}
+
+		// Tables that should have an ID column with auto increment enabled.
+		$table_names = array(
+			$wpdb->prefix . 'gf_form',
+			$wpdb->prefix . 'gf_form_view',
+			$wpdb->prefix . 'gf_form_revisions',
+			$wpdb->prefix . 'gf_entry',
+			$wpdb->prefix . 'gf_entry_notes',
+			$wpdb->prefix . 'gf_entry_meta',
+			$wpdb->prefix . 'gf_addon_feed',
+			$wpdb->prefix . 'gf_addon_payment_transaction',
+			$wpdb->prefix . 'gf_addon_payment_callback',
+		);
+
+		// create a string of %s - one for each array value.
+		$placeholders = join( ',', array_fill( 0, count( $table_names ), '%s' ) );
+
+		$table_rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT table_name as `table`, extra as auto_increment_flag, column_type as column_data_type
+				FROM information_schema.columns
+				WHERE table_schema=%s AND table_name in ( {$placeholders} )
+				AND column_name = 'id'",
+				array_merge( array( $wpdb->dbname ), $table_names )
+			),
+			ARRAY_A
+		);
+
+		GFCommon::log_debug( sprintf( '%s(): Checking tables for auto_increment flag: %s', __METHOD__, print_r( $table_rows, 1 ) ) );
+
+		// Set cache so that only one query is executed if this method is called more than once in a page life cycle.
+		GFCache::set( $this->auto_increment_tables_cache_key, $table_rows );
+
+		return $table_rows;
+	}
+
+	/**
+	 * Turn on auto_increment for a broken table.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param string $table_name The name of the table to fix.
+	 * @param string $column_type The data type of the id column.
+	 *
+	 * @return bool|int False if the query failed, or the id of the entry if successful
+	 */
+	private function fix_auto_increment( $table_name, $column_type ) {
+		GFCommon::log_debug( __METHOD__ . '(): Fixing the auto_increment settings for' . $table_name );
+
+		global $wpdb;
+
+		$max    = $wpdb->query( "select id from {$table_name} order by id desc" );
+		$new_id = $max + 1;
+
+		$sql = $wpdb->query(
+			$wpdb->prepare(
+				'ALTER TABLE %1$s
+				AUTO_INCREMENT = %2$d, 
+				CHANGE COLUMN `id` `id` %3$s not null auto_increment',
+				$table_name,
+				$new_id,
+				$column_type
+			)
+		);
+
+		// Deleting auto increment cache so that new table meta is retrieved.
+		GFCache::delete( $this->auto_increment_tables_cache_key );
+
+		return $sql;
 	}
 
 	/**

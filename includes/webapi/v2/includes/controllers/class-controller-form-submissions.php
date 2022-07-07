@@ -45,6 +45,10 @@ class GF_REST_Form_Submissions_Controller extends GF_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function create_item( $request ) {
+		if ( rgar( $request->get_query_params(), '_validate_only' ) ) {
+			return ( new GF_REST_Form_Submissions_Validation_Controller() )->validate_form( $request );
+		}
+
 		$form_id = $request['form_id'];
 
 		$params = $request->get_json_params();
@@ -143,7 +147,7 @@ class GF_REST_Form_Submissions_Controller extends GF_REST_Controller {
 				),
 				'field_values' => array(
 					'description' => __( 'The field values.', 'gravityforms' ),
-					'type'        => 'string',
+					'type'        => array( 'string', 'array' ),
 				),
 				'target_page'  => array(
 					'description' => 'The target page number.',

@@ -43,20 +43,46 @@ class GF_Settings_Config_Admin extends GF_Config {
 			),
 		);
 
-		foreach( $post_types as $post_type ) {
+		foreach ( $post_types as $post_type ) {
 			$post_type_obj = get_post_type_object( $post_type );
-			if ( $post_type_obj ) {
-				$post_plural = $post_type_obj->labels->name;
-				$data['components']['post_select'][ $post_type ] = array(
-					'endpoints' => array(
-						'get' => rest_url( '/wp/v2/' . $post_plural ),
-					),
-					'data' => $this->get_first_posts_for_type( $post_type, $count ),
-				);
+			if ( ! $post_type_obj ) {
+				continue;
 			}
+
+			$data['components']['post_select'][ $post_type ] = array(
+				'endpoints' => array(
+					'get' => rest_url( $this->get_post_type_rest_route( $post_type_obj ) ),
+				),
+				'data'      => $this->get_first_posts_for_type( $post_type, $count ),
+			);
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Returns the REST route for the given post type.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param \WP_Post_Type $post_type A post type object.
+	 *
+	 * @return string
+	 */
+	private function get_post_type_rest_route( $post_type ) {
+		if ( function_exists( 'rest_get_route_for_post_type_items' ) ) {
+			return rest_get_route_for_post_type_items( $post_type->name );
+		}
+
+		if ( ! $post_type->show_in_rest ) {
+			return '';
+		}
+
+		return sprintf(
+			'/%s/%s',
+			! empty( $post_type->rest_namespace ) ? $post_type->rest_namespace : 'wp/v2',
+			! empty( $post_type->rest_base ) ? $post_type->rest_base : $post_type->name
+		);
 	}
 
 	/**

@@ -3162,10 +3162,17 @@ Content-Type: text/html;
 	}
 
 	public static function get_selection_value( $value ) {
-		$ary = explode( '|', $value );
-		$val = $ary[0];
+		
+		if ( is_null( $value ) ) {
+			return $value;
+		}
 
-		return $val;
+		if ( ! is_array( $value ) ) {
+			$value = explode( '|', $value );
+		}
+		
+		return $value[0];
+
 	}
 
 	public static function selection_display( $value, $field, $currency = '', $use_text = false ) {
@@ -4977,8 +4984,14 @@ Content-Type: text/html;
 			$prev_reporting_level = error_reporting( 0 );
 			try {
 				$result = eval( "return {$formula};" );
-        		} catch ( ParseError $e ) {
+			} catch (DivisionByZeroError $e) {
+				GFCommon::log_debug( __METHOD__ . sprintf( '(): Formula tried dividing by zero: "%s".', $e->getMessage() ) );
+				$result = 0;
+			} catch ( ParseError $e ) {
 				GFCommon::log_debug( __METHOD__ . sprintf( '(): Formula could not be parsed: "%s".', $e->getMessage() ) );
+				$result = 0;
+			} catch ( ErrorException $e ) {
+				GFCommon::log_debug( __METHOD__ . sprintf( '(): Formula caused an exception: "%s".', $e->getMessage() ) );
 				$result = 0;
 			}
 			error_reporting( $prev_reporting_level );

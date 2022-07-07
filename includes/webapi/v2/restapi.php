@@ -25,30 +25,31 @@ class GF_REST_API_Bootstrap {
 		$dir = plugin_dir_path( __FILE__ );
 
 		// Requires the class file
-		require_once( $dir . '/class-gf-rest-api.php' );
+		require_once $dir . 'class-gf-rest-api.php';
 
-		require_once( $dir . '/includes/class-results-cache.php' );
+		require_once $dir . 'includes/class-results-cache.php';
 
 
 		if ( ! class_exists( 'WP_REST_Controller' ) ) {
-			require_once( $dir . '/includes/controllers/class-wp-rest-controller.php' );
+			require_once $dir . 'includes/controllers/class-wp-rest-controller.php';
 		}
 
-		require_once( $dir . '/includes/controllers/class-gf-rest-controller.php' );
+		require_once $dir . 'includes/controllers/class-gf-rest-controller.php';
 
-		require_once( $dir . '/includes/controllers/class-controller-form-entries.php' );
-		require_once( $dir . '/includes/controllers/class-controller-form-results.php' );
-		require_once( $dir . '/includes/controllers/class-controller-form-submissions.php' );
-		require_once( $dir . '/includes/controllers/class-controller-form-feeds.php' );
-		require_once( $dir . '/includes/controllers/class-controller-feeds.php' );
-		require_once( $dir . '/includes/controllers/class-controller-entries.php' );
-		require_once( $dir . '/includes/controllers/class-controller-entry-notes.php' );
-		require_once( $dir . '/includes/controllers/class-controller-notes.php' );
-		require_once( $dir . '/includes/controllers/class-controller-entry-notifications.php' );
-		require_once( $dir . '/includes/controllers/class-controller-entry-properties.php' );
-		require_once( $dir . '/includes/controllers/class-controller-forms.php' );
-		require_once( $dir . '/includes/controllers/class-controller-form-field-filters.php' );
-		require_once( $dir . '/includes/controllers/class-controller-feed-properties.php' );
+		require_once $dir . 'includes/controllers/class-controller-form-entries.php';
+		require_once $dir . 'includes/controllers/class-controller-form-results.php';
+		require_once $dir . 'includes/controllers/class-controller-form-submissions.php';
+		require_once $dir . 'includes/controllers/class-controller-form-submissions-validation.php';
+		require_once $dir . 'includes/controllers/class-controller-form-feeds.php';
+		require_once $dir . 'includes/controllers/class-controller-feeds.php';
+		require_once $dir . 'includes/controllers/class-controller-entries.php';
+		require_once $dir . 'includes/controllers/class-controller-entry-notes.php';
+		require_once $dir . 'includes/controllers/class-controller-notes.php';
+		require_once $dir . 'includes/controllers/class-controller-entry-notifications.php';
+		require_once $dir . 'includes/controllers/class-controller-entry-properties.php';
+		require_once $dir . 'includes/controllers/class-controller-forms.php';
+		require_once $dir . 'includes/controllers/class-controller-form-field-filters.php';
+		require_once $dir . 'includes/controllers/class-controller-feed-properties.php';
 
 		return GF_REST_API::get_instance();
 	}
