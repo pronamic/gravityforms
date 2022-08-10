@@ -162,7 +162,6 @@ div.wrap {
 }
 
 .gform_settings_form .hr-divider {
-	-ms-grid-column-span: 2;
 	grid-column: span 2;
 }
 
@@ -1917,7 +1916,6 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 			display: block;
 			-webkit-user-select: none;
 			   -moz-user-select: none;
-			    -ms-user-select: none;
 			        user-select: none;
 		}
 
@@ -2153,10 +2151,6 @@ html[dir="rtl"] .gform-settings-field__select-enhanced-container .select2-result
 	}
 
 .panel-block-tabs__body--settings input[type="text"]::-moz-placeholder, .gform-flyout--choices-ui input[type="text"]::-moz-placeholder {
-			color: #9092b2;
-		}
-
-.panel-block-tabs__body--settings input[type="text"]:-ms-input-placeholder, .gform-flyout--choices-ui input[type="text"]:-ms-input-placeholder {
 			color: #9092b2;
 		}
 
@@ -2427,10 +2421,6 @@ html[dir="rtl"] .panel-block-tabs__body--settings input[type="radio"]:not(.field
 }
 
 input.search-button__input::-moz-placeholder {
-	color: #5b5e80;
-}
-
-input.search-button__input:-ms-input-placeholder {
 	color: #5b5e80;
 }
 
@@ -4642,10 +4632,6 @@ div.resource_list li::before {
 	color: #5b5e80;
 }
 
-#gf_help_page_search input:-ms-input-placeholder {
-	color: #5b5e80;
-}
-
 #gf_help_page_search input::placeholder {
 	color: #5b5e80;
 }
@@ -6354,7 +6340,6 @@ div#gform_heading.selectable.field_selected {
 /* upgrade and renewal styles for settings page */
 
 div.gf_renew_license, div.gf_upgrade_license {
-	-ms-grid-column-span: 2;
 	grid-column: span 2;
 }
 
@@ -9384,7 +9369,6 @@ div .gfield_repeater_cell {
 	pointer-events: none;
 	-webkit-user-select: none;
 	-moz-user-select: none;
-	 -ms-user-select: none;
 	     user-select: none;
 }
 

@@ -111,7 +111,8 @@ class GF_Field_Name extends GF_Field {
 	/**
 	 * Validates Name field inputs.
 	 *
-	 * @since  Unknown
+	 * @since 1.9
+	 * @since 2.6.5 Updated to use set_required_error().
 	 * @access public
 	 *
 	 * @used-by GFFormDisplay::validate()
@@ -128,15 +129,8 @@ class GF_Field_Name extends GF_Field {
 	 * @return void
 	 */
 	function validate( $value, $form ) {
-
 		if ( $this->isRequired && $this->nameFormat != 'simple' ) {
-			$message = $this->complex_validation_message( $value, $this->get_required_inputs_ids() );
-
-			if ( $message ) {
-				$this->failed_validation  = true;
-				$message_intro            = empty( $this->errorMessage ) ? __( 'This field is required.', 'gravityforms' ) : $this->errorMessage;
-				$this->validation_message = $message_intro . ' ' . $message;
-			}
+			$this->set_required_error( $value, true );
 		}
 	}
 

@@ -112,7 +112,8 @@ class GF_Field_Time extends GF_Field {
 	/**
 	 * Validates the field inputs.
 	 *
-	 * @since  Unknown
+	 * @since 1.9
+	 * @since 2.5.6 Updated to use set_required_error().
 	 * @access public
 	 *
 	 * @used-by GFFormDisplay::validate()
@@ -136,15 +137,7 @@ class GF_Field_Time extends GF_Field {
 		}
 
 		if ( is_array( $value ) && $this->isRequired ) {
-			$required_inputs = array( 0, 1 );
-
-			$message = $this->complex_validation_message( $value, $required_inputs );
-
-			if ( $message ) {
-				$this->failed_validation  = true;
-				$message_intro            = empty( $this->errorMessage ) ? __( 'This field is required.', 'gravityforms' ) : $this->errorMessage;
-				$this->validation_message = $message_intro . ' ' . $message;
-			}
+			$this->set_required_error( $value, true );
 		}
 
 		$hour   = rgar( $value, 0 );
@@ -167,35 +160,20 @@ class GF_Field_Time extends GF_Field {
 	}
 
 	/**
-	 * Create a validation message for a required field with multiple inputs.
+	 * Updates the value to use the input ids as the keys before it's used to generate the complex validation message.
 	 *
-	 * The validation message will specify which inputs need to be filled out.
+	 * @since 2.6.5
 	 *
-	 * @since 2.5
+	 * @param array $value The value to be prepared.
 	 *
-	 * @param array $value            The value entered by the user.
-	 * @param array $required_inputs  The required inputs to validate.
-	 *
-	 * @return string|void
+	 * @return array
 	 */
-	public function complex_validation_message( $value, $required_inputs ) {
-		$error_inputs = array();
-
-		foreach ( $required_inputs as $input ) {
-			if ( '' == $value[ $input ] ) {
-				$input_id       = $input + 1;
-				$error_inputs[] = $this->get_input_property( $input_id, 'label' );
-			}
-		}
-
-		if ( ! empty( $error_inputs ) ) {
-			$field_list = implode( ', ', $error_inputs );
-
-			// Translators: comma-separated list of the labels of missing fields.
-			return sprintf( __( 'Please complete the following fields: %s.', 'gravityforms' ), $field_list );
-		}
-
-		return false;
+	public function prepare_complex_validation_value( $value ) {
+		return array(
+			"{$this->id}.1" => rgar( $value, 0 ),
+			"{$this->id}.2" => rgar( $value, 1 ),
+			"{$this->id}.3" => rgar( $value, 2 ),
+		);
 	}
 
 	/**
@@ -403,12 +381,15 @@ class GF_Field_Time extends GF_Field {
 	 */
 	public function is_value_submission_empty( $form_id ) {
 		$value = rgpost( 'input_' . $this->id );
-		if ( is_array( $value ) ) {
-			// If some but not all inputs are empty, return false so that this field's validation method will be triggered.
-			return empty( array_filter( $value ) );
-		} else {
+
+		if ( ! is_array( $value ) ) {
 			return strlen( trim( $value ) ) <= 0;
 		}
+
+		// Ignoring the AM/PM value; it's always set for embedded forms.
+		unset( $value[2] );
+
+		return GFCommon::is_empty_array( $value );
 	}
 
 	/**

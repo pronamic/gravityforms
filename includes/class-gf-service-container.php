@@ -14,6 +14,7 @@ namespace Gravity_Forms\Gravity_Forms;
 class GF_Service_Container {
 
 	private $services = array();
+	private $providers = array();
 
 	/**
 	 * Add a service to the container.
@@ -23,12 +24,12 @@ class GF_Service_Container {
 	 * @param string $name   The service Name
 	 * @param mixed $service The service to add
 	 */
-	public function add( $name, $service ) {
+	public function add( $name, $service, $defer = false ) {
 		if ( empty( $name ) ) {
 			$name = get_class( $service );
 		}
 
-		if ( is_callable( $service ) ) {
+		if ( ! $defer && is_callable( $service ) ) {
 			$service = $service();
 		}
 
@@ -60,6 +61,11 @@ class GF_Service_Container {
 			return null;
 		}
 
+		if ( is_callable( $this->services[ $name ] ) ) {
+			$called                  = $this->services[ $name ]();
+			$this->services[ $name ] = $called;
+		}
+
 		return $this->services[ $name ];
 	}
 
@@ -71,6 +77,15 @@ class GF_Service_Container {
 	 * @param GF_Service_Provider $provider
 	 */
 	public function add_provider( GF_Service_Provider $provider ) {
+		$provider_name = get_class( $provider );
+
+		// Only add providers a single time.
+		if ( isset( $this->providers[ $provider_name ] ) ) {
+			return;
+		}
+
+		$this->providers[ $provider_name ] = $provider;
+
 		$provider->register( $this );
 		$provider->init( $this );
 	}

@@ -1537,13 +1537,6 @@ html[dir="rtl"] .gform-admin .gform-flyout__desc {
 			font-weight: 400;
 		}
 
-.gform-admin .gform-input:-ms-input-placeholder {
-			color: #5b5e80;
-			font-family: inter, -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
-			font-size: 0.8125rem;
-			font-weight: 400;
-		}
-
 .gform-admin .gform-input::placeholder {
 			color: #5b5e80;
 			font-family: inter, -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;

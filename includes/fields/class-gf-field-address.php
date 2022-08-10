@@ -92,24 +92,29 @@ class GF_Field_Address extends GF_Field {
 
 	}
 
-	function validate( $value, $form ) {
-
-		if ( $this->isRequired ) {
-			$copy_values_option_activated = $this->enableCopyValuesOption && rgpost( 'input_' . $this->id . '_copy_values_activated' );
-			if ( $copy_values_option_activated ) {
-				// validation will occur in the source field
-				return;
-			}
-
-			$message = $this->complex_validation_message( $value, $this->get_required_inputs_ids() );
-
-			if ( $message ) {
-				$this->failed_validation  = true;
-				$message_intro            = empty( $this->errorMessage ) ? __( 'This field is required.', 'gravityforms' ) : $this->errorMessage;
-				$this->validation_message = $message_intro . ' ' . $message;
-			}
+	/**
+	 * Validates the address field inputs.
+	 *
+	 * @since 1.9
+	 * @since 2.6.5 Updated to use set_required_error().
+	 *
+	 * @param string|array $value The field value from get_value_submission().
+	 * @param array        $form  The Form Object currently being processed.
+	 *
+	 * @return void
+	 */
+	public function validate( $value, $form ) {
+		if ( ! $this->isRequired ) {
+			return;
 		}
 
+		$copy_values_option_activated = $this->enableCopyValuesOption && rgpost( 'input_' . $this->id . '_copy_values_activated' );
+		if ( $copy_values_option_activated ) {
+			// Validation will occur in the source field.
+			return;
+		}
+
+		$this->set_required_error( $value, true );
 	}
 
 	public function get_value_submission( $field_values, $get_from_post_global_var = true ) {
@@ -647,10 +652,10 @@ class GF_Field_Address extends GF_Field {
 			'BG' => __( 'Bulgaria', 'gravityforms' ),
 			'BF' => __( 'Burkina Faso', 'gravityforms' ),
 			'BI' => __( 'Burundi', 'gravityforms' ),
+			'CV' => __( 'Cabo Verde', 'gravityforms' ),
 			'KH' => __( 'Cambodia', 'gravityforms' ),
 			'CM' => __( 'Cameroon', 'gravityforms' ),
 			'CA' => __( 'Canada', 'gravityforms' ),
-			'CV' => __( 'Cape Verde', 'gravityforms' ),
 			'KY' => __( 'Cayman Islands', 'gravityforms' ),
 			'CF' => __( 'Central African Republic', 'gravityforms' ),
 			'TD' => __( 'Chad', 'gravityforms' ),
@@ -661,7 +666,7 @@ class GF_Field_Address extends GF_Field {
 			'CO' => __( 'Colombia', 'gravityforms' ),
 			'KM' => __( 'Comoros', 'gravityforms' ),
 			'CD' => __( 'Congo, Democratic Republic of the', 'gravityforms' ),
-			'CG' => __( 'Congo, Republic of the', 'gravityforms' ),
+			'CG' => __( 'Congo', 'gravityforms' ),
 			'CK' => __( 'Cook Islands', 'gravityforms' ),
 			'CR' => __( 'Costa Rica', 'gravityforms' ),
 			'CI' => __( "Côte d'Ivoire", 'gravityforms' ),
@@ -669,7 +674,7 @@ class GF_Field_Address extends GF_Field {
 			'CU' => __( 'Cuba', 'gravityforms' ),
 			'CW' => __( 'Curaçao', 'gravityforms' ),
 			'CY' => __( 'Cyprus', 'gravityforms' ),
-			'CZ' => __( 'Czech Republic', 'gravityforms' ),
+			'CZ' => __( 'Czechia', 'gravityforms' ),
 			'DK' => __( 'Denmark', 'gravityforms' ),
 			'DJ' => __( 'Djibouti', 'gravityforms' ),
 			'DM' => __( 'Dominica', 'gravityforms' ),
@@ -680,7 +685,7 @@ class GF_Field_Address extends GF_Field {
 			'GQ' => __( 'Equatorial Guinea', 'gravityforms' ),
 			'ER' => __( 'Eritrea', 'gravityforms' ),
 			'EE' => __( 'Estonia', 'gravityforms' ),
-			'SZ' => __( 'Eswatini (Swaziland)', 'gravityforms' ),
+			'SZ' => __( 'Eswatini', 'gravityforms' ),
 			'ET' => __( 'Ethiopia', 'gravityforms' ),
 			'FK' => __( 'Falkland Islands', 'gravityforms' ),
 			'FO' => __( 'Faroe Islands', 'gravityforms' ),
@@ -707,7 +712,7 @@ class GF_Field_Address extends GF_Field {
 			'GW' => __( 'Guinea-Bissau', 'gravityforms' ),
 			'GY' => __( 'Guyana', 'gravityforms' ),
 			'HT' => __( 'Haiti', 'gravityforms' ),
-			'HM' => __( 'Heard and McDonald Islands', 'gravityforms' ),
+			'HM' => __( 'Heard Island and McDonald Islands', 'gravityforms' ),
 			'VA' => __( 'Holy See', 'gravityforms' ),
 			'HN' => __( 'Honduras', 'gravityforms' ),
 			'HK' => __( 'Hong Kong', 'gravityforms' ),
@@ -728,6 +733,8 @@ class GF_Field_Address extends GF_Field {
 			'KZ' => __( 'Kazakhstan', 'gravityforms' ),
 			'KE' => __( 'Kenya', 'gravityforms' ),
 			'KI' => __( 'Kiribati', 'gravityforms' ),
+			'KP' => __( "Korea, Democratic People's Republic of", 'gravityforms' ),
+			'KR' => __( 'Korea, Republic of', 'gravityforms' ),
 			'KW' => __( 'Kuwait', 'gravityforms' ),
 			'KG' => __( 'Kyrgyzstan', 'gravityforms' ),
 			'LA' => __( "Lao People's Democratic Republic", 'gravityforms' ),
@@ -739,8 +746,7 @@ class GF_Field_Address extends GF_Field {
 			'LI' => __( 'Liechtenstein', 'gravityforms' ),
 			'LT' => __( 'Lithuania', 'gravityforms' ),
 			'LU' => __( 'Luxembourg', 'gravityforms' ),
-			'MO' => __( 'Macau', 'gravityforms' ),
-			'MK' => __( 'Macedonia', 'gravityforms' ),
+			'MO' => __( 'Macao', 'gravityforms' ),
 			'MG' => __( 'Madagascar', 'gravityforms' ),
 			'MW' => __( 'Malawi', 'gravityforms' ),
 			'MY' => __( 'Malaysia', 'gravityforms' ),
@@ -773,7 +779,7 @@ class GF_Field_Address extends GF_Field {
 			'NG' => __( 'Nigeria', 'gravityforms' ),
 			'NU' => __( 'Niue', 'gravityforms' ),
 			'NF' => __( 'Norfolk Island', 'gravityforms' ),
-			'KP' => __( 'North Korea', 'gravityforms' ),
+			'MK' => __( 'North Macedonia', 'gravityforms' ),
 			'MP' => __( 'Northern Mariana Islands', 'gravityforms' ),
 			'NO' => __( 'Norway', 'gravityforms' ),
 			'OM' => __( 'Oman', 'gravityforms' ),
@@ -792,10 +798,10 @@ class GF_Field_Address extends GF_Field {
 			'QA' => __( 'Qatar', 'gravityforms' ),
 			'RE' => __( 'Réunion', 'gravityforms' ),
 			'RO' => __( 'Romania', 'gravityforms' ),
-			'RU' => __( 'Russia', 'gravityforms' ),
+			'RU' => __( 'Russian Federation', 'gravityforms' ),
 			'RW' => __( 'Rwanda', 'gravityforms' ),
 			'BL' => __( 'Saint Barthélemy', 'gravityforms' ),
-			'SH' => __( 'Saint Helena', 'gravityforms' ),
+			'SH' => __( 'Saint Helena, Ascension and Tristan da Cunha', 'gravityforms' ),
 			'KN' => __( 'Saint Kitts and Nevis', 'gravityforms' ),
 			'LC' => __( 'Saint Lucia', 'gravityforms' ),
 			'MF' => __( 'Saint Martin', 'gravityforms' ),
@@ -816,20 +822,19 @@ class GF_Field_Address extends GF_Field {
 			'SB' => __( 'Solomon Islands', 'gravityforms' ),
 			'SO' => __( 'Somalia', 'gravityforms' ),
 			'ZA' => __( 'South Africa', 'gravityforms' ),
-			'GS' => _x( 'South Georgia', 'Country', 'gravityforms' ),
-			'KR' => __( 'South Korea', 'gravityforms' ),
+			'GS' => _x( 'South Georgia and the South Sandwich Islands', 'Country', 'gravityforms' ),
 			'SS' => __( 'South Sudan', 'gravityforms' ),
 			'ES' => __( 'Spain', 'gravityforms' ),
 			'LK' => __( 'Sri Lanka', 'gravityforms' ),
 			'SD' => __( 'Sudan', 'gravityforms' ),
 			'SR' => __( 'Suriname', 'gravityforms' ),
-			'SJ' => __( 'Svalbard and Jan Mayen Islands', 'gravityforms' ),
+			'SJ' => __( 'Svalbard and Jan Mayen', 'gravityforms' ),
 			'SE' => __( 'Sweden', 'gravityforms' ),
 			'CH' => __( 'Switzerland', 'gravityforms' ),
-			'SY' => __( 'Syria', 'gravityforms' ),
+			'SY' => __( 'Syria Arab Republic', 'gravityforms' ),
 			'TW' => __( 'Taiwan', 'gravityforms' ),
 			'TJ' => __( 'Tajikistan', 'gravityforms' ),
-			'TZ' => __( 'Tanzania', 'gravityforms' ),
+			'TZ' => __( 'Tanzania, the United Republic of', 'gravityforms' ),
 			'TH' => __( 'Thailand', 'gravityforms' ),
 			'TL' => __( 'Timor-Leste', 'gravityforms' ),
 			'TG' => __( 'Togo', 'gravityforms' ),
@@ -837,7 +842,7 @@ class GF_Field_Address extends GF_Field {
 			'TO' => __( 'Tonga', 'gravityforms' ),
 			'TT' => __( 'Trinidad and Tobago', 'gravityforms' ),
 			'TN' => __( 'Tunisia', 'gravityforms' ),
-			'TR' => __( 'Turkey', 'gravityforms' ),
+			'TR' => __( 'Türkiye', 'gravityforms' ),
 			'TM' => __( 'Turkmenistan', 'gravityforms' ),
 			'TC' => __( 'Turks and Caicos Islands', 'gravityforms' ),
 			'TV' => __( 'Tuvalu', 'gravityforms' ),
@@ -851,7 +856,7 @@ class GF_Field_Address extends GF_Field {
 			'UZ' => __( 'Uzbekistan', 'gravityforms' ),
 			'VU' => __( 'Vanuatu', 'gravityforms' ),
 			'VE' => __( 'Venezuela', 'gravityforms' ),
-			'VN' => __( 'Vietnam', 'gravityforms' ),
+			'VN' => __( 'Viet Nam', 'gravityforms' ),
 			'VG' => __( 'Virgin Islands, British', 'gravityforms' ),
 			'VI' => __( 'Virgin Islands, U.S.', 'gravityforms' ),
 			'WF' => __( 'Wallis and Futuna', 'gravityforms' ),
@@ -892,11 +897,26 @@ class GF_Field_Address extends GF_Field {
 		return array_flip( $countries );
 	}
 
+	/**
+	 * Returns the array of US states and territories.
+	 *
+	 * @since Unknown
+	 *
+	 * @return array The array of US states.
+	 */
 	public function get_us_states() {
+		/**
+		 * Filters the US states array.
+		 *
+		 * @since Unknown
+		 *
+		 * @param array The array of US states.
+		 */
 		return apply_filters(
 			'gform_us_states', array(
 				__( 'Alabama', 'gravityforms' ),
 				__( 'Alaska', 'gravityforms' ),
+				__( 'American Samoa', 'gravityforms' ),
 				__( 'Arizona', 'gravityforms' ),
 				__( 'Arkansas', 'gravityforms' ),
 				__( 'California', 'gravityforms' ),
@@ -906,6 +926,7 @@ class GF_Field_Address extends GF_Field {
 				__( 'District of Columbia', 'gravityforms' ),
 				__( 'Florida', 'gravityforms' ),
 				_x( 'Georgia', 'US State', 'gravityforms' ),
+				__( 'Guam', 'gravityforms' ),
 				__( 'Hawaii', 'gravityforms' ),
 				__( 'Idaho', 'gravityforms' ),
 				__( 'Illinois', 'gravityforms' ),
@@ -930,16 +951,19 @@ class GF_Field_Address extends GF_Field {
 				__( 'New York', 'gravityforms' ),
 				__( 'North Carolina', 'gravityforms' ),
 				__( 'North Dakota', 'gravityforms' ),
+				__( 'Northern Mariana Islands', 'gravityforms' ),
 				__( 'Ohio', 'gravityforms' ),
 				__( 'Oklahoma', 'gravityforms' ),
 				__( 'Oregon', 'gravityforms' ),
 				__( 'Pennsylvania', 'gravityforms' ),
+				__( 'Puerto Rico', 'gravityforms' ),
 				__( 'Rhode Island', 'gravityforms' ),
 				__( 'South Carolina', 'gravityforms' ),
 				__( 'South Dakota', 'gravityforms' ),
 				__( 'Tennessee', 'gravityforms' ),
 				__( 'Texas', 'gravityforms' ),
 				__( 'Utah', 'gravityforms' ),
+				__( 'U.S. Virgin Islands', 'gravityforms' ),
 				__( 'Vermont', 'gravityforms' ),
 				__( 'Virginia', 'gravityforms' ),
 				__( 'Washington', 'gravityforms' ),
@@ -953,62 +977,76 @@ class GF_Field_Address extends GF_Field {
 		);
 	}
 
+	/**
+	 * Returns the two-letter US state code from the state name provided.
+	 *
+	 * @since Unknown
+	 *
+	 * @param string $state_name The state name.
+	 *
+	 * @return string The two-letter US state code.
+	 */
 	public function get_us_state_code( $state_name ) {
 		$states = array(
-			GFCommon::safe_strtoupper( __( 'Alabama', 'gravityforms' ) )               => 'AL',
-			GFCommon::safe_strtoupper( __( 'Alaska', 'gravityforms' ) )                => 'AK',
-			GFCommon::safe_strtoupper( __( 'Arizona', 'gravityforms' ) )               => 'AZ',
-			GFCommon::safe_strtoupper( __( 'Arkansas', 'gravityforms' ) )              => 'AR',
-			GFCommon::safe_strtoupper( __( 'California', 'gravityforms' ) )            => 'CA',
-			GFCommon::safe_strtoupper( __( 'Colorado', 'gravityforms' ) )              => 'CO',
-			GFCommon::safe_strtoupper( __( 'Connecticut', 'gravityforms' ) )           => 'CT',
-			GFCommon::safe_strtoupper( __( 'Delaware', 'gravityforms' ) )              => 'DE',
-			GFCommon::safe_strtoupper( __( 'District of Columbia', 'gravityforms' ) )  => 'DC',
-			GFCommon::safe_strtoupper( __( 'Florida', 'gravityforms' ) )               => 'FL',
-			GFCommon::safe_strtoupper( _x( 'Georgia', 'US State', 'gravityforms' ) )   => 'GA',
-			GFCommon::safe_strtoupper( __( 'Hawaii', 'gravityforms' ) )                => 'HI',
-			GFCommon::safe_strtoupper( __( 'Idaho', 'gravityforms' ) )                 => 'ID',
-			GFCommon::safe_strtoupper( __( 'Illinois', 'gravityforms' ) )              => 'IL',
-			GFCommon::safe_strtoupper( __( 'Indiana', 'gravityforms' ) )               => 'IN',
-			GFCommon::safe_strtoupper( __( 'Iowa', 'gravityforms' ) )                  => 'IA',
-			GFCommon::safe_strtoupper( __( 'Kansas', 'gravityforms' ) )                => 'KS',
-			GFCommon::safe_strtoupper( __( 'Kentucky', 'gravityforms' ) )              => 'KY',
-			GFCommon::safe_strtoupper( __( 'Louisiana', 'gravityforms' ) )             => 'LA',
-			GFCommon::safe_strtoupper( __( 'Maine', 'gravityforms' ) )                 => 'ME',
-			GFCommon::safe_strtoupper( __( 'Maryland', 'gravityforms' ) )              => 'MD',
-			GFCommon::safe_strtoupper( __( 'Massachusetts', 'gravityforms' ) )         => 'MA',
-			GFCommon::safe_strtoupper( __( 'Michigan', 'gravityforms' ) )              => 'MI',
-			GFCommon::safe_strtoupper( __( 'Minnesota', 'gravityforms' ) )             => 'MN',
-			GFCommon::safe_strtoupper( __( 'Mississippi', 'gravityforms' ) )           => 'MS',
-			GFCommon::safe_strtoupper( __( 'Missouri', 'gravityforms' ) )              => 'MO',
-			GFCommon::safe_strtoupper( __( 'Montana', 'gravityforms' ) )               => 'MT',
-			GFCommon::safe_strtoupper( __( 'Nebraska', 'gravityforms' ) )              => 'NE',
-			GFCommon::safe_strtoupper( __( 'Nevada', 'gravityforms' ) )                => 'NV',
-			GFCommon::safe_strtoupper( __( 'New Hampshire', 'gravityforms' ) )         => 'NH',
-			GFCommon::safe_strtoupper( __( 'New Jersey', 'gravityforms' ) )            => 'NJ',
-			GFCommon::safe_strtoupper( __( 'New Mexico', 'gravityforms' ) )            => 'NM',
-			GFCommon::safe_strtoupper( __( 'New York', 'gravityforms' ) )              => 'NY',
-			GFCommon::safe_strtoupper( __( 'North Carolina', 'gravityforms' ) )        => 'NC',
-			GFCommon::safe_strtoupper( __( 'North Dakota', 'gravityforms' ) )          => 'ND',
-			GFCommon::safe_strtoupper( __( 'Ohio', 'gravityforms' ) )                  => 'OH',
-			GFCommon::safe_strtoupper( __( 'Oklahoma', 'gravityforms' ) )              => 'OK',
-			GFCommon::safe_strtoupper( __( 'Oregon', 'gravityforms' ) )                => 'OR',
-			GFCommon::safe_strtoupper( __( 'Pennsylvania', 'gravityforms' ) )          => 'PA',
-			GFCommon::safe_strtoupper( __( 'Rhode Island', 'gravityforms' ) )          => 'RI',
-			GFCommon::safe_strtoupper( __( 'South Carolina', 'gravityforms' ) )        => 'SC',
-			GFCommon::safe_strtoupper( __( 'South Dakota', 'gravityforms' ) )          => 'SD',
-			GFCommon::safe_strtoupper( __( 'Tennessee', 'gravityforms' ) )             => 'TN',
-			GFCommon::safe_strtoupper( __( 'Texas', 'gravityforms' ) )                 => 'TX',
-			GFCommon::safe_strtoupper( __( 'Utah', 'gravityforms' ) )                  => 'UT',
-			GFCommon::safe_strtoupper( __( 'Vermont', 'gravityforms' ) )               => 'VT',
-			GFCommon::safe_strtoupper( __( 'Virginia', 'gravityforms' ) )              => 'VA',
-			GFCommon::safe_strtoupper( __( 'Washington', 'gravityforms' ) )            => 'WA',
-			GFCommon::safe_strtoupper( __( 'West Virginia', 'gravityforms' ) )         => 'WV',
-			GFCommon::safe_strtoupper( __( 'Wisconsin', 'gravityforms' ) )             => 'WI',
-			GFCommon::safe_strtoupper( __( 'Wyoming', 'gravityforms' ) )               => 'WY',
-			GFCommon::safe_strtoupper( __( 'Armed Forces Americas', 'gravityforms' ) ) => 'AA',
-			GFCommon::safe_strtoupper( __( 'Armed Forces Europe', 'gravityforms' ) )   => 'AE',
-			GFCommon::safe_strtoupper( __( 'Armed Forces Pacific', 'gravityforms' ) )  => 'AP',
+			GFCommon::safe_strtoupper( __( 'Alabama', 'gravityforms' ) )                  => 'AL',
+			GFCommon::safe_strtoupper( __( 'Alaska', 'gravityforms' ) )                   => 'AK',
+			GFCommon::safe_strtoupper( __( 'American Samoa', 'gravityforms' ) )           => 'AS',
+			GFCommon::safe_strtoupper( __( 'Arizona', 'gravityforms' ) )                  => 'AZ',
+			GFCommon::safe_strtoupper( __( 'Arkansas', 'gravityforms' ) )                 => 'AR',
+			GFCommon::safe_strtoupper( __( 'California', 'gravityforms' ) )               => 'CA',
+			GFCommon::safe_strtoupper( __( 'Colorado', 'gravityforms' ) )                 => 'CO',
+			GFCommon::safe_strtoupper( __( 'Connecticut', 'gravityforms' ) )              => 'CT',
+			GFCommon::safe_strtoupper( __( 'Delaware', 'gravityforms' ) )                 => 'DE',
+			GFCommon::safe_strtoupper( __( 'District of Columbia', 'gravityforms' ) )     => 'DC',
+			GFCommon::safe_strtoupper( __( 'Florida', 'gravityforms' ) )                  => 'FL',
+			GFCommon::safe_strtoupper( _x( 'Georgia', 'US State', 'gravityforms' ) )      => 'GA',
+			GFCommon::safe_strtoupper( __( 'Guam', 'gravityforms' ) )                     => 'GU',
+			GFCommon::safe_strtoupper( __( 'Hawaii', 'gravityforms' ) )                   => 'HI',
+			GFCommon::safe_strtoupper( __( 'Idaho', 'gravityforms' ) )                    => 'ID',
+			GFCommon::safe_strtoupper( __( 'Illinois', 'gravityforms' ) )                 => 'IL',
+			GFCommon::safe_strtoupper( __( 'Indiana', 'gravityforms' ) )                  => 'IN',
+			GFCommon::safe_strtoupper( __( 'Iowa', 'gravityforms' ) )                     => 'IA',
+			GFCommon::safe_strtoupper( __( 'Kansas', 'gravityforms' ) )                   => 'KS',
+			GFCommon::safe_strtoupper( __( 'Kentucky', 'gravityforms' ) )                 => 'KY',
+			GFCommon::safe_strtoupper( __( 'Louisiana', 'gravityforms' ) )                => 'LA',
+			GFCommon::safe_strtoupper( __( 'Maine', 'gravityforms' ) )                    => 'ME',
+			GFCommon::safe_strtoupper( __( 'Maryland', 'gravityforms' ) )                 => 'MD',
+			GFCommon::safe_strtoupper( __( 'Massachusetts', 'gravityforms' ) )            => 'MA',
+			GFCommon::safe_strtoupper( __( 'Michigan', 'gravityforms' ) )                 => 'MI',
+			GFCommon::safe_strtoupper( __( 'Minnesota', 'gravityforms' ) )                => 'MN',
+			GFCommon::safe_strtoupper( __( 'Mississippi', 'gravityforms' ) )              => 'MS',
+			GFCommon::safe_strtoupper( __( 'Missouri', 'gravityforms' ) )                 => 'MO',
+			GFCommon::safe_strtoupper( __( 'Montana', 'gravityforms' ) )                  => 'MT',
+			GFCommon::safe_strtoupper( __( 'Nebraska', 'gravityforms' ) )                 => 'NE',
+			GFCommon::safe_strtoupper( __( 'Nevada', 'gravityforms' ) )                   => 'NV',
+			GFCommon::safe_strtoupper( __( 'New Hampshire', 'gravityforms' ) )            => 'NH',
+			GFCommon::safe_strtoupper( __( 'New Jersey', 'gravityforms' ) )               => 'NJ',
+			GFCommon::safe_strtoupper( __( 'New Mexico', 'gravityforms' ) )               => 'NM',
+			GFCommon::safe_strtoupper( __( 'New York', 'gravityforms' ) )                 => 'NY',
+			GFCommon::safe_strtoupper( __( 'North Carolina', 'gravityforms' ) )           => 'NC',
+			GFCommon::safe_strtoupper( __( 'North Dakota', 'gravityforms' ) )             => 'ND',
+			GFCommon::safe_strtoupper( __( 'Northern Mariana Islands', 'gravityforms' ) ) => 'MP',
+			GFCommon::safe_strtoupper( __( 'Ohio', 'gravityforms' ) )                     => 'OH',
+			GFCommon::safe_strtoupper( __( 'Oklahoma', 'gravityforms' ) )                 => 'OK',
+			GFCommon::safe_strtoupper( __( 'Oregon', 'gravityforms' ) )                   => 'OR',
+			GFCommon::safe_strtoupper( __( 'Pennsylvania', 'gravityforms' ) )             => 'PA',
+			GFCommon::safe_strtoupper( __( 'Puerto Rico', 'gravityforms' ) )              => 'PR',
+			GFCommon::safe_strtoupper( __( 'Rhode Island', 'gravityforms' ) )             => 'RI',
+			GFCommon::safe_strtoupper( __( 'South Carolina', 'gravityforms' ) )           => 'SC',
+			GFCommon::safe_strtoupper( __( 'South Dakota', 'gravityforms' ) )             => 'SD',
+			GFCommon::safe_strtoupper( __( 'Tennessee', 'gravityforms' ) )                => 'TN',
+			GFCommon::safe_strtoupper( __( 'Texas', 'gravityforms' ) )                    => 'TX',
+			GFCommon::safe_strtoupper( __( 'Utah', 'gravityforms' ) )                     => 'UT',
+			GFCommon::safe_strtoupper( __( 'U.S. Virgin Islands', 'gravityforms' ) )      => 'VI',
+			GFCommon::safe_strtoupper( __( 'Vermont', 'gravityforms' ) )                  => 'VT',
+			GFCommon::safe_strtoupper( __( 'Virginia', 'gravityforms' ) )                 => 'VA',
+			GFCommon::safe_strtoupper( __( 'Washington', 'gravityforms' ) )               => 'WA',
+			GFCommon::safe_strtoupper( __( 'West Virginia', 'gravityforms' ) )            => 'WV',
+			GFCommon::safe_strtoupper( __( 'Wisconsin', 'gravityforms' ) )                => 'WI',
+			GFCommon::safe_strtoupper( __( 'Wyoming', 'gravityforms' ) )                  => 'WY',
+			GFCommon::safe_strtoupper( __( 'Armed Forces Americas', 'gravityforms' ) )    => 'AA',
+			GFCommon::safe_strtoupper( __( 'Armed Forces Europe', 'gravityforms' ) )      => 'AE',
+			GFCommon::safe_strtoupper( __( 'Armed Forces Pacific', 'gravityforms' ) )     => 'AP',
 		);
 
 		$state_name = GFCommon::safe_strtoupper( $state_name );

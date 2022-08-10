@@ -695,7 +695,6 @@ fieldset.gfield + fieldset.gfield::before, fieldset.gfield + fieldset.gfield.fie
 /* Will be overridden inline. */
 
 .gfield.custom {
-	-ms-grid-column-span: 1;
 	grid-column: span 1;
 }
 

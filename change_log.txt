@@ -1,3 +1,15 @@
+### 2.6.5 | 2022-08-09
+- Fixed a fatal error that can occur on some hosting environments when the license is validated.
+- Fixed an issue where inserting a new notification routing rule will sometimes overwrite the following rule.
+- Fixed an issue which prevents some {today} merge tags from displaying the correct value.
+- Fixed an issue where the required field legend is not displayed if form title or description aren't enabled on a form that does not use legacy markup.
+- Fixed an issue which can cause code to run multiple times on some hosting environments, leading to warnings and fatal errors.
+- Fixed an issue where the default value of an email field with confirmation enabled does not display.
+- Updated predefined choices lists for countries, US states, marital status, and gender as well as name prefix choices to be up-to-date and more inclusive.
+- AF: Fixed a fatal error that can occur with PHP 8+ if an error occurs during background feed processing.
+- API: Fixed an issue where GF_Field_Time::is_value_submission_empty() can return the wrong result.
+
+
 ### 2.6.4 | 2022-07-06
 - Added the [gform_cleanup_target_dir](https://docs.gravityforms.com/gform_cleanup_target_dir/) filter to support async uploads on servers with opendir() disabled.
 - Fixed an issue where the REST request to get additional pages fails on translated sites when configuring the form confirmation.

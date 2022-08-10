@@ -36,13 +36,13 @@ class GF_Asset_Service_Provider extends GF_Service_Provider {
 		require_once( plugin_dir_path( __FILE__ ) . '/admin-dependencies/class-gf-admin-style-dependencies.php' );
 
 		$container->add( self::HASH_MAP, function () {
-			if ( ! file_exists( plugin_dir_path( __FILE__ ) . '/../../assets/js/dist/assets.php' ) ) {
+			if ( ! file_exists( \GFCommon::get_base_path() . '/assets/js/dist/assets.php' ) ) {
 				return array();
 			}
 
-			$map = require_once( plugin_dir_path( __FILE__ ) . '/../../assets/js/dist/assets.php' );
+			$map = require( \GFCommon::get_base_path() . '/assets/js/dist/assets.php' );
 
-			return $map['hash_map'];
+			return rgar( $map, 'hash_map', array() );
 		} );
 
 		$container->add( self::ASSET_PROCESSOR, function () use ( $container ) {

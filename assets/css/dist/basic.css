@@ -485,7 +485,6 @@
 	position: relative;
 	-webkit-user-select: none;
 	-moz-user-select: none;
-	-ms-user-select: none;
 	user-select: none;
 	vertical-align: middle;
 }
@@ -1144,11 +1143,7 @@ to no.
 
 			.gform_wrapper .gfield.gf_list_2col .gfield_checkbox, .gform_wrapper .gfield.gf_list_2col .gfield_radio {
 
-				display: -ms-grid;
-
 				display: grid;
-
-				-ms-grid-columns: (1fr) [ 2 ];
 
 				grid-template-columns: repeat( 2, 1fr );
 
@@ -1159,11 +1154,7 @@ to no.
 
 			.gform_wrapper .gfield.gf_list_3col .gfield_checkbox, .gform_wrapper .gfield.gf_list_3col .gfield_radio {
 
-				display: -ms-grid;
-
 				display: grid;
-
-				-ms-grid-columns: (1fr) [ 3 ];
 
 				grid-template-columns: repeat( 3, 1fr );
 
@@ -1174,11 +1165,7 @@ to no.
 
 			.gform_wrapper .gfield.gf_list_4col .gfield_checkbox, .gform_wrapper .gfield.gf_list_4col .gfield_radio {
 
-				display: -ms-grid;
-
 				display: grid;
-
-				-ms-grid-columns: (1fr) [ 4 ];
 
 				grid-template-columns: repeat( 4, 1fr );
 
@@ -1189,11 +1176,7 @@ to no.
 
 			.gform_wrapper .gfield.gf_list_5col .gfield_checkbox, .gform_wrapper .gfield.gf_list_5col .gfield_radio {
 
-				display: -ms-grid;
-
 				display: grid;
-
-				-ms-grid-columns: (1fr) [ 5 ];
 
 				grid-template-columns: repeat( 5, 1fr );
 
@@ -1550,12 +1533,10 @@ to no.
 	}
 
 .gform_wrapper.gravity-theme .gform_fields {
-		display: -ms-grid;
 		display: grid;
 		grid-column-gap: 2%;
 		-ms-grid-columns: (1fr 2%) [12];
 		grid-row-gap: 16px;
-		-ms-grid-columns: (1fr)[12];
 		grid-template-columns: repeat(12, 1fr);
 		grid-template-rows: repeat(auto-fill, auto);
 		width: 100%;

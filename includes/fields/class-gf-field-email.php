@@ -264,6 +264,35 @@ class GF_Field_Email extends GF_Field {
 	}
 
 	/**
+	 * If the value is empty, get the default value.
+	 *
+	 * @since 2.6.5
+	 *
+	 * @param array|string $value The field's value.
+	 *
+	 * @return array|string The default value, if there is one.
+	 */
+	public function get_value_default_if_empty( $value ) {
+
+		if ( is_array( $this->inputs ) && is_array( $value ) ) {
+			// get_value_default() uses the input IDs as the array keys, while $value is an array that uses automatic index, so we need to reindex the defaults.
+			$defaults = $this->get_value_default();
+			$defaults = is_array( $defaults ) ? array_values( $defaults ) : $defaults;
+			foreach( $value as $index => &$input_value ) {
+				if ( rgblank( $input_value ) ) {
+					$input_value = rgar( $defaults, $index );
+				}
+			}
+		}
+
+		if ( ! GFCommon::is_empty_array( $value ) ) {
+			return $value;
+		}
+
+		return $this->get_value_default();
+	}
+
+	/**
 	 * Removes the "for" attribute in the field label when the confirmation input is enabled.
 	 * Inputs are only allowed one label (a11y) and the inputs already have labels.
 	 *

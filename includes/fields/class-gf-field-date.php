@@ -80,21 +80,24 @@ class GF_Field_Date extends GF_Field {
 		return in_array( $this->dateType, array( 'datefield', 'datedropdown' ) );
 	}
 
+	/**
+	 * Validates the date field inputs.
+	 *
+	 * @since 1.9
+	 * @since 2.6.5 Updated to use set_required_error().
+	 *
+	 * @param string|array $value The field value from get_value_submission().
+	 * @param array        $form  The Form Object currently being processed.
+	 *
+	 * @return void
+	 */
 	public function validate( $value, $form ) {
 		if ( is_array( $value ) && rgempty( 0, $value ) && rgempty( 1, $value ) && rgempty( 2, $value ) ) {
 			$value = null;
 		}
 
 		if ( is_array( $value ) && $this->isRequired ) {
-			$required_inputs = array( 0, 1, 2 );
-
-			$message = $this->complex_validation_message( $value, $required_inputs );
-
-			if ( $message ) {
-				$this->failed_validation  = true;
-				$message_intro            = empty( $this->errorMessage ) ? __( 'This field is required.', 'gravityforms' ) : $this->errorMessage;
-				$this->validation_message = $message_intro . ' ' . $message;
-			}
+			$this->set_required_error( $value, true );
 		}
 
 		if ( ! empty( $value ) ) {
@@ -134,37 +137,20 @@ class GF_Field_Date extends GF_Field {
 	}
 
 	/**
-	 * Create a validation message for a required field with multiple inputs.
+	 * Updates the value to use the input ids as the keys before it's used to generate the complex validation message.
 	 *
-	 * The validation message will specify which inputs need to be filled out.
+	 * @since 2.6.5
 	 *
-	 * @since 2.5
+	 * @param array $value The value to be prepared.
 	 *
-	 * @param array $value            The value entered by the user.
-	 * @param array $required_inputs  The required inputs to validate.
-	 *
-	 * @return string|void
+	 * @return array
 	 */
-	public function complex_validation_message( $value, $required_inputs ) {
-		$error_inputs = array();
-
-		foreach ( $required_inputs as $input ) {
-			if ( '' == $value[ $input ] ) {
-				$input_id       = $input + 1;
-				$custom_label   = $this->get_input_property( $input_id, 'customLabel' );
-				$label          = $custom_label ? $custom_label : $this->get_input_property( $input_id, 'label' );
-				$error_inputs[] = $label;
-			}
-		}
-
-		if ( ! empty( $error_inputs ) ) {
-			$field_list = implode( ', ', $error_inputs );
-			// Translators: comma-separated list of the labels of missing fields.
-			$message = sprintf( __( 'This field is required. Please complete the following fields: %s.', 'gravityforms' ), $field_list );
-			return $message;
-		}
-
-		return false;
+	public function prepare_complex_validation_value( $value ) {
+		return array(
+			"{$this->id}.1" => rgar( $value, 0 ),
+			"{$this->id}.2" => rgar( $value, 1 ),
+			"{$this->id}.3" => rgar( $value, 2 ),
+		);
 	}
 
 	public function is_value_submission_empty( $form_id ) {

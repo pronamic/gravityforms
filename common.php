@@ -1329,7 +1329,8 @@ class GFCommon {
 			}
 			$text = str_replace( '{embed_url}', $current_page_url, $text );
 
-			$local_timestamp = self::get_local_timestamp( time() );
+			$utc_timestamp   = time();
+			$local_timestamp = self::get_local_timestamp( $utc_timestamp );
 
 			//date (mm/dd/yyyy)
 			$local_date_mdy = date_i18n( 'm/d/Y', $local_timestamp, true );
@@ -1347,8 +1348,13 @@ class GFCommon {
 				foreach ( $matches as $match ) {
 					$is_today    = $match[1] === 'today';
 					$full_tag    = $match[0];
-					$date_string = ! $is_today ? rgar( $entry, $match[1] ) : $local_timestamp;
+					$date_string = ! $is_today ? rgar( $entry, $match[1] ) : $utc_timestamp;
 					$property    = $match[2];
+
+					// $date_string can't be a timestamp; convert to an actual date format.
+					if ( ! empty( $date_string ) && self::is_numeric( $date_string ) ) {
+						$date_string = date( 'c', (int) $date_string );
+					}
 
 					if( ! empty( $date_string ) ) {
 						// Expand all modifiers, skipping escaped colons
@@ -1384,7 +1390,7 @@ class GFCommon {
 						if ( $is_raw ) {
 							$formatted_date = $date_string;
 						} elseif ( $is_timestamp ) {
-							$formatted_date = $date_local_timestamp;
+							$formatted_date = $is_today ? $utc_timestamp : $date_local_timestamp;
 						} elseif ( $is_diff ) {
 							$formatted_date = sprintf( $date_format, human_time_diff( $date_gmt_time ) );
 						} else {
@@ -5291,6 +5297,7 @@ Content-Type: text/html;
 			__( 'Mrs.', 'gravityforms' ),
 			__( 'Miss', 'gravityforms' ),
 			__( 'Ms.', 'gravityforms' ),
+			__( 'Mx.', 'gravityforms' ),
 			__( 'Dr.', 'gravityforms' ),
 			__( 'Prof.', 'gravityforms' ),
 			__( 'Rev.', 'gravityforms' ),
@@ -7236,7 +7243,7 @@ Content-Type: text/html;
 	 */
 	public static function safe_unserialize( $string, $expected, $default = false ) {
 
-		$data = @unserialize( $string );
+		$data = is_string( $string ) ? @unserialize( $string ) : $string;
 
 		if ( is_a( $data, $expected ) ) {
 			return $data;

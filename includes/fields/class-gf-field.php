@@ -714,11 +714,53 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * Return the result (bool) by setting $this->failed_validation.
 	 * Return the validation message (string) by setting $this->validation_message.
 	 *
+	 * @since 1.9
+	 *
 	 * @param string|array $value The field value from get_value_submission().
 	 * @param array        $form  The Form Object currently being processed.
+	 *
+	 * @return void
 	 */
 	public function validate( $value, $form ) {
 		//
+	}
+
+	/**
+	 * Sets the failed_validation and validation_message properties for a required field error.
+	 *
+	 * @since 2.6.5
+	 *
+	 * @param mixed $value                   The field value.
+	 * @param bool  $require_complex_message Indicates if the field must have a complex validation message for the error to be set.
+	 *
+	 * @return void
+	 */
+	public function set_required_error( $value, $require_complex_message = false ) {
+		$complex_message = $this->complex_validation_message( $value, $this->get_required_inputs_ids() );
+
+		if ( $require_complex_message && ! $complex_message ) {
+			return;
+		}
+
+		$this->failed_validation  = true;
+		$this->validation_message = empty( $this->errorMessage ) ? __( 'This field is required.', 'gravityforms' ) : $this->errorMessage;
+
+		if ( $complex_message ) {
+			$this->validation_message .= ' ' . $complex_message;
+		}
+	}
+
+	/**
+	 * Override to modify the value before it's used to generate the complex validation message.
+	 *
+	 * @since 2.6.5
+	 *
+	 * @param array $value The value to be prepared.
+	 *
+	 * @return array
+	 */
+	public function prepare_complex_validation_value( $value ) {
+		return $value;
 	}
 
 	/**
@@ -727,31 +769,37 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * The validation message will specify which inputs need to be filled out.
 	 *
 	 * @since 2.5
+	 * @since 2.6.5 Updated to use prepare_complex_validation_value().
 	 *
 	 * @param array $value            The value entered by the user.
 	 * @param array $required_inputs  The required inputs to validate.
 	 *
-	 * @return string|void
+	 * @return string|false
 	 */
 	public function complex_validation_message( $value, $required_inputs ) {
+		if ( empty( $this->inputs ) || empty( $required_inputs ) ) {
+			return false;
+		}
+
+		$value        = $this->prepare_complex_validation_value( $value );
 		$error_inputs = array();
 
 		foreach ( $required_inputs as $input ) {
-			if ( '' == rgar( $value, $this->id . '.' . $input )  && ! $this->get_input_property( $input, 'isHidden' ) ) {
+			if ( rgblank( rgar( $value, $this->id . '.' . $input ) ) && ! $this->get_input_property( $input, 'isHidden' ) ) {
 				$custom_label   = $this->get_input_property( $input, 'customLabel' );
 				$label          = $custom_label ? $custom_label : $this->get_input_property( $input, 'label' );
 				$error_inputs[] = $label;
 			}
 		}
 
-		if ( ! empty( $error_inputs ) ) {
-			$field_list = implode( ', ', $error_inputs );
-			// Translators: comma-separated list of the labels of missing fields.
-			$message = sprintf( __( 'Please complete the following fields: %s.', 'gravityforms' ), $field_list );
-			return $message;
+		if ( empty( $error_inputs ) ) {
+			return false;
 		}
 
-		return false;
+		$field_list = implode( ', ', $error_inputs );
+
+		// Translators: comma-separated list of the labels of missing fields.
+		return sprintf( __( 'Please complete the following fields: %s.', 'gravityforms' ), $field_list );
 	}
 
 	/**

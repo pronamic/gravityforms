@@ -172,11 +172,8 @@ html[dir="rtl"] #wpcontent {
 
 .gform-settings__wrapper {
 
-	display: -ms-grid;
-
 	display: grid;
 	grid-column-gap: 0.875rem;
-	-ms-grid-columns: 12.875rem auto;
 	grid-template-columns: 12.875rem auto;
 	margin-left: auto;
 	margin-right: auto;
@@ -186,7 +183,6 @@ html[dir="rtl"] #wpcontent {
 }
 
 .gform-settings__wrapper--full {
-	-ms-grid-columns: auto;
 	grid-template-columns: auto;
 }
 
@@ -198,8 +194,6 @@ html[dir="rtl"] #wpcontent {
 }
 
 .gform-settings__wrapper > .notice, .gform-settings__wrapper > .alert {
-
-	-ms-grid-column-span: 2;
 
 	grid-column: span 2;
 	margin: 0 0 0.875rem;
@@ -325,18 +319,14 @@ html[dir="rtl"] #wpcontent {
 
 .gform_settings_form, .gform-settings-tabs__container {
 
-	display: -ms-grid;
-
 	display: grid;
 	grid-column-gap: 0.875rem;
 	grid-row-gap: 0.875rem;
-	-ms-grid-columns: 1fr 1fr;
 	grid-template-columns: 1fr 1fr;
 
 }
 
 .gform-settings__wrapper--full .gform_settings_form, .gform-settings__wrapper--full .gform-settings-tabs__container {
-		-ms-grid-column-span: 2;
 		grid-column: span 2;
 	}
 
@@ -345,7 +335,6 @@ html[dir="rtl"] #wpcontent {
 	background: #fff;
 	border-radius: 3px;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.13);
-	-ms-grid-column-span: 2;
 	grid-column: span 2;
 
 }
@@ -378,8 +367,6 @@ html[dir="rtl"] #wpcontent {
 
 .gform-settings-tabs__container {
 
-	-ms-grid-column-span: 2;
-
 	grid-column: span 2;
 
 }
@@ -402,7 +389,6 @@ html[dir="rtl"] #wpcontent {
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	-ms-grid-column-span: 2;
 	grid-column: span 2;
 	position: relative;
 
@@ -416,15 +402,11 @@ html[dir="rtl"] #wpcontent {
 
 .gform-settings-panel--half {
 
-	-ms-grid-column-span: 1;
-
 	grid-column: span 1;
 
 }
 
 .gform-settings-save-container {
-
-	-ms-grid-column-span: 2;
 
 	grid-column: span 2;
 	margin-top: 1.125rem;
@@ -540,12 +522,9 @@ html[dir="rtl"] .gform-settings-panel__title--header + .gform-settings-panel__co
 
 .gform-addons-uninstall-panel {
 
-	display: -ms-grid;
-
 	display: grid;
 	grid-column-gap: 0.875rem;
 	grid-row-gap: 0.875rem;
-	-ms-grid-columns: 1fr 1fr;
 	grid-template-columns: 1fr 1fr;
 	margin: 1.125rem 0;
 
@@ -553,18 +532,13 @@ html[dir="rtl"] .gform-settings-panel__title--header + .gform-settings-panel__co
 
 .gform-settings-panel__addon-uninstall {
 
-	-ms-grid-column-span: 1;
-
 	grid-column: span 1;
 
 }
 
 .gform-settings-panel__addon-uninstall .gform-settings-panel__content {
 
-	display: -ms-grid;
-
 	display: grid;
-	-ms-grid-columns: 1fr 2fr 1fr;
 	grid-template-columns: 1fr 2fr 1fr;
 
 }
@@ -791,12 +765,6 @@ html[dir="rtl"] .gform-settings-field--with-merge-tag .gform-settings-field__hea
 	height: 2.375rem;
 	line-height: 1.125rem;
 	padding: 0.5rem 1.125rem;
-
-}
-
-.gform-settings-panel__content input:-ms-input-placeholder, .gform-settings-panel__content textarea:-ms-input-placeholder {
-
-	color: #9092b0;
 
 }
 
