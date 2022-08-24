@@ -3775,7 +3775,9 @@ class GFFormDisplay {
 		 * @param string   $style           Holds the conditional logic display style. Deprecated in 1.9.4.4.
 		 * @param string   $field_content   The markup for the field content: label, description, inputs, etc.
 		 */
-		$field_container = gf_apply_filters( array( 'gform_field_container', $form_id, $field->id ), $field_container, $field, $form, $css_class, $style, $field_content );
+		if ( rgar( $field, 'type' ) !== 'submit' ) {
+			$field_container = gf_apply_filters( array( 'gform_field_container', $form_id, $field->id ), $field_container, $field, $form, $css_class, $style, $field_content );
+		}
 
 		$field_markup = str_replace( '{FIELD_CONTENT}', $field_content, $field_container );
 

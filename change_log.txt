@@ -1,3 +1,8 @@
+### 2.6.6 | 2022-08-23
+- Fixed an issue where the a form can have multiple submit buttons if markup is changed with the `gform_field_container` filter.
+- Updated the Zapier icon to reflect their new branding.
+
+
 ### 2.6.5 | 2022-08-09
 - Fixed a fatal error that can occur on some hosting environments when the license is validated.
 - Fixed an issue where inserting a new notification routing rule will sometimes overwrite the following rule.
