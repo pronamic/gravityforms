@@ -1572,12 +1572,20 @@ class GFFormDetail {
 									<div class="gform_column_wrapper">
 										<?php
 
+										/*
+										* Translators: This string is a list of genders.  If the language you are translating into
+										* doesn't have equivalents, just provide a list with as many or few genders as your language has.
+										*/
+										$genders_string = __( 'Male, Female, Non-binary, Agender, My gender is not listed, Prefer not to answer', 'gravityforms' );
+										$genders_array  = explode( ', ', $genders_string );
+										$gender_choices = array_values( array_unique( $genders_array ) );
+
 										$predefined_choices = array(
 											__( 'Countries', 'gravityforms' )                   => $gf_address_field->get_countries(),
 											__( 'U.S. States', 'gravityforms' )                 => $gf_address_field->get_us_states(),
 											__( 'Canadian Province/Territory', 'gravityforms' ) => $gf_address_field->get_canadian_provinces(),
 											__( 'Continents', 'gravityforms' )                  => array( __( 'Africa', 'gravityforms' ), __( 'Antarctica', 'gravityforms' ), __( 'Asia', 'gravityforms' ), __( 'Australia', 'gravityforms' ), __( 'Europe', 'gravityforms' ), __( 'North America', 'gravityforms' ), __( 'South America', 'gravityforms' ) ),
-											__( 'Gender', 'gravityforms' )                      => array( __( 'Male', 'gravityforms' ), __( 'Female', 'gravityforms' ), __( 'Non-binary', 'gravityforms' ), __( 'Agender', 'gravityforms' ), __( "My gender isn't listed", 'gravityforms' ), __( 'Prefer Not to Answer', 'gravityforms' ) ),
+											__( 'Gender', 'gravityforms' )                      => $gender_choices,
 											__( 'Age', 'gravityforms' )                         => array( __( 'Under 18', 'gravityforms' ), __( '18-24', 'gravityforms' ), __( '25-34', 'gravityforms' ), __( '35-44', 'gravityforms' ), __( '45-54', 'gravityforms' ), __( '55-64', 'gravityforms' ), __( '65 or Above', 'gravityforms' ), __( 'Prefer Not to Answer', 'gravityforms' ) ),
 											__( 'Marital Status', 'gravityforms' )              => array( __( 'Single', 'gravityforms' ), __( 'Married', 'gravityforms' ), __( 'Divorced', 'gravityforms' ), __( 'Widowed', 'gravityforms' ), __( 'Separated', 'gravityforms' ), __( 'Domestic Partnership', 'gravityforms' ) ),
 											__( 'Employment', 'gravityforms' )                  => array( __( 'Employed Full-Time', 'gravityforms' ), __( 'Employed Part-Time', 'gravityforms' ), __( 'Self-employed', 'gravityforms' ), __( 'Not employed but looking for work', 'gravityforms' ), __( 'Not employed and not looking for work', 'gravityforms' ), __( 'Homemaker', 'gravityforms' ), __( 'Retired', 'gravityforms' ), __( 'Student', 'gravityforms' ), __( 'Prefer Not to Answer', 'gravityforms' ) ),
@@ -1596,6 +1604,7 @@ class GFFormDetail {
 											__( 'Size', 'gravityforms' )                        => array( __( 'Extra Small', 'gravityforms' ), __( 'Small', 'gravityforms' ), __( 'Medium', 'gravityforms' ), __( 'Large', 'gravityforms' ), __( 'Extra Large', 'gravityforms' ) ),
 
 										);
+
 										$predefined_choices = gf_apply_filters( array( 'gform_predefined_choices', rgar( $form, 'id' ) ), $predefined_choices );
 
 										$custom_choices = RGFormsModel::get_custom_choices();

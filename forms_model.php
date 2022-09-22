@@ -7070,7 +7070,28 @@ class GFFormsModel {
 	 * @return array
 	 */
 	public static function get_lead_db_columns() {
-		return array( 'id', 'form_id', 'post_id', 'date_created', 'date_updated', 'is_starred', 'is_read', 'ip', 'source_url', 'user_agent', 'currency', 'payment_status', 'payment_date', 'payment_amount', 'transaction_id', 'is_fulfilled', 'created_by', 'transaction_type', 'status', 'payment_method' );
+		return array(
+			'id',
+			'form_id',
+			'post_id',
+			'date_created',
+			'date_updated',
+			'is_starred',
+			'is_read',
+			'ip',
+			'source_url',
+			'user_agent',
+			'currency',
+			'payment_status',
+			'payment_date',
+			'payment_amount',
+			'payment_method',
+			'transaction_id',
+			'is_fulfilled',
+			'created_by',
+			'transaction_type',
+			'status',
+		);
 	}
 
 	/**

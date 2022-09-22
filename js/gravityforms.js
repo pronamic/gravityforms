@@ -2957,69 +2957,69 @@ function gformValidateFileSize( field, max_file_size ) {
 			}
 		});
 
-        uploader.bind('FileUploaded', function(up, file, result) {
-			if( ! up.getFile(file.id) ) {
+		uploader.bind('FileUploaded', function(up, file, result) {
+			if (!up.getFile(file.id)) {
 				// The file has been removed from the queue.
 				return;
 			}
-            var response = $.secureEvalJSON(result.response);
-            if(response.status == "error"){
-                addMessage(up.settings.gf_vars.message_id, file.name + " - " + response.error.message);
-                $('#' + file.id ).html('');
-                toggleLimitReached(up.settings);
-                return;
-            }
 
-            var html = '<strong>' + htmlEncode(file.name) + '</strong>';
-            var formId = up.settings.multipart_params.form_id;
-            var fieldId = up.settings.multipart_params.field_id;
+			var response = $.secureEvalJSON(result.response);
+			if (response.status == "error") {
+				addMessage(up.settings.gf_vars.message_id, file.name + " - " + response.error.message);
+				$('#' + file.id).html('');
+				toggleLimitReached(up.settings);
+				return;
+			}
 
-            if ( typeof gf_legacy !== 'undefined' && gf_legacy.is_legacy ) {
-                html = "<img "
-                    + "class='gform_delete' "
-                    + "src='" + imagesUrl + "/delete.png' "
-                    + "onclick='gformDeleteUploadedFile(" + formId + "," + fieldId + ", this);' "
-                    + "onkeypress='gformDeleteUploadedFile(" + formId + "," + fieldId + ", this);' "
-                    + "alt='" + strings.delete_file + "' "
-                    + "title='" + strings.delete_file
-                    + "' /> "
-                    + html;
-            } else {
-                html = "<button class='gform_delete_file' onclick='gformDeleteUploadedFile(" + formId + "," + fieldId + ", this);'><span class='dashicons dashicons-trash' aria-hidden='true'></span><span class='screen-reader-text'>" + strings.delete_file + ': ' + file.name + "</span></button> " + html;
-            }
+			var uploadedName = rgars(response, 'data/uploaded_filename');
+			var html = '<strong>' + htmlEncode(uploadedName) + '</strong>';
+			var formId = up.settings.multipart_params.form_id;
+			var fieldId = up.settings.multipart_params.field_id;
 
-	        /**
-	         * Allows the markup for the file to be overridden.
-	         *
-	         * @since 1.9
-	         * @since 2.4.23 Added the response param.
-	         *
-	         * @param {string} html      The HTML for the file name and delete button.
-	         * @param {object} file      The file upload properties. See: https://www.plupload.com/docs/v2/File.
-	         * @param {object} up        The uploader properties. See: https://www.plupload.com/docs/v2/Uploader.
-	         * @param {object} strings   Localized strings relating to file uploads.
-	         * @param {string} imagesURL The base URL to the Gravity Forms images directory.
-	         * @param {object} response  The response from GFAsyncUpload.
-	         */
-	        html = gform.applyFilters( 'gform_file_upload_markup', html, file, up, strings, imagesUrl, response );
+			if (typeof gf_legacy !== 'undefined' && gf_legacy.is_legacy) {
+				html = "<img "
+					+ "class='gform_delete' "
+					+ "src='" + imagesUrl + "/delete.png' "
+					+ "onclick='gformDeleteUploadedFile(" + formId + "," + fieldId + ", this);' "
+					+ "onkeypress='gformDeleteUploadedFile(" + formId + "," + fieldId + ", this);' "
+					+ "alt='" + strings.delete_file + "' "
+					+ "title='" + strings.delete_file
+					+ "' /> "
+					+ html;
+			} else {
+				html = "<button class='gform_delete_file' onclick='gformDeleteUploadedFile(" + formId + "," + fieldId + ", this);'><span class='dashicons dashicons-trash' aria-hidden='true'></span><span class='screen-reader-text'>" + strings.delete_file + ': ' + htmlEncode(uploadedName) + "</span></button> " + html;
+			}
 
-            $( '#' + file.id ).html( html );
+			/**
+			 * Allows the markup for the file to be overridden.
+			 *
+			 * @since 1.9
+			 * @since 2.4.23 Added the response param.
+			 *
+			 * @param {string} html      The HTML for the file name and delete button.
+			 * @param {object} file      The file upload properties. See: https://www.plupload.com/docs/v2/File.
+			 * @param {object} up        The uploader properties. See: https://www.plupload.com/docs/v2/Uploader.
+			 * @param {object} strings   Localized strings relating to file uploads.
+			 * @param {string} imagesURL The base URL to the Gravity Forms images directory.
+			 * @param {object} response  The response from GFAsyncUpload.
+			 */
+			html = gform.applyFilters('gform_file_upload_markup', html, file, up, strings, imagesUrl, response);
 
-            if(file.percent == 100){
-                if(response.status && response.status == 'ok'){
-                    addFile(fieldId, response.data);
-                }  else {
-                    addMessage(up.settings.gf_vars.message_id, strings.unknown_error + ': ' + file.name);
-                }
-            }
+			$('#' + file.id).html(html);
 
+			if (file.percent == 100) {
+				if (response.status && response.status == 'ok') {
+					addFile(fieldId, response.data);
+				} else {
+					addMessage(up.settings.gf_vars.message_id, strings.unknown_error + ': ' + file.name);
+				}
+			}
 
+		});
 
-        });
-
-	    uploader.bind('FilesRemoved', function (up, files) {
-		    toggleLimitReached(up.settings);
-	    });
+		uploader.bind('FilesRemoved', function (up, files) {
+			toggleLimitReached(up.settings);
+		});
 
 		function getAllFiles(){
 			var selector = '#gform_uploaded_files_' + formID,

@@ -2763,6 +2763,18 @@ Content-Type: text/html;
 		return get_option( 'rg_gforms_key' );
 	}
 
+	/**
+	 * Gets the support url configured for the current environment.
+	 *
+	 * @since 2.6.7
+	 *
+	 * @return string Returns the support URL.
+	 */
+	public static function get_support_url() {
+		$env_handler = GFForms::get_service_container()->get( Gravity_Forms\Gravity_Forms\Environment_Config\GF_Environment_Config_Service_Provider::GF_ENVIRONMENT_CONFIG_HANDLER );
+		return $env_handler->get_support_url();
+	}
+
 	public static function has_update( $use_cache = true ) {
 		$version_info = GFCommon::get_version_info( $use_cache );
 		$version      = rgar( $version_info, 'version' );
@@ -3168,7 +3180,7 @@ Content-Type: text/html;
 	}
 
 	public static function get_selection_value( $value ) {
-		
+
 		if ( is_null( $value ) ) {
 			return $value;
 		}
@@ -3176,7 +3188,7 @@ Content-Type: text/html;
 		if ( ! is_array( $value ) ) {
 			$value = explode( '|', $value );
 		}
-		
+
 		return $value[0];
 
 	}
@@ -5292,16 +5304,15 @@ Content-Type: text/html;
 			$gf_vars['idString'] = __( 'ID: ', 'gravityforms' );
 		}
 
-		$prefixes = array_unique( array_filter( array(
-			__( 'Mr.', 'gravityforms' ),
-			__( 'Mrs.', 'gravityforms' ),
-			__( 'Miss', 'gravityforms' ),
-			__( 'Ms.', 'gravityforms' ),
-			__( 'Mx.', 'gravityforms' ),
-			__( 'Dr.', 'gravityforms' ),
-			__( 'Prof.', 'gravityforms' ),
-			__( 'Rev.', 'gravityforms' ),
-		) ) );
+		/*
+		 * Translators: This string is a list of name prefixes/honorifics.  If the language you are translating into
+		 * doesn't have equivalents, just provide a list with as many or few prefixes as your language has.
+		 */
+		$prefixes_string = __( 'Mr., Mrs., Miss, Ms., Mx., Dr., Prof., Rev.', 'gravityforms' );
+		$prefixes_array  = explode( ', ', $prefixes_string );
+
+		$prefixes = array_unique( array_filter( $prefixes_array ) );
+
 		sort( $prefixes );
 
 		$gf_vars['nameFieldDefaultPrefixes'] = array();

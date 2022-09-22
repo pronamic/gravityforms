@@ -880,10 +880,13 @@ WHERE lfv.id NOT IN
 	/**
 	 * Upgrade leads to 2.3
 	 *
-	 * @return bool
+	 * @return bool Indicates if the background upgrader needs more time to complete the upgrade.
 	 */
 	public function gf_upgrade_230_migrate_leads() {
-		global $wpdb;
+		$lead_table = GFFormsModel::get_lead_table_name();
+		if ( ! GFCommon::table_exists( $lead_table ) ) {
+			return false;
+		}
 
 		if ( defined( 'GFORM_DB_MIGRATION_BATCH_SIZE' ) ) {
 			$limit = GFORM_DB_MIGRATION_BATCH_SIZE;
@@ -891,14 +894,59 @@ WHERE lfv.id NOT IN
 			$limit = 20000;
 		}
 
-		$lead_table = GFFormsModel::get_lead_table_name();
-		$entry_table = GFFormsModel::get_entry_table_name();
 		$time_start = microtime( true );
+
+		if (
+			$this->migrate_230_lead_properties( $lead_table, $limit, $time_start ) ||
+			$this->migrate_230_lead_details( $limit, $time_start ) ||
+			$this->migrate_230_lead_meta( $limit, $time_start )
+		) {
+			return true;
+		}
+
+		$this->update_upgrade_status( esc_html__( 'Entry details migrated.', 'gravityforms' ) );
+
+		return false;
+	}
+
+	/**
+	 * Migrates the rg_lead table.
+	 *
+	 * @since 2.6.7
+	 *
+	 * @param string $lead_table The name of the table to be migrated.
+	 * @param int    $limit      The migration batch size.
+	 * @param float  $time_start The time the migration started, in seconds.
+	 *
+	 * @return bool|void
+	 */
+	public function migrate_230_lead_properties( $lead_table, $limit, $time_start ) {
+		global $wpdb;
+
+		$entry_table = GFFormsModel::get_entry_table_name();
 
 		$lead_ids_sql = "SELECT l2.id
 FROM {$lead_table} l2
 WHERE l2.id NOT IN ( SELECT e.id FROM {$entry_table} e )
 LIMIT {$limit}";
+
+		// Find out which columns exist for this installation.
+		$lead_columns   = array_flip( $wpdb->get_col( 'DESC ' . $lead_table ) );
+		$entry_columns  = GFFormsModel::get_lead_db_columns();
+		$select_columns = array();
+
+		foreach ( $entry_columns as $column ) {
+			if ( ! isset( $lead_columns[ $column ] ) ) {
+				// Pad the list to prevent errors for missing columns when the insert into query runs.
+				$select_columns[] = $column === 'status' ? "'active'" : 'null';
+				continue;
+			}
+
+			$select_columns[] = $column;
+		}
+
+		$insert_columns = implode( ', ', $entry_columns );
+		$select_columns = implode( ', ', $select_columns );
 
 		do {
 
@@ -921,9 +969,9 @@ LIMIT {$limit}";
 					// Add the lead header to the data
 					$sql = "
 INSERT INTO $entry_table
-(id, form_id, post_id, date_created, date_updated, is_starred, is_read, ip, source_url, user_agent, currency, payment_status, payment_date, payment_amount, payment_method, transaction_id, is_fulfilled, created_by, transaction_type, status)
+($insert_columns)
 SELECT
-id, form_id, post_id, date_created, null, is_starred, is_read, ip, source_url, user_agent, currency, payment_status, payment_date, payment_amount, payment_method, transaction_id, is_fulfilled, created_by, transaction_type, status
+$select_columns
 FROM
 $lead_table l
 WHERE l.id IN ( {$lead_ids_in} )";
@@ -937,15 +985,16 @@ WHERE l.id IN ( {$lead_ids_in} )";
 						exit;
 					}
 
-					$current_time = microtime( true );
+					$current_time   = microtime( true );
 					$execution_time = ( $current_time - $time_start );
 					if ( $execution_time > 15 ) {
 						$sql_remaining = "SELECT COUNT(l2.id)
 FROM {$lead_table} l2
 WHERE l2.id NOT IN ( SELECT e.id FROM {$entry_table} e )";
-						$remaining = $wpdb->get_var( $sql_remaining );
+						$remaining     = $wpdb->get_var( $sql_remaining );
 						if ( $remaining > 0 ) {
 							$this->update_upgrade_status( sprintf( esc_html__( 'Migrating leads. Step 1/3 Migrating entry headers. %d rows remaining.', 'gravityforms' ), $remaining ) );
+
 							return true;
 						}
 					}
@@ -953,9 +1002,26 @@ WHERE l2.id NOT IN ( SELECT e.id FROM {$entry_table} e )";
 			}
 		} while ( ! empty( $lead_ids ) );
 
-		// Lead details
+		return false;
+	}
 
+	/**
+	 * Migrates the rg_lead_detail table, if it exists.
+	 *
+	 * @since 2.6.7
+	 *
+	 * @param int   $limit      The migration batch size.
+	 * @param float $time_start The time the migration started, in seconds.
+	 *
+	 * @return bool|void
+	 */
+	public function migrate_230_lead_details( $limit, $time_start ) {
 		$lead_details_table = GFFormsModel::get_lead_details_table_name();
+		if ( ! GFCommon::table_exists( $lead_details_table ) ) {
+			return false;
+		}
+
+		global $wpdb;
 		$entry_meta_table = GFFormsModel::get_entry_meta_table_name();
 
 		$lead_detail_ids_sql = "
@@ -968,7 +1034,7 @@ LIMIT {$limit}";
 			$lead_detail_ids = $wpdb->get_col( $lead_detail_ids_sql );
 
 			if ( $wpdb->last_error ) {
-				error_log('error: ' . $wpdb->last_error );
+				error_log( 'error: ' . $wpdb->last_error );
 				/* translators: %s: the database error */
 				$this->update_upgrade_status( sprintf( esc_html__( 'Error Migrating Entry Details: %s', 'gravityforms' ), $wpdb->last_error ) );
 				// wp_die() is not used here because it would trigger another async task
@@ -993,37 +1059,53 @@ WHERE ld.id IN ( {$lead_detail_ids_in} )";
 				$wpdb->query( $sql );
 
 				if ( $wpdb->last_error ) {
-					error_log('error: ' . $wpdb->last_error );
+					error_log( 'error: ' . $wpdb->last_error );
 					/* translators: %s: the database error */
 					$this->update_upgrade_status( sprintf( esc_html__( 'Error Migrating Entry Details: %s', 'gravityforms' ), $wpdb->last_error ) );
 					// wp_die() is not used here because it would trigger another async task
 					exit;
 				}
 
-				$current_time = microtime( true );
+				$current_time   = microtime( true );
 				$execution_time = ( $current_time - $time_start );
 				if ( $execution_time > 15 ) {
 					$sql_remaining = "
 SELECT COUNT(ld.id)
 FROM {$lead_details_table} ld
 WHERE ld.id NOT IN ( SELECT em.id FROM {$entry_meta_table} em )";
-					$remaining = $wpdb->get_var( $sql_remaining );
+					$remaining     = $wpdb->get_var( $sql_remaining );
 					if ( $remaining > 0 ) {
 						$this->update_upgrade_status( sprintf( esc_html__( 'Migrating leads. Step 2/3 Migrating entry details. %d rows remaining.', 'gravityforms' ), $remaining ) );
+
 						return true;
 					}
 				}
 			}
 		} while ( ! empty( $lead_detail_ids ) );
 
-		// Lead meta
+		return false;
+	}
 
-		$lead_meta_table = GFFormsModel::get_lead_meta_table_name();
+	/**
+	 * Migrates the rg_lead_meta table, if it exists.
+	 *
+	 * @since 2.6.7
+	 *
+	 * @param int   $limit      The migration batch size.
+	 * @param float $time_start The time the migration started, in seconds.
+	 *
+	 * @return bool|void
+	 */
+	public function migrate_230_lead_meta( $limit, $time_start ) {
+		$lead_meta_table  = GFFormsModel::get_lead_meta_table_name();
+		if ( ! GFCommon::table_exists( $lead_meta_table ) ) {
+			return false;
+		}
+
+		global $wpdb;
 		$entry_meta_table = GFFormsModel::get_entry_meta_table_name();
-
-		$charset_db = empty( $wpdb->charset ) ? 'utf8mb4' : $wpdb->charset;
-
-		$collate = ! empty( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : '';
+		$charset_db       = empty( $wpdb->charset ) ? 'utf8mb4' : $wpdb->charset;
+		$collate          = ! empty( $wpdb->collate ) ? " COLLATE {$wpdb->collate}" : '';
 
 		$lead_meta_ids_sql = "
 SELECT
@@ -1068,7 +1150,7 @@ WHERE lm.id IN ( {$lead_meta_ids_in} )";
 					exit;
 				}
 
-				$current_time = microtime( true );
+				$current_time   = microtime( true );
 				$execution_time = ( $current_time - $time_start );
 				if ( $execution_time > 15 ) {
 					$sql_remaining = "
@@ -1077,16 +1159,16 @@ FROM
   {$lead_meta_table} lm
 WHERE NOT EXISTS
       (SELECT * FROM {$entry_meta_table} em WHERE em.entry_id = lm.lead_id AND CONVERT(em.meta_key USING {$charset_db}) = CONVERT(lm.meta_key USING {$charset_db}) {$collate})";
-					$remaining = $wpdb->get_var( $sql_remaining );
+					$remaining     = $wpdb->get_var( $sql_remaining );
 					if ( $remaining > 0 ) {
 						$this->update_upgrade_status( sprintf( esc_html__( 'Migrating leads. Step 3/3 Migrating entry meta. %d rows remaining.', 'gravityforms' ), $remaining ) );
+
 						return true;
 					}
 				}
 			}
 		} while ( ! empty( $lead_meta_ids ) );
 
-		$this->update_upgrade_status( esc_html__( 'Entry details migrated.', 'gravityforms' ) );
 		return false;
 	}
 
@@ -1278,6 +1360,7 @@ WHERE ln.id NOT IN
 	 * Upgrade routine from gravity forms version 2.0.4.7 and below
 	 */
 	protected function post_upgrade_schema_2047() {
+		remove_filter( 'query', array( 'GFForms', 'filter_query' ) );
 
 		global $wpdb;
 

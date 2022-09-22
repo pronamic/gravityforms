@@ -631,6 +631,9 @@ class GFFormDisplay {
 		$page_number = RGForms::post( "gform_target_page_number_{$form['id']}" );
 		$page_number = ! is_numeric( $page_number ) ? 1 : $page_number;
 
+		// cast to an integer since page numbers can only be whole numbers
+		$page_number = absint( $page_number );
+
 		$direction = $page_number >= $current_page ? 1 : - 1;
 
 		//Finding next page that is not hidden by conditional logic

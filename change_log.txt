@@ -1,7 +1,14 @@
+### 2.6.7 | 2022-09-21
+- Added security enhancements.
+- Added support for environment options.
+- Fixed an issue where the product field description is not announced by screen readers when the quantity field is disabled.
+- Fixed an issue where the wrong change log can display on update.
+- Fixed an issue that can result in the database upgrade stalling with an error when updating from very old versions.
+- Updated how the predefined choices list for gender and the name prefix choices are generated to make them easier to translate.
+
 ### 2.6.6 | 2022-08-23
 - Fixed an issue where the a form can have multiple submit buttons if markup is changed with the `gform_field_container` filter.
 - Updated the Zapier icon to reflect their new branding.
-
 
 ### 2.6.5 | 2022-08-09
 - Fixed a fatal error that can occur on some hosting environments when the license is validated.

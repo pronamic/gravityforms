@@ -75,6 +75,7 @@ class GF_Background_Upgrader extends GF_Background_Process {
 		}
 
 		if ( is_callable( $callback ) ) {
+			remove_filter( 'query', array( 'GFForms', 'filter_query' ) );
 			GFCommon::log_debug( sprintf( '%s(): Running callback: %s', __METHOD__, print_r( $callback, 1 ) ) );
 			$needs_more_time = call_user_func( $callback );
 			if ( $needs_more_time ) {
