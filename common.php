@@ -5612,7 +5612,7 @@ Content-Type: text/html;
 			$network_notices = $wp_filter['network_admin_notices']->callbacks;
 		}
 
-		$all_notices = array_replace( $notices, $network_notices );
+		$all_notices = $notices && array_replace( $notices, $network_notices );
 
 		$has_non_gf_notices = false;
 		foreach ( $all_notices as $priority => $notice ) {
