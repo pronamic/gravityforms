@@ -1492,12 +1492,12 @@ function gformToggleShowPassword( fieldId ) {
     switch ( currentType ) {
         case 'password':
             $password.attr( 'type', 'text' );
-            $button.attr( 'label', $button.attr( 'data-label-hide' ) );
+            $button.attr( 'aria-label', $button.attr( 'data-label-hide' ) );
             $icon.removeClass( 'dashicons-hidden' ).addClass( 'dashicons-visibility' );
             break;
         case 'text':
             $password.attr( 'type', 'password' );
-            $button.attr( 'label', $button.attr( 'data-label-show' ) );
+            $button.attr( 'aria-label', $button.attr( 'data-label-show' ) );
             $icon.removeClass( 'dashicons-visibility' ).addClass( 'dashicons-hidden' );
             break;
     }

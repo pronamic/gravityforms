@@ -700,17 +700,6 @@ html[dir="rtl"] .right .gform-dropdown__container {
 		margin: 0 0.75rem;
 	}
 
-@-webkit-keyframes spin {
-
-	0% {
-		transform: rotate(0deg);
-	}
-
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
 @keyframes spin {
 
 	0% {
@@ -719,21 +708,6 @@ html[dir="rtl"] .right .gform-dropdown__container {
 
 	100% {
 		transform: rotate(360deg);
-	}
-}
-
-@-webkit-keyframes moveOutLeft {
-
-	0% {
-		margin-left: 0;
-	}
-
-	50% {
-		margin-left: -12px;
-	}
-
-	100% {
-		margin-left: -24px;
 	}
 }
 
@@ -752,17 +726,6 @@ html[dir="rtl"] .right .gform-dropdown__container {
 	}
 }
 
-@-webkit-keyframes moveInRight {
-
-	0% {
-		margin-right: 12px;
-	}
-
-	100% {
-		margin-right: 0;
-	}
-}
-
 @keyframes moveInRight {
 
 	0% {
@@ -771,21 +734,6 @@ html[dir="rtl"] .right .gform-dropdown__container {
 
 	100% {
 		margin-right: 0;
-	}
-}
-
-@-webkit-keyframes fadeOut {
-
-	0% {
-		opacity: 1;
-	}
-
-	50% {
-		opacity: 0.5;
-	}
-
-	100% {
-		opacity: 0;
 	}
 }
 
@@ -804,32 +752,10 @@ html[dir="rtl"] .right .gform-dropdown__container {
 	}
 }
 
-@-webkit-keyframes fadeIn {
-
-	0% {
-		opacity: 0;
-	}
-
-	100% {
-		opacity: 1;
-	}
-}
-
 @keyframes fadeIn {
 
 	0% {
 		opacity: 0;
-	}
-
-	100% {
-		opacity: 1;
-	}
-}
-
-@-webkit-keyframes fadeInFromHalf {
-
-	0% {
-		opacity: 0.75;
 	}
 
 	100% {
@@ -3791,15 +3717,6 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 			}
 		}
 
-@-webkit-keyframes rotation {
-			0% {
-				-webkit-transform: rotate(0);
-			}
-			100% {
-				-webkit-transform: rotate(360deg);
-			}
-		}
-
 .gficon-spin {
 	display: inline-block;
 	animation: rotation 2s linear infinite;
@@ -5119,14 +5036,11 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 		-webkit-text-decoration: solid underline #242748 1px;
 		        text-decoration: solid underline #242748 1px;
 		text-underline-offset: 2px;
-		transition: -webkit-text-decoration-color 0.15s ease;
 		transition: text-decoration-color 0.15s ease;
-		transition: text-decoration-color 0.15s ease, -webkit-text-decoration-color 0.15s ease;
 	}
 
 .gform-splash__body a:hover, .gform-splash__body a:focus {
-			-webkit-text-decoration-color: transparent;
-			        text-decoration-color: transparent;
+			text-decoration-color: transparent;
 		}
 
 .gform-splash__section {

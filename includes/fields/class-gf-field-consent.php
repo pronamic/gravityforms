@@ -279,6 +279,32 @@ class GF_Field_Consent extends GF_Field {
 	}
 
 	/**
+	 * If a field has a description, the aria-describedby attribute for the input field is returned.
+	 * This method is specific to the consent field since the consent description has a different ID pattern.
+	 *
+	 * @since 2.6.8
+	 *
+	 * @param array|string $extra_ids Any extra ids that should be added to the describedby attribute.
+	 *
+	 * @return string
+	 */
+	public function get_aria_describedby( $extra_ids = array() ) {
+
+		$describedby_ids = is_array( $extra_ids ) ? $extra_ids : explode( ' ', $extra_ids );
+
+		if ( $this->failed_validation ) {
+			$describedby_ids[] = "validation_message_{$this->formId}_{$this->id}";
+		}
+
+		if ( empty( $describedby_ids ) ) {
+			return '';
+		}
+
+		return 'aria-describedby="' . implode( ' ', $describedby_ids ) . '"';
+
+	}
+
+	/**
 	 * Return the result (bool) by setting $this->failed_validation.
 	 * Return the validation message (string) by setting $this->validation_message.
 	 *

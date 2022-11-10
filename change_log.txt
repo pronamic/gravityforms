@@ -1,3 +1,9 @@
+### 2.6.8 | 2022-11-09
+- Fixed an accessibility issue with the consent field description.
+- Fixed an accessibility issue that prevents the show/hide password button from read by screen readers.
+- Fixed an issue where editing an entry with a multifile upload field could result in broken links to files.  Credit: GravityWiz
+- Removed an unused javascript function.
+
 ### 2.6.7 | 2022-09-21
 - Added security enhancements.
 - Added support for environment options.

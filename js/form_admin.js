@@ -487,10 +487,6 @@ function GetRuleValuesDropDown(choices, objectType, ruleIndex, selectedValue, in
     return str;
 
 }
-function isEmpty(str){
-	return
-}
-
 
 function SetRuleProperty(objectType, ruleIndex, name, value){
     var obj = GetConditionalObject(objectType);
@@ -2298,4 +2294,3 @@ gform.simplebar = {
 };
 
 gform.initializeOnLoaded( gform.simplebar.init );
-

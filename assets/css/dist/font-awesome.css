@@ -12,14 +12,6 @@
   font-weight: normal;
   font-style: normal;
 }
-@-webkit-keyframes fa-spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(359deg);
-  }
-}
 @keyframes fa-spin {
   0% {
     transform: rotate(0deg);
@@ -107,11 +99,9 @@
     margin-left: .3em;
   }
 .gforms_edit_form .fa-spin, .gforms_form_settings_wrap .fa-spin, .gform-settings__wrapper .fa-spin, .gforms_help .fa-spin, .gform_wrapper .fa-spin, .gf_entry_wrap .fa-spin {
-    -webkit-animation: fa-spin 2s infinite linear;
     animation: fa-spin 2s infinite linear;
   }
 .gforms_edit_form .fa-pulse, .gforms_form_settings_wrap .fa-pulse, .gform-settings__wrapper .fa-pulse, .gforms_help .fa-pulse, .gform_wrapper .fa-pulse, .gf_entry_wrap .fa-pulse {
-    -webkit-animation: fa-spin 1s infinite steps(8);
     animation: fa-spin 1s infinite steps(8);
   }
 .gforms_edit_form .fa-rotate-90, .gforms_form_settings_wrap .fa-rotate-90, .gform-settings__wrapper .fa-rotate-90, .gforms_help .fa-rotate-90, .gform_wrapper .fa-rotate-90, .gf_entry_wrap .fa-rotate-90 {

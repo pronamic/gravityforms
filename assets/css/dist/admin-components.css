@@ -1664,7 +1664,6 @@ html[dir="rtl"] .gform-admin .gform-input--radio + .gform-input__label--radio::b
 		}
 
 .gform-admin .gform-loader__mask--position-sticky .gform-loader__mask-positioner {
-			position: -webkit-sticky;
 			position: sticky;
 		}
 
@@ -1673,8 +1672,7 @@ html[dir="rtl"] .gform-admin .gform-input--radio + .gform-input__label--radio::b
 	}
 
 .gform-admin .gform-loader--simple {
-		-webkit-animation: gformLoader1 1.1s infinite linear;
-		        animation: gformLoader1 1.1s infinite linear;
+		animation: gformLoader1 1.1s infinite linear;
 		border-bottom: 1.1em solid #000;
 		border-left: 1.1em solid #000;
 		border-radius: 50%;
@@ -1696,17 +1694,6 @@ html[dir="rtl"] .gform-admin .gform-input--radio + .gform-input__label--radio::b
 		margin-top: 20px;
 		text-align: center;
 	}
-
-@-webkit-keyframes gformLoader1 {
-
-	0% {
-		transform: rotate(0deg);
-	}
-
-	100% {
-		transform: rotate(360deg);
-	}
-}
 
 @keyframes gformLoader1 {
 
