@@ -15,8 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once( 'libraries/wp-async-request.php' );
-require_once( 'libraries/gf-background-process.php' );
+if ( ! class_exists( 'GF_Background_Process' ) ) {
+	require_once GF_PLUGIN_DIR_PATH . 'includes/libraries/gf-background-process.php';
+}
 
 /**
  * GF_Background_Upgrader Class.

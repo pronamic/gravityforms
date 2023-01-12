@@ -634,6 +634,9 @@ Class GFNotification {
 						$notification_id = $notification['id'] = uniqid();
 					}
 
+					// Removing legacy (pre-1.7) admin/user notification property.
+					unset( $notification['type'] );
+
 					// Save values to the confirmation object in advance so non-custom values will be rewritten when we apply values below.
 					$notification = GFFormSettings::save_changed_form_settings_fields( $notification, $values );
 
@@ -665,6 +668,8 @@ Class GFNotification {
 						$routing_logic           = GFFormsModel::sanitize_conditional_logic( $routing_logic );
 						$notification['routing'] = $routing_logic['rules'];
 					}
+
+					$notification = GFCommon::fix_notification_routing( $notification );
 
 					/**
 					 * Filters the notification before it is saved
@@ -1183,6 +1188,11 @@ Class GFNotification {
 		if ( $new_notification['toType'] == 'hidden' ) {
 			$new_notification['toType'] = 'email';
 		}
+
+		// Removing legacy (pre-1.7) admin/user notification property.
+		unset( $new_notification['type'] );
+
+		$new_notification = GFCommon::fix_notification_routing( $new_notification );
 
 		$form['notifications'][ $new_id ] = $new_notification;
 

@@ -1237,6 +1237,7 @@ unless explicitly defined */
 
 .gform-admin .choices-ui__section-label {
 		color: #242748;
+		font-family: inter, -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
 		font-size: 0.8125rem;
 		font-weight: 500;
 		margin: 0 0 0.8rem;

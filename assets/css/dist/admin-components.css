@@ -1938,7 +1938,7 @@ html[dir="rtl"] .gform-admin .gform-snackbar__message {
 			height: 1.125rem;
 			left: 0;
 			position: absolute;
-			top: 0;
+			top: 0.031rem;
 			transition: border-color 200ms ease-in-out, box-shadow 200ms ease-in-out;
 			width: 1.125rem;
 		}
@@ -1961,7 +1961,7 @@ html[dir="rtl"] .gform-admin .gform-snackbar__message {
 			}
 
 .gform-admin .gform-st-icon--circle-plus::after {
-			content: "\e951";
+			content: "\e966";
 		}
 
 .gform-admin .gform-st-icon--circle-minus::after {

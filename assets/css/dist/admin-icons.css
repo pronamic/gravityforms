@@ -64,10 +64,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 @font-face {
 	font-family: 'gform-icons-admin';
 	src:
-		url('../../../fonts/gform-icons-admin.woff2?tkztib') format('woff2'),
-		url('../../../fonts/gform-icons-admin.ttf?tkztib') format('truetype'),
-		url('../../../fonts/gform-icons-admin.woff?tkztib') format('woff'),
-		url('../../../fonts/gform-icons-admin.svg?tkztib#gform-icons-admin') format('svg');
+		url('../../../fonts/gform-icons-admin.woff2?s4zbqe') format('woff2'),
+		url('../../../fonts/gform-icons-admin.ttf?s4zbqe') format('truetype'),
+		url('../../../fonts/gform-icons-admin.woff?s4zbqe') format('woff'),
+		url('../../../fonts/gform-icons-admin.svg?s4zbqe#gform-icons-admin') format('svg');
 	font-weight: normal;
 	font-style: normal;
 	font-display: block;
@@ -89,12 +89,28 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.gform-icon--conversational:before {
+	content: "\e99a";
+}
+
+.gform-icon--external-link:before {
+	content: "\e999";
+}
+
+.gform-icon--abuse-filter:before {
+	content: "\e900";
+}
+
+.gform-icon--renew:before {
+	content: "\e980";
+}
+
 .gform-icon--zapier:before {
 	content: "\e976";
 }
 
 .gform-icon--circle-error-fine:before {
-	content: "\e900";
+	content: "\e901";
 }
 
 .gform-icon--circle-notice-fine:before {
@@ -542,7 +558,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 }
 
 .gform-icon--quantity:before {
-	content: "\e901";
+	content: "\e94a";
 }
 
 .gform-icon--question:before {
@@ -563,10 +579,6 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-icon--recaptcha:before {
 	content: "\e95d";
-}
-
-.gform-icon--renew:before {
-	content: "\e980";
 }
 
 .gform-icon--search:before {
@@ -610,35 +622,35 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 }
 
 .gform-icon--st-circle:before {
-	content: "\e94a";
-}
-
-.gform-icon--st-plus:before {
 	content: "\e951";
 }
 
-.gform-icon--stripe:before {
+.gform-icon--st-plus:before {
 	content: "\e966";
 }
 
-.gform-icon--style:before {
+.gform-icon--stripe:before {
 	content: "\e967";
 }
 
-.gform-icon--survey:before {
+.gform-icon--style:before {
 	content: "\e968";
 }
 
-.gform-icon--tags:before {
+.gform-icon--survey:before {
 	content: "\e969";
 }
 
-.gform-icon--time:before {
+.gform-icon--tags:before {
 	content: "\e96a";
 }
 
-.gform-icon--title:before {
+.gform-icon--time:before {
 	content: "\e96b";
+}
+
+.gform-icon--title:before {
+	content: "\e96c";
 }
 
 .gform-icon--tools:before {
@@ -646,7 +658,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 }
 
 .gform-icon--total:before {
-	content: "\e96c";
+	content: "\e96d";
 }
 
 .gform-icon--trash:before {
@@ -654,15 +666,15 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 }
 
 .gform-icon--trello:before {
-	content: "\e96d";
-}
-
-.gform-icon--twilio:before {
 	content: "\e96e";
 }
 
-.gform-icon--upload:before {
+.gform-icon--twilio:before {
 	content: "\e96f";
+}
+
+.gform-icon--upload:before {
+	content: "\e970";
 }
 
 .gform-icon--user:before {
@@ -670,15 +682,15 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 }
 
 .gform-icon--verified:before {
-	content: "\e970";
-}
-
-.gform-icon--videopipe:before {
 	content: "\e971";
 }
 
-.gform-icon--vote:before {
+.gform-icon--videopipe:before {
 	content: "\e972";
+}
+
+.gform-icon--vote:before {
+	content: "\e973";
 }
 
 .gform-icon--warning:before {
@@ -686,15 +698,15 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 }
 
 .gform-icon--warning-amber:before {
-	content: "\e973";
-}
-
-.gform-icon--webhooks:before {
 	content: "\e975";
 }
 
-.gform-icon--zoho:before {
+.gform-icon--webhooks:before {
 	content: "\e977";
+}
+
+.gform-icon--zoho:before {
+	content: "\e998";
 }
 
 /* -----------------------------------------------------------------------------
@@ -795,7 +807,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 			}
 
 .gform-admin .gform-st-icon--circle-plus::after {
-			content: "\e951";
+			content: "\e966";
 		}
 
 .gform-admin .gform-st-icon--circle-minus::after {

@@ -289,10 +289,8 @@ class GFFormDetail {
 			id="form_editor_fields_container"
 			class="<?php esc_attr_e( $form_editor_class ); ?>"
 			data-js="form-editor"
-			<?php if ( ! $no_conflict_mode ) { ?>
 			<?php echo ! empty( $form['fields'] ) ? 'data-simplebar' : ''; ?>
 			<?php echo ! empty( $form['fields'] ) && is_rtl() ? 'data-simplebar-direction="rtl"' : ''; ?>
-			<?php } ?>
 		>
 		<?php
 		$has_pages  = GFCommon::has_pages( $form );
@@ -1538,7 +1536,7 @@ class GFFormDetail {
 								<div class="choices-ui__section" data-js="choices-ui-section" data-type="options">
 									<h6 class="choices-ui__section-label"><?php esc_html_e( 'Options', 'gravityforms' ) ?></h6>
 									<ul class="choices-ui__options-list" data-js="choices-ui-option-list">
-										<li class="choices-ui__options-list-item">
+										<li class="choices-ui__options-list-item show_values_setting">
 											<input
 												type="checkbox"
 												id="field_choice_values_enabled"

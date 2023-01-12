@@ -1,3 +1,19 @@
+### 2.6.9 | 2023-01-11
+- Added a new environment variable to hide the background updates setting.
+- Added a new environment variable to control the update message and the unregistered license message.
+- Updated the icon for the Password field.
+- Updated the minimum WordPress version on the System Status page to 6.0.
+- Fixed an issue where the editor jumps to the top of the form when opening the choices flyout in no-conflict mode.
+- Fixed an issue that causes hidden inputs to render in the autocomplete UI of the form editor.
+- Fixed an issue where exporting entries including multiple Multi-Column List fields would not create separate columns for each List field row. Credit: ForGravity.
+- Fixed an issue which causes products to display images as HTML in email notifications.
+- Fixed an issue where some admin notifications result in an error: "Cannot send email because the TO address is invalid".
+- Fixed an issue that causes the "Enable Other Choice" setting for option-based fields (Radio, Checkbox etc) to not display in the choices flyout when the Quiz add-on is enabled.
+- Fixed an issue where the `gform_require_login` filter isn't called in all contexts where login is required for the form.
+- API: Added the [gform_uninstalling](https://docs.gravityforms.com/gform_uninstalling/) action hook.
+- API: Added the [gform_form_pre_process_async_task](https://docs.gravityforms.com/gform_form_pre_process_async_task/) filter.
+- API: Updated the GFAPI::send_notifications() method to support async (background) processing of notifications. Disabled by default. Enable using the [gform_is_asynchronous_notifications_enabled](https://docs.gravityforms.com/gform_is_asynchronous_notifications_enabled/) filter.
+
 ### 2.6.8 | 2022-11-09
 - Fixed an accessibility issue with the consent field description.
 - Fixed an accessibility issue that prevents the show/hide password button from read by screen readers.

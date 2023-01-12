@@ -38,7 +38,7 @@ class GFAsyncUpload {
 			die();
 		}
 
-		if ( rgar( $form, 'requireLogin' ) ) {
+		if ( GFCommon::form_requires_login( $form ) ) {
 			if ( ! is_user_logged_in() ) {
 				die();
 			}

@@ -326,7 +326,7 @@ class GF_Field_FileUpload extends GF_Field {
 					)
 				);
 
-				if ( rgar( $form, 'requireLogin' ) ) {
+				if ( GFCommon::form_requires_login( $form ) ) {
 					$plupload_init['multipart_params'][ '_gform_file_upload_nonce_' . $form_id ] = wp_create_nonce( 'gform_file_upload_' . $form_id, '_gform_file_upload_nonce_' . $form_id );
 				}
 

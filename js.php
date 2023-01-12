@@ -243,6 +243,9 @@ if ( ! class_exists( 'GFForms' ) ) {
 		} else {
 			field_str = "<table class='input_autocompletes'><tr><td><strong>" + <?php echo json_encode( esc_html__( 'Field', 'gravityforms' ) ); ?> + "</strong></td><td><strong>" + <?php echo json_encode( esc_html__( 'Autocomplete Attribute', 'gravityforms' ) ); ?> + "</strong></td></tr>";
 			for ( var i = 0; i < field["inputs"].length; i++ ) {
+				if ( field["inputs"][i]["isHidden"] ) {
+					continue;
+				}
 				id = field["inputs"][i]["id"];
 				inputName = 'input_' + id.toString();
 				inputId = inputName.replace('.', '_');

@@ -55,6 +55,10 @@ class GF_Environment_Config_Service_Provider extends GF_Service_Provider {
 		add_filter( 'pre_option_gform_pending_installation', array( $handler, 'maybe_override_gform_pending_installation' ) );
 
 		// Maybe hides license key setting and license key details.
-		add_filter( 'gform_plugin_settings_fields', array( $handler, 'remove_license_from_settings' ) );
+		add_filter( 'gform_plugin_settings_fields', array( $handler, 'maybe_hide_setting' ) );
+
+		// Maybe hide plugin auto update messages.
+		add_filter( 'init', array( $handler, 'maybe_hide_plugin_page_message' ), 20 );
+		add_filter( 'gform_updates_list', array( $handler, 'maybe_hide_update_page_message' ), 20 );
 	}
 }

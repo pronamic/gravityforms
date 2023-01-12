@@ -19,7 +19,7 @@
 			<?php foreach ( rgars( $order_summary, 'rows/body', array() ) as $row ) { ?>
 				<tr>
 					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; font-family: sans-serif; font-size:11px;">
-						<strong style="color:#BF461E; font-size:12px; margin-bottom:5px"><?php echo esc_html( rgar( $row, 'name' ) ); ?></strong>
+						<strong style="color:#BF461E; font-size:12px; margin-bottom:5px"><?php echo \GFCommon::maybe_wp_kses( rgar( $row, 'name' ) ); ?></strong>
 							<ul style="margin:0">
 						<?php if ( is_array( rgar( $row, 'options' ) ) ) { ?>
 								<?php
@@ -49,7 +49,7 @@
 			<?php foreach ( rgars( $order_summary, 'rows/footer', array() ) as $row ) { ?>
 				<tr>
 					<td colspan="2" style="background-color:#F4F4F4; border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; font-size:11px;">&nbsp;</td>
-					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif;font-size:12px;text-align:right;"><?php echo esc_html( rgar( $row, 'name' ) ); ?></td>
+					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif;font-size:12px;text-align:right;"><?php echo \GFCommon::maybe_wp_kses( rgar( $row, 'name' ) ); ?></td>
 					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif; font-size:11px;">
 						<?php echo rgar( $row, 'sub_total_money' ); ?>
 					</td>

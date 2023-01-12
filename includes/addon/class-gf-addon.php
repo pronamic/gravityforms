@@ -866,6 +866,13 @@ abstract class GFAddOn {
 	 *                // post - Specifies a set of post ($_POST) values.
 	 *                // If all specified posted values match the current request, the script will be enqueued
 	 *                array( 'post' => 'posted_field=val' )
+	 *
+	 *                // If a nested condition is used, it will be considered a "match" if ALL sub-conditions match.
+	 *                // In the following example, the condition will match if you are on the plugin settings page AND on the signature tab
+	 *                array(
+	 *                    'admin_page' => array( 'plugin_settings' )
+	 *                    'tab'        => 'signature',
+	 *                ),
 	 *            )
 	 *        ),
 	 *        array(
@@ -882,7 +889,7 @@ abstract class GFAddOn {
 	 *            "enqueue"  => array(
 	 *                // field_types - Specifies one or more field types that requires this script.
 	 *                // The script will only be enqueued if the current form has a field of any of the specified field types.
-	 *                // Only applies when a current form is available.
+	 *                // Only applies when a current form is available (website front end, but also in the form editor, preview, entry details, results, etc...)
 	 *                array( 'field_types' => array( 'signature' ) )
 	 *            )
 	 *        )

@@ -676,6 +676,16 @@ gform.options = {
         activate: function( event ) {
             gform.tools.setAttr( '.ui-accordion-header', 'tabindex', '0', event.target, 100 );
         },
+	    beforeActivate: function( event ) {
+			// handle advanced tab operations as needed before the tab is revealed in a fields settings
+			if ( event.currentTarget.id === 'advanced_tab_toggle' ) {
+				// handle address field
+				if ( window.field && window.field.type && window.field.type === 'address' ) {
+					// regen the Autocomplete UI on every tab open to handle changes to input visibility from interactions
+					CreateAutocompleteUI( window.field );
+				}
+			}
+	    }
     },
 
 	jqAddFieldAccordions: {

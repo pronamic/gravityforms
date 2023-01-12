@@ -1,5 +1,7 @@
 <?php
 
+use Gravity_Forms\Gravity_Forms\Async;
+
 if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
@@ -1748,17 +1750,7 @@ class GFAPI {
 			return $form;
 		}
 
-		/**
-		 * Allows the form logged in user requirement to be overridden.
-		 *
-		 * @since 2.4
-		 *
-		 * @param bool  $require_login Indicates if the user must be logged in to use the current form.
-		 * @param array $form          The form currently being validated.
-		 */
-		$require_login = gf_apply_filters( array( 'gform_require_login', $form_id, ), (bool) rgar( $form, 'requireLogin' ), $form );
-
-		if ( $require_login && ! is_user_logged_in() ) {
+		if ( GFCommon::form_requires_login( $form ) && ! is_user_logged_in() ) {
 			return new WP_Error( 'login_required', __( 'You must be logged in to use this form.', 'gravityforms' ) );
 		}
 
@@ -2140,20 +2132,17 @@ class GFAPI {
 	// NOTIFICATIONS ----------------------------------------------
 
 	/**
-	 * Sends all active notifications for a form given an entry object and an event.
+	 * Triggers sending of active notifications for the given form, entry, and event.
 	 *
-	 * @since  Unknown
-	 * @access public
-	 *
-	 * @uses GFCommon::log_debug()
-	 * @uses GFCommon::send_notifications()
+	 * @since Unknown
+	 * @since 2.6.9 Added support for async processing of notifications.
 	 *
 	 * @param array  $form  The Form Object associated with the notification.
 	 * @param array  $entry The Entry Object associated with the triggered event.
 	 * @param string $event Optional. The event that's firing the notification. Defaults to 'form_submission'.
 	 * @param array  $data  Optional. Array of data which can be used in the notifications via the generic {object:property} merge tag. Defaults to empty array.
 	 *
-	 * @return array The array of notification IDs sent.
+	 * @return array
 	 */
 	public static function send_notifications( $form, $entry, $event = 'form_submission', $data = array() ) {
 
@@ -2161,8 +2150,9 @@ class GFAPI {
 			return array();
 		}
 
-		$entry_id = rgar( $entry, 'id' );
-		GFCommon::log_debug( "GFAPI::send_notifications(): Gathering notifications for {$event} event for entry #{$entry_id}." );
+		$form_id  = absint( rgar( $form, 'id' ) );
+		$entry_id = absint( rgar( $entry, 'id' ) );
+		GFCommon::log_debug( __METHOD__ . "(): Gathering notifications for {$event} event for entry #{$entry_id}." );
 
 		$notifications_to_send = array();
 
@@ -2182,8 +2172,8 @@ class GFAPI {
 				 * @param array $form  The Form Object that triggered the notification event.
 				 * @param array $entry The Entry Object that triggered the notification event.
 				 */
-				if ( rgar( $notification, 'type' ) == 'user' && gf_apply_filters( array( 'gform_disable_user_notification', $form['id'] ), false, $form, $entry ) ) {
-					GFCommon::log_debug( "GFAPI::send_notifications(): Notification is disabled by gform_disable_user_notification hook, not including notification (#{$notification['id']} - {$notification['name']})." );
+				if ( rgar( $notification, 'type' ) == 'user' && gf_apply_filters( array( 'gform_disable_user_notification', $form_id ), false, $form, $entry ) ) {
+					GFCommon::log_debug( __METHOD__ . "(): Notification is disabled by gform_disable_user_notification hook, not including notification (#{$notification['id']} - {$notification['name']})." );
 					// Skip user notification if it has been disabled by a hook.
 					continue;
 					/**
@@ -2195,8 +2185,8 @@ class GFAPI {
 					 * @param array $form  The Form Object that triggered the notification event.
 					 * @param array $entry The Entry Object that triggered the notification event.
 					 */
-				} elseif ( rgar( $notification, 'type' ) == 'admin' && gf_apply_filters( array( 'gform_disable_admin_notification', $form['id'] ), false, $form, $entry ) ) {
-					GFCommon::log_debug( "GFAPI::send_notifications(): Notification is disabled by gform_disable_admin_notification hook, not including notification (#{$notification['id']} - {$notification['name']})." );
+				} elseif ( rgar( $notification, 'type' ) == 'admin' && gf_apply_filters( array( 'gform_disable_admin_notification', $form_id ), false, $form, $entry ) ) {
+					GFCommon::log_debug( __METHOD__ . "(): Notification is disabled by gform_disable_admin_notification hook, not including notification (#{$notification['id']} - {$notification['name']})." );
 					// Skip admin notification if it has been disabled by a hook.
 					continue;
 				}
@@ -2213,8 +2203,8 @@ class GFAPI {
 			 * @param array $entry The Entry Object that triggered the notification event.
 			 * @param array $data  Array of data which can be used in the notifications via the generic {object:property} merge tag. Defaults to empty array.
 			 */
-			if ( gf_apply_filters( array( 'gform_disable_notification', $form['id'] ), false, $notification, $form, $entry, $data ) ) {
-				GFCommon::log_debug( "GFAPI::send_notifications(): Notification is disabled by gform_disable_notification hook, not including notification (#{$notification['id']} - {$notification['name']})." );
+			if ( gf_apply_filters( array( 'gform_disable_notification', $form_id ), false, $notification, $form, $entry, $data ) ) {
+				GFCommon::log_debug( __METHOD__ . "(): Notification is disabled by gform_disable_notification hook, not including notification (#{$notification['id']} - {$notification['name']})." );
 				// Skip notifications if it has been disabled by a hook
 				continue;
 			}
@@ -2222,7 +2212,47 @@ class GFAPI {
 			$notifications_to_send[] = $notification['id'];
 		}
 
-		GFCommon::send_notifications( $notifications_to_send, $form, $entry, true, $event, $data );
+		if ( empty( $notifications_to_send ) ) {
+			GFCommon::log_debug( __METHOD__ . "(): Aborting. No notifications to process for {$event} event for entry #{$entry_id}." );
+
+			return $notifications_to_send;
+		}
+
+		/**
+		 * Allows async (background) processing of notifications to be enabled or disabled.
+		 *
+		 * @since 2.6.9
+		 *
+		 * @param bool   $is_asynchronous       Is async (background) processing of notifications enabled? Default is false.
+		 * @param string $event                 The event the notifications are to be sent for.
+		 * @param array  $notifications_to_send An array containing the IDs of the notifications to be sent.
+		 * @param array  $form                  The form currently being processed.
+		 * @param array  $entry                 The entry currently being processed.
+		 * @param array  $data                  An array of data which can be used in the notifications via the generic {object:property} merge tag. Defaults to empty array.
+		 */
+		$is_asynchronous = gf_apply_filters( array(
+			'gform_is_asynchronous_notifications_enabled',
+			$form_id,
+		), false, $event, $notifications_to_send, $form, $entry, $data );
+
+		if ( $is_asynchronous ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Adding %d notification(s) to the async processing queue for entry #%d.', count( $notifications_to_send ), $entry_id ) );
+
+			/**
+			 * @var Async\GF_Notifications_Processor $processor
+			 */
+			$processor = GFForms::get_service_container()->get( Async\GF_Background_Process_Service_Provider::NOTIFICATIONS );
+			$processor->push_to_queue( array(
+				'notifications' => $notifications_to_send,
+				'form_id'       => $form_id,
+				'entry_id'      => $entry_id,
+				'event'         => $event,
+				'data'          => $data,
+			) );
+			$processor->save()->dispatch();
+		} else {
+			GFCommon::send_notifications( $notifications_to_send, $form, $entry, true, $event, $data );
+		}
 
 		return $notifications_to_send;
 	}

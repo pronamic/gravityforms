@@ -53,17 +53,7 @@ class GFFormDisplay {
 			return;
 		}
 
-		/**
-		 * Filter whether the user must be logged-in to submit the form.
-		 *
-		 * @since 2.4
-		 *
-		 * @param bool  $require_login  Whether or not user required to be logged-in to submit the form.
-		 * @param array $form   The current form object.
-		 */
-		$require_login = gf_apply_filters( array( 'gform_require_login', $form['id'] ), rgar( $form, 'requireLogin' ), $form );
-
-		if ( $require_login ) {
+		if ( GFCommon::form_requires_login( $form ) ) {
 			if ( ! is_user_logged_in() ) {
 				return;
 			}
@@ -918,7 +908,7 @@ class GFFormDisplay {
 			}
 
 			// If form requires login, check if user is logged in
-			if ( rgar( $form, 'requireLogin' ) ) {
+			if ( GFCommon::form_requires_login( $form ) ) {
 				if ( ! is_user_logged_in() ) {
 					return empty( $form['requireLoginMessage'] ) ? '<p>' . esc_html__( 'Sorry. You must be logged in to view this form.', 'gravityforms' ) . '</p>' : '<p>' . GFCommon::gform_do_shortcode( $form['requireLoginMessage'] ) . '</p>';
 				}
@@ -1491,7 +1481,7 @@ class GFFormDisplay {
                              <input type='hidden' class='gform_hidden' name='gform_resume_token' id='gform_resume_token_{$form_id}' value='{$resume_token}' />";
 		}
 
-		if ( rgar( $form, 'requireLogin' ) ) {
+		if ( GFCommon::form_requires_login( $form ) ) {
 			$footer .= wp_nonce_field( 'gform_submit_' . $form_id, '_gform_submit_nonce_' . $form_id, true, false );
 		}
 
@@ -4083,7 +4073,7 @@ class GFFormDisplay {
 			return;
 		}
 
-		if ( rgar( $form, 'requireLogin' ) ) {
+		if ( GFCommon::form_requires_login( $form ) ) {
 			if ( ! is_user_logged_in() ) {
 				wp_die();
 			}
@@ -4183,7 +4173,7 @@ class GFFormDisplay {
 
 		$nonce_input = '';
 
-		if ( rgar( $form, 'requireLogin' ) ) {
+		if ( GFCommon::form_requires_login( $form ) ) {
 			$nonce_input = wp_nonce_field( 'gform_send_resume_link', '_gform_send_resume_link_nonce', true, false );
 		}
 

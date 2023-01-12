@@ -169,18 +169,14 @@ class GFSettings {
 				die( esc_html__( "You don't have adequate permission to uninstall Gravity Forms.", 'gravityforms' ) );
 			}
 
-			// Removing background tasks.
-			$processors = array(
-				GFForms::$background_upgrader,
-				gf_feed_processor()
-			);
+			/**
+			 * Used to perform any cleanup tasks when the uninstall button has been clicked on the Forms > Settings > Uninstall page.
+			 *
+			 * @since 2.6.9
+			 */
+			do_action( 'gform_uninstalling' );
 
-			/** @var GF_Background_Process $processor The background task processor. */
-			foreach ( $processors as $processor ) {
-				$processor->clear_scheduled_events();
-				$processor->clear_queue( true );
-				$processor->unlock_process();
-			}
+			// Background tasks cleanup moved to \Gravity_Forms\Gravity_Forms\Async\GF_Background_Process_Service_Provider().
 
 			// Removing cron task
 			wp_clear_scheduled_hook( 'gravityforms_cron' );
