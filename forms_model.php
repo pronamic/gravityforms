@@ -60,6 +60,15 @@ class GFFormsModel {
 	private static $_current_forms = array();
 
 	/**
+	 * An in-memory cache of form properties using "{Blog ID}_{Form ID}" as the key.
+	 *
+	 * @since 2.7
+	 *
+	 * @var array $_current_forms_props
+	 */
+	private static $_current_forms_props = array();
+
+	/**
 	 * Handles batch operations for entry meta updates.
 	 *
 	 * @since 2.5.16
@@ -108,7 +117,8 @@ class GFFormsModel {
 	 * @return void
 	 */
 	public static function flush_current_forms() {
-		self::$_current_forms = null;
+		self::$_current_forms       = array();
+		self::$_current_forms_props = array();
 		self::flush_confirmations();
 	}
 
@@ -127,16 +137,16 @@ class GFFormsModel {
 	}
 
 	/**
-	 * Removes a form from the data stored within GFFormsModel::$_current_form.
+	 * Removes the cached properties, meta, and confirmations for a specific form.
 	 *
 	 * @since 2.6
 	 *
-	 * @var string $key The key of the form to clear from the current forms array.
+	 * @var string $key The cache key.
 	 *
 	 * @return void
 	 */
 	public static function flush_current_form( $key ) {
-		self::$_current_forms[ $key ] = null;
+		unset( self::$_current_forms[ $key ], self::$_current_forms_props[ $key ], self::$_confirmations[ $key ] );
 	}
 
 	/**
@@ -150,7 +160,7 @@ class GFFormsModel {
 	 * @return void
 	 */
 	public static function flush_confirmations() {
-		self::$_confirmations = null;
+		self::$_confirmations = array();
 	}
 
 	/**
@@ -879,26 +889,58 @@ class GFFormsModel {
 	}
 
 	/**
-	 * Gets a form based on the form ID.
+	 * Returns the cache key for the specified form.
 	 *
-	 * @since  Unknown
-	 * @access public
-	 * @global $wpdb
+	 * @since 2.7
 	 *
-	 * @uses GFFormsModel::get_form_table_name()
+	 * @param int $form_id The form ID.
+	 *
+	 * @return string
+	 */
+	public static function get_form_cache_key( $form_id ) {
+		return get_current_blog_id() . '_' . $form_id;
+	}
+
+	/**
+	 * Returns an object containing the properties of the specified form or false if the form doesn't exist.
+	 *
+	 * @since Unknown
+	 * @since 2.7 Updated to cache the result.
 	 *
 	 * @param int  $form_id     The ID of the form to get.
 	 * @param bool $allow_trash Optional. Set to true to allow trashed results. Defaults to false.
 	 *
-	 * @return bool
+	 * @return bool|object
 	 */
 	public static function get_form( $form_id, $allow_trash = false ) {
+		$form_id = absint( $form_id );
+		if ( empty( $form_id ) ) {
+			return false;
+		}
+
+		$key        = self::get_form_cache_key( $form_id );
+		$form_props = rgar( self::$_current_forms_props, $key );
+
+		if ( is_object( $form_props ) ) {
+			if ( ! $allow_trash && $form_props->is_trash ) {
+				return false;
+			}
+
+			return $form_props;
+		}
+
 		global $wpdb;
 		$table_name   = self::get_form_table_name();
 		$trash_clause = $allow_trash ? '' : 'AND is_trash = 0';
-		$results      = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_name WHERE id=%d {$trash_clause}", $form_id ) );
+		$result       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id=%d {$trash_clause}", $form_id ) );
 
-		return isset( $results[0] ) ? $results[0] : false;
+		if ( empty( $result ) ) {
+			return false;
+		}
+
+		self::$_current_forms_props[ $key ] = $result;
+
+		return $result;
 	}
 
 	/**
@@ -944,8 +986,11 @@ class GFFormsModel {
 		global $wpdb;
 
 		$form_id = absint( $form_id );
+		if ( empty( $form_id ) ) {
+			return null;
+		}
 
-		$key = get_current_blog_id() . '_' . $form_id;
+		$key = self::get_form_cache_key( $form_id );
 		// Return cached version if form meta has been previously retrieved for this form
 		if ( isset( self::$_current_forms[ $key ] ) ) {
 			return self::$_current_forms[ $key ];
@@ -1388,6 +1433,17 @@ class GFFormsModel {
 		return 0;
 	}
 
+	/**
+	 * Updates the form is_active property in the database.
+	 *
+	 * @since unknown
+	 * @since 2.7 Updated to clear the form from the cache.
+	 *
+	 * @param int      $form_id   The ID of the form to be updated.
+	 * @param int|bool $is_active Indicates if the form is being set as active.
+	 *
+	 * @return void
+	 */
 	public static function update_form_active( $form_id, $is_active ) {
 		global $wpdb;
 		$form_table = self::get_form_table_name();
@@ -1415,6 +1471,8 @@ class GFFormsModel {
 			 */
 			do_action( 'gform_post_form_deactivated', $form_id );
 		}
+
+		self::flush_current_form( self::get_form_cache_key( $form_id ) );
 	}
 
 	public static function update_notification_active( $form_id, $notification_id, $is_active ) {
@@ -1758,11 +1816,7 @@ class GFFormsModel {
 		$sql = $wpdb->prepare( "DELETE FROM $form_table WHERE id=%d", $form_id );
 		$wpdb->query( $sql );
 
-		// Prepare the cache key.
-		$key = get_current_blog_id() . '_' . $form_id;
-
-		// Remove the cached form.
-		self::$_current_forms[ $key ] = null;
+		self::flush_current_form( self::get_form_cache_key( $form_id ) );
 
         /**
          * Fires after a form is deleted
@@ -1787,8 +1841,7 @@ class GFFormsModel {
 		$sql             = $wpdb->prepare( "UPDATE $form_table_name SET is_trash=1 WHERE id=%d", $form_id );
 		$result          = $wpdb->query( $sql );
 
-		$key = get_current_blog_id() . '_' . $form_id;
-		self::$_current_forms[ $key ] = null;
+		self::flush_current_form( self::get_form_cache_key( $form_id ) );
 
 		$success = $result == false;
 
@@ -1817,9 +1870,7 @@ class GFFormsModel {
 		$sql             = $wpdb->prepare( "UPDATE $form_table_name SET is_trash=0 WHERE id=%d", $form_id );
 		$result          = $wpdb->query( $sql );
 
-		$key = get_current_blog_id() . '_' . $form_id;
-
-		self::$_current_forms[ $key ] = null;
+		self::flush_current_form( self::get_form_cache_key( $form_id ) );
 
 		$success = $result == false;
 
@@ -2012,11 +2063,7 @@ class GFFormsModel {
 			$result = $wpdb->query( $wpdb->prepare( "INSERT INTO $meta_table_name(form_id, $meta_name) VALUES(%d, %s)", $form_id, $form_meta ) );
 		}
 
-		$key = get_current_blog_id() . '_' . $form_id;
-		self::$_current_forms[ $key ] = null;
-		if ( isset( self::$_confirmations[ $key ] ) ) {
-			self::$_confirmations[ $key ] = null;
-		}
+		self::flush_current_form( self::get_form_cache_key( $form_id ) );
 
 		/**
 		 * Fires after form meta has been updated for any form
@@ -2042,10 +2089,7 @@ class GFFormsModel {
 		global $wpdb;
 
 		// Make sure the form isn't in the cache before calling get_form_meta().
-		$key = get_current_blog_id() . '_' . $form_id;
-		if ( isset( self::$_current_forms[ $key ] ) ) {
-			unset( GFFormsModel::$_current_forms[ $key ] );
-		}
+		self::flush_current_form( self::get_form_cache_key( $form_id ) );
 		$form = self::get_form_meta( $form_id );
 		// check if form has consent field.
 		if ( GFCommon::has_consent_field( $new_display_meta ) ) {
@@ -2060,7 +2104,7 @@ class GFFormsModel {
 
 			$old_consent_fields = array();
 			foreach ( $form['fields'] as $field ) {
-				if ( $field->type === 'consent' ) {
+				if ( $field->get_input_type() === 'consent' ) {
 					$old_consent_fields[ $field->id ] = $field->description;
 				}
 			}
@@ -2068,7 +2112,7 @@ class GFFormsModel {
 			// check if consent field description changed.
 			$create_revision = false;
 			foreach ( $new_display_meta['fields'] as $field ) {
-				if ( $field['type'] === 'consent' ) {
+				if ( self::get_input_type( $field ) === 'consent' ) {
 					if ( $field['description'] !== rgar( $old_consent_fields, $field['id'] ) ) {
 						$create_revision = true;
 
@@ -4232,11 +4276,11 @@ class GFFormsModel {
 	}
 
 	public static function maybe_trim_input( $value, $form_id, $field ) {
-		
+
 		if ( is_null( $value ) ) {
 			return $value;
 		}
-		
+
 		$trim_value = apply_filters( 'gform_trim_input_value', true, $form_id, $field );
 
 		if ( $trim_value ) {
@@ -6579,8 +6623,9 @@ class GFFormsModel {
 				$indicator_class = 'gfield_required_custom';
 				break;
 			default:
-				$indicator       = GFCommon::is_legacy_markup_enabled( $form_id ) ? '*' : esc_html__( '(Required)', 'gravityforms' );
-				$indicator_class = GFCommon::is_legacy_markup_enabled( $form_id ) ? 'gfield_required_asterisk' : 'gfield_required_text';
+				$legacy_markup   = GFCommon::is_legacy_markup_enabled( $meta );
+				$indicator       = $legacy_markup ? '*' : esc_html__( '(Required)', 'gravityforms' );
+				$indicator_class = $legacy_markup ? 'gfield_required_asterisk' : 'gfield_required_text';
 				break;
 		}
 
@@ -6812,7 +6857,7 @@ class GFFormsModel {
 					'isDefault'   => true,
 					'type'        => 'message',
 					'message'     => sprintf(
-						'<h2>%s</h2><p role="alert">%s</p><p class="resume_form_link_wrapper"> {save_link} </p><p> %s<br />%s</p><p> {save_email_input}</p>',
+						'<h2>%s</h2><p role="alert">%s</p><p class="resume_form_link_wrapper">{save_link}</p><p>%s<br />%s</p>{save_email_input}',
 						__( 'Link to continue editing later', 'gravityforms' ),
 						__( 'Please use the following link to return and complete this form from any computer.', 'gravityforms' ),
 						__( 'Note: This link will expire after 30 days.', 'gravityforms' ),
@@ -6871,7 +6916,7 @@ class GFFormsModel {
 	public static function get_form_confirmations( $form_id ) {
 		global $wpdb;
 
-		$key = get_current_blog_id() . '_' . $form_id;
+		$key = self::get_form_cache_key( $form_id );
 
 		if ( isset( self::$_confirmations[ $key ] ) ) {
 			return self::$_confirmations[ $key ];
@@ -6924,7 +6969,7 @@ class GFFormsModel {
 		unset( $form['confirmations'][ $confirmation_id ] );
 
 		// Clear form cache so next retrieval of form meta will reflect deleted confirmation.
-		self::flush_current_forms();
+		self::flush_current_form( self::get_form_cache_key( $form_id ) );
 
 		return self::save_form_confirmations( $form['id'], $form['confirmations'] );
 
@@ -7616,7 +7661,11 @@ class GFFormsModel {
 		}
 
 		if ( isset( $form['enableHoneypot'] ) ) {
-			$form['enableHoneypot']  = (bool) $form['enableHoneypot'];
+			$form['enableHoneypot'] = (bool) $form['enableHoneypot'];
+		}
+
+		if ( isset( $form['honeypotAction'] ) ) {
+			$form['honeypotAction']  = GFCommon::whitelist( $form['honeypotAction'], array( 'abort', 'spam' ) );
 		}
 
 		if ( isset( $form['enableAnimation'] ) ) {

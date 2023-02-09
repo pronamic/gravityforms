@@ -38,8 +38,13 @@ class GF_License_API_Response extends GF_API_Response {
 			/**
 			 * @var \WP_Error $data
 			 */
-			$this->set_status( $data->get_error_code() );
-			$this->add_error( $data->get_error_message() );
+			if ( $data->get_error_code() == 'rest_invalid_param' ) {
+				$this->set_status( GF_License_Statuses::INVALID_LICENSE_KEY );
+				$this->add_error( __( 'The license is invalid.', 'gravityforms' ) );
+			} else {
+				$this->set_status( $data->get_error_code() );
+				$this->add_error( $data->get_error_message() );
+			}
 
 			if ( empty( $data->get_error_data() ) ) {
 				return;
@@ -137,13 +142,16 @@ class GF_License_API_Response extends GF_API_Response {
 	 * @return string|void
 	 */
 	public function get_display_status() {
+
+		if ( $this->max_seats_exceeded() ) {
+			return __( 'Sites Exceeded', 'gravityforms' );
+		}
+
 		switch ( $this->get_status() ) {
 			case GF_License_Statuses::INVALID_LICENSE_KEY:
 				return __( 'Invalid', 'gravityforms' );
 			case GF_License_Statuses::EXPIRED_LICENSE_KEY:
 				return __( 'Expired', 'gravityforms' );
-			case GF_License_Statuses::MAX_SITES_EXCEEDED:
-				return __( 'Sites Exceeded', 'gravityforms' );
 			case GF_License_Statuses::VALID_KEY:
 			default:
 				return __( 'Active', 'gravityforms' );
@@ -192,7 +200,7 @@ class GF_License_API_Response extends GF_API_Response {
 	 *
 	 * @return string
 	 */
-	private function get_upgrade_link() {
+	public function get_upgrade_link() {
 		$key  = $this->get_data_value( 'license_key_md5' );
 		$type = $this->get_data_value( 'product_code' );
 
@@ -207,25 +215,30 @@ class GF_License_API_Response extends GF_API_Response {
 	 * @return mixed
 	 */
 	public function get_cta() {
-		switch ( $this->get_status() ) {
-			case GF_License_Statuses::EXPIRED_LICENSE_KEY:
-				return array(
-					'label' => __( 'Manage', 'gravityforms' ),
-					'link'  => 'https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=manage-button&utm_campaign=license-enforcement',
-					'class' => 'cog',
-				);
-			case GF_License_Statuses::MAX_SITES_EXCEEDED:
-				return array(
-					'label' => __( 'Upgrade', 'gravityforms' ),
-					'link'  => $this->get_upgrade_link(),
-					'class' => 'product',
-				);
-			default:
-				if ( ! $this->has_expiration() ) {
-					return __( 'N/A', 'gravityforms' );
-				}
 
-				return $this->get_data_value( 'days_to_expire' );
+		if ( $this->get_status() == GF_License_Statuses::EXPIRED_LICENSE_KEY ) {
+			return array(
+				'type'  => 'button',
+				'label' => __( 'Manage', 'gravityforms' ),
+				'link'  => 'https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=manage-button&utm_campaign=license-enforcement',
+				'class' => 'cog',
+			);
+		} elseif ( $this->max_seats_exceeded() ) {
+			return array(
+				'type'  => 'button',
+				'label' => __( 'Upgrade', 'gravityforms' ),
+				'link'  => $this->get_upgrade_link(),
+				'class' => 'product',
+			);
+		} else if ( $this->has_expiration() ) {
+			return array(
+				'type'    => 'text',
+				'content' => $this->get_data_value( 'days_to_expire' ),
+			);
+		} else {
+			return array(
+				'type'    => 'blank',
+			);
 		}
 	}
 
@@ -238,10 +251,13 @@ class GF_License_API_Response extends GF_API_Response {
 	 * @return bool
 	 */
 	public function display_as_valid() {
+
+		if ( $this->max_seats_exceeded() ) {
+			return false;
+		}
 		switch ( $this->get_status() ) {
 			case GF_License_Statuses::INVALID_LICENSE_KEY:
 			case GF_License_Statuses::EXPIRED_LICENSE_KEY:
-			case GF_License_Statuses::MAX_SITES_EXCEEDED:
 				return false;
 			case GF_License_Statuses::VALID_KEY:
 			default:
@@ -261,21 +277,6 @@ class GF_License_API_Response extends GF_API_Response {
 	}
 
 	/**
-	 * Get the CTA type to display.
-	 *
-	 * @since 2.5.11
-	 *
-	 * @return string
-	 */
-	public function cta_type() {
-		if ( is_array( $this->get_cta() ) ) {
-			return 'button';
-		}
-
-		return 'text';
-	}
-
-	/**
 	 * Determine if the contained License Key has an expiration date.
 	 *
 	 * @since 2.5.11
@@ -283,7 +284,7 @@ class GF_License_API_Response extends GF_API_Response {
 	 * @return bool
 	 */
 	public function has_expiration() {
-		return ( ! $this->get_data_value( 'is_perpetual' ) && ( $this->get_data_value( 'renewal_date' ) || $this->get_data_value( 'date_expires' ) ) );
+		return $this->get_data_value( 'date_expires' ) && ! $this->get_data_value( 'renewal_date' ) && ! $this->get_data_value( 'is_perpetual' );
 	}
 
 	/**
@@ -316,7 +317,7 @@ class GF_License_API_Response extends GF_API_Response {
 	 * @return string|void
 	 */
 	public function renewal_date() {
-		if ( ! $this->has_expiration() ) {
+		if ( $this->get_data_value( 'is_perpetual' ) ) {
 			return __( 'Does not expire', 'gravityforms' );
 		}
 
@@ -336,7 +337,7 @@ class GF_License_API_Response extends GF_API_Response {
 	 * @return bool
 	 */
 	public function max_seats_exceeded() {
-		return $this->get_status() === GF_License_Statuses::MAX_SITES_EXCEEDED;
+		return $this->get_status() === GF_License_Statuses::MAX_SITES_EXCEEDED || $this->get_data_value( 'remaining_seats' ) < 0;
 	}
 
 	//----------------------------------------

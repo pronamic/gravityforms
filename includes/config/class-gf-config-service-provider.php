@@ -4,6 +4,7 @@ namespace Gravity_Forms\Gravity_Forms\Config;
 
 use Gravity_Forms\Gravity_Forms\Config\Items\GF_Config_Admin_I18n;
 use Gravity_Forms\Gravity_Forms\Config\Items\GF_Config_Block_Editor;
+use Gravity_Forms\Gravity_Forms\Config\Items\GF_Config_Global;
 use Gravity_Forms\Gravity_Forms\Config\Items\GF_Config_I18n;
 use Gravity_Forms\Gravity_Forms\Config\Items\GF_Config_Legacy_Check;
 use Gravity_Forms\Gravity_Forms\Config\Items\GF_Config_Legacy_Check_Multi;
@@ -32,6 +33,7 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 	const LEGACY_MULTI_CONFIG = 'legacy_multi_config';
 	const MULTIFILE_CONFIG    = 'multifile_config';
 	const BLOCK_EDITOR_CONFIG = 'block_editor_config';
+	const GLOBAL_CONFIG       = 'global_config';
 
 	/**
 	 * Array mapping config class names to their container ID.
@@ -62,6 +64,7 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-config-collection.php' );
 		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-config.php' );
 		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-config-data-parser.php' );
+		require_once( plugin_dir_path( __FILE__ ) . 'items/class-gf-config-global.php' );
 
 		// Add to container
 		$container->add( self::CONFIG_COLLECTION, function () {
@@ -70,6 +73,10 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 
 		$container->add( self::DATA_PARSER, function () {
 			return new GF_Config_Data_Parser();
+		} );
+
+		$container->add( self::GLOBAL_CONFIG, function () {
+			return new GF_Config_Global();
 		} );
 
 		// Add configs to container.
@@ -107,8 +114,19 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 			register_rest_route( 'gravityforms/v2', '/tests/mock-data', array(
 				'methods'             => 'GET',
 				'callback'            => array( $self, 'config_mocks_endpoint' ),
-				'permission_callback' => current_user_can( 'administrator' ),
+				'permission_callback' => function () {
+					return true;
+				},
 			) );
+		} );
+
+		// Add global config data to admin and theme.
+		add_filter( 'gform_localized_script_data_gform_admin_config', function ( $data ) use ( $self ) {
+			return $self->add_global_config_data( $data );
+		} );
+
+		add_filter( 'gform_localized_script_data_gform_theme_config', function ( $data ) use ( $self ) {
+			return $self->add_global_config_data( $data );
 		} );
 	}
 
@@ -169,5 +187,22 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 		$data      = $container->get( self::CONFIG_COLLECTION )->handle( false );
 
 		return $data;
+	}
+
+	/**
+	 * Add global data to both admin and theme configs so that it is available everywhere
+	 * within the system.
+	 *
+	 * @since 2.7
+	 *
+	 * @param $data
+	 *
+	 * @return array
+	 */
+	public function add_global_config_data( $data ) {
+		$container = \GFForms::get_service_container();
+		$global    = $container->get( self::GLOBAL_CONFIG )->data();
+
+		return array_merge( $data, $global );
 	}
 }

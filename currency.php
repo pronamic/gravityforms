@@ -404,6 +404,69 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 
 			return apply_filters( 'gform_currencies', $currencies );
 		}
+
+		/**
+		 * Returns a sorted data object with filterable common currencies listed first, then all currencies either listed in
+		 * alphabetical or original order as found in self::get_currencies() above. Designed to drive a select 
+		 * in a format that select2 and our react select component understands.
+		 *
+		 * @since 2.7
+		 *
+		 * @param $placeholder
+		 * @param $sort
+		 *
+		 * @return array|array[]
+		 */
+
+		public static function get_grouped_currency_options( $placeholder = true, $sort = true ) {
+			/**
+			 * Filter the common currencies shown in currency selects that use this data. You'll
+			 * want to make sure the custom data that maps to the key is included in the gform_currencies
+			 * filter.
+			 *
+			 * @since 2.7
+			 *
+			 * @param array The currency keys to include.
+			 */
+			$common_currency_keys = apply_filters( 'gform_common_currencies', array(
+				'USD',
+				'GBP',
+				'EUR',
+			) );
+
+			$common_options = array_intersect_key( self::get_currencies(), array_flip( $common_currency_keys ) );
+			$all_options    = self::get_currencies();
+
+			if ( $sort ) {
+				uasort( $all_options, function( $a, $b ) {
+					return strcmp( strtolower( $a[ 'name' ] ), strtolower( $b[ 'name' ] ) );
+				} );
+			}
+
+			$options = $placeholder ? array(
+				array(
+					'label' => esc_html__( 'Select a Currency', 'gravityforms' ),
+					'value' => '',
+				)
+			) : array();
+
+			foreach( $common_options as $item ) {
+				$options[] = array(
+					'label' => esc_html__( $item['name'] ),
+					'value' => esc_html__( $item['code'] ),
+				);
+			}
+
+			foreach( $all_options as $item ) {
+				$options[] = array(
+					'label' => esc_html__( $item['name'] ),
+					'value' => esc_html__( $item['code'] ),
+				);
+			}
+
+			return $options;
+		}
+
 	}
 
 }

@@ -344,14 +344,14 @@ class GF_Field_FileUpload extends GF_Field {
 
 			$plupload_init_json = htmlspecialchars( json_encode( $plupload_init ), ENT_QUOTES, 'UTF-8' );
 			$upload             = "<div id='{$container_id}' data-settings='{$plupload_init_json}' class='gform_fileupload_multifile'>
-										<div id='{$drag_drop_id}' class='gform_drop_area'>
+										<div id='{$drag_drop_id}' class='gform_drop_area gform-theme-field-control'>
 											<span class='gform_drop_instructions'>{$drop_files_here_text} </span>
 											<button type='button' id='{$browse_button_id}' class='button gform_button_select_files' {$describedby} {$tabindex} >{$select_files_text}</button>
 										</div>
 									</div>";
 
-			$upload .= $rules_messages ? "<span class='gform_fileupload_rules' id='{$rules_messages_id}'>{$rules_messages}</span>" : '';
-			$upload .= "<ul class='validation_message validation_message--hidden-on-empty gfield_validation_message gform-ul-reset' id='{$messages_id}'></ul> <!-- Leave <ul> empty to support CSS :empty selector. -->";
+			$upload .= $rules_messages ? "<span class='gfield_description gform_fileupload_rules' id='{$rules_messages_id}'>{$rules_messages}</span>" : '';
+			$upload .= "<ul class='validation_message--hidden-on-empty gform-ul-reset' id='{$messages_id}'></ul> <!-- Leave <ul> empty to support CSS :empty selector. -->";
 
 
 			if ( $is_entry_detail ) {
@@ -368,17 +368,15 @@ class GF_Field_FileUpload extends GF_Field {
 
 			$upload .= sprintf( "<input name='input_%d' id='%s' type='file' class='%s' %s onchange='javascript:gformValidateFileSize( this, %s );' {$tabindex} %s/>", $id, $field_id, esc_attr( $class ), $describedby, esc_attr( $max_upload_size ), $disabled_text );
 
-
-			$upload .= $rules_messages ? "<span class='gform_fileupload_rules' id='{$rules_messages_id}'>{$rules_messages}</span>" : '';
-			$upload .= "<div class='validation_message validation_message--hidden-on-empty' id='{$live_validation_message_id}'></div>";
-
+			$upload .= $rules_messages ? "<span class='gfield_description gform_fileupload_rules' id='{$rules_messages_id}'>{$rules_messages}</span>" : '';
+			$upload .= "<div class='gfield_description validation_message gfield_validation_message validation_message--hidden-on-empty' id='{$live_validation_message_id}'></div>";
 		}
 
 		if ( $is_entry_detail && ! empty( $value ) ) { // edit entry
 			$file_urls      = $multiple_files ? json_decode( $value ) : array( $value );
 			$upload_display = $multiple_files ? '' : "style='display:none'";
 			$preview        = "<div id='upload_$id' {$upload_display}>$upload</div>";
-			$preview .= sprintf( "<div id='%s'></div>", $file_list_id );
+			$preview .= sprintf( "<div id='%s' class='ginput_preview_list'></div>", $file_list_id );
 			$preview .= sprintf( "<div id='preview_existing_files_%d'>", $id );
 
 			foreach ( $file_urls as $file_index => $file_url ) {
@@ -408,8 +406,6 @@ class GF_Field_FileUpload extends GF_Field {
 				$file_url            = esc_attr( $file_url );
 				$display_file_url    = GFCommon::truncate_url( $file_url );
 				$file_url            = $this->get_download_url( $file_url );
-				$download_button_url = GFCommon::get_base_url() . '/images/download.png';
-				$delete_button_url   = GFCommon::get_base_url() . '/images/delete.png';
 				$preview .= "<div id='preview_file_{$file_index}' class='ginput_preview'>
 								<a href='{$file_url}' target='_blank' aria-label='{$view_file_text}'>{$display_file_url}</a>
 								<a href='{$file_url}' target='_blank' aria-label='{$download_file_text}' class='ginput_preview_control gform-icon gform-icon--circle-arrow-down'></a>
@@ -426,22 +422,24 @@ class GF_Field_FileUpload extends GF_Field {
 			$file_infos     = $multiple_files ? $uploaded_files : RGFormsModel::get_temp_filename( $form_id, $input_name );
 
 			if ( ! empty( $file_infos ) ) {
-				$preview    = sprintf( "<div id='%s'>", $file_list_id );
+				$preview   = sprintf( "<div id='%s' class='ginput_preview_list'>", $file_list_id );
 				$file_infos = $multiple_files ? $uploaded_files : array( $file_infos );
 				foreach ( $file_infos as $file_info ) {
 
 					if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
 						$file_upload_markup = "<img alt='" . esc_attr__( 'Delete file', 'gravityforms' ) . "' class='gform_delete' src='" . GFCommon::get_base_url() . "/images/delete.png' onclick='gformDeleteUploadedFile({$form_id}, {$id}, this);' onkeypress='gformDeleteUploadedFile({$form_id}, {$id}, this);' /> <strong>" . esc_html( $file_info['uploaded_filename'] ) . '</strong>';
 					} else {
-						$file_upload_markup = sprintf(
-							"<button class='gform_delete_file' onclick='gformDeleteUploadedFile( %d, %d, this );'><span class='dashicons dashicons-trash' aria-hidden='true'></span><span class='screen-reader-text'>%s</span></button> <strong>%s</strong>",
+						$file_upload_markup = sprintf( '<span class="gfield_fileupload_filename">%s</span>', esc_html( $file_info['uploaded_filename'] ) );
+						// TODO: get file size $file_upload_markup .= sprintf( '<span class="gfield_fileupload_filesize">%s</span>', esc_html( $file_info['uploaded_filesize'] ) );
+						$file_upload_markup .= '<span class="gfield_fileupload_progress gfield_fileupload_progress_complete"><span class="gfield_fileupload_progressbar"><span class="gfield_fileupload_progressbar_progress" style="width: 100%;"></span></span><span class="gfield_fileupload_percent">100%</span></span>';
+						$file_upload_markup .= sprintf(
+							'<button class="gform_delete_file gform-theme-button gform-theme-button--simple" onclick="gformDeleteUploadedFile( %d, %d, this );"><span class="dashicons dashicons-trash" aria-hidden="true"></span><span class="screen-reader-text">%s: %s</span></button>',
 							$form_id,
 							$id,
-							esc_html__( 'Delete file', 'gravityforms' ),
+							esc_html__( 'Delete this file', 'gravityforms' ),
 							esc_html( $file_info['uploaded_filename'] )
 						);
 					}
-
 
 					/**
 					 * Modify the HTML for the Multi-File Upload "preview."
@@ -464,7 +462,7 @@ class GF_Field_FileUpload extends GF_Field {
 				return "<div class='ginput_container ginput_container_fileupload'>" . $upload . " {$preview}</div>";
 			} else {
 
-				$preview = $multiple_files ? sprintf( "<div id='%s'></div>", $file_list_id ) : '';
+				$preview = $multiple_files ? sprintf( "<div id='%s' class='ginput_preview_list'></div>", $file_list_id ) : '';
 
 				return "<div class='ginput_container ginput_container_fileupload'>$upload</div>" . $preview;
 			}

@@ -29,18 +29,6 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
  *
  * ----------------------------------------------------------------------------- */
 
-/* Font Icons */
-
-/* stylelint-disable */
-
-/* -----------------------------------------------------------------------------
- *
- * Variables: Admin Icons (via IcoMoon)
- *
- * This file is generated using the `gulp icons` task. Do not edit it directly.
- *
- * ----------------------------------------------------------------------------- */
-
 /* Images */
 
 /* -----------------------------------------------------------------------------
@@ -1208,6 +1196,23 @@ unless explicitly defined */
 * Used in editor.css.
 */
 
+.gform-admin .gform-flyout.gform-flyout--choices-ui {
+
+		padding-top: 1.25rem;
+	}
+
+.gform-admin .gform-flyout.gform-flyout--choices-ui .gform-flyout__head {
+			padding: 0 1.2rem 1.5625rem;
+		}
+
+.gform-admin .gform-flyout.gform-flyout--choices-ui .gform-flyout__close.gform-button--size-xs {
+			top: 15px;
+		}
+
+.gform-admin .gform-flyout.gform-flyout--choices-ui .gform-flyout__body {
+			padding: 1.25rem 1.5625rem;
+		}
+
 .gform-admin .choices-ui__trigger {
 		margin-bottom: 12px;
 		padding: 0 16px 0 13px;
@@ -1249,12 +1254,6 @@ html[dir="rtl"] .gform-admin .choices-ui__trigger {
 
 html[dir="rtl"] .gform-admin .choices-ui__options-list > li {
 			margin: 0 0 0.5rem 0.5rem;
-		}
-
-html[dir="rtl"] .gform-flyout--choices-ui input[type="checkbox"]:not(.gform-field__toggle-input):not(.field-choice-type) + label::before {
-			margin-left: 0.375rem;
-			margin-right: 0;
-			margin-right: initial;
 		}
 
 /*

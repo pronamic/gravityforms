@@ -168,23 +168,24 @@ class GF_Field_List extends GF_Field {
 			$value = array( array() );
 		}
 
-		$has_columns = is_array( $this->choices );
-		$columns     = $has_columns ? $this->choices : array( array() );
+		$has_columns       = is_array( $this->choices );
+		$columns           = $has_columns ? $this->choices : array( array() );
+		$class_has_columns = $has_columns ? 'ginput_container_list--columns' : '';
 
 		$list = '';
 
-		$list .= "<div class='ginput_container ginput_container_list ginput_list'>" .
+		$list .= "<div class='ginput_container ginput_container_list ginput_list ${class_has_columns}'>" .
 			"<div class='gfield_list gfield_list_container'>";
 
 		if ( $has_columns ) {
 
-			$list .= '<div class="gfield_list_header">';
+			$list .= '<div class="gfield_list_header gform-grid-row">';
 			foreach ( $columns as $column ) {
-				$list .= '<div class="gfield_header_item">' . esc_html( $column['text'] ) . '</div>';
+				$list .= '<div class="gform-field-label gfield_header_item gform-grid-col">' . esc_html( $column['text'] ) . '</div>';
 			}
 
 			if ( $this->maxRows != 1 ) {
-				$list .= '<div class="gfield_header_item gfield_header_item--icons">&nbsp;</div>';
+				$list .= '<div class="gfield_header_item gfield_header_item--icons gform-grid-col">&nbsp;</div>';
 			}
 
 			$list .= '</div>';
@@ -206,7 +207,7 @@ class GF_Field_List extends GF_Field {
 
 			$odd_even = ( $rownum % 2 ) == 0 ? 'even' : 'odd';
 
-			$list .= "<div class='gfield_list_row_{$odd_even} gfield_list_group'>";
+			$list .= "<div class='gfield_list_row_{$odd_even} gfield_list_group gform-grid-row'>";
 			$colnum = 1;
 			foreach ( $columns as $column ) {
 				$data_label = '';
@@ -224,7 +225,7 @@ class GF_Field_List extends GF_Field {
 					$val = $colnum == 1 ? $item : '';
 				}
 
-				$list .= "<div class='gfield_list_group_item gfield_list_cell gfield_list_{$this->id}_cell{$colnum}' {$data_label}>" . $this->get_list_input( $has_columns, $column, $val, $form_id, $rownum ) . '</div>';
+				$list .= "<div class='gfield_list_group_item gfield_list_cell gfield_list_{$this->id}_cell{$colnum} gform-grid-col' {$data_label}>" . $this->get_list_input( $has_columns, $column, $val, $form_id, $rownum ) . '</div>';
 				$colnum ++;
 			}
 
@@ -234,9 +235,9 @@ class GF_Field_List extends GF_Field {
 
 				$disabled = $is_form_editor ? 'disabled=\'disabled\'' : '';
 
-				$list .= "<div class='gfield_list_icons'>";
-				$list .= "   <button type=\"button\" {$disabled} class='add_list_item {$disabled_icon_class}' aria-label='" . esc_attr__( 'Add another row', 'gravityforms' ) . "' {$add_events}>Add</button>" .
-				         "   <button type=\"button\" {$disabled} class='delete_list_item' aria-label='" . esc_attr( str_replace( '{0}', $rownum, $aria_label_template ) ) . "' data-aria-label-template='{$aria_label_template}' {$delete_events} {$delete_display}>Remove</button>";
+				$list .= "<div class='gfield_list_icons gform-grid-col'>";
+				$list .= "   <button type=\"button\" {$disabled} class='add_list_item {$disabled_icon_class}' aria-label='" . esc_attr__( 'Add another row', 'gravityforms' ) . "' {$add_events}>" . __( 'Add', 'gravityforms' ) . "</button>" .
+				         "   <button type=\"button\" {$disabled} class='delete_list_item' aria-label='" . esc_attr( str_replace( '{0}', $rownum, $aria_label_template ) ) . "' data-aria-label-template='{$aria_label_template}' {$delete_events} {$delete_display}>" . __( 'Remove', 'gravityforms' ) . "</button>";
 				$list .= '</div>';
 
 			}
@@ -560,11 +561,13 @@ class GF_Field_List extends GF_Field {
 	 *
 	 * @since unknown
 	 * @since 2.5     Added `screen-reader-text` if the label hasn't been set; added `gfield_label_before_complex` if it has choices.
+	 * @since 2.7     Added `gform-field-label` for the theme framework.
 	 *
 	 * @return string
 	 */
 	public function get_field_label_class() {
 		$class = 'gfield_label';
+		$class .= ' gform-field-label';
 
 		// Added `screen-reader-text` if the label hasn't been set.
 		$class .= ( rgblank( $this->label ) ) ? ' screen-reader-text' : '';

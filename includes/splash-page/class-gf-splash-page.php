@@ -47,7 +47,7 @@ class GF_Splash_Page {
 	 * @param Splash_Page_Template_Tags\GF_Splash_Page_Template_Tags $tags
 	 */
 	public function __construct( $tags ) {
-		$this->about_version = '2.6';
+		$this->about_version = '2.7';
 
 		$this->tags = $tags;
 
@@ -109,7 +109,7 @@ class GF_Splash_Page {
 	 */
 	public function admin_title( $title ) {
 		if ( $this->is_splash_page() ) {
-			$title = __( 'About', 'gravityforms' ) . $title;
+			$title = __( 'About', 'gravityforms' ) . ' ' . $this->about_version . ' - Gravity Forms';
 		}
 		return $title;
 	}

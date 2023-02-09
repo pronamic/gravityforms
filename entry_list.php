@@ -945,13 +945,13 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	 * @param $primary
 	 */
 	function _column_is_starred( $entry, $classes, $data, $primary ) {
-		echo '<th scope="row" class="manage-column column-is_starred">';
+		echo '<td class="manage-column column-is_starred">';
 		if ( $this->filter !== 'trash' ) {
 			?>
-			<img id="star_image_<?php echo esc_attr( $entry['id'] ) ?>" src="<?php echo GFCommon::get_base_url() ?>/images/star<?php echo intval( $entry['is_starred'] ) ?>.svg" onclick="ToggleStar(this, '<?php echo esc_js( $entry['id'] ); ?>','<?php echo esc_js( $this->filter ); ?>');" />
+			<img role="presentation" id="star_image_<?php echo esc_attr( $entry['id'] ) ?>" src="<?php echo GFCommon::get_base_url() ?>/images/star<?php echo intval( $entry['is_starred'] ) ?>.svg" onclick="ToggleStar(this, '<?php echo esc_js( $entry['id'] ); ?>','<?php echo esc_js( $this->filter ); ?>');" />
 			<?php
 		}
-		echo '</th>';
+		echo '</td>';
 	}
 
 	/**
@@ -1018,7 +1018,24 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 		if ( $column_id == $primary ) {
 			$edit_url = $this->get_detail_url( $entry );
-			echo '<a aria-label="' . esc_attr__( 'View this entry', 'gravityforms' ) . '" href="' . $edit_url .'">' . $value . '</a>';
+			$column_value = '<a aria-label="' . esc_attr__( 'View this entry', 'gravityforms' ) . '" href="' . $edit_url . '">' . $value . '</a>';
+
+			/**
+			 * Used to inject markup and replace the value of any primary/first column in the entry list grid.
+			 *
+			 * @param string     $column_value The column value to be filtered. Contains the field value wrapped in a link/a tag.
+			 * @param int        $form_id      The ID of the current form.
+			 * @param int|string $field_id     The ID of the field or the name of an entry column (i.e. date_created).
+			 * @param array      $entry        The Entry object.
+			 * @param string     $query_string The current page's query string.
+			 * @param string     $edit_url     The url to the entry edit page.
+			 * @param string     $value        The value of the field.
+			 */
+			$column_value = apply_filters( 'gform_entries_primary_column_filter', $column_value, $form_id, $field_id, $entry, $query_string, $edit_url, $value );
+
+			// Warning ignored becuase output is expected to be escaped higher up in the chain.
+			// phpcs:ignore
+			echo $column_value;
 		} else {
 
 			/**

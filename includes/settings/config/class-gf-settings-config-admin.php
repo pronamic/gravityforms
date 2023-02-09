@@ -40,6 +40,18 @@ class GF_Settings_Config_Admin extends GF_Config {
 		$data = array(
 			'components' => array(
 				'post_select' => array(),
+				'file_upload' => array(
+					'data' => array(
+						'allowed_file_types' => array(
+							'SVG',
+							'PNG',
+							'JPG',
+							'GIF',
+						),
+						'max_width'          => 800,
+						'max_height'         => 400,
+					),
+				),
 			),
 		);
 

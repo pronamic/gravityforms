@@ -1,7 +1,8 @@
 <?php
 
-namespace Gravity_Forms\Gravity_Forms\Asset\Admin_Dependencies;
+namespace Gravity_Forms\Gravity_Forms\Assets\Admin_Dependencies;
 
+use Gravity_Forms\Gravity_Forms\Assets\GF_Dependencies;
 use Gravity_Forms\Gravity_Forms\GF_Service_Container;
 use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
 
@@ -12,7 +13,7 @@ use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
  *
  * @package Gravity_Forms\Gravity_Forms\Assets\Admin_Dependencies;
  */
-class GF_Admin_Script_Dependencies extends GF_Admin_Dependencies {
+class GF_Admin_Script_Dependencies extends GF_Dependencies {
 
 	/**
 	 * Items to enqueue globally in admin.

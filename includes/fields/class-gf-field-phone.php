@@ -178,7 +178,7 @@ class GF_Field_Phone extends GF_Field {
 		if ( $this->failed_validation ) {
 			$phone_format = $this->get_phone_format();
 			if ( rgar( $phone_format, 'instruction' ) ) {
-				$instruction_div = sprintf( "<div class='instruction validation_message'>%s %s</div>", esc_html__( 'Phone format:', 'gravityforms' ), $phone_format['instruction'] );
+				$instruction_div = sprintf( "<div class='gfield_description instruction validation_message'>%s %s</div>", esc_html__( 'Phone format:', 'gravityforms' ), $phone_format['instruction'] );
 			}
 		}
 

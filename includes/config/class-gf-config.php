@@ -122,7 +122,7 @@ abstract class GF_Config {
 	 * @return array
 	 */
 	public function get_data() {
-		if ( ! $this->should_enqueue() ) {
+		if ( ( ! defined( 'GFORMS_DOING_MOCK' ) || ! GFORMS_DOING_MOCK ) && ! $this->should_enqueue() ) {
 			return false;
 		}
 

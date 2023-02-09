@@ -123,8 +123,9 @@ class GF_Field_Checkbox extends GF_Field {
 	/**
 	 * Returns the field inner markup.
 	 *
-	 * @since  Unknown
-	 * @since  2.5 Implement Select All directly.
+	 * @since Unknown
+	 * @since 2.5 Implement Select All directly.
+	 * @since 2.7 Added `gfield_choice_all_toggle` class to Select All button.
 	 *
 	 * @param array        $form  The Form Object currently being processed.
 	 * @param string|array $value The field value. From default/dynamic population, $_POST, or a resumed incomplete submission.
@@ -136,7 +137,7 @@ class GF_Field_Checkbox extends GF_Field {
 
 		$form_id = absint( $form['id'] );
 
-		if ( GFCommon::is_legacy_markup_enabled( $form_id ) ) {
+		if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
 			return $this->get_legacy_field_input( $form, $value, $entry );
 		}
 
@@ -185,7 +186,7 @@ class GF_Field_Checkbox extends GF_Field {
 
 		// Prepare button markup.
 		$button_markup = sprintf(
-			'<button type="button" id="button_%1$d_select_all" onclick="gformToggleCheckboxes( this )" data-checked="%4$d" data-label-select="%2$s" data-label-deselect="%3$s"%6$s>%5$s</button>',
+			'<button type="button" id="button_%1$d_select_all" class="gfield_choice_all_toggle gform-theme-button--size-sm" onclick="gformToggleCheckboxes( this )" data-checked="%4$d" data-label-select="%2$s" data-label-deselect="%3$s"%6$s>%5$s</button>',
 			$this->id,
 			$select_label,
 			$deselect_label,
@@ -223,7 +224,7 @@ class GF_Field_Checkbox extends GF_Field {
 		$id            = $this->id;
 		$field_id      = $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
 		$disabled_text = $is_form_editor ? 'disabled="disabled"' : '';
-		$tag           = GFCommon::is_legacy_markup_enabled( $form_id ) ? 'ul' : 'div';
+		$tag           = GFCommon::is_legacy_markup_enabled( $form ) ? 'ul' : 'div';
 
 		return sprintf(
 			"<div class='ginput_container ginput_container_checkbox'><{$tag} class='gfield_checkbox' id='%s'>%s</{$tag}></div>",
@@ -393,6 +394,7 @@ class GF_Field_Checkbox extends GF_Field {
 			foreach ( $lead_field_keys as $input_id ) {
 				if ( is_numeric( $input_id ) && absint( $input_id ) == $field_id ) {
 					$items[] = GFCommon::selection_display( rgar( $entry, $input_id ), null, $entry['currency'], false );
+					$items[] = $this->get_selected_choice_output( rgar( $entry, $input_id ), rgar( $entry, 'currency' ) );
 				}
 			}
 
@@ -445,11 +447,11 @@ class GF_Field_Checkbox extends GF_Field {
 				if ( ! rgblank( $item ) ) {
 					switch ( $format ) {
 						case 'text' :
-							$items .= GFCommon::selection_display( $item, $this, $currency, $use_text ) . ', ';
+							$items .= $this->get_selected_choice_output( $item, $currency, $use_text ) . ', ';
 							break;
 
 						default:
-							$items .= '<li>' . wp_kses_post( GFCommon::selection_display( $item, $this, $currency, $use_text ) ) . '</li>';
+							$items .= '<li>' . $this->get_selected_choice_output( $item, $currency, $use_text ) . '</li>';
 							break;
 					}
 				}
@@ -688,11 +690,12 @@ class GF_Field_Checkbox extends GF_Field {
 
 			$choice_number = 1;
 			$count         = 1;
+			$legacy_markup = GFCommon::is_legacy_markup_enabled( $form_id );
 
-			$tag = GFCommon::is_legacy_markup_enabled( $form_id ) ? 'li' : 'div';
+			$tag = $legacy_markup ? 'li' : 'div';
 
 			// Add Select All choice.
-			if ( $this->enableSelectAll && GFCommon::is_legacy_markup_enabled( $form_id ) ) {
+			if ( $this->enableSelectAll && $legacy_markup ) {
 
 				/**
 				 * Modify the "Select All" checkbox label.
@@ -734,7 +737,7 @@ class GF_Field_Checkbox extends GF_Field {
 				// Prepare choice markup.
 				$choice_markup = "<{$tag} class='gchoice gchoice_select_all'>
 						<input class='gfield-choice-input' type='checkbox' id='{$id}' {$tabindex} {$disabled_text} onclick='gformToggleCheckboxes( this )' onkeypress='gformToggleCheckboxes( this )'{$checked} />
-						<label for='{$id}' id='label_" . $this->id . "_select_all' data-label-select='{$select_label}' data-label-deselect='{$deselect_label}'>{$toggle_label}</label>
+						<label for='{$id}' id='label_" . $this->id . "_select_all' class='gform-field-label  gform-field-label--type-inline' data-label-select='{$select_label}' data-label-deselect='{$deselect_label}'>{$toggle_label}</label>
 					</{$tag}>";
 
 				/**
@@ -792,7 +795,7 @@ class GF_Field_Checkbox extends GF_Field {
 				$choice_value  = esc_attr( $choice_value );
 				$choice_markup = "<{$tag} class='gchoice gchoice_{$id}'>
 								<input class='gfield-choice-input' name='input_{$input_id}' type='checkbox'  value='{$choice_value}' {$checked} id='choice_{$id}' {$tabindex} {$disabled_text} {$aria_describedby}/>
-								<label for='choice_{$id}' id='label_{$id}'>{$choice['text']}</label>
+								<label for='choice_{$id}' id='label_{$id}' class='gform-field-label gform-field-label--type-inline'>{$choice['text']}</label>
 							</{$tag}>";
 
 				/**

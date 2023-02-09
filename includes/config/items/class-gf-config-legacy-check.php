@@ -17,6 +17,17 @@ class GF_Config_Legacy_Check extends GF_Config {
 	protected $script_to_localize = 'gform_layout_editor';
 
 	/**
+	 * Determine if the config should enqueue its data.
+	 *
+	 * @since 2.7
+	 *
+	 * @return bool
+	 */
+	public function should_enqueue() {
+		return \GFCommon::is_form_editor();
+	}
+
+	/**
 	 * Config data.
 	 *
 	 * @return array[]

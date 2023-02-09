@@ -22,15 +22,10 @@ class GF_Config_Block_Editor extends GF_Config {
 	 * @return array[]
 	 */
 	public function data() {
-		$is_editor = function_exists( 'get_current_screen' ) && is_callable( array(
-				get_current_screen(),
-				'is_block_editor'
-			) ) && get_current_screen()->is_block_editor();
-
 		return array(
 			'block_editor' => array(
 				'data' => array(
-					'is_block_editor' => $is_editor
+					'is_block_editor' => \GFCommon::is_block_editor_page(),
 				),
 				'i18n' => array(
 					'insert_gform_block_title'   => __( 'Add Block To Page', 'gravityforms' ),

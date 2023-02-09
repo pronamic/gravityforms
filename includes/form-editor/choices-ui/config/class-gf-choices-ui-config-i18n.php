@@ -14,6 +14,11 @@ class GF_Choices_UI_Config_I18N extends GF_Config {
 	protected $name               = 'gform_admin_config';
 	protected $script_to_localize = 'gform_gravityforms_admin_vendors';
 
+
+	public function should_enqueue() {
+		return \GFCommon::is_form_editor();
+	}
+
 	/**
 	 * Config data.
 	 *

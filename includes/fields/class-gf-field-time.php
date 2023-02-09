@@ -275,13 +275,13 @@ class GF_Field_Time extends GF_Field {
 		if ( $is_form_editor || $this->timeFormat != '24' ) {
 			$am_text = esc_html__( 'AM', 'gravityforms' );
 			$pm_text = esc_html__( 'PM', 'gravityforms' );
-			$ampm_field = "<div class='gfield_time_ampm ginput_container ginput_container_time {$colon_pmam_placement}' {$ampm_field_style}>
+			$ampm_field = "<div class='gfield_time_ampm ginput_container ginput_container_time {$colon_pmam_placement} gform-grid-col' {$ampm_field_style}>
                                 " . ( $output_shim ? "<div class='gfield_time_ampm_shim' aria-hidden='true'>&nbsp;</div>" : "" ) . "
                                 <select name='input_{$id}[]' id='{$field_id}_3' $ampm_tabindex {$disabled_text}>
                                     <option value='am' {$am_selected}>{$am_text}</option>
                                     <option value='pm' {$pm_selected}>{$pm_text}</option>
                                 </select> 
-                                <label class='am_pm_label screen-reader-text' for='{$field_id}_3'>" . esc_html__( 'AM/PM', 'gravityforms' ) . "</label>                                
+                                <label class='gform-field-label gform-field-label--type-sub am_pm_label screen-reader-text' for='{$field_id}_3'>" . esc_html__( 'AM/PM', 'gravityforms' ) . "</label>                                
                            </div>";
 		} else {
 			$ampm_field = '';
@@ -322,38 +322,38 @@ class GF_Field_Time extends GF_Field {
 		$aria_describedby       = $this->get_aria_describedby();
 
 		$legacy_markup_colon = GFCommon::is_legacy_markup_enabled( $form ) ? '<i>:</i>' : '';
-		$new_markup_colon    = GFCommon::is_legacy_markup_enabled( $form ) ? '' : '<div class="' . $colon_pmam_placement . ' hour_minute_colon">:</div>';
+		$new_markup_colon    = GFCommon::is_legacy_markup_enabled( $form ) ? '' : '<div class="' . $colon_pmam_placement . ' hour_minute_colon gform-grid-col">:</div>';
 
 		if ( $is_sub_label_above ) {
 			$markup = "{$clear_multi_div_open}
-                        <div class='gfield_time_hour ginput_container ginput_container_time' id='{$field_id}'>
-                            <label class='hour_label{$hour_label_class}' for='{$field_id}_1'>{$hour_label}</label>
+                        <div class='gfield_time_hour ginput_container ginput_container_time gform-grid-col' id='{$field_id}'>
+                            <label class='gform-field-label gform-field-label--type-sub hour_label{$hour_label_class}' for='{$field_id}_1'>{$hour_label}</label>
                             <input type='{$input_type}' maxlength='2' name='input_{$id}[]' id='{$field_id}_1' value='{$hour}' {$hour_tabindex} {$hour_html5_attributes} {$disabled_text} {$hour_placeholder_attribute} {$hour_aria_attributes} {$aria_describedby}/> {$legacy_markup_colon}
                         </div>
                         {$new_markup_colon}
-                        <div class='gfield_time_minute ginput_container ginput_container_time'>
-                            <label class='minute_label{$minute_label_class}' for='{$field_id}_2'>{$minute_label}</label>
+                        <div class='gfield_time_minute ginput_container ginput_container_time gform-grid-col'>
+                            <label class='gform-field-label gform-field-label--type-sub minute_label{$minute_label_class}' for='{$field_id}_2'>{$minute_label}</label>
                             <input type='{$input_type}' maxlength='2' name='input_{$id}[]' id='{$field_id}_2' value='{$minute}' {$minute_tabindex} {$minute_html5_attributes} {$disabled_text} {$minute_placeholder_attribute} {$minute_aria_attributes}/>
                         </div>
                         {$ampm_field}
                     {$clear_multi_div_close}";
 		} else {
 			$markup = "{$clear_multi_div_open}
-                        <div class='gfield_time_hour ginput_container ginput_container_time' id='{$field_id}'>
+                        <div class='gfield_time_hour ginput_container ginput_container_time gform-grid-col' id='{$field_id}'>
                             <input type='{$input_type}' maxlength='2' name='input_{$id}[]' id='{$field_id}_1' value='{$hour}' {$hour_tabindex} {$hour_html5_attributes} {$disabled_text} {$hour_placeholder_attribute} {$hour_aria_attributes} {$aria_describedby}/> {$legacy_markup_colon}
-                            <label class='hour_label{$hour_label_class}' for='{$field_id}_1'>{$hour_label}</label>
+                            <label class='gform-field-label gform-field-label--type-sub hour_label{$hour_label_class}' for='{$field_id}_1'>{$hour_label}</label>
                         </div>
                         {$new_markup_colon}
-                        <div class='gfield_time_minute ginput_container ginput_container_time'>
+                        <div class='gfield_time_minute ginput_container ginput_container_time gform-grid-col'>
                             <input type='{$input_type}' maxlength='2' name='input_{$id}[]' id='{$field_id}_2' value='{$minute}' {$minute_tabindex} {$minute_html5_attributes} {$disabled_text} {$minute_placeholder_attribute} {$minute_aria_attributes}/>
-                            <label class='minute_label{$minute_label_class}' for='{$field_id}_2'>{$minute_label}</label>
+                            <label class='gform-field-label gform-field-label--type-sub minute_label{$minute_label_class}' for='{$field_id}_2'>{$minute_label}</label>
                         </div>
                         {$ampm_field}
                     {$clear_multi_div_close}";
 		}
 
 
-		return sprintf( '<div class="ginput_complex">%s</div>', $markup );
+		return sprintf( '<div class="ginput_container ginput_complex gform-grid-row">%s</div>', $markup );
 	}
 
 	/**

@@ -23,6 +23,7 @@ class GF_Form_CRUD_Handler {
 	const STATUS_INVALID_META    = 'invalid_meta';
 	const STATUS_INVALID_JSON    = 'invalid_json';
 	const STATUS_DUPLICATE_TITLE = 'duplicate_title';
+	const STATUS_MISSING_TITLE   = 'missing_title';
 
 	/**
 	 * Holds an instance of the GFFormsModel class.
@@ -148,13 +149,18 @@ class GF_Form_CRUD_Handler {
 		$this->deleted_fields = array();
 		$this->form_meta      = array();
 
-		$this->cleanup();
+		if ( ! $this->cleanup() ) {
+			return array(
+				'status' => self::STATUS_INVALID_JSON,
+				'meta'   => null,
+			);
+		}
 
 		$validation_result = $this->validate();
 		if ( rgar( $validation_result, 'status' ) !== self::STATUS_SUCCESS ) {
 			return $validation_result;
 		}
-
+		// $this->form_meta is populated during insert or update.
 		if ( $this->form_id <= 0 ) {
 			$save_result = $this->insert();
 		} else {
@@ -198,9 +204,16 @@ class GF_Form_CRUD_Handler {
 		$gf_forms_model = $this->gf_forms_model;
 
 		// If form meta is not found, exit.
-		if ( ! $this->form_meta ) {
+		if ( ! is_array( $this->form_meta ) ) {
 			return array(
 				'status' => self::STATUS_INVALID_META,
+				'meta'   => null,
+			);
+		}
+
+		if ( ! rgar( $this->form_meta, 'title' ) ) {
+			return array(
+				'status' => self::STATUS_MISSING_TITLE,
 				'meta'   => null,
 			);
 		}
@@ -226,6 +239,8 @@ class GF_Form_CRUD_Handler {
 	 * Performs any sanitization/formatting necessary before processing the form.
 	 *
 	 * @since 2.6
+	 *
+	 * @return bool
 	 */
 	private function cleanup() {
 
@@ -244,6 +259,11 @@ class GF_Form_CRUD_Handler {
 
 		// Convert form meta JSON to array.
 		$this->form_meta = json_decode( $this->form_json, true );
+
+		if ( ! is_array( $this->form_meta ) ) {
+			return false;
+		}
+
 		$this->form_meta = $gf_forms_model::convert_field_objects( $this->form_meta );
 
 		// Set version of Gravity Forms form was created with.
@@ -258,6 +278,8 @@ class GF_Form_CRUD_Handler {
 		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Deleted fields ' . print_r( $deleted_fields, true ) );
 		unset( $this->form_meta['deletedFields'] );
 		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Form meta => ' . print_r( $this->form_meta, true ) );
+
+		return true;
 	}
 
 	/**
@@ -319,41 +341,32 @@ class GF_Form_CRUD_Handler {
 	private function insert() {
 			$rg_forms_model = $this->rg_forms_model;
 			$gf_forms_model = $this->gf_forms_model;
-			//inserting form
+
+			// Inserting form.
 			$this->form_id = $rg_forms_model::insert_form( $this->form_meta['title'] );
 
-			//updating object's id property
+			// Updating object's id property.
 			$this->form_meta['id'] = $this->form_id;
 
-			//creating default notification
-		if ( apply_filters( 'gform_default_notification', true ) ) {
+			// Use the notifications in form_meta if one is set. If not set, and default notification is not disabled by the hook, use default.
+			$notifications = rgempty( 'notifications', $this->form_meta ) ? $this->get_default_notification() : rgar( $this->form_meta, 'notifications' );
+			if ( ! empty( $notifications ) ) {
+				// updating notifications form meta.
+				$rg_forms_model::save_form_notifications( $this->form_id, $notifications );
+			}
 
-			$default_notification = array(
-				'id'       => uniqid(),
-				'isActive' => true,
-				'to'       => '{admin_email}',
-				'name'     => __( 'Admin Notification', 'gravityforms' ),
-				'event'    => 'form_submission',
-				'toType'   => 'email',
-				'subject'  => __( 'New submission from', 'gravityforms' ) . ' {form_title}',
-				'message'  => '{all_fields}',
-			);
-
-			$notifications = array( $default_notification['id'] => $default_notification );
-
-			//updating notifications form meta
-			$rg_forms_model::save_form_notifications( $this->form_id, $notifications );
-		}
-
-			// Add default confirmation when saving a new form.
-			$confirmation  = $gf_forms_model::get_default_confirmation();
-			$confirmations = array( $confirmation['id'] => $confirmation );
+			// Use default confirmation if not set in form_meta.
+			$confirmations = rgempty( 'confirmations', $this->form_meta ) ? $this->get_default_confirmation() : rgar( $this->form_meta, 'confirmations' );
 			$gf_forms_model::save_form_confirmations( $this->form_id, $confirmations );
 
 			// Adding markup version. Increment this when we make breaking changes to form markup.
 			$this->form_meta['markupVersion'] = 2;
 
-			//updating form meta
+			// Removing notifications and confirmations from form meta.
+			unset( $this->form_meta['confirmations'] );
+			unset( $this->form_meta['notifications'] );
+
+			// Updating form meta.
 			$gf_forms_model::update_form_meta( $this->form_id, $this->form_meta );
 
 			// Get form meta.
@@ -364,6 +377,46 @@ class GF_Form_CRUD_Handler {
 				'meta'   => $this->form_meta,
 				'is_new' => true,
 			);
+	}
+
+	/**
+	 * Gets the default notifications.
+	 *
+	 * @since 2.7
+	 *
+	 * @return array Returns the array containing the default notifications.
+	 */
+	private function get_default_notification() {
+		if ( ! apply_filters( 'gform_default_notification', true ) ) {
+			return array();
+		}
+
+		$default_notification = array(
+			'id'       => uniqid(),
+			'isActive' => true,
+			'to'       => '{admin_email}',
+			'name'     => __( 'Admin Notification', 'gravityforms' ),
+			'event'    => 'form_submission',
+			'toType'   => 'email',
+			'subject'  => __( 'New submission from', 'gravityforms' ) . ' {form_title}',
+			'message'  => '{all_fields}',
+		);
+
+		return array( $default_notification['id'] => $default_notification );
+	}
+
+	/**
+	 * Gets the default confirmations.
+	 *
+	 * @since 2.7
+	 *
+	 * @return array Returns the confirmation array.
+	 */
+	private function get_default_confirmation() {
+		$gf_forms_model = $this->gf_forms_model;
+
+		$confirmation  = $gf_forms_model::get_default_confirmation();
+		return array( $confirmation['id'] => $confirmation );
 	}
 
 	/**

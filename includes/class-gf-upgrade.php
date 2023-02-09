@@ -43,13 +43,8 @@ class GF_Upgrade {
 	public function maybe_display_wizard() {
 
 		$result = false;
-		if ( $this->requires_install_wizard() ) {
 
-			require_once( GFCommon::get_base_path() . '/includes/wizard/class-gf-installation-wizard.php' );
-			$wizard = new GF_Installation_Wizard;
-			$result = $wizard->display();
-
-		} elseif ( $this->requires_upgrade_wizard() ) {
+		if ( $this->requires_upgrade_wizard() ) {
 
 			require_once( GFCommon::get_base_path() . '/includes/wizard/class-gf-upgrade-wizard.php' );
 			$wizard = new GF_Upgrade_Wizard;
@@ -70,7 +65,6 @@ class GF_Upgrade {
 		$versions = $this->get_versions();
 
 		if ( $this->requires_install() ) {
-			// First time install
 			$this->install();
 
 			// Show installation wizard for all new installations as long as the key wasn't already set e.g. by the CLI.

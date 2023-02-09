@@ -137,7 +137,7 @@ class GF_Config_Collection {
 		$data_to_localize = array();
 
 		foreach ( $this->configs as $config ) {
-			if ( ! $config->should_enqueue() ) {
+			if ( ( ! defined( 'GFORMS_DOING_MOCK' ) || ! GFORMS_DOING_MOCK ) && ! $config->should_enqueue() ) {
 				continue;
 			}
 

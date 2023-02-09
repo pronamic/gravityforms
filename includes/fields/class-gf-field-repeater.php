@@ -282,7 +282,7 @@ class GF_Field_Repeater extends GF_Field {
 	public function get_input_top( $values ) {
 		$html = "<fieldset class='gfield_repeater gfield_repeater_container'>\n";
 		$label = esc_html( $this->label );
-		$html .= "<legend class='gfield_label'>{$label}</legend>";
+		$html .= "<legend class='gfield_label gform-field-label'>{$label}</legend>";
 		return $html;
 	}
 
@@ -385,8 +385,8 @@ class GF_Field_Repeater extends GF_Field {
 
 		$add_button_class = $this->addButtonText ? 'add_repeater_item_text' : 'add_repeater_item_plus';
 		$remove_button_class = $this->removeButtonText ? 'remove_repeater_item_text' : 'remove_repeater_item_minus';
-		$html = "<button type='button' class='add_repeater_item {$disabled_icon_class} {$add_button_class}' {$add_events}>" . $add_button_text . "</button>" .
-		        "<button type='button' class='remove_repeater_item {$remove_button_class}' {$delete_events} style='{$delete_display}'>" . $remove_button_text . "</button>";
+		$html = "<button type='button' class='add_repeater_item gform-theme-button gform-theme-button--secondary gform-theme-button--size-sm {$disabled_icon_class} {$add_button_class}' {$add_events}>" . $add_button_text . "</button>" .
+		        "<button type='button' class='remove_repeater_item gform-theme-button gform-theme-button--secondary gform-theme-button--size-sm {$remove_button_class}' {$delete_events} style='{$delete_display}'>" . $remove_button_text . "</button>";
 
 		return $html;
 	}
@@ -472,7 +472,7 @@ class GF_Field_Repeater extends GF_Field {
 		$fields = $this->fields;
 		$html   = "<div class='gfield_repeater' {$repeater_style}>";
 		$repeater_label = $this->nestingLevel === 0 ? '' : $this->label;
-		$html   .= "<div class='gfield_label' {$label_style}>{$repeater_label}</div>";
+		$html   .= "<div class='gfield_label gform-field-label' {$label_style}>{$repeater_label}</div>";
 		$html   .= '<div class="gfield_repeater_items">';
 		foreach ( $item_values as $item_value ) {
 			$html .= '<div class="gfield_repeater_item">';
@@ -639,7 +639,11 @@ class GF_Field_Repeater extends GF_Field {
 			require_once( GFCommon::get_base_path() .'/form_display.php' );
 		}
 
-		$field_content = GFFormDisplay::get_field_content( $field, $value, true, $form['id'], $form );
+		if ( $field->type === 'repeater' ) {
+			$field_content = GFFormDisplay::get_field_content( $field, $value, true, $form['id'], $form );
+		} else {
+			$field_content = GFFormDisplay::get_field( $field, $value, true, $form );
+		}
 
 		$field->failed_validation = $validation_status;
 

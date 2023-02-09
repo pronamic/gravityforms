@@ -14,6 +14,7 @@ class GF_Settings_Config_I18N extends GF_Config {
 	protected $name               = 'gform_admin_config';
 	protected $script_to_localize = 'gform_gravityforms_admin_vendors';
 
+
 	/**
 	 * Config data.
 	 *
@@ -25,6 +26,29 @@ class GF_Settings_Config_I18N extends GF_Config {
 				'loader' => array(
 					'i18n' => array(
 						'loaderText' => __( 'Loading', 'gravityforms' ),
+					),
+				),
+			),
+			'components'    => array(
+				'color_picker' => array(
+					'i18n' => array(
+						'apply' => __( 'Apply', 'gravityforms' ),
+						'hex'   => __( 'Hex', 'gravityforms' ),
+					),
+				),
+				'swatch'       => array(
+					'i18n' => array(
+						'swatch' => __( 'swatch', 'gravityforms' ),
+					),
+				),
+				'file_upload'  => array(
+					'i18n' => array(
+						'click_to_upload' => __( 'Click to upload', 'gravityforms' ),
+						'drag_n_drop'     => __( 'or drag and drop', 'gravityforms' ),
+						'max'             => __( 'max.', 'gravityforms' ),
+						'or'              => __( 'or', 'gravityforms' ),
+						'replace'         => __( 'Replace', 'gravityforms' ),
+						'delete'          => __( 'Delete', 'gravityforms' ),
 					),
 				),
 			),

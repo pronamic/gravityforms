@@ -298,38 +298,38 @@ class GF_Field_Date extends GF_Field {
 			}
 
 			if ( $is_sub_label_above ) {
-				$month_field = "<div class='gfield_date_month ginput_date ginput_container ginput_container_date' id='gfield_input_date_month' style='display:$datefield_display'>
-                                    <label for='{$field_id}_1' class='{$month_sub_label_class}'>{$month_sub_label}</label>
+				$month_field = "<div class='gfield_date_month ginput_date ginput_container ginput_container_date gform-grid-col' id='gfield_input_date_month' style='display:$datefield_display'>
+                                    <label for='{$field_id}_1' class='gform-field-label gform-field-label--type-sub {$month_sub_label_class}'>{$month_sub_label}</label>
                                     <input id='{$field_id}_1' name='ginput_month' type='text' {$month_placeholder_attribute} {$disabled_text} value='{$month_value}'/>
                                 </div>";
-				$day_field   = "<div class='gfield_date_day ginput_date ginput_container ginput_container_date' id='gfield_input_date_day' style='display:$datefield_display'>
-                                    <label for='{$field_id}_2' class='{$day_sub_label_class}'>{$day_sub_label}</label>
+				$day_field   = "<div class='gfield_date_day ginput_date ginput_container ginput_container_date gform-grid-col' id='gfield_input_date_day' style='display:$datefield_display'>
+                                    <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$day_sub_label_class}'>{$day_sub_label}</label>
                                     <input id='{$field_id}_2' name='ginput_day' type='text' {$day_placeholder_attribute} {$disabled_text} value='{$day_value}'/>
                                </div>";
-				$year_field  = "<div class='gfield_date_year ginput_date ginput_container ginput_container_date' id='gfield_input_date_year' style='display:$datefield_display'>
-                                    <label for='{$field_id}_3' class='{$year_sub_label_class}'>{$year_sub_label}</label>
+				$year_field  = "<div class='gfield_date_year ginput_date ginput_container ginput_container_date gform-grid-col' id='gfield_input_date_year' style='display:$datefield_display'>
+                                    <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$year_sub_label_class}'>{$year_sub_label}</label>
                                     <input id='{$field_id}_3' type='text' name='text' {$year_placeholder_attribute} {$disabled_text} value='{$year_value}'/>
                                </div>";
 			} else {
-				$month_field = "<div class='gfield_date_month ginput_date ginput_container ginput_container_date' id='gfield_input_date_month' style='display:$datefield_display'>
+				$month_field = "<div class='gfield_date_month ginput_date ginput_container ginput_container_date gform-grid-col' id='gfield_input_date_month' style='display:$datefield_display'>
                                     <input id='{$field_id}_1' name='ginput_month' type='text' {$month_placeholder_attribute} {$disabled_text} value='{$month_value}'/>
-                                    <label for='{$field_id}_1' class='{$month_sub_label_class}'>{$month_sub_label}</label>
+                                    <label for='{$field_id}_1' class='gform-field-label gform-field-label--type-sub {$month_sub_label_class}'>{$month_sub_label}</label>
                                 </div>";
-				$day_field   = "<div class='gfield_date_day ginput_date ginput_container ginput_container_date' id='gfield_input_date_day' style='display:$datefield_display'>
+				$day_field   = "<div class='gfield_date_day ginput_date ginput_container ginput_container_date gform-grid-col' id='gfield_input_date_day' style='display:$datefield_display'>
                                     <input id='{$field_id}_2' name='ginput_day' type='text' {$day_placeholder_attribute} {$disabled_text} value='{$day_value}'/>
-                                    <label for='{$field_id}_2' class='{$day_sub_label_class}'>{$day_sub_label}</label>
+                                    <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$day_sub_label_class}'>{$day_sub_label}</label>
                               </div>";
-				$year_field  = "<div class='gfield_date_year ginput_date ginput_container ginput_container_date' id='gfield_input_date_year' style='display:$datefield_display'>
+				$year_field  = "<div class='gfield_date_year ginput_date ginput_container ginput_container_date gform-grid-col' id='gfield_input_date_year' style='display:$datefield_display'>
                                     <input type='text' id='{$field_id}_3' name='ginput_year' {$year_placeholder_attribute} {$disabled_text} value='{$year_value}'/>
-                                    <label for='{$field_id}_3' class='{$year_sub_label_class}'>{$year_sub_label}</label>
+                                    <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$year_sub_label_class}'>{$year_sub_label}</label>
                                </div>";
 			}
 
-			$month_dropdown = "<div class='gfield_date_dropdown_month ginput_date_dropdown ginput_container ginput_container_date' id='gfield_dropdown_date_month' style='display:$dropdown_display'>" . $this->get_month_dropdown( '', "{$field_id}_1", rgar( $date_info, 'month' ), '', $disabled_text, $month_placeholder_value ) . '</div>';
-			$day_dropdown   = "<div class='gfield_date_dropdown_day ginput_date_dropdown ginput_container ginput_container_date' id='gfield_dropdown_date_day' style='display:$dropdown_display'>" . $this->get_day_dropdown( '', "{$field_id}_2", rgar( $date_info, 'day' ), '', $disabled_text, $day_placeholder_value ) . '</div>';
-			$year_dropdown  = "<div class='gfield_date_dropdown_year ginput_date_dropdown ginput_container ginput_container_date' id='gfield_dropdown_date_year' style='display:$dropdown_display'>" . $this->get_year_dropdown( '', "{$field_id}_3", rgar( $date_info, 'year' ), '', $disabled_text, $year_placeholder_value, $form ) . '</div>';
+			$month_dropdown = "<div class='gfield_date_dropdown_month ginput_date_dropdown ginput_container ginput_container_date gform-grid-col' id='gfield_dropdown_date_month' style='display:$dropdown_display'>" . $this->get_month_dropdown( '', "{$field_id}_1", rgar( $date_info, 'month' ), '', $disabled_text, $month_placeholder_value ) . '</div>';
+			$day_dropdown   = "<div class='gfield_date_dropdown_day ginput_date_dropdown ginput_container ginput_container_date gform-grid-col' id='gfield_dropdown_date_day' style='display:$dropdown_display'>" . $this->get_day_dropdown( '', "{$field_id}_2", rgar( $date_info, 'day' ), '', $disabled_text, $day_placeholder_value ) . '</div>';
+			$year_dropdown  = "<div class='gfield_date_dropdown_year ginput_date_dropdown ginput_container ginput_container_date gform-grid-col' id='gfield_dropdown_date_year' style='display:$dropdown_display'>" . $this->get_year_dropdown( '', "{$field_id}_3", rgar( $date_info, 'year' ), '', $disabled_text, $year_placeholder_value, $form ) . '</div>';
 
-			$field_string = "<div class='ginput_container ginput_container_date' id='gfield_input_datepicker' style='display:$datepicker_display'><input name='ginput_datepicker' type='text' {$date_picker_placeholder} {$disabled_text} value='{$picker_value}'/><img src='" . GFCommon::get_base_url() . "/images/datepicker/datepicker.svg' id='gfield_input_datepicker_icon' style='display:$icon_display'/></div>";
+			$field_string = "<div class='ginput_container ginput_container_date gform-grid-col' id='gfield_input_datepicker' style='display:$datepicker_display'><input name='ginput_datepicker' type='text' {$date_picker_placeholder} {$disabled_text} value='{$picker_value}'/><img src='" . GFCommon::get_base_url() . "/images/datepicker/datepicker.svg' id='gfield_input_datepicker_icon' style='display:$icon_display'/></div>";
 
 			switch ( $field_position ) {
 				case 'dmy' :
@@ -345,7 +345,7 @@ class GF_Field_Date extends GF_Field {
 					break;
 			}
 
-			$field_string .= "<div id='{$field_id}' class='ginput_container ginput_complex'>{$date_inputs}</div>";
+			$field_string .= "<div id='{$field_id}' class='ginput_container ginput_complex gform-grid-row'>{$date_inputs}</div>";
 
 			return $field_string;
 		} else {
@@ -371,51 +371,51 @@ class GF_Field_Date extends GF_Field {
 
 						if ( $date_type == 'datedropdown' ) {
 
-							$field_str = "{$clear_multi_div_open}<div class='gfield_date_dropdown_day ginput_container ginput_container_date' id='{$field_id}_2_container'>" . $this->get_day_dropdown( "input_{$id}[]", "{$field_id}_2", rgar( $date_info, 'day' ), $tabindex, $disabled_text, $day_placeholder_value, $day_aria_attributes ) . '</div>';
+							$field_str = "{$clear_multi_div_open}<div class='gfield_date_dropdown_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>" . $this->get_day_dropdown( "input_{$id}[]", "{$field_id}_2", rgar( $date_info, 'day' ), $tabindex, $disabled_text, $day_placeholder_value, $day_aria_attributes ) . '</div>';
 
 							$tabindex = $this->get_tabindex();
-							$field_str .= "<div class='gfield_date_dropdown_month ginput_container ginput_container_date' id='{$field_id}_1_container'>" . $this->get_month_dropdown( "input_{$id}[]", "{$field_id}_1", rgar( $date_info, 'month' ), $tabindex, $disabled_text, $month_placeholder_value, $month_aria_attributes ) . '</div>';
+							$field_str .= "<div class='gfield_date_dropdown_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>" . $this->get_month_dropdown( "input_{$id}[]", "{$field_id}_1", rgar( $date_info, 'month' ), $tabindex, $disabled_text, $month_placeholder_value, $month_aria_attributes ) . '</div>';
 
 							$tabindex = $this->get_tabindex();
 
-							$field_str .= "<div class='gfield_date_dropdown_year ginput_container ginput_container_date' id='{$field_id}_3_container'>" . $this->get_year_dropdown( "input_{$id}[]", "{$field_id}_3", rgar( $date_info, 'year' ), $tabindex, $disabled_text, $year_placeholder_value, $form, $year_aria_attributes ) ."</div>{$clear_multi_div_close}";
+							$field_str .= "<div class='gfield_date_dropdown_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>" . $this->get_year_dropdown( "input_{$id}[]", "{$field_id}_3", rgar( $date_info, 'year' ), $tabindex, $disabled_text, $year_placeholder_value, $form, $year_aria_attributes ) ."</div>{$clear_multi_div_close}";
 						} else {
 
 							$field_str = $is_sub_label_above
 								? "{$clear_multi_div_open}
-                                        <div class='gfield_date_day ginput_container ginput_container_date' id='{$field_id}_2_container'>
-                                            <label for='{$field_id}_2' class='{$day_sub_label_class}'>{$day_sub_label}</label>
+                                        <div class='gfield_date_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>
+                                            <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$day_sub_label_class}'>{$day_sub_label}</label>
                                             <input type='{$date_input_type}' {$day_maxlength} name='input_{$id}[]' id='{$field_id}_2' value='$day_value' {$tabindex} {$disabled_text} {$day_aria_attributes} {$day_placeholder_attribute} {$day_html5_attributes}/>
                                         </div>"
 								: "{$clear_multi_div_open}
-                                        <div class='gfield_date_day ginput_container ginput_container_date' id='{$field_id}_2_container'>
+                                        <div class='gfield_date_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>
                                             <input type='{$date_input_type}' {$day_maxlength} name='input_{$id}[]' id='{$field_id}_2' value='$day_value' {$tabindex} {$disabled_text} {$day_aria_attributes} {$day_placeholder_attribute} {$day_html5_attributes}/>
-                                            <label for='{$field_id}_2' class='{$day_sub_label_class}'>{$day_sub_label}</label>
+                                            <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$day_sub_label_class}'>{$day_sub_label}</label>
                                         </div>";
 
 							$tabindex = $this->get_tabindex();
 
 							$field_str .= $is_sub_label_above
-								? "<div class='gfield_date_month ginput_container ginput_container_date' id='{$field_id}_1_container'>
-                                        <label for='{$field_id}_1' class='{$month_sub_label_class}'>{$month_sub_label}</label>
+								? "<div class='gfield_date_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>
+                                        <label for='{$field_id}_1' class='gform-field-label gform-field-label--type-sub {$month_sub_label_class}'>{$month_sub_label}</label>
                                         <input type='{$date_input_type}' {$month_maxlength} name='input_{$id}[]' id='{$field_id}_1' value='{$month_value}' {$tabindex} {$disabled_text} {$month_aria_attributes} {$month_placeholder_attribute} {$month_html5_attributes}/>
                                    </div>"
-								: "<div class='gfield_date_month ginput_container ginput_container_date' id='{$field_id}_1_container'>
+								: "<div class='gfield_date_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>
                                         <input type='{$date_input_type}' {$month_maxlength} name='input_{$id}[]' id='{$field_id}_1' value='{$month_value}' {$tabindex} {$disabled_text} {$month_aria_attributes} {$month_placeholder_attribute} {$month_html5_attributes}/>
-                                        <label for='{$field_id}_1' class='{$month_sub_label_class}'>{$month_sub_label}</label>
+                                        <label for='{$field_id}_1' class='gform-field-label gform-field-label--type-sub {$month_sub_label_class}'>{$month_sub_label}</label>
                                    </div>";
 
 							$tabindex = $this->get_tabindex();
 
 							$field_str .= $is_sub_label_above
-								? "<div class='gfield_date_year ginput_container ginput_container_date' id='{$field_id}_3_container'>
-                                            <label for='{$field_id}_3' class='{$year_sub_label_class}'>{$year_sub_label}</label>
+								? "<div class='gfield_date_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>
+                                            <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$year_sub_label_class}'>{$year_sub_label}</label>
                                             <input type='{$date_input_type}' {$year_maxlength} name='input_{$id}[]' id='{$field_id}_3' value='{$year_value}' {$tabindex} {$disabled_text} {$year_aria_attributes} {$year_placeholder_attribute} {$year_min_attribute} {$year_max_attribute} {$year_step_attribute}/>
                                        </div>
                                     {$clear_multi_div_close}"
-								: "<div class='gfield_date_year ginput_container ginput_container_date' id='{$field_id}_3_container'>
+								: "<div class='gfield_date_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>
                                         <input type='{$date_input_type}' {$year_maxlength} name='input_{$id}[]' id='{$field_id}_3' value='{$year_value}' {$tabindex} {$disabled_text} {$year_aria_attributes} {$year_placeholder_attribute} {$year_min_attribute} {$year_max_attribute} {$year_step_attribute}/>
-                                        <label for='{$field_id}_3' class='{$year_sub_label_class}'>{$year_sub_label}</label>
+                                        <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$year_sub_label_class}'>{$year_sub_label}</label>
                                    </div>
                                 {$clear_multi_div_close}";
 
@@ -429,52 +429,52 @@ class GF_Field_Date extends GF_Field {
 
 						if ( $date_type == 'datedropdown' ) {
 
-							$field_str = "{$clear_multi_div_open}<div class='gfield_date_dropdown_year ginput_container ginput_container_date' id='{$field_id}_3_container'>" . $this->get_year_dropdown( "input_{$id}[]", "{$field_id}_3", rgar( $date_info, 'year' ), $tabindex, $disabled_text, $year_placeholder_value, $form, $year_aria_attributes ) . '</div>';
+							$field_str = "{$clear_multi_div_open}<div class='gfield_date_dropdown_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>" . $this->get_year_dropdown( "input_{$id}[]", "{$field_id}_3", rgar( $date_info, 'year' ), $tabindex, $disabled_text, $year_placeholder_value, $form, $year_aria_attributes ) . '</div>';
 
 							$tabindex = $this->get_tabindex();
 
-							$field_str .= "<div class='gfield_date_dropdown_month ginput_container ginput_container_date' id='{$field_id}_1_container'>" . $this->get_month_dropdown( "input_{$id}[]", "{$field_id}_1", rgar( $date_info, 'month' ), $tabindex, $disabled_text, $month_placeholder_value, $month_aria_attributes ) . '</div>';
+							$field_str .= "<div class='gfield_date_dropdown_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>" . $this->get_month_dropdown( "input_{$id}[]", "{$field_id}_1", rgar( $date_info, 'month' ), $tabindex, $disabled_text, $month_placeholder_value, $month_aria_attributes ) . '</div>';
 
 							$tabindex = $this->get_tabindex();
 
-							$field_str .= "<div class='gfield_date_dropdown_day ginput_container ginput_container_date' id='{$field_id}_2_container'>" . $this->get_day_dropdown( "input_{$id}[]", "{$field_id}_2", rgar( $date_info, 'day' ), $tabindex, $disabled_text, $day_placeholder_value, $day_aria_attributes ) . "</div>{$clear_multi_div_close}";
+							$field_str .= "<div class='gfield_date_dropdown_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>" . $this->get_day_dropdown( "input_{$id}[]", "{$field_id}_2", rgar( $date_info, 'day' ), $tabindex, $disabled_text, $day_placeholder_value, $day_aria_attributes ) . "</div>{$clear_multi_div_close}";
 						} else {
 
 							$field_str = $is_sub_label_above
 								? "{$clear_multi_div_open}
-                                            <div class='gfield_date_year ginput_container ginput_container_date' id='{$field_id}_3_container'>
-                                                <label for='{$field_id}_3' class='{$year_sub_label_class}'>{$year_sub_label}</label>
+                                            <div class='gfield_date_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>
+                                                <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$year_sub_label_class}'>{$year_sub_label}</label>
                                                 <input type='{$date_input_type}' {$year_maxlength} name='input_{$id}[]' id='{$field_id}_3' value='{$year_value}' {$tabindex} {$disabled_text} {$year_aria_attributes} {$year_placeholder_attribute} {$year_min_attribute} {$year_max_attribute} {$year_step_attribute}/>
                                             </div>"
 								: "{$clear_multi_div_open}
-                                            <div class='gfield_date_year ginput_container ginput_container_date' id='{$field_id}_3_container'>
+                                            <div class='gfield_date_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>
                                                 <input type='{$date_input_type}' {$year_maxlength} name='input_{$id}[]' id='{$field_id}_3' value='{$year_value}' {$tabindex} {$disabled_text} {$year_aria_attributes} {$year_placeholder_attribute} {$year_min_attribute} {$year_max_attribute} {$year_step_attribute}/>
-                                                <label for='{$field_id}_3' class='{$year_sub_label_class}'>{$year_sub_label}</label>
+                                                <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$year_sub_label_class}'>{$year_sub_label}</label>
                                             </div>";
 
 							$tabindex = $this->get_tabindex();
 
 							$field_str .= $is_sub_label_above
-								? "<div class='gfield_date_month ginput_container ginput_container_date' id='{$field_id}_1_container'>
-                                                <label for='{$field_id}_1' class='{$month_sub_label_class}'>{$month_sub_label}</label>
+								? "<div class='gfield_date_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>
+                                                <label for='{$field_id}_1' class='gform-field-label gform-field-label--type-sub {$month_sub_label_class}'>{$month_sub_label}</label>
                                                 <input type='{$date_input_type}' {$month_maxlength} name='input_{$id}[]' id='{$field_id}_1' value='{$month_value}' {$tabindex} {$disabled_text} {$month_aria_attributes} {$month_placeholder_attribute} {$month_html5_attributes}/>
                                             </div>"
-								: "<div class='gfield_date_month ginput_container ginput_container_date' id='{$field_id}_1_container'>
+								: "<div class='gfield_date_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>
                                                 <input type='{$date_input_type}' {$month_maxlength} name='input_{$id}[]' id='{$field_id}_1' value='{$month_value}' {$tabindex} {$disabled_text} {$month_aria_attributes} {$month_placeholder_attribute} {$month_html5_attributes}/>
-                                                <label for='{$field_id}_1' class='{$month_sub_label_class}'>{$month_sub_label}</label>
+                                                <label for='{$field_id}_1' class='gform-field-label gform-field-label--type-sub {$month_sub_label_class}'>{$month_sub_label}</label>
                                             </div>";
 
 							$tabindex = $this->get_tabindex();
 
 							$field_str .= $is_sub_label_above
-								? "<div class='gfield_date_day ginput_container ginput_container_date' id='{$field_id}_2_container'>
-                                                <label for='{$field_id}_2' class='{$day_sub_label_class}'>{$day_sub_label}</label>
+								? "<div class='gfield_date_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>
+                                                <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$day_sub_label_class}'>{$day_sub_label}</label>
                                                 <input type='{$date_input_type}' {$day_maxlength} name='input_{$id}[]' id='{$field_id}_2' value='{$day_value}' {$tabindex} {$disabled_text} {$day_aria_attributes} {$day_placeholder_attribute} {$day_html5_attributes}/>
                                            </div>
                                         {$clear_multi_div_close}"
-								: "<div class='gfield_date_day ginput_container ginput_container_date' id='{$field_id}_2_container'>
+								: "<div class='gfield_date_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>
                                                 <input type='{$date_input_type}' {$day_maxlength} name='input_{$id}[]' id='{$field_id}_2' value='{$day_value}' {$tabindex} {$disabled_text} {$day_aria_attributes} {$day_placeholder_attribute} {$day_html5_attributes}/>
-                                                <label for='{$field_id}_2' class='{$day_sub_label_class}'>{$day_sub_label}</label>
+                                                <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$day_sub_label_class}'>{$day_sub_label}</label>
                                            </div>
                                         {$clear_multi_div_close}";
 						}
@@ -486,50 +486,50 @@ class GF_Field_Date extends GF_Field {
 
 						if ( $date_type == 'datedropdown' ) {
 
-							$field_str = "{$clear_multi_div_open}<div class='gfield_date_dropdown_month ginput_container ginput_container_date' id='{$field_id}_1_container'>" . $this->get_month_dropdown( "input_{$id}[]", "{$field_id}_1", rgar( $date_info, 'month' ), $tabindex, $disabled_text, $month_placeholder_value, $month_aria_attributes ) . '</div>';
+							$field_str = "{$clear_multi_div_open}<div class='gfield_date_dropdown_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>" . $this->get_month_dropdown( "input_{$id}[]", "{$field_id}_1", rgar( $date_info, 'month' ), $tabindex, $disabled_text, $month_placeholder_value, $month_aria_attributes ) . '</div>';
 
 							$tabindex = $this->get_tabindex();
 
-							$field_str .= "<div class='gfield_date_dropdown_day ginput_container ginput_container_date' id='{$field_id}_2_container'>" . $this->get_day_dropdown( "input_{$id}[]", "{$field_id}_2", rgar( $date_info, 'day' ), $tabindex, $disabled_text, $day_placeholder_value, $day_aria_attributes ) . '</div>';
+							$field_str .= "<div class='gfield_date_dropdown_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>" . $this->get_day_dropdown( "input_{$id}[]", "{$field_id}_2", rgar( $date_info, 'day' ), $tabindex, $disabled_text, $day_placeholder_value, $day_aria_attributes ) . '</div>';
 
 							$tabindex = $this->get_tabindex();
 
-							$field_str .= "<div class='gfield_date_dropdown_year ginput_container ginput_container_date' id='{$field_id}_3_container'>" . $this->get_year_dropdown( "input_{$id}[]", "{$field_id}_3", rgar( $date_info, 'year' ), $tabindex, $disabled_text, $year_placeholder_value, $form, $year_aria_attributes ) . "</div>{$clear_multi_div_close}";
+							$field_str .= "<div class='gfield_date_dropdown_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>" . $this->get_year_dropdown( "input_{$id}[]", "{$field_id}_3", rgar( $date_info, 'year' ), $tabindex, $disabled_text, $year_placeholder_value, $form, $year_aria_attributes ) . "</div>{$clear_multi_div_close}";
 						} else {
 
 							$field_str = $is_sub_label_above
-								? "{$clear_multi_div_open}<div class='gfield_date_month ginput_container ginput_container_date' id='{$field_id}_1_container'>
-                                            <label for='{$field_id}_1' class='{$month_sub_label_class}'>{$month_sub_label}</label>
+								? "{$clear_multi_div_open}<div class='gfield_date_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>
+                                            <label for='{$field_id}_1' class='gform-field-label gform-field-label--type-sub {$month_sub_label_class}'>{$month_sub_label}</label>
                                             <input type='{$date_input_type}' {$month_maxlength} name='input_{$id}[]' id='{$field_id}_1' value='{$month_value}' {$tabindex} {$disabled_text} {$month_aria_attributes} {$month_placeholder_attribute} {$month_html5_attributes}/>
                                         </div>"
-								: "{$clear_multi_div_open}<div class='gfield_date_month ginput_container ginput_container_date' id='{$field_id}_1_container'>
+								: "{$clear_multi_div_open}<div class='gfield_date_month ginput_container ginput_container_date gform-grid-col' id='{$field_id}_1_container'>
                                             <input type='{$date_input_type}' {$month_maxlength} name='input_{$id}[]' id='{$field_id}_1' value='{$month_value}' {$tabindex} {$disabled_text} {$month_aria_attributes} {$month_placeholder_attribute} {$month_html5_attributes}/>
-                                            <label for='{$field_id}_1' class='{$month_sub_label_class}'>{$month_sub_label}</label>
+                                            <label for='{$field_id}_1' class='gform-field-label gform-field-label--type-sub {$month_sub_label_class}'>{$month_sub_label}</label>
                                         </div>";
 
 							$tabindex = $this->get_tabindex();
 
 							$field_str .= $is_sub_label_above
-								? "<div class='gfield_date_day ginput_container ginput_container_date' id='{$field_id}_2_container'>
-                                            <label for='{$field_id}_2' class='{$day_sub_label_class}'>{$day_sub_label}</label>
+								? "<div class='gfield_date_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>
+                                            <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$day_sub_label_class}'>{$day_sub_label}</label>
                                             <input type='{$date_input_type}' {$day_maxlength} name='input_{$id}[]' id='{$field_id}_2' value='{$day_value}' {$tabindex} {$disabled_text} {$day_aria_attributes} {$day_placeholder_attribute} {$day_html5_attributes}/>
                                         </div>"
-								: "<div class='gfield_date_day ginput_container ginput_container_date' id='{$field_id}_2_container'>
+								: "<div class='gfield_date_day ginput_container ginput_container_date gform-grid-col' id='{$field_id}_2_container'>
                                             <input type='{$date_input_type}' {$day_maxlength} name='input_{$id}[]' id='{$field_id}_2' value='{$day_value}' {$tabindex} {$disabled_text} {$day_aria_attributes} {$day_placeholder_attribute} {$day_html5_attributes}/>
-                                            <label for='{$field_id}_2' class='{$day_sub_label_class}'>{$day_sub_label}</label>
+                                            <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$day_sub_label_class}'>{$day_sub_label}</label>
                                         </div>";
 
 							$tabindex = $this->get_tabindex();
 
 							$field_str .= $is_sub_label_above
-								? "<div class='gfield_date_year ginput_container ginput_container_date' id='{$field_id}_3_container'>
-                                            <label for='{$field_id}_3' class='{$year_sub_label_class}'>{$year_sub_label}</label>
+								? "<div class='gfield_date_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>
+                                            <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$year_sub_label_class}'>{$year_sub_label}</label>
                                             <input type='{$date_input_type}' {$year_maxlength} name='input_{$id}[]' id='{$field_id}_3' value='{$year_value}' {$tabindex} {$disabled_text} {$year_aria_attributes} {$year_placeholder_attribute} {$year_min_attribute} {$year_max_attribute} {$year_step_attribute}/>
                                        </div>
                                    {$clear_multi_div_close}"
-								: "<div class='gfield_date_year ginput_container ginput_container_date' id='{$field_id}_3_container'>
+								: "<div class='gfield_date_year ginput_container ginput_container_date gform-grid-col' id='{$field_id}_3_container'>
                                             <input type='{$date_input_type}' {$year_maxlength} name='input_{$id}[]' id='{$field_id}_3' value='{$year_value}' {$tabindex} {$disabled_text} {$year_aria_attributes} {$year_placeholder_attribute} {$year_min_attribute} {$year_max_attribute} {$year_step_attribute}/>
-                                            <label for='{$field_id}_3' class='{$year_sub_label_class}'>{$year_sub_label}</label>
+                                            <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$year_sub_label_class}'>{$year_sub_label}</label>
                                        </div>
                                    {$clear_multi_div_close}";
 						}
@@ -537,7 +537,7 @@ class GF_Field_Date extends GF_Field {
 						break;
 				}
 
-				return "<div id='{$field_id}' class='ginput_container ginput_complex'>$field_str</div>";
+				return "<div id='{$field_id}' class='ginput_container ginput_complex gform-grid-row'>$field_str</div>";
 			} else {
 				$picker_value = esc_attr( GFCommon::date_display( $picker_value, $format ) );
 				$icon_class   = $this->calendarIconType == 'none' ? 'datepicker_no_icon gdatepicker-no-icon' : 'datepicker_with_icon gdatepicker_with_icon';
@@ -545,12 +545,12 @@ class GF_Field_Date extends GF_Field {
 				$icon_url     = esc_url( $icon_url );
 				$tabindex     = $this->get_tabindex();
 
-				$required_attribute     = $this->isRequired ? 'aria-required="true"' : '';
-				$invalid_attribute      = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
-				$describedby_attribute  = $this->get_aria_describedby( array( "{$field_id}_date_format" ) );
+				$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
+				$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
+				$describedby_attribute = $this->get_aria_describedby( array( "{$field_id}_date_format" ) );
 
 				return "<div class='ginput_container ginput_container_date'>
-                            <input name='input_{$id}' id='{$field_id}' type='text' value='{$picker_value}' class='datepicker {$format} {$icon_class}' {$tabindex} {$disabled_text} {$date_picker_placeholder} {$describedby_attribute} {$invalid_attribute} {$required_attribute}/>
+                            <input name='input_{$id}' id='{$field_id}' type='text' value='{$picker_value}' class='datepicker gform-datepicker {$format} {$icon_class}' {$tabindex} {$disabled_text} {$date_picker_placeholder} {$describedby_attribute} {$invalid_attribute} {$required_attribute}/>
                             <span id='{$field_id}_date_format' class='screen-reader-text'>{$date_format_sr_text}</span>
                         </div>
                         <input type='hidden' id='gforms_calendar_icon_$field_id' class='gform_hidden' value='$icon_url'/>";
@@ -563,17 +563,42 @@ class GF_Field_Date extends GF_Field {
 	 *
 	 * @since unknown
 	 * @since 2.5     Added `screen-reader-text` if the label hasn't been set; added `gfield_label_before_complex` if it is datefield.
+	 * @since 2.7     Added `gform-field-label` for the theme framework.
 	 *
 	 * @return string
 	 */
 	public function get_field_label_class() {
 		$class = 'gfield_label';
+		$class .= ' gform-field-label';
 
 		// Added `screen-reader-text` if the label hasn't been set.
 		$class .= ( rgblank( $this->label ) ) ? ' screen-reader-text' : '';
 
 		// Added `gfield_label_before_complex` if it is datefield.
 		$class .= $this->dateType === 'datefield' ? ' gfield_label_before_complex' : '';
+
+		return $class;
+	}
+
+	public function get_field_css_class() {
+		$class  = parent::get_field_css_class();
+		$class .= sprintf( ' gfield--input-type-%s', $this->dateType );
+
+		if ( $this->dateType === 'datepicker' ) {
+			switch( $this->calendarIconType ) {
+				case 'calendar':
+					$class .= ' gfield--datepicker-default-icon';
+					break;
+				case 'custom':
+					$class .= ' gfield--datepicker-custom-icon';
+					break;
+				case 'none':
+					$class .= ' gfield--datepicker-no-icon';
+					break;
+				default:
+					break;
+			}
+		}
 
 		return $class;
 	}

@@ -542,11 +542,13 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 *
 	 * @since unknown
 	 * @since 2.5     Added `screen-reader-text` if the label hasn't been set; added `gfield_label_before_complex` if the field has inputs.
+	 * @since 2.7     Added `gform-field-label` for the theme framework.
 	 *
 	 * @return string
 	 */
 	public function get_field_label_class() {
 		$class = 'gfield_label';
+		$class .= ' gform-field-label';
 
 		// Added `screen-reader-text` if the label hasn't been set.
 		$class .= ( rgblank( $this->label ) ) ? ' screen-reader-text' : '';
@@ -555,6 +557,17 @@ class GF_Field extends stdClass implements ArrayAccess {
 		$class .= is_array( $this->inputs ) ? ' gfield_label_before_complex' : '';
 
 		return $class;
+	}
+
+	/**
+	 * Get field CSS class.
+	 *
+	 * @since 2.7
+	 *
+	 * @return string
+	 */
+	public function get_field_css_class() {
+		return '';
 	}
 
 	/**
@@ -1674,11 +1687,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * @return string The aria-describedby text or a blank string.
 	 */
 	public function maybe_add_aria_describedby( $input, $field_id, $form_id ) {
-		$form                  = GFAPI::get_form( $form_id );
-		$first_input_for_field = self::get_first_input_id( GFAPI::get_form( $form_id ) );
+		$first_input_for_field = $this->get_first_input_id( GFFormsModel::get_form_meta( $form_id ) );
 		$field_id_as_array     = explode( '_', $field_id );
 		$first_input_as_array  = explode( '_', $first_input_for_field );
-		$subelement_id         =  end( $field_id_as_array ) . '.' . end( $first_input_as_array  );
+		$subelement_id         = end( $field_id_as_array ) . '.' . end( $first_input_as_array );
 
 		if ( $input['id'] === $subelement_id ) {
 			return $this->get_aria_describedby();
@@ -2628,7 +2640,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 			'gform_product_quantity',
 			$form_id,
 			$this->id,
-		), esc_html__( 'Quantity:', 'gravityforms' ), $form_id );
+		), esc_html__( 'Quantity', 'gravityforms' ), $form_id );
 	}
 
 	/**

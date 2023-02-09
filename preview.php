@@ -47,7 +47,7 @@ $form = RGFormsModel::get_form_meta( $_GET['id'] );
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Imagetoolbar" content="No" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title><?php esc_html_e( 'Form Preview', 'gravityforms' ) ?></title>
+	<title><?php esc_html_e( 'Form Preview - Gravity Forms', 'gravityforms' ) ?></title>
 	<?php
 
 		// If form exists, enqueue its scripts.

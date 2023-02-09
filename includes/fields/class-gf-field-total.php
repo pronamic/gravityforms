@@ -77,7 +77,7 @@ class GF_Field_Total extends GF_Field {
 						</div>";
 			} else {
 				return "<div class='ginput_container ginput_container_total'>
-							<input readonly name='input_{$id}' id='{$field_id}' value='" . GFCommon::to_money( '0' ) . "' class='gform-text-input-reset ginput_total ginput_total_{$form_id}' />
+							<input type='text' readonly name='input_{$id}' id='{$field_id}' value='" . GFCommon::to_money( '0' ) . "' class='gform-text-input-reset ginput_total ginput_total_{$form_id}' />
 						</div>";
 			}
 		}

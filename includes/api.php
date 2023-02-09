@@ -277,6 +277,9 @@ class GFAPI {
 		// Updating form title and is_active flag.
 		$is_active = rgar( $form, 'is_active' ) ? '1' : '0';
 		$result    = $wpdb->query( $wpdb->prepare( "UPDATE {$form_table_name} SET title=%s, is_active=%s WHERE id=%d", $form['title'], $is_active, $form['id'] ) );
+
+		GFFormsModel::flush_current_form( GFFormsModel::get_form_cache_key( $form_id ) );
+
 		if ( false === $result ) {
 			return new WP_Error( 'error_updating_title', __( 'Error updating title', 'gravityforms' ), $wpdb->last_error );
 		}
@@ -363,6 +366,8 @@ class GFAPI {
                 ", $form_ids
 			)
 		);
+
+		GFFormsModel::flush_current_forms();
 
 		return $result;
 	}
@@ -1790,6 +1795,41 @@ class GFAPI {
 		$result['validation_messages'] = self::get_field_validation_errors( $form );
 
 		return $result;
+	}
+
+	/**
+	 * Validates the submitted value of the specified field.
+	 *
+	 * @since 2.7
+	 *
+	 * @param int   $form_id      The ID of the form this submission belongs to.
+	 * @param int   $field_id     The ID of the field to be validated.
+	 * @param array $input_values Optional. An associative array containing the values to be validated using the field input names as the keys. Will be merged into the $_POST.
+	 *
+	 * @return WP_Error|array
+	 */
+	public static function validate_field( $form_id, $field_id, $input_values = array() ) {
+		$form = self::get_submission_form( $form_id );
+		if ( is_wp_error( $form ) ) {
+			return $form;
+		}
+
+		$field = self::get_field( $form, $field_id );
+		if ( ! $field ) {
+			return new WP_Error( 'field_not_found', __( 'Field not found.', 'gravityforms' ) );
+		}
+
+		require_once GFCommon::get_base_path() . '/form_display.php';
+		if ( ! GFFormDisplay::is_field_validation_supported( $field ) ) {
+			return new WP_Error( 'not_supported', __( 'Field does not support validation.', 'gravityforms' ) );
+		}
+
+		self::hydrate_post( $form_id, $input_values, array(), 0, $field->pageNumber );
+
+		// Ensure the state input is populated.
+		self::submit_form_filter_gform_pre_validation( $form );
+
+		return GFFormDisplay::validate_field( $field, $form, 'api-validate' );
 	}
 
 	/**

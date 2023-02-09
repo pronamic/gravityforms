@@ -45,6 +45,33 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	border-top: 1px solid #e2e4e7 !important;
 }
 
+.gform-block__panel .block-editor-panel-color-gradient-settings__item-group {
+		border: none;
+		border-radius: 0;
+	}
+
+.gform-block__panel .block-editor-panel-color-gradient-settings__item-group div[class$="-child-palette"] {
+			border-left: 1px solid rgba(0, 0, 0, 0.1);
+			border-right: 1px solid rgba(0, 0, 0, 0.1);
+			border-top: 1px solid rgba(0, 0, 0, 0.1);
+			width: 100%;
+		}
+
+.gform-block__panel .gform-block-editor-panel__first-child-palette {
+		border-top-left-radius: 2px;
+		border-top-right-radius: 2px;
+	}
+
+.gform-block__panel .gform-block-editor-panel__last-child-palette {
+		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+		border-bottom-left-radius: 2px;
+		border-bottom-right-radius: 2px;
+	}
+
+.gform-block__components-flex--adjust-gap {
+	gap: 8px;
+}
+
 .gform_wrapper .gform_fields, .gform_wrapper .gform_footer {
 	pointer-events: none;
 	-webkit-user-select: none;
@@ -73,24 +100,12 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		padding: 0.75em 1em;
 	}
 
-.gform-block__tabindex {
-	width: 100%;
-}
-
-.gform-block__tabindex .components-base-control__field {
-		align-items: center;
-		display: flex;
-		justify-content: space-between;
-	}
-
-.gform-block__tabindex input {
-		width: 66px;
-	}
-
 .gform-block__toolbar-button {
 	align-items: center;
+	border-radius: 0;
 	border-right: 1px solid #000;
 	display: flex;
+	height: 100%;
 	justify-content: center;
 	min-width: 48px;
 	padding-left: 12px;
@@ -99,6 +114,20 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-block__toolbar-button i.gform-icon {
 		font-style: normal;
+	}
+
+.components-accessible-toolbar .gform-block__toolbar-button {
+		margin-top: -1px;
+	}
+
+.gform-block__form-styles .components-base-control {
+		margin-bottom: 8px;
+	}
+
+.gform-block__form-styles .gform-block__theme-reset-defaults {
+		display: block;
+		text-align: center;
+		width: 100%;
 	}
 
 .components-button.has-icon .dashicon.dashicon-gravityforms {
@@ -211,5 +240,13 @@ html[dir="rtl"] .gform-block__tooltip::after {
 html[dir="rtl"] .gform-block__tooltip-inner {
 		margin: 0 15px 0 0;
 	}
+
+html[dir="rtl"] .gform-block__toolbar-button:first-child {
+			border-right: 0;
+		}
+
+html[dir="rtl"] .gform-block__toolbar-button:last-child {
+			border-left: 1px solid #000;
+		}
 
 /*# sourceMappingURL=blocks.css.map */

@@ -25,13 +25,13 @@ class GF_Config_I18n extends GF_Config {
 		return array(
 			'datepicker' => array(
 				'days'     => array(
-					'monday'    => esc_html__( 'Mon', 'gravityforms' ),
-					'tuesday'   => esc_html__( 'Tue', 'gravityforms' ),
-					'wednesday' => esc_html__( 'Wed', 'gravityforms' ),
-					'thursday'  => esc_html__( 'Thu', 'gravityforms' ),
-					'friday'    => esc_html__( 'Fri', 'gravityforms' ),
-					'saturday'  => esc_html__( 'Sat', 'gravityforms' ),
-					'sunday'    => esc_html__( 'Sun', 'gravityforms' ),
+					'monday'    => esc_html__( 'Mo', 'gravityforms' ),
+					'tuesday'   => esc_html__( 'Tu', 'gravityforms' ),
+					'wednesday' => esc_html__( 'We', 'gravityforms' ),
+					'thursday'  => esc_html__( 'Th', 'gravityforms' ),
+					'friday'    => esc_html__( 'Fr', 'gravityforms' ),
+					'saturday'  => esc_html__( 'Sa', 'gravityforms' ),
+					'sunday'    => esc_html__( 'Su', 'gravityforms' ),
 				),
 				'months'   => array(
 					'january'   => esc_html__( 'January', 'gravityforms' ),
@@ -52,6 +52,7 @@ class GF_Config_I18n extends GF_Config {
 					'default' => 1,
 				),
 				'iconText' => esc_html__( 'Select date', 'gravityforms' ),
+
 			),
 		);
 	}

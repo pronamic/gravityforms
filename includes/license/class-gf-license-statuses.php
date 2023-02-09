@@ -14,7 +14,7 @@ namespace Gravity_Forms\Gravity_Forms\License;
 class GF_License_Statuses {
 	const VALID_KEY             = 'valid_key';
 	const SITE_UNREGISTERED     = 'site_unregistered';
-	const INVALID_LICENSE_KEY   = 'gravityapi_invalid_license_key';
+	const INVALID_LICENSE_KEY   = 'gravityapi_invalid_license';
 	const EXPIRED_LICENSE_KEY   = 'gravityapi_expired_license';
 	const SITE_REVOKED          = 'gravityapi_site_revoked';
 	const URL_CHANGED           = 'gravityapi_site_url_changed';

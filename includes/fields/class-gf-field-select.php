@@ -101,8 +101,7 @@ class GF_Field_Select extends GF_Field {
 	}
 
 	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
-		$return = esc_html( $value );
-		return GFCommon::selection_display( $return, $this, $entry['currency'] );
+		return esc_html( $this->get_selected_choice_output( $value, rgar( $entry, 'currency' ) ) );
 	}
 
 
@@ -172,8 +171,7 @@ class GF_Field_Select extends GF_Field {
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
-		$return = esc_html( $value );
-		return GFCommon::selection_display( $return, $this, $currency, $use_text );
+		return esc_html( $this->get_selected_choice_output( $value, $currency, $use_text ) );
 	}
 
 	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {

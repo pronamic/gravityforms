@@ -1,0 +1,84 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "source": {
+    "include": [
+      "../../../packages/npm/components/react/admin/elements",
+      "../../../packages/npm/components/react/admin/modules"
+    ],
+    "exclude": [],
+    "includePattern": "index\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  },
+  "gf_opts": {
+    "static_dirs": ["jsdoc/fonts","jsdoc/images"],
+    "output_dir": "docs/js/components-react/"
+  },
+  "opts": {
+    "template": "../../../node_modules/clean-jsdoc-theme",
+    "readme": "../../../packages/npm/components/README.md",
+    "encoding": "utf8",
+    "destination": "../../../docs/js/components-react/",
+    "recurse": true,
+    "markdown": {
+      "hardwrap": false,
+      "idInHeadings": true
+    },
+    "theme_opts": {
+      "title": "<span class=\"gform-gravity-logo\"></span>",
+      "default_theme": "light",
+      "include_css": ["../../../jsdoc/custom-styles.css"],
+      "include_js": ["../../../jsdoc/custom-scripts.js"],
+      "menu" : [
+        {
+          "title": "HTML Components",
+          "link": "../components-html/",
+          "target": "_self",
+          "class": "gform-docs-nav-item",
+          "id": "components-html"
+        },
+        {
+          "title": "HTML Storybook",
+          "link": "../storybook-html/",
+          "target": "_self",
+          "class": "gform-docs-nav-item",
+          "id": "storybook-html"
+        },
+        {
+          "title": "React Components",
+          "link": "../components-react/",
+          "target": "_self",
+          "class": "gform-docs-nav-item",
+          "id": "components-react"
+        },
+        {
+          "title": "React Storybook",
+          "link": "../storybook-react/",
+          "target": "_self",
+          "class": "gform-docs-nav-item",
+          "id": "storybook-react"
+        },
+        {
+          "title": "JS Utils",
+          "link": "../js-utils/",
+          "target": "_self",
+          "class": "gform-docs-nav-item",
+          "id": "js-utils"
+        },
+        {
+          "title": "React Utils",
+          "link": "../react-utils/",
+          "target": "_self",
+          "class": "gform-docs-nav-item",
+          "id": "react-utils"
+        }
+      ]
+    }
+  }
+}

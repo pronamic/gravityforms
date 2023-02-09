@@ -68,6 +68,10 @@
 		var isThemeDatepicker = $element.closest( '.gform_wrapper' ).length > 0;
 		var isPreview = $( '#preview_form_container' ).length > 0;
 		var isRTL = window.getComputedStyle($element[0], null).getPropertyValue('direction') === 'rtl';
+		var formTheme = isThemeDatepicker ? $element.closest( '.gform_wrapper' ).data( 'form-theme' ) : 'gravity-theme';
+		var formId = isThemeDatepicker ? $element.closest( '.gform_wrapper' ).attr( 'id' ).replace( 'gform_wrapper_', '' ) : '';
+		var formPageInstance = isThemeDatepicker ? $element.closest( '.gform_wrapper' ).attr( 'data-form-index' ) : '';
+
 		return {
 			yearRange: '-100:+20',
 			showOn: 'focus',
@@ -89,12 +93,38 @@
 				}, 200 );
 			},
 			beforeShow: function( input, inst ) {
+
+				// Remove any classes that were added before as it could have been added to a different datepicker.
 				inst.dpDiv[0].classList.remove( 'gform-theme-datepicker' );
+				inst.dpDiv[0].classList.remove( 'gravity-theme' );
+				inst.dpDiv[0].classList.remove( 'gform-theme' );
 				inst.dpDiv[0].classList.remove( 'gform-legacy-datepicker' );
+				inst.dpDiv[0].classList.remove( 'gform-theme--framework' );
+				inst.dpDiv[0].classList.remove( 'gform-theme--foundation' );
+				inst.dpDiv[0].classList.remove( 'gform-theme--orbital' );
 
 				if ( isThemeDatepicker ) {
 					inst.dpDiv[ 0 ].classList.add( 'gform-theme-datepicker' );
+					$( inst.dpDiv[ 0 ] ).attr( 'data-parent-form', formId + '_' + formPageInstance );
 				}
+
+				if ( formTheme === undefined || formTheme === 'gravity-theme' ) {
+
+					$( inst.dpDiv[0] ).addClass( 'gravity-theme' );
+
+				} else if ( formTheme === 'legacy' ) {
+					$( inst.dpDiv[0] ).addClass( 'gform-legacy-datepicker' );
+				}
+				else {
+
+					$( inst.dpDiv[0] ).addClass( 'gform-theme--' + formTheme );
+
+					if ( formTheme === 'orbital' ) {
+						$( inst.dpDiv[0] ).addClass( 'gform-theme--framework' );
+						$( inst.dpDiv[0] ).addClass( 'gform-theme--foundation' );
+					}
+				}
+
 				if ( isRTL && isPreview ) {
 					var $inputContainer = $( input ).closest( '.gfield' );
 					var rightOffset = $( document ).outerWidth() - ( $inputContainer.offset().left + $inputContainer.outerWidth() );
@@ -136,6 +166,8 @@
 			optionsObj.buttonImage = $element.parent().siblings( "[id^='gforms_calendar_icon_input']" ).val();
 			optionsObj.buttonImageOnly = true;
 			optionsObj.buttonText = i18n.iconText;
+		} else {
+			optionsObj.showOn = 'focus';
 		}
 
 		inputId = inputId.split( '_' );
@@ -162,7 +194,7 @@
 	 */
 
 	function initDatepickers() {
-		$( '.datepicker:not(.initialized)' ).each( function() {
+		$( '.gform-datepicker:not(.initialized)' ).each( function() {
 			var $element = $( this );
 			initSingleDatepicker( $element );
 			$element.addClass( 'initialized' );

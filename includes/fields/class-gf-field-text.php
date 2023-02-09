@@ -119,7 +119,7 @@ class GF_Field_Text extends GF_Field {
 		// For Post Tags, Use the WordPress built-in class "howto" in the form editor.
 		$text_hint = '';
 		if ( $this->type === 'post_tags' ) {
-			$text_hint_class = $is_form_editor ? 'howto' : 'gfield_post_tags_hint';
+			$text_hint_class = $is_form_editor ? 'howto' : 'gfield_post_tags_hint gfield_description';
 			$text_hint       = '<p class="' . $text_hint_class . '" id="' . $field_id . '_desc">' . gf_apply_filters( array(
 					'gform_post_tags_hint',
 					$form_id,

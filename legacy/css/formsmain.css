@@ -442,8 +442,8 @@ body .gform_legacy_markup_wrapper ul li.field_description_below div.ginput_conta
     overflow: hidden;
 }
 
-.gfield.right_label,
-.gfield.left_label {
+.gform_legacy_markup_wrapper .gfield.right_label,
+.gform_legacy_markup_wrapper .gfield.left_label {
     padding-top: 10px;
 }
 
@@ -636,7 +636,7 @@ body .gform_legacy_markup_wrapper ul li.field_description_below div.ginput_conta
     padding: 0 0 10px 0;
 }
 
-.gfield_date_year+.gfield_description {
+.gform_legacy_markup_wrapper .gfield_date_year+.gfield_description {
     padding: 0;
 }
 
@@ -707,7 +707,7 @@ body .gform_legacy_markup_wrapper ul li.field_description_below div.ginput_conta
     padding: 16px 16px 14px 16px;
 }
 
-li.gfield + li.gfield.gfield_creditcard_warning {
+.gform_legacy_markup_wrapper li.gfield + li.gfield.gfield_creditcard_warning {
     margin-top: 16px !important;
 }
 
@@ -761,7 +761,7 @@ li.gfield + li.gfield.gfield_creditcard_warning {
  * Validation
  */
 
-.gform_validation_errors {
+.gform_legacy_markup_wrapper .gform_validation_errors {
 	width: 100%;
 	border: 1px solid #790000;
 	box-shadow: 0px 0px 0px #FF6D6D;
@@ -771,18 +771,18 @@ li.gfield + li.gfield.gfield_creditcard_warning {
 	margin-bottom: 0.5rem;
 }
 
-.gform_validation_errors > h2 {
+.gform_legacy_markup_wrapper .gform_validation_errors > h2 {
 	font-size: 16px;
 	font-weight: 700;
 	color: #790000;
 	margin: 0 0 0.9375rem 0;
 }
 
-.gform_validation_errors > h2.hide_summary {
+.gform_legacy_markup_wrapper .gform_validation_errors > h2.hide_summary {
 	margin: 0 ;
 }
 
-.gform_validation_errors > h2:before {
+.gform_legacy_markup_wrapper .gform_validation_errors > h2:before {
 	background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0iIzc5MDAwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExIDE5QzE1LjQxODMgMTkgMTkgMTUuNDE4MyAxOSAxMUMxOSA2LjU4MTcyIDE1LjQxODMgMyAxMSAzQzYuNTgxNzIgMyAzIDYuNTgxNzIgMyAxMUMzIDE1LjQxODMgNi41ODE3MiAxOSAxMSAxOVoiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHBhdGggZD0iTTEyIDZIMTBWMTJIMTJWNloiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTEyIDE0SDEwVjE2SDEyVjE0WiIgZmlsbD0iI0ZGRkZGRiIvPgo8L3N2Zz4=);
 	content: '';
 	width: 22px;
@@ -795,7 +795,7 @@ li.gfield + li.gfield.gfield_creditcard_warning {
 	background-color: transparent;
 }
 
-.gform_validation_errors > ol {
+.gform_legacy_markup_wrapper .gform_validation_errors > ol {
 	list-style-type: none !important;
 	padding-block-start: 0;
 	padding-inline-start: 0;
@@ -803,19 +803,18 @@ li.gfield + li.gfield.gfield_creditcard_warning {
 	margin: 0;
 }
 
-.gform_validation_errors > ol a {
-	text-decoration: none;
+.gform_legacy_markup_wrapper .gform_validation_errors > ol a {
 	color: #790000;
 	font-size: 1rem;
 }
 
-.gform_validation_errors > ol li {
+.gform_legacy_markup_wrapper .gform_validation_errors > ol li {
 	margin: 0 0 0.9375rem 0;
 	font-size: 1rem;
 	list-style-type: none !important;
 }
 
-.gform_validation_errors > ol li:last-of-type {
+.gform_legacy_markup_wrapper .gform_validation_errors > ol li:last-of-type {
 	margin-bottom: 0;
 }
 
@@ -878,7 +877,7 @@ li.gfield + li.gfield.gfield_creditcard_warning {
     line-height: 32px;
 }
 
-div.gf_page_steps+div.validation_error {
+.gform_legacy_markup_wrapper div.gf_page_steps+div.validation_error {
     margin-top: 16px;
 }
 
@@ -1047,7 +1046,6 @@ body .gform_legacy_markup_wrapper ul li.gfield.gfield_html img {
     padding-left: 10px;
 }
 
-.gform_validation_container,
 .gform_legacy_markup_wrapper .gform_validation_container,
 body .gform_legacy_markup_wrapper li.gform_validation_container,
 body .gform_legacy_markup_wrapper .gform_body ul.gform_fields li.gfield.gform_validation_container,
@@ -1449,12 +1447,12 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     border-bottom: 3px solid #8DFF1C;
 }
 
-.ginput_container_password,
-.ginput_container_password span {
+.gform_legacy_markup_wrapper .ginput_container_password,
+.gform_legacy_markup_wrapper .ginput_container_password span {
     position: relative;
 }
 
-.ginput_container_password button {
+.gform_legacy_markup_wrapper .ginput_container_password button {
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
@@ -1467,24 +1465,24 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     width: 40px;
 }
 
-.ginput_container_password span.ginput_left button {
+.gform_legacy_markup_wrapper .ginput_container_password span.ginput_left button {
     right: 9px;
 }
 
-.ginput_container_password:not(.ginput_complex) span {
+.gform_legacy_markup_wrapper .ginput_container_password:not(.ginput_complex) span {
     display: inline-block;
     width: 100%;
 }
 
-.ginput_container_password:not(.ginput_complex) span input {
+.gform_legacy_markup_wrapper .ginput_container_password:not(.ginput_complex) span input {
     width: 100%;
 }
 
-.ginput_container_password span.medium {
+.gform_legacy_markup_wrapper .ginput_container_password span.medium {
     width: calc(50% - 8px);
 }
 
-.ginput_container_password span.small {
+.gform_legacy_markup_wrapper .ginput_container_password span.small {
     width: 25%;
 }
 
@@ -1509,7 +1507,7 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     border-collapse: collapse;
 }
 
-.gfield_repeater_buttons{
+.gform_legacy_markup_wrapper .gfield_repeater_buttons{
     padding-top: 15px;
 }
 
@@ -1561,7 +1559,7 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     width: 100%;
 }
 
-.gfield_icon_disabled {
+.gform_legacy_markup_wrapper .gfield_icon_disabled {
     cursor: default !important;
     filter: alpha(opacity=60);
     -moz-opacity: .6;
@@ -1581,13 +1579,13 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     vertical-align: middle;
 }
 
-.gform_card_icon_container {
+.gform_legacy_markup_wrapper .gform_card_icon_container {
     display: flex;
     height: 32px;
     margin: 8px 0 6px 0;
 }
 
-.gform_card_icon_container div.gform_card_icon {
+.gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon {
     background-image: url(../../images/gf-creditcards.svg);
     background-repeat: no-repeat;
     height: 32px;
@@ -1596,35 +1594,35 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     width: 40px;
 }
 
-.gform_card_icon_container div.gform_card_icon.gform_card_icon_amex {
+.gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon.gform_card_icon_amex {
     background-position: -167px 0;
 }
 
-.gform_card_icon_container div.gform_card_icon.gform_card_icon_discover {
+.gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon.gform_card_icon_discover {
     background-position: -221px 0;
 }
 
-.gform_card_icon_container div.gform_card_icon.gform_card_icon_mastercard {
+.gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon.gform_card_icon_mastercard {
     background-position: -275px 0;
 }
 
-.gform_card_icon_container div.gform_card_icon.gform_card_icon_visa {
+.gform_legacy_markup_wrapper .gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon.gform_card_icon_visa {
     background-position: -59px 0;
 }
 
-.gform_card_icon_container div.gform_card_icon.gform_card_icon_jcb {
+.gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon.gform_card_icon_jcb {
     background-position: -329px 0;
 }
 
-.gform_card_icon_container div.gform_card_icon.gform_card_icon_maestro {
+.gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon.gform_card_icon_maestro {
     background-position: -5px 0;
 }
 
-.gform_card_icon_container div.gform_card_icon.gform_card_icon_selected {
+.gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon.gform_card_icon_selected {
     position: relative;
 }
 
-.gform_card_icon_container div.gform_card_icon.gform_card_icon_selected:after {
+.gform_legacy_markup_wrapper .gform_card_icon_container div.gform_card_icon.gform_card_icon_selected:after {
     display: block;
     content: '';
     position: absolute;
@@ -1635,7 +1633,7 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     right: -2px;
 }
 
-.ginput_container_creditcard .ginput_card_security_code_icon {
+.gform_legacy_markup_wrapper .ginput_container_creditcard .ginput_card_security_code_icon {
     width: 40px;
     height: 32px;
     display: inline-block;
@@ -1663,7 +1661,7 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     margin-bottom: 8px;
 }
 
-.gform_delete {
+.gform_legacy_markup_wrapper .gform_delete {
     vertical-align: middle;
     cursor: pointer;
 }
@@ -1691,7 +1689,7 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
   border-radius: 2px;
 }
 
-.form_saved_message p.resume_form_link_wrapper {
+.gform_legacy_markup_wrapper .form_saved_message p.resume_form_link_wrapper {
   background-color: rgba(255, 255, 255, 1);
   display: inline-block;
   padding: 1em;
@@ -1705,36 +1703,36 @@ body .gform_legacy_markup_wrapper ul.gform_fields li.gfield.gform_validation_con
     box-shadow: 0px 3px 2px 0px rgba(66,103,126,.2);
 }
 
-.form_saved_message a.resume_form_link {
+.gform_legacy_markup_wrapper .form_saved_message a.resume_form_link {
   word-wrap: break-word;
   text-decoration: none;
   color: rgba(47, 99, 126, 1);
 }
 
-.form_saved_message .form_saved_message_emailform {
+.gform_legacy_markup_wrapper .form_saved_message .form_saved_message_emailform {
   margin: 1em 0 0 0;
 }
 
-.form_saved_message label.form_saved_label {
+.gform_legacy_markup_wrapper .form_saved_message label.form_saved_label {
     position: absolute;
     left: -9000px;
 }
 
-div.form_saved_message div.form_saved_message_emailform form input[type=text] {
+.gform_legacy_markup_wrapper div.form_saved_message div.form_saved_message_emailform form input[type=text] {
   margin-bottom: .25em;
 }
 
-div.form_saved_message div.form_saved_message_emailform form label.gform_resume_email_label {
+.gform_legacy_markup_wrapper div.form_saved_message div.form_saved_message_emailform form label.gform_resume_email_label {
     font-size: 1em;
     display: block;
 }
 
-div.form_saved_message div.form_saved_message_emailform form input {
+.gform_legacy_markup_wrapper div.form_saved_message div.form_saved_message_emailform form input {
   margin: 0 auto;
   display: inline-block;
 }
 
-div.form_saved_message div.form_saved_message_emailform form input[type=email] {
+.gform_legacy_markup_wrapper div.form_saved_message div.form_saved_message_emailform form input[type=email] {
   padding: calc(.75em - 1px) !important;
   width: 24em;
   max-width: 98% !important;
@@ -1752,7 +1750,7 @@ div.form_saved_message div.form_saved_message_emailform form input[type=email] {
 box-shadow: inset 0px 0px 5px 0px rgba(238,238,238,1);
 }
 
-div.form_saved_message div.form_saved_message_emailform form input[type=submit] {
+.gform_legacy_markup_wrapper div.form_saved_message div.form_saved_message_emailform form input[type=submit] {
   padding: .75em 1em;
   font-size: 1em;
   line-height: 1;
@@ -1768,20 +1766,20 @@ div.form_saved_message div.form_saved_message_emailform form input[type=submit] 
 }
 
 @media only screen and (max-width: 640px) {
-  div.form_saved_message div.form_saved_message_emailform form input[type=email],
-  div.form_saved_message div.form_saved_message_emailform form input[type=submit] {
+    .gform_legacy_markup_wrapper div.form_saved_message div.form_saved_message_emailform form input[type=email],
+    .gform_legacy_markup_wrapper div.form_saved_message div.form_saved_message_emailform form input[type=submit] {
     display: block;
     width: 98%;
   }
 }
 
-.form_saved_message .form_saved_message_emailform .validation_message {
+.gform_legacy_markup_wrapper .form_saved_message .form_saved_message_emailform .validation_message {
   color: #790000;
   font-weight: 700;
   padding: 2em;
 }
 
-.form_saved_message_sent {
+.gform_legacy_markup_wrapper .form_saved_message_sent {
   margin: 1em auto;
   padding: 3em 2em;
   width: 99%;
@@ -1795,14 +1793,14 @@ div.form_saved_message div.form_saved_message_emailform form input[type=submit] 
   box-sizing: border-box;
 }
 
-.form_saved_message_sent .saved_message_email,
-.form_saved_message_sent .saved_message_success {
+.gform_legacy_markup_wrapper .form_saved_message_sent .saved_message_email,
+.gform_legacy_markup_wrapper .form_saved_message_sent .saved_message_success {
   font-weight: 700;
   display: block;
   line-height: 2;
 }
 
-.form_saved_message_sent .saved_message_email {
+.gform_legacy_markup_wrapper .form_saved_message_sent .saved_message_email {
   word-wrap: break-word;
   text-decoration: underline;
 }
@@ -1846,20 +1844,20 @@ body .gform_legacy_markup_wrapper img.delete_list_item {
 
 /* rich text editor */
 
-.gfield .wp-editor-container {
+.gform_legacy_markup_wrapper .gfield .wp-editor-container {
     border: 1px solid #ddd;
 }
 
-.gfield .wp-switch-editor {
+.gform_legacy_markup_wrapper .gfield .wp-switch-editor {
     border-color: #ddd;
 }
 
-.gfield .tmce-active .switch-tmce,
-.gfield .html-active .switch-html {
+.gform_legacy_markup_wrapper .gfield .tmce-active .switch-tmce,
+.gform_legacy_markup_wrapper .gfield .html-active .switch-html {
     border-bottom-color: #f5f5f5;
 }
 
-.gfield .mce-edit-area iframe {
+.gform_legacy_markup_wrapper .gfield .mce-edit-area iframe {
     width: 99.9% !important;
     margin: 0 !important;
 }
@@ -2819,7 +2817,7 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
         float: left;
     }
 
-    .ginput_complex .ginput_cardinfo_right input {
+    .gform_legacy_markup_wrapper .ginput_complex .ginput_cardinfo_right input {
         display: inline-block;
         width: 30%;
         max-width: 7rem;
@@ -2943,25 +2941,25 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
 
     /* a little better specificty to avoid problems with forms in widgets */
 
-    ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_1,
-    ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_2,
-    ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_3 {
+    .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_1,
+    .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_2,
+    .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_3 {
         width: calc(70% + 15px);
         margin-left: 29%;
     }
 
-    ul.gform_fields:not(.top_label) li.gfield.gfield_error div.ginput_complex.ginput_container.gf_name_has_1,
-    ul.gform_fields:not(.top_label) li.gfield.gfield_error div.ginput_complex.ginput_container.gf_name_has_2,
-    ul.gform_fields:not(.top_label) li.gfield.gfield_error div.ginput_complex.ginput_container.gf_name_has_3 {
+    .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) li.gfield.gfield_error div.ginput_complex.ginput_container.gf_name_has_1,
+    .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) li.gfield.gfield_error div.ginput_complex.ginput_container.gf_name_has_2,
+    .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) li.gfield.gfield_error div.ginput_complex.ginput_container.gf_name_has_3 {
         width: calc(70% + 24px);
     }
 
-    ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_4 {
+    .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_4 {
         width: calc(70% + 13px);
         margin-left: 29%;
     }
 
-    ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_5 {
+    .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) div.ginput_complex.ginput_container.gf_name_has_5 {
         width: calc(70% + 14px);
         margin-left: 29%;
     }
@@ -3034,8 +3032,6 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
     .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) li.gfield.gfield_error div.ginput_complex.ginput_container.ginput_container_email {
         width: calc(70% + 17px);
     }
-
-    li.gfield.gfield_error
 
     .gform_legacy_markup_wrapper ul.gform_fields:not(.top_label) li.gfield.gfield_error .ginput_complex.ginput_container.ginput_container_email {
         width: calc(70% + 8px) !important;
@@ -3122,7 +3118,7 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
 
 
 /* Padding, Left Border, background color for nested repeaters */
-.gfield_repeater_cell  > .gfield_repeater_wrapper   {
+.gform_legacy_markup_wrapper .gfield_repeater_cell  > .gfield_repeater_wrapper   {
     border-left: 8px solid rgba(54, 86, 102, 0.1);
     background-color: rgba(1,1,1,0.02);
     padding: 10px 20px;
@@ -3133,18 +3129,18 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
 
 
 /* Targeting the border color of the repeater inputs */
-.gfield_repeater_wrapper input  {
+.gform_legacy_markup_wrapper .gfield_repeater_wrapper input  {
     border:1px solid rgba(197, 198, 197, 1.000);
     border-radius: 4px;
 }
 
 /* Spacing between the wrappers */
-.gfield_repeater_wrapper .gfield_repeater_wrapper{
+.gform_legacy_markup_wrapper .gfield_repeater_wrapper .gfield_repeater_wrapper{
     margin-top: 10px;
 }
 
-.gfield_repeater_buttons .add_repeater_item_text,
-.gfield_repeater_buttons .remove_repeater_item_text{
+.gform_legacy_markup_wrapper .gfield_repeater_buttons .add_repeater_item_text,
+.gform_legacy_markup_wrapper .gfield_repeater_buttons .remove_repeater_item_text{
     min-width: 100px;
     height: 30px;
     background: rgba(242, 242, 242, 0.5);
@@ -3159,8 +3155,8 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
 }
 
 
-.gfield_repeater_buttons .add_repeater_item_plus,
-.gfield_repeater_buttons .remove_repeater_item_minus{
+.gform_legacy_markup_wrapper .gfield_repeater_buttons .add_repeater_item_plus,
+.gform_legacy_markup_wrapper .gfield_repeater_buttons .remove_repeater_item_minus{
     width: 22px;
     height: 22px;
     background: rgba(242, 242, 242, 0.5);
@@ -3175,7 +3171,7 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
     padding-bottom: 5px;
 }
 
-.gfield_repeater_buttons button.gfield_icon_disabled {
+.gform_legacy_markup_wrapper .gfield_repeater_buttons button.gfield_icon_disabled {
     cursor: default;
     filter: alpha(opacity=30);
     -moz-opacity: .3;
@@ -3183,14 +3179,14 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
     opacity: .3;
 }
 
-.gfield_repeater_buttons button.gfield_icon_disabled:hover {
+.gform_legacy_markup_wrapper .gfield_repeater_buttons button.gfield_icon_disabled:hover {
     background: rgba(242, 242, 242, 0.5);
     color: rgba(117, 117, 117, 1);
     border: 1px solid rgba(117, 117, 117, 0.4);
 }
 
 /* Hover style for Add buttons */
-.gfield_repeater_buttons button:hover {
+.gform_legacy_markup_wrapper .gfield_repeater_buttons button:hover {
     background: rgba(250, 250, 250, 1.000);
     color: #374750;
     border:1px solid rgba(117, 117, 117, 1);
@@ -3198,13 +3194,13 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
 
 
 /* Adding the separation border and padding in between items */
-.gfield_repeater .gfield_repeater_items  .gfield_repeater_item:not(:last-child)  {
+.gform_legacy_markup_wrapper .gfield_repeater .gfield_repeater_items  .gfield_repeater_item:not(:last-child)  {
     border-bottom: 2px solid #e0e0e6;
     padding-bottom: 20px;
 }
 
 /* Repeater - Left Border Color */
-.gfield_repeater_cell  > .gfield_repeater_wrapper   {
+.gform_legacy_markup_wrapper .gfield_repeater_cell  > .gfield_repeater_wrapper   {
     border-left: 8px solid rgba(241, 241, 241, 1.000);
     box-shadow: 0 1px 1px 0 rgba(0,0,0,0.06), 0 2px 1px -1px rgba(0,0,0,0.06), 0 1px 5px 0 rgba(0,0,0,0.06);
 
@@ -3218,14 +3214,14 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
 /* //////////////////////////////////////////////////////////////*/
 
 
-.gfield_repeater_buttons .add_repeater_item_text:focus,
-.gfield_repeater_buttons .remove_repeater_item_text:focus {
+.gform_legacy_markup_wrapper .gfield_repeater_buttons .add_repeater_item_text:focus,
+.gform_legacy_markup_wrapper .gfield_repeater_buttons .remove_repeater_item_text:focus {
       outline:0;
 }
 
 
  /*Coloring for the required asterisk*/
-.gfield_repeater_item .gfield_repeater_cell .gfield_required {
+.gform_legacy_markup_wrapper .gfield_repeater_item .gfield_repeater_cell .gfield_required {
     color: #c32121;
 }
 
@@ -3245,18 +3241,18 @@ body .gform_legacy_markup_wrapper ul.chosen-results li {
 
 
 /* Third Level Repeater Spacing */
-.gfield_repeater_value .gfield_repeater_value .gfield_repeater_cell{
+.gform_legacy_markup_wrapper .gfield_repeater_value .gfield_repeater_value .gfield_repeater_cell{
     padding-bottom: 20px;
     padding-top: 0px;
 }
 
 /*Spacing between adjancent cells in the same repeater*/
-div .gfield_repeater_cell {
+.gform_legacy_markup_wrapper div .gfield_repeater_cell {
     margin-top: 5px;
 }
 
 /* Repeater styling line divider */
-.gfield_repeater .gfield_repeater_items .gfield_repeater_item:not(:last-child)  {
+.gform_legacy_markup_wrapper .gfield_repeater .gfield_repeater_items .gfield_repeater_item:not(:last-child)  {
     border-bottom: 2px solid #e0e0e6;
     padding-bottom: 20px;
     margin-bottom: 20px;
@@ -3265,7 +3261,7 @@ div .gfield_repeater_cell {
 
 
 /* Repeater containers */
-.gfield_repeater_value > .gfield_repeater {
+.gform_legacy_markup_wrapper .gfield_repeater_value > .gfield_repeater {
     border-left: 8px solid rgba(54, 86, 102, 0.1);
     background-color: rgba(1, 1, 1, 0.02);
     padding: 10px 20px;
@@ -3275,7 +3271,7 @@ div .gfield_repeater_cell {
 }
 
 /* Styling for Fake disabled input containers */
-.gfield_repeater_cell  .gfield_repeater_value:not(:first-child)  {
+.gform_legacy_markup_wrapper .gfield_repeater_cell  .gfield_repeater_value:not(:first-child)  {
     color: rgba(117, 117, 117,0.7);
     border:1px solid rgba(197, 198, 197, 1.000);
     border-radius: 4px;
@@ -3287,24 +3283,24 @@ div .gfield_repeater_cell {
 
 
 /* Consistent Padding in between cells and items */
-.gfield_repeater_items .gfield_repeater_cell:not(:first-child),
-.gfield_repeater .gfield_repeater_items{
+.gform_legacy_markup_wrapper .gfield_repeater_items .gfield_repeater_cell:not(:first-child),
+.gform_legacy_markup_wrapper .gfield_repeater .gfield_repeater_items{
     padding-top: 5px;
 }
 
 /* Repeaters Labels styling */
-.gfield_repeater .gfield_label {
+.gform_legacy_markup_wrapper .gfield_repeater .gfield_label {
     color: rgba(35, 40, 45, 1.000);
     font-size: 16px;
     font-weight: 600;
 }
 
 /* Decreasing the space below the label */
-.gfield_repeater_value .gfield_label {
+.gform_legacy_markup_wrapper .gfield_repeater_value .gfield_label {
     padding-bottom: 0px;
 }
 
 /* Removing additional 20px padding when more repeaters are added on third level repeater */
-.gfield_repeater_value .gfield_repeater_value .gfield_repeater_item:first-child {
+.gform_legacy_markup_wrapper .gfield_repeater_value .gfield_repeater_value .gfield_repeater_item:first-child {
     padding-bottom: 0px;
 }

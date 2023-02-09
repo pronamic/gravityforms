@@ -51,53 +51,26 @@ class GF_System_Report {
 		wp_print_styles( array( 'thickbox' ) );
 
 		?>
+
 		<div class="alert info">
 			<p><?php _e( 'The following is a system report containing useful technical information for troubleshooting issues. If you need further help after viewing the report, click on the "Copy System Report" button below to copy the report and paste it in your message to support.', 'gravityforms' ); ?></p>
-			<button class="button" type="button" id="gf_copy_report" data-clipboard-target="#gf_system_report"><?php _e( 'Copy System Report', 'gravityforms' ); ?> <i aria-hidden="true" class="dashicons dashicons-arrow-right-alt" ></i></button>
 
-			<div class="gf_copy_message" id="gf_copy_error_message">
-				<p><span class="dashicons dashicons-yes"></span><?php esc_html_e( 'Report generated!', 'gravityforms' ); echo ' <b>Press Ctrl+C to copy it.</b>'; ?></p>
-			</div>
+			<button class="gform-button gform-button--size-r gform-button--white gform-button--icon-leading gform-system-report__copy-button" data-js="gf-copy-system-report">
+				<i class="gform-button__icon gform-button__icon--inactive gform-icon gform-icon--copy" data-js="button-icon"></i>
 
-			<div class="gf_copy_message" id="gf_copy_success">
-				<p><span class="dashicons dashicons-yes"></span><?php esc_html_e( 'Report Copied!', 'gravityforms' ) ?></p>
-			</div>
+				<span class="gform-system-report__copy-label" data-js="system-status-copy-label" aria-hidden="false">Copy System Report</span>
+				<span class="gform-system-report__copy-copied" data-js="system-status-copy-copied" aria-hidden="true">
+					<i class="gform-system-report__copy-icon gform-icon gform-icon--circle-check-alt"></i>
+					Copied
+				</span>
+			</button>
 
-			<textarea id="gf_system_report" readonly="readonly" ><?php echo esc_html( $system_report_text ) ?></textarea>
+			<div id="gform-system-report-text" class="gform-system-report__text" aria-hidden="true" data-js="system-report-text" ><?php echo esc_html( $system_report_text ) ?></div>
 		</div>
-		<script type="text/javascript">
-			jQuery(document).ready( function() {
 
-				clipboard = new Clipboard('#gf_copy_report');
-				clipboard.on('success', function(e) {
-					setTimeout( function(){ jQuery('#gf_copy_success').attr( 'style', 'display:inline-block !important;' )}, 300 );
-					setTimeout( function(){ jQuery('#gf_copy_success').attr( 'style', 'display:none !important;' ) }, 5000 );
-					e.clearSelection();
-				});
-
-				clipboard.on('error', function(e) {
-					jQuery('#gf_copy_error_message').attr( 'style', 'display:inline-block !important;' );
-				});
-
-			});
-
-			function gfDoAction(actionCode, confirmMessage) {
-
-
-				if (confirmMessage && !confirm(confirmMessage)) {
-					// User canceled action;
-					return;
-				}
-
-				jQuery('#gf_action').val(actionCode);
-				jQuery('#gf_system_report_form').submit();
-			}
-
-		</script>
-
-		<form method="post" id="gf_system_report_form">
-			<input type="hidden" name="gf_action" id="gf_action" />
-			<input type="hidden" name="gf_arg" id="gf_arg" />
+		<form method="post" id="gf_system_report_form" data-js="system-report-form">
+			<input type="hidden" name="gf_action" id="gf_action" data-js="system-report-action" />
+			<input type="hidden" name="gf_arg" id="gf_arg" data-js="system-report-action-arg"/>
 
 		<?php
 		wp_nonce_field( 'gf_sytem_report_action', 'gf_sytem_report_action' );

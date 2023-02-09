@@ -5,6 +5,7 @@ namespace Gravity_Forms\Gravity_Forms\Util;
 use Gravity_Forms\Gravity_Forms\GF_Service_Container;
 use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Transients\GF_WP_Transient_Strategy;
+use Gravity_Forms\Gravity_Forms\Util\Colors\Color_Modifier;
 
 class GF_Util_Service_Provider extends GF_Service_Provider {
 
@@ -16,9 +17,12 @@ class GF_Util_Service_Provider extends GF_Service_Provider {
 	const GF_API          = 'gf_api';
 	const GF_FORMS        = 'gf_forms';
 	const GF_FORM_DETAIL  = 'gf_form_detail';
+	const GF_COLORS       = 'gf_colors';
 
 
 	public function register( GF_Service_Container $container ) {
+		require_once( \GFCommon::get_base_path() . '/includes/util/colors/class-color-modifier.php' );
+
 		$container->add(
 			self::GF_CACHE,
 			function () {
@@ -74,5 +78,9 @@ class GF_Util_Service_Provider extends GF_Service_Provider {
 				return new \GFFormDetail;
 			}
 		);
+
+		$container->add( self::GF_COLORS, function () {
+			return new Color_Modifier();
+		} );
 	}
 }

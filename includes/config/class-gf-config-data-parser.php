@@ -49,7 +49,7 @@ class GF_Config_Data_Parser {
 		}
 
 		// Value is an array with our defined value and default keys. Return either live or mock data.
-		if ( array_key_exists( 'default', $value ) ) {
+		if ( array_key_exists( 'default', $value ) && array_key_exists( 'value', $value ) ) {
 			return $this->is_mock() ? $value['default'] : $value['value'];
 		}
 

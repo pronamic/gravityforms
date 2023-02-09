@@ -29,18 +29,6 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
  *
  * ----------------------------------------------------------------------------- */
 
-/* Font Icons */
-
-/* stylelint-disable */
-
-/* -----------------------------------------------------------------------------
- *
- * Variables: Admin Icons (via IcoMoon)
- *
- * This file is generated using the `gulp icons` task. Do not edit it directly.
- *
- * ----------------------------------------------------------------------------- */
-
 /* Images */
 
 /* -----------------------------------------------------------------------------
@@ -535,7 +523,7 @@ table#gf_personal_data_field_settings td {
 	right: 0;
 }
 
-.gform-admin .gform-dropdown__search .gform-dropdown__search-input {
+.gform-admin .gform-dropdown__search .gform-dropdown__search-input:not(#gform-form-switcher-search) {
 	-webkit-appearance: none;
 	background: #fff;
 	border: 1px solid #c3c5db;
@@ -919,6 +907,7 @@ input.button-primary.gfbutton, button.button-primary.gfbutton, a.button-primary.
 			height: 26px;
 			justify-content: center;
 			margin: 0;
+			min-width: 26px;
 			padding: 0;
 			position: relative;
 			transition: border-color 300ms ease, background-color 300ms ease;
@@ -1063,7 +1052,7 @@ html[dir="rtl"] .gform-admin .gform-choice .gform-choice__selected-label::before
 }
 	}
 
-@media (min-width: 1260px) {
+@media (min-width: 1280px) {
 
 .conditional_logic_flyout {
 		width: 650px
@@ -1077,7 +1066,7 @@ html[dir="rtl"] .gform-admin .gform-choice .gform-choice__selected-label::before
 	}
 		}
 
-@media (min-width: 1260px) {
+@media (min-width: 1280px) {
 
 .folded.sticky-menu .conditional_logic_flyout {
 			width: auto
@@ -1168,7 +1157,7 @@ html[dir="rtl"] .gform-admin .gform-choice .gform-choice__selected-label::before
 			width: 30%;
 		}
 
-@media (min-width: 1260px) {
+@media (min-width: 1280px) {
 
 .conditional_logic_flyout__rule input[type="text"].gfield_rule_input {
 				flex: 1;
@@ -1506,7 +1495,7 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 * Used in admin.css.
 */
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker), .gravity-theme.ui-datepicker {
 	background: #fff;
 	border: 0.0625rem solid #d5d7e9;
 	border-radius: 0.1875rem;
@@ -1519,7 +1508,7 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 	padding: 1.125rem 1.5rem;
 }
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header, .gravity-theme.ui-datepicker .ui-datepicker-header {
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
@@ -1528,7 +1517,7 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 		width: 100%;
 	}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-prev, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-next {
 			align-items: center;
 			color: #9092b2;
 			cursor: pointer;
@@ -1546,28 +1535,28 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 			width: 1.875rem;
 		}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev:focus, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev:hover, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next:focus, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next:hover {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev:focus, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev:hover, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next:focus, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next:hover, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-prev:focus, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-prev:hover, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-next:focus, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-next:hover {
 				color: #3e7da6;
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-prev {
 			left: -0.3125rem;
 		}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev::before {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-prev::before, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-prev::before {
 				content: "\e90a";
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-next {
 			right: -0.3125rem;
 			transform: rotate(180deg);
 		}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next::before {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header .ui-datepicker-next::before, .gravity-theme.ui-datepicker .ui-datepicker-header .ui-datepicker-next::before {
 				content: "\e90a";
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header select {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header select, .gravity-theme.ui-datepicker .ui-datepicker-header select {
 			-webkit-appearance: none;
 			background: none;
 			border: 0;
@@ -1580,7 +1569,7 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 			padding: 0 1.25rem 0 0.5rem;
 		}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header select.ui-datepicker-month {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header select.ui-datepicker-month, .gravity-theme.ui-datepicker .ui-datepicker-header select.ui-datepicker-month {
 				background-image: url(../../../images/chevron-down.svg);
 				background-position: 100% 0.3125rem;
 				background-repeat: no-repeat;
@@ -1591,7 +1580,7 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 				     text-align-last: right;
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header select.ui-datepicker-year {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-header select.ui-datepicker-year, .gravity-theme.ui-datepicker .ui-datepicker-header select.ui-datepicker-year {
 				background-image: url(../../../images/select-date.svg);
 				background-position: 100% 0.375rem;
 				background-repeat: no-repeat;
@@ -1599,7 +1588,7 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 				padding: 0 1rem 0 0;
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar th span {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar th span, .gravity-theme.ui-datepicker .ui-datepicker-calendar th span {
 				align-items: center;
 				color: #5b5e80;
 				display: flex;
@@ -1610,14 +1599,14 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 				width: 1.875rem;
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar td {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar td, .gravity-theme.ui-datepicker .ui-datepicker-calendar td {
 			font-size: 0.75rem;
 			height: 1.875rem;
 			padding: 0;
 			width: 1.875rem;
 		}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-default {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-default, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-default {
 			align-items: center;
 			border: 0.0625rem solid transparent;
 			border-radius: 100%;
@@ -1631,31 +1620,31 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 			width: 1.875rem;
 		}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-default:hover, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-default:focus {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-default:hover, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-default:focus, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-default:hover, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-default:focus {
 				border-color: #d5d7e9;
 				outline: none;
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-default:active {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-default:active, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-default:active {
 				background: #ecedf8;
 				border-color: #d5d7e9;
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default {
 				background: #3e7da6;
 				border-color: #3e7da6;
 				color: #fff;
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default:hover, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default:focus {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default:hover, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default:focus, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default:hover, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-datepicker-current-day .ui-state-default:focus {
 					border-color: #3e7da6;
 				}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-disabled .ui-state-default {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-disabled .ui-state-default, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-disabled .ui-state-default {
 				color: #9092b2;
 			}
 
-.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-disabled .ui-state-default:hover, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-disabled .ui-state-default:focus {
+.ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-disabled .ui-state-default:hover, .ui-datepicker:not(.gform-legacy-datepicker):not(.gform-theme-datepicker) .ui-datepicker-calendar .ui-state-disabled .ui-state-default:focus, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-disabled .ui-state-default:hover, .gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-disabled .ui-state-default:focus {
 					border-color: transparent;
 				}
 
@@ -1700,14 +1689,14 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 	width: auto;
 }
 
-@media (min-width: 960px) {
+@media (--viewport-full) {
 
 .gform-settings-field__conditional-logic select:not([multiple]), .gform-settings-field__conditional-logic .select2-container .select2-selection__rendered {
 		max-width: 150px
 }
 	}
 
-@media (min-width: 1260px) {
+@media (min-width: 1280px) {
 
 .gform-settings-field__conditional-logic select:not([multiple]), .gform-settings-field__conditional-logic .select2-container .select2-selection__rendered {
 		max-width: 400px
@@ -1874,6 +1863,16 @@ html[dir="rtl"] .conditional_logic_flyout_container .conditional_logic_flyout .a
 		overflow-y: scroll;
 		padding: 0;
 	}
+
+.gform-settings-field__select-enhanced-container .select2-results__options.select2-results__options--nested {
+			max-height: none;
+			overflow-y: visible;
+		}
+
+.gform-settings-field__select-enhanced-container .select2-results__options .select2-results__group {
+			display: block;
+			margin-bottom: 15px;
+		}
 
 .gform-settings-field__select-enhanced-container .select2-results__options[aria-multiselectable="true"] .select2-results__option {
 				padding-left: 0.8125rem;
@@ -4315,10 +4314,6 @@ body.forms_page_gf_help div#wpfooter {
 	display: none;
 }
 
-body.forms_page_gf_help #wpbody-content {
-	z-index: 5;
-}
-
 .forms_page_gf_help #hexagons-bg-orange {
 	height: 392px;
 	left: -159px;
@@ -4825,6 +4820,9 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 	}
 
 .gform-splash {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
 	margin: 4.5rem auto;
 	max-width: 1280px;
 	width: 94%;
@@ -4841,29 +4839,93 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 	}
 
 .gform-splash__header {
-	background: #0f3d6c;
+	background: #242748;
 	color: #fff;
 	min-height: 17.875rem;
-	padding: 6.25rem 1.875rem;
+	overflow: hidden;
+	padding: 3.75rem 1.875rem 0 1.875rem;
 	position: relative;
 	text-align: center;
 	z-index: 5;
 
 }
 
-.gform-splash__header img {
-		display: block;
-		margin: 0 auto;
-		max-width: 100%;
-		width: 21.375rem;
+@media (min-width: 783px) {
+
+.gform-splash__header {
+		padding-left: 5.812rem;
+		padding-right: 5.812rem
+
+}
 	}
 
-.gform-splash__header .gf-splash-version {
+.gform-splash__header .gform-logo {
 		display: block;
-		font-size: 2.25rem;
+		margin: 0 auto 3.25rem auto;
+		max-width: 90%;
+		width: 18.75rem;
+	}
+
+.gform-splash__header h1 {
+		color: #fff;
+		font-size: 3rem;
 		font-weight: 700;
-		padding-top: 0.75rem;
-		position: relative;
+		letter-spacing: -1px;
+		line-height: 112%;
+		margin: 0 auto 1.375rem auto;
+		max-width: 53rem;
+		text-align: center;
+	}
+
+@media (min-width: 783px) {
+
+.gform-splash__header h1 {
+			font-size: 4.5rem
+	}
+		}
+
+.gform-splash__header p {
+		color: #ecedf8;
+		font-size: 1.25rem;
+		line-height: 150%;
+		margin: 0 auto 2.125rem auto;
+		max-width: 48rem;
+		text-align: center;
+	}
+
+.gform-splash__header .gform-reviews {
+		font-size: 1rem;
+		font-weight: 500;
+		margin: 0 auto 2.812rem auto;
+		padding-top: 2.5rem;
+	}
+
+.gform-splash__header .gform-reviews a {
+			align-items: center;
+			color: #fff;
+			display: flex;
+			justify-content: center;
+			text-decoration: none;
+		}
+
+.gform-splash__header .gform-reviews a:focus {
+				box-shadow: none;
+			}
+
+.gform-splash__header .gform-reviews img {
+			height: 2.187rem;
+		}
+
+.gform-splash__header .gform-reviews .gform-reviews__stars {
+			color: #ffbe03;
+			font-size: 1.3rem;
+			letter-spacing: -0.15rem;
+			padding: 0 1rem;
+		}
+
+.gform-splash__header .gform-splash__header-bottom-image {
+		display: block;
+		width: 100%;
 	}
 
 .gform-splash__header .gform-splash__back-link {
@@ -4903,121 +4965,20 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 			color: #f6f9fc;
 		}
 
-.gform-splash__header::after {
-		background: #0f3d6c;
-		bottom: -38px;
-		content: "";
-		display: block;
-		height: 100px;
-		left: 0;
-		position: absolute;
-		transform: skewY(-3.18deg);
-		width: 100%;
-		z-index: 1;
-	}
-
-@media (min-width: 783px) {
-
-.gform-splash__header {
-		align-content: center;
-		align-items: center;
-		display: flex;
-		justify-content: center;
-		min-height: 16.5rem
-
-}
-
-		.gform-splash__header img {
-			height: 4rem;
-			margin: 0;
-			padding-right: 3rem;
-			width: auto;
-		}
-
-		.gform-splash__header .gf-splash-version {
-			font-size: 2.1rem;
-			padding-left: 3rem;
-			padding-top: 0;
-		}
-
-			.gform-splash__header .gf-splash-version::before {
-				background: #5b5e80;
-				content: "";
-				display: block;
-				height: 6.25rem;
-				left: 0;
-				position: absolute;
-				top: -2.375rem;
-				width: 1px;
-			}
-	}
-
-@media (min-width: 1200px) {
-
-		.gform-splash__header img {
-			height: 5.062rem;
-			padding-right: 5.812rem;
-		}
-
-		.gform-splash__header .gf-splash-version {
-			font-size: 2.875rem;
-			padding-left: 5.812rem;
-			top: -1px;
-		}
-
-			.gform-splash__header .gf-splash-version::before {
-				height: 6.25rem;
-				top: -2.375rem;
-			}
-	}
-
 .gform-splash__body {
-	background:
-		linear-gradient(180deg, rgba(66, 233, 244, 0.58) 2.65%, rgba(255, 255, 255, 0) 9.99%, rgba(252, 255, 255, 0) 78.3%, rgba(236, 253, 254, 0) 81.5%, rgba(124, 240, 247, 0.79) 89.5%),
-		url(../../../includes/splash-page/images/splash-header-hex.svg),
-		url(../../../includes/splash-page/images/splash-left-grey-hex.svg),
-		url(../../../includes/splash-page/images/splash-right-grey-hex.svg),
-		url(../../../includes/splash-page/images/splash-bottom-right-2.svg),
-		url(../../../includes/splash-page/images/splash-bottom-right-1.svg);
-	background-color: #fff;
-	background-position:
-		right,
-		right -10px,
-		left 25%,
-		right 50%,
-		right bottom,
-		right bottom 20px;
-	background-repeat:
-		no-repeat,
-		no-repeat,
-		no-repeat,
-		no-repeat,
-		no-repeat,
-		no-repeat;
-	color: #242748;
-	font-family: inter, -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
-	margin-top: -17.5rem;
-	mix-blend-mode: normal;
-	padding: 23.75rem 0 5rem;
+	background: #fff;
+	overflow: hidden;
 	position: relative;
 }
 
-@media (min-width: 783px) {
-
-.gform-splash__body {
-		margin-top: -16.25rem;
-		padding-top: 22.5rem
-}
-	}
-
 .gform-splash__body h2 {
-		font-size: 2rem;
+		font-size: 2.25rem;
 		line-height: 1.16;
 		text-align: center;
 	}
 
 .gform-splash__body h3 {
-		font-size: 1.375rem;
+		font-size: 1.25rem;
 		line-height: 1.7;
 	}
 
@@ -5027,7 +4988,7 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 	}
 
 .gform-splash__body p {
-		font-size: 0.937rem;
+		font-size: 1rem;
 		line-height: 1.562rem;
 	}
 
@@ -5046,7 +5007,9 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 .gform-splash__section {
 	margin: 3.25rem auto;
 	max-width: 64rem;
+	position: relative;
 	width: 94%;
+	z-index: 10;
 }
 
 @media (min-width: 783px) {
@@ -5108,11 +5071,11 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 		}
 
 .gform-splash__section--text-and-image.gform-splash__section--image-spread-right .gform-splash-image {
-			margin-right: -3.7%;
+			margin-left: -3.7%;
 		}
 
 .gform-splash__section--full-width-image.gform-splash__section--image-spread-right .gform-splash-image {
-			margin-right: -2.3%;
+			margin-left: -2.3%;
 		}
 
 .gform-splash__section--text-and-image.gform-splash__section--image-spread-down .gform-splash-image, .gform-splash__section--full-width-image.gform-splash__section--image-spread-down .gform-splash-image {
@@ -5156,18 +5119,20 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 			flex: none;
 			margin: 0;
 			padding: 0 2rem;
-			width: 33.33%;
+			width: 50%;
 		}
 	}
 
 .gform-splash__footer {
-	background: rgba(246, 249, 252, 0.22);
-	border-radius: 6px;
-	margin: 3.375rem auto 0;
-	max-width: 64rem;
-	padding: 2rem;
+	background: #242748;
+	color: #fff;
+	margin-top: 3.375rem;
+	overflow: hidden;
+	padding: 7.5rem 2rem;
+	position: relative;
 	text-align: center;
-	width: 96%;
+	width: 100%;
+	z-index: 5;
 }
 
 .gform-splash__footer img {
@@ -5176,48 +5141,159 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 	}
 
 .gform-splash__footer h4 {
-		font-size: 1.25rem;
+		display: inline-block;
+		font-size: 3rem;
+		font-weight: 700;
+		line-height: 112%;
+		margin: 0 0 1.25rem 0;
+		position: relative;
 	}
+
+@media (min-width: 783px) {
+
+			.gform-splash__footer h4::before {
+				background-image: repeating-linear-gradient(to bottom, transparent, transparent 4px, #242748 4px, #242748 23.5px), repeating-linear-gradient(to right, #9092b0, #9092b0 4px, #242748 4px, #242748 23.5px);
+				content: "";
+				display: block;
+				height: 9.375rem;
+				left: -8.5rem;
+				opacity: 0.6;
+				position: absolute;
+				top: -5rem;
+				width: 9.375rem;
+				z-index: -1;
+			}
+		}
+
+.gform-splash__footer p {
+		font-size: 1.125rem;
+		line-height: 156%;
+		margin: 0 auto 1.25rem auto;
+		max-width: 32rem;
+	}
+
+.gform-splash__footer::before, .gform-splash__footer::after {
+		content: "";
+		display: block;
+		position: absolute;
+		z-index: 1;
+	}
+
+.gform-splash__footer::before {
+		background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTExIiBoZWlnaHQ9IjEyMiIgdmlld0JveD0iMCAwIDExMSAxMjIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xMTEgODIuODYxOEMxMTEgODguNDQxOCAxMDcuMDQ1IDk1LjI4MDcgMTAyLjIwMSA5OC4wNTY0TDY0LjI4NDMgMTE5LjkxOEM1OS40NDA3IDEyMi42OTQgNTEuNTMwNiAxMjIuNjk0IDQ2LjY4NzEgMTE5LjkxOEw4Ljc2OTk1IDk4LjA1NjRDMy45NTUwNyA5NS4yODA3IDAgODguNDQxOCAwIDgyLjg2MThWMzkuMTM4MUMwIDMzLjU1ODIgMy45NTUwNyAyNi43MTkyIDguNzk4NjEgMjMuOTQzNkw0Ni42ODcxIDIuMDgxNzRDNTEuNTMwNiAtMC42OTM5MTMgNTkuNDQwNyAtMC42OTM5MTMgNjQuMjg0MyAyLjA4MTc0TDEwMi4yMDEgMjMuOTQzNkMxMDcuMDQ1IDI2LjcxOTIgMTExIDMzLjU1ODIgMTExIDM5LjEzODFWODIuODYxOFoiIGZpbGw9IiM0MkU5RjQiLz4KPC9zdmc+) center center no-repeat;
+		background-size: contain;
+		height: 280px;
+		left: -219px;
+		top: -118px;
+		transform: rotate(30deg);
+		width: 280px;
+	}
+
+@media (min-width: 783px) {
+
+.gform-splash__footer::before {
+			height: 344px;
+			width: 335px
+	}
+		}
+
+.gform-splash__footer::after {
+		background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTExIiBoZWlnaHQ9IjEyMiIgdmlld0JveD0iMCAwIDExMSAxMjIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xMTEgODIuODYxOEMxMTEgODguNDQxOCAxMDcuMDQ1IDk1LjI4MDcgMTAyLjIwMSA5OC4wNTY0TDY0LjI4NDMgMTE5LjkxOEM1OS40NDA3IDEyMi42OTQgNTEuNTMwNiAxMjIuNjk0IDQ2LjY4NzEgMTE5LjkxOEw4Ljc2OTk1IDk4LjA1NjRDMy45NTUwNyA5NS4yODA3IDAgODguNDQxOCAwIDgyLjg2MThWMzkuMTM4MUMwIDMzLjU1ODIgMy45NTUwNyAyNi43MTkyIDguNzk4NjEgMjMuOTQzNkw0Ni42ODcxIDIuMDgxNzRDNTEuNTMwNiAtMC42OTM5MTMgNTkuNDQwNyAtMC42OTM5MTMgNjQuMjg0MyAyLjA4MTc0TDEwMi4yMDEgMjMuOTQzNkMxMDcuMDQ1IDI2LjcxOTIgMTExIDMzLjU1ODIgMTExIDM5LjEzODFWODIuODYxOFoiIGZpbGw9IiNGMTVBMkIiLz4KPC9zdmc+) center center no-repeat;
+		background-size: contain;
+		bottom: -68px;
+		height: 200px;
+		right: -152px;
+		width: 200px;
+	}
+
+@media (min-width: 783px) {
+
+.gform-splash__footer::after {
+			height: 280px;
+			width: 280px
+	}
+		}
 
 .toplevel_page_gf_splash #wpfooter {
 	display: none;
 }
 
+.gform-splash__background {
+	position: absolute;
+	z-index: 0;
+}
+
+.gform-splash__background-one {
+		background: radial-gradient(50% 50% at 50% 50%, #0005ff 0%, rgba(0, 5, 255, 0.7) 45.83%, rgba(255, 0, 113, 0.12) 83.33%, rgba(255, 0, 113, 0.03) 100%);
+		height: 740px;
+		left: -530px;
+		opacity: 0.16;
+		top: 0;
+		width: 740px;
+	}
+
+.gform-splash__background-two {
+		background: radial-gradient(50% 50% at 50% 50%, #0005ff 0%, rgba(0, 5, 255, 0.7) 45.83%, rgba(255, 0, 113, 0.12) 83.33%, rgba(255, 0, 113, 0.03) 100%);
+		height: 740px;
+		opacity: 0.16;
+		right: -530px;
+		top: 0;
+		width: 740px;
+	}
+
+.gform-splash__background-three {
+		background: radial-gradient(50% 50% at 50% 50%, #0005ff 0%, rgba(0, 5, 255, 0.7) 45.83%, rgba(255, 0, 113, 0.12) 83.33%, rgba(255, 0, 113, 0.03) 100%);
+		height: 652px;
+		opacity: 0.16;
+		position: absolute;
+		right: -500px;
+		top: 20%;
+		width: 652px;
+	}
+
+.gform-splash__background-four {
+		background: radial-gradient(50% 50% at 50% 50%, #0005ff 0%, rgba(0, 5, 255, 0.7) 45.83%, rgba(255, 0, 113, 0.12) 83.33%, rgba(255, 0, 113, 0.03) 100%);
+		height: 740px;
+		left: -530px;
+		opacity: 0.16;
+		top: 48%;
+		width: 740px;
+	}
+
+.gform-splash__background-five {
+		background: radial-gradient(50% 50% at 50% 50%, #ff0071 0%, rgba(255, 0, 113, 0.7) 45.83%, rgba(0, 5, 255, 0.114423) 83.33%, rgba(0, 5, 255, 0) 100%);
+		height: 740px;
+		opacity: 0.16;
+		position: absolute;
+		right: -530px;
+		top: 51%;
+		width: 740px;
+	}
+
+.gform-splash__background-six {
+		background: radial-gradient(50% 50% at 50% 50%, #ff0071 0%, rgba(255, 0, 113, 0.7) 45.83%, rgba(0, 5, 255, 0.114423) 83.33%, rgba(0, 5, 255, 0) 100%);
+		bottom: 4%;
+		height: 740px;
+		left: -530px;
+		opacity: 0.16;
+		position: absolute;
+		width: 740px;
+	}
+
+.gform-splash__background-seven {
+		background: radial-gradient(50% 50% at 50% 50%, #ff0071 0%, rgba(255, 0, 113, 0.7) 45.83%, rgba(0, 5, 255, 0.114423) 83.33%, rgba(0, 5, 255, 0) 100%);
+		bottom: 3%;
+		height: 740px;
+		opacity: 0.16;
+		position: absolute;
+		right: -530px;
+		width: 740px;
+	}
+
 html[dir="rtl"] .toplevel_page_gf_splash #wpcontent {
 		padding-left: 0;
 		padding-right: 0;
 	}
-
-@media (min-width: 783px) {
-
-			html[dir="rtl"] .gform-splash__header img {
-				padding-left: 3rem;
-				padding-right: 0;
-			}
-
-			html[dir="rtl"] .gform-splash__header .gf-splash-version {
-				padding-left: 0;
-				padding-right: 3rem;
-			}
-
-				html[dir="rtl"] .gform-splash__header .gf-splash-version::before {
-					left: auto;
-					right: 0;
-				}
-		}
-
-@media (min-width: 1200px) {
-
-			html[dir="rtl"] .gform-splash__header img {
-				padding-left: 5.812rem;
-				padding-right: 0;
-			}
-
-			html[dir="rtl"] .gform-splash__header .gf-splash-version {
-				padding-left: 0;
-				padding-right: 5.812rem;
-			}
-		}
 
 @media (min-width: 783px) {
 

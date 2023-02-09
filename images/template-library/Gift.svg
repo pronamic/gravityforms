@@ -1,0 +1,48 @@
+<svg width="153" height="210" viewBox="0 0 153 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1386_101565)">
+<path d="M86 6H83.82C83.93 5.69 84 5.35 84 5C84 3.34 82.66 2 81 2C79.95 2 79.04 2.54 78.5 3.35L78 4.02L77.5 3.34C76.96 2.54 76.05 2 75 2C73.34 2 72 3.34 72 5C72 5.35 72.07 5.69 72.18 6H70C68.89 6 68.01 6.89 68.01 8L68 19C68 20.11 68.89 21 70 21H86C87.11 21 88 20.11 88 19V8C88 6.89 87.11 6 86 6ZM81 4C81.55 4 82 4.45 82 5C82 5.55 81.55 6 81 6C80.45 6 80 5.55 80 5C80 4.45 80.45 4 81 4ZM75 4C75.55 4 76 4.45 76 5C76 5.55 75.55 6 75 6C74.45 6 74 5.55 74 5C74 4.45 74.45 4 75 4ZM86 19H70V17H86V19ZM86 14H70V9C70 8.45 70.45 8 71 8H75.08L73.6 10.02C73.27 10.47 73.37 11.1 73.82 11.42C74.26 11.74 74.89 11.64 75.21 11.2L78 7.4L80.79 11.2C81.11 11.64 81.74 11.74 82.18 11.42C82.63 11.1 82.73 10.47 82.4 10.02L80.92 8H85C85.55 8 86 8.45 86 9V14Z" fill="#F15A2B"/>
+</g>
+<rect x="44" y="32" width="68" height="4" rx="2" fill="#C3C5DB"/>
+<rect x="3" y="48" width="31" height="4" rx="2" fill="#D5D7E9"/>
+<rect x="3.5" y="58.5" width="68" height="13" rx="1.5" fill="#FDFDFF" stroke="#D5D7E9"/>
+<rect x="83" y="48" width="31" height="4" rx="2" fill="#D5D7E9"/>
+<rect x="83.5" y="58.5" width="68" height="13" rx="1.5" fill="#FDFDFF" stroke="#D5D7E9"/>
+<rect x="3" y="84" width="53" height="4" rx="2" fill="#D5D7E9"/>
+<rect x="3.5" y="94.5" width="148" height="13" rx="1.5" fill="#FDFDFF"/>
+<rect x="3.5" y="94.5" width="148" height="13" rx="1.5" fill="#FDFDFF" stroke="#D5D7E9"/>
+<rect x="3.5" y="94.5" width="148" height="13" rx="1.5" stroke="#D5D7E9"/>
+<rect x="3" y="120" width="53" height="4" rx="2" fill="#D5D7E9"/>
+<rect x="3.5" y="130.5" width="148" height="13" rx="1.5" fill="#FDFDFF"/>
+<rect x="3.5" y="130.5" width="148" height="13" rx="1.5" fill="#FDFDFF" stroke="#D5D7E9"/>
+<rect x="3.5" y="130.5" width="148" height="13" rx="1.5" stroke="#D5D7E9"/>
+<rect x="3" y="156" width="31" height="4" rx="2" fill="#D5D7E9"/>
+<rect x="3.5" y="166.5" width="43" height="13" rx="1.5" fill="#FDFDFF" stroke="#D5D7E9"/>
+<rect x="55.5" y="156" width="31" height="4" rx="2" fill="#D5D7E9"/>
+<rect x="56" y="166.5" width="43" height="13" rx="1.5" fill="#FDFDFF" stroke="#D5D7E9"/>
+<rect x="108" y="156" width="31" height="4" rx="2" fill="#D5D7E9"/>
+<rect x="108.5" y="166.5" width="43" height="13" rx="1.5" fill="#FDFDFF" stroke="#D5D7E9"/>
+<g filter="url(#filter0_dd_1386_101565)">
+<rect x="3" y="192" width="69" height="14" rx="7" fill="#F15A2B"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M21 202C22.6569 202 24 200.657 24 199C24 197.343 22.6569 196 21 196C19.3431 196 18 197.343 18 199C18 200.657 19.3431 202 21 202ZM22.3902 198.515C22.5366 198.369 22.5366 198.131 22.3902 197.985C22.2437 197.838 22.0063 197.838 21.8598 197.985L20.625 199.22L20.1402 198.735C19.9937 198.588 19.7563 198.588 19.6098 198.735C19.4634 198.881 19.4634 199.119 19.6098 199.265L20.3598 200.015C20.5063 200.162 20.7437 200.162 20.8902 200.015L22.3902 198.515Z" fill="white"/>
+<rect x="28" y="197.5" width="29" height="3" rx="1.5" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_dd_1386_101565" x="0" y="190" width="75" height="20" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="1"/>
+<feGaussianBlur stdDeviation="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.0705882 0 0 0 0 0.0980392 0 0 0 0 0.380392 0 0 0 0.06 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1386_101565"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="1"/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.0705882 0 0 0 0 0.0980392 0 0 0 0 0.380392 0 0 0 0.1 0"/>
+<feBlend mode="normal" in2="effect1_dropShadow_1386_101565" result="effect2_dropShadow_1386_101565"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_1386_101565" result="shape"/>
+</filter>
+<clipPath id="clip0_1386_101565">
+<rect width="24" height="24" fill="white" transform="translate(66)"/>
+</clipPath>
+</defs>
+</svg>

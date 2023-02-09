@@ -855,6 +855,16 @@ class GFExport {
 
 		$form = self::add_default_export_fields( $form );
 
+		/**
+		 * Allows the search criteria to be filtered before exporting entries.
+		 *
+		 * @since 2.7
+		 *
+		 * @param array $search_criteria The search criteria array being filtered.
+		 * @param int   $form_id         The current form ID.
+		 */
+		$search_criteria = apply_filters( 'gform_search_criteria_export_entries', $search_criteria, $form_id );
+
 		$total_entry_count     = GFAPI::count_entries( $form_id, $search_criteria );
 		$remaining_entry_count = $offset == 0 ? $total_entry_count : $total_entry_count - $offset;
 

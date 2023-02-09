@@ -1,3 +1,35 @@
+### 2.7 | 2023-01-25
+- Added an improved Setup Wizard.
+- Added the Orbital Form Theme, a theme with opinionated styles that is customizable in the block style settings.
+- Added form style settings to the Gravity Forms block to allow users to easily customize the appearance of their forms.
+- Added the Form Template Library to make it easier to create common forms.
+- Added new Honeypot functionality to increase spam protection.
+- Added a new Honeypot form setting to allow entries to be created and marked as spam when the Honeypot catches a form submission.
+- Added the ability to upgrade a license from the settings page.
+- Added performance improvements to form submissions for forms with lots of confirmations.
+- Added performance improvements to form rendering.
+- Added performance improvements to merge tag processing. Credit: The GravityKit team.
+- Added accessibility improvements to the system report page.
+- Added accessibility improvements to the Form, Entry and Feed List tables to improve accessibility.
+- Added "Gravity Forms" to the title of admin pages to improve accessibility.
+- Added underlines to links in the Form Validation Summary for better accessibility.
+- Added security enhancements.
+- Updated the repeater field markup to be compatible with the Theme Framework.
+- Updated the form submit spinner to use new Theme Framework styles.
+- Updated the image in the drag and drop instructions on an empty form.
+- Updated the form preview in the block editor to display the form if it has conditional logic.
+- Updated the default phone format option to be "International" instead of "US/Canada".
+- Fixed a fatal error that can occur in some hosting environments with PHP 8+.
+- Fixed an issue where form revisions are not created when a form contains a Consent field other than the Gravity Forms core Consent field.
+- Fixed a performance issue where the gform_layout_editor script is being localised outside the editor for a form that doesn't exist. Credit: The GravityKit team.
+- Fixed an issue where the Gravity Forms datepicker style is being applied outside of Gravity Forms.
+- API: Added a form Theme Framework and CSS API to make it easier to customize the appearance of forms.
+- API: Added a "block_editor" admin page type to allow add-ons to easily enqueue scripts and styles to the block editor via the scripts() and styles() methods.
+- API: Added [GFAPI::validate_field()](https://docs.gravityforms.com/validating-field-submissions-with-the-gfapi/) to validate the value of a specific field.
+- API: Added a new hook [`gform_entries_primary_column_filter`](https://docs.gravityforms.com/gform_entries_primary_column_filter) to filter the entry list table's first column.
+- API: Added a new filter [`gform_abort_submission_with_confirmation`](https://docs.gravityforms.com/gform_abort_submission_with_confirmation) that can be used to abort form submission and display a confirmation.
+- API: Added a new filter [`gform_search_criteria_export_entries`](https://docs.gravityforms.com/gform_search_criteria_export_entries) to allow entries of different statuses (i.e. trash, abuse) to be exported.
+
 ### 2.6.9 | 2023-01-11
 - Added a new environment variable to hide the background updates setting.
 - Added a new environment variable to control the update message and the unregistered license message.

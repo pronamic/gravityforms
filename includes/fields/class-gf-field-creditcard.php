@@ -196,7 +196,7 @@ class GF_Field_CreditCard extends GF_Field {
 
 		// If SSL is not used, display warning message.
 		if ( ! GFCommon::is_ssl() && ! $is_admin ) {
-			$field_content = "<div class='gfield_creditcard_warning_message' id='field_{$form['id']}_{$this->id}_creditcard_warning_message'><span>" . esc_html__( 'This page is unsecured. Do not enter a real credit card number! Use this field only for testing purposes. ', 'gravityforms' ) . '</span></div>' . $field_content;
+			$field_content = "<div class='gfield_description gfield_validation_message gfield_creditcard_warning_message' id='field_{$form['id']}_{$this->id}_creditcard_warning_message'><span>" . esc_html__( 'This page is unsecured. Do not enter a real credit card number! Use this field only for testing purposes. ', 'gravityforms' ) . '</span></div>' . $field_content;
 		}
 
 		return $field_content;
@@ -216,10 +216,10 @@ class GF_Field_CreditCard extends GF_Field {
 		$class_suffix  = $is_entry_detail ? '_admin' : '';
 
 
-		$form_sub_label_placement  = rgar( $form, 'subLabelPlacement' );
+		$form_sub_label_placement = rgar( $form, 'subLabelPlacement' );
 		$field_sub_label_placement = $this->subLabelPlacement;
-		$is_sub_label_above        = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
-		$sub_label_class_attribute = $field_sub_label_placement == 'hidden_label' ? "class='hidden_sub_label screen-reader-text'" : '';
+		$is_sub_label_above       = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
+		$sub_label_class          = $field_sub_label_placement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
 
 		$card_number      = '';
 		$card_name        = '';
@@ -306,16 +306,16 @@ class GF_Field_CreditCard extends GF_Field {
 
 		$card_number_placeholder = $this->get_input_placeholder_attribute( $card_number_field_input );
 		if ( $is_sub_label_above ) {
-			$card_field = "<span class='ginput_full{$class_suffix}' id='{$field_id}_1_container' >
+			$card_field = "<span class='ginput_full{$class_suffix} gform-grid-col' id='{$field_id}_1_container' >
                                     {$card_icons}
-                                    <label for='{$field_id}_1' id='{$field_id}_1_label' {$sub_label_class_attribute}>{$card_number_label}</label>
+                                    <label for='{$field_id}_1' id='{$field_id}_1_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$card_number_label}</label>
                                     <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$html5_output} {$card_number_placeholder} {$number_aria_attributes}/>
                                  </span>";
 		} else {
-			$card_field = "<span class='ginput_full{$class_suffix}' id='{$field_id}_1_container' >
+			$card_field = "<span class='ginput_full{$class_suffix} gform-grid-col' id='{$field_id}_1_container' >
                                     {$card_icons}
                                     <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$html5_output} {$card_number_placeholder} {$number_aria_attributes}/>
-                                    <label for='{$field_id}_1' id='{$field_id}_1_label' {$sub_label_class_attribute}>{$card_number_label}</label>
+                                    <label for='{$field_id}_1' id='{$field_id}_1_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$card_number_label}</label>
                                  </span>";
 		}
 
@@ -329,7 +329,7 @@ class GF_Field_CreditCard extends GF_Field {
 		$expiration_label             = gf_apply_filters( array( 'gform_card_expiration', $form_id ), $expiration_label, $form_id );
 
 		// Expiration Date: Month
-		$expiration_month_label       = $expiration_wrapper_tag === 'fieldset' ? "<label for='{$field_id}_2_month' class='screen-reader-text'>" . esc_html__( 'Month', 'gravityforms' ) . "</label>" : '';
+		$expiration_month_label       = $expiration_wrapper_tag === 'fieldset' ? "<label for='{$field_id}_2_month' class='gform-field-label gform-field-label--type-sub screen-reader-text'>" . esc_html__( 'Month', 'gravityforms' ) . "</label>" : '';
 		$expiration_month_tab_index   = $this->get_tabindex();
 		$expiration_month_placeholder = $this->get_input_placeholder_value( $expiration_month_input );
 		$expiration_months            = $this->get_expiration_months( $expiration_month, $expiration_month_placeholder );
@@ -342,7 +342,7 @@ class GF_Field_CreditCard extends GF_Field {
 
 		if ( $expiration_wrapper_tag === 'fieldset' ) {
 			$expiration_year_label_for = $is_form_editor ? '' : $field_id . '_2_year';
-			$expiration_year_label     = "<label for='{$expiration_year_label_for}' class='screen-reader-text'>" . esc_html__( 'Year', 'gravityforms' ) . "</label>";
+			$expiration_year_label     = "<label for='{$expiration_year_label_for}' class='gform-field-label gform-field-label--type-sub screen-reader-text'>" . esc_html__( 'Year', 'gravityforms' ) . "</label>";
 		} else {
 			$expiration_year_label = '';
 		}
@@ -350,17 +350,17 @@ class GF_Field_CreditCard extends GF_Field {
 		// legend tag should be the first child of fieldset, so we are putting out this markup for fieldset
 		// even if the sub-label is below or hidden.
 		if ( $expiration_wrapper_tag === 'fieldset' || $is_sub_label_above ) {
-			$expiration_field = "<span class='ginput_full{$class_suffix} ginput_cardextras' id='{$field_id}_2_container'>
-                                            <{$expiration_wrapper_tag} class='ginput_cardinfo_left{$class_suffix}' id='{$field_id}_2_cardinfo_left'>
-                                            <{$expiration_label_tag}{$expiration_label_for} {$sub_label_class_attribute}>{$expiration_label}</{$expiration_label_tag}>
-                                                <span class='ginput_card_expiration_container ginput_card_field'>
-                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_month_container'>" : "" ) . "
+			$expiration_field = "<span class='ginput_full{$class_suffix} ginput_cardextras gform-grid-col gform-grid-row' id='{$field_id}_2_container'>
+                                            <{$expiration_wrapper_tag} class='ginput_cardinfo_left{$class_suffix} gform-grid-col' id='{$field_id}_2_cardinfo_left'>
+                                            <{$expiration_label_tag}{$expiration_label_for} class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$expiration_label}</{$expiration_label_tag}>
+                                                <span class='ginput_card_expiration_container ginput_card_field gform-grid-row'>
+                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_month_container gform-grid-col'>" : "" ) . "
                                                        {$expiration_month_label}
                                                        <select name='input_{$id}.2[]' id='{$field_id}_2_month' {$expiration_month_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_month' {$expiration_month_aria_attributes}>
                                                            {$expiration_months}
                                                        </select>
                                                    " . ( $expiration_wrapper_tag === 'fieldset' ? "</span>" : "" ) . "
-                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_year_container'>" : "" ) . "
+                                                   " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_year_container gform-grid-col'>" : "" ) . "
                                                        {$expiration_year_label}
                                                        <select name='input_{$id}.2[]' id='{$field_id}_2_year' {$expiration_year_tab_index} {$disabled_text} class='ginput_card_expiration ginput_card_expiration_year' {$expiration_year_aria_attributes}>
                                                            {$expiration_years}
@@ -370,7 +370,7 @@ class GF_Field_CreditCard extends GF_Field {
                                             </{$expiration_wrapper_tag}>";
 
 		} else {
-			$expiration_field = "<span class='ginput_full{$class_suffix} ginput_cardextras' id='{$field_id}_2_container'>
+			$expiration_field = "<span class='ginput_full{$class_suffix} ginput_cardextras gform-grid-col gform-grid-row' id='{$field_id}_2_container'>
                                             <{$expiration_wrapper_tag} class='ginput_cardinfo_left{$class_suffix}' id='{$field_id}_2_cardinfo_left'>
                                                 <span class='ginput_card_expiration_container ginput_card_field'>
                                                     " . ( $expiration_wrapper_tag === 'fieldset' ? "<span class='ginput_card_expiration_month_container'>" : "" ) . "
@@ -386,7 +386,7 @@ class GF_Field_CreditCard extends GF_Field {
                                                        {$expiration_year_label}
                                                        " . ( $expiration_wrapper_tag === 'fieldset' ? "</span>" : "" ) . "
                                                 </span>
-                                                 <{$expiration_label_tag}{$expiration_label_for} {$sub_label_class_attribute}>{$expiration_label}</{$expiration_label_tag}>
+                                                 <{$expiration_label_tag}{$expiration_label_for} class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$expiration_label}</{$expiration_label_tag}>
                                             </{$expiration_wrapper_tag}>";
 		}
 		//security code field
@@ -397,17 +397,17 @@ class GF_Field_CreditCard extends GF_Field {
 		$html5_output              = GFFormsModel::is_html5_enabled() ? "pattern='[0-9]*' title='" . esc_attr__( 'Only digits are allowed', 'gravityforms' ) . "'" : '';
 		$security_code_placeholder = $this->get_input_placeholder_attribute( $security_code_field_input );
 		if ( $is_sub_label_above ) {
-			$security_field = "<span class='ginput_cardinfo_right{$class_suffix}' id='{$field_id}_2_cardinfo_right'>
-                                                <label for='{$field_id}_3' {$sub_label_class_attribute}>$security_code_label</label>
+			$security_field = "<span class='ginput_cardinfo_right{$class_suffix} gform-grid-col' id='{$field_id}_2_cardinfo_right'>
+                                                <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>$security_code_label</label>
                                                 <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$html5_output} {$security_code_placeholder} {$security_aria_attributes}/>
                                                 <span class='ginput_card_security_code_icon'>&nbsp;</span>
                                              </span>
                                         </span>";
 		} else {
-			$security_field = "<span class='ginput_cardinfo_right{$class_suffix}' id='{$field_id}_2_cardinfo_right'>
+			$security_field = "<span class='ginput_cardinfo_right{$class_suffix} gform-grid-col' id='{$field_id}_2_cardinfo_right'>
                                                 <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$html5_output} {$security_code_placeholder} {$security_aria_attributes}/>
                                                 <span class='ginput_card_security_code_icon'>&nbsp;</span>
-                                                <label for='{$field_id}_3' {$sub_label_class_attribute}>$security_code_label</label>
+                                                <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>$security_code_label</label>
                                              </span>
                                         </span>";
 		}
@@ -419,18 +419,18 @@ class GF_Field_CreditCard extends GF_Field {
 
 		$card_name_placeholder = $this->get_input_placeholder_attribute( $card_name_field_input );
 		if ( $is_sub_label_above ) {
-			$card_name_field = "<span class='ginput_full{$class_suffix}' id='{$field_id}_5_container'>
-                                            <label for='{$field_id}_5' id='{$field_id}_5_label' {$sub_label_class_attribute}>{$card_name_label}</label>
+			$card_name_field = "<span class='ginput_full{$class_suffix} gform-grid-col' id='{$field_id}_5_container'>
+                                            <label for='{$field_id}_5' id='{$field_id}_5_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$card_name_label}</label>
                                             <input type='text' name='input_{$id}.5' id='{$field_id}_5' value='{$card_name}' {$tabindex} {$disabled_text} {$card_name_placeholder} {$name_aria_attributes}/>
                                         </span>";
 		} else {
-			$card_name_field = "<span class='ginput_full{$class_suffix}' id='{$field_id}_5_container'>
+			$card_name_field = "<span class='ginput_full{$class_suffix} gform-grid-col' id='{$field_id}_5_container'>
                                             <input type='text' name='input_{$id}.5' id='{$field_id}_5' value='{$card_name}' {$tabindex} {$disabled_text} {$card_name_placeholder} {$name_aria_attributes}/>
-                                            <label for='{$field_id}_5' id='{$field_id}_5_label' {$sub_label_class_attribute}>{$card_name_label}</label>
+                                            <label for='{$field_id}_5' id='{$field_id}_5_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$card_name_label}</label>
                                         </span>";
 		}
 
-		return "<div class='ginput_complex{$class_suffix} ginput_container ginput_container_creditcard' id='{$field_id}'>" . $card_field . $expiration_field . $security_field . $card_name_field . ' </div>';
+		return "<div class='ginput_complex{$class_suffix} ginput_container ginput_container_creditcard gform-grid-row' id='{$field_id}'>" . $card_field . $expiration_field . $security_field . $card_name_field . ' </div>';
 
 	}
 

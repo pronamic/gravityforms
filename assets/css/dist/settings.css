@@ -29,18 +29,6 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
  *
  * ----------------------------------------------------------------------------- */
 
-/* Font Icons */
-
-/* stylelint-disable */
-
-/* -----------------------------------------------------------------------------
- *
- * Variables: Admin Icons (via IcoMoon)
- *
- * This file is generated using the `gulp icons` task. Do not edit it directly.
- *
- * ----------------------------------------------------------------------------- */
-
 /* Images */
 
 /* -----------------------------------------------------------------------------
@@ -117,17 +105,48 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		box-shadow: none;
 	}
 
-#gf_copy_report:active, #gf_copy_report:focus, #gf_copy_report {
-	border: none;
-	box-shadow: none;
-	color: #3e7ca6;
-	text-decoration: none;
-
+.gform-system-report__text {
+	display: none;
 }
 
-#gf_copy_report i {
-	font-size: 14px;
-	line-height: 20px;
+.gform-system-report__copy-button {
+	margin-top: 20px;
+}
+
+.gform-system-report__copy-button .gform-button__icon {
+		opacity: 1;
+		transition: var(--tr-hover);
+	}
+
+.gform-system-report__copy-button.gform-system-report__copy-button-copied .gform-system-report__copy-label, .gform-system-report__copy-button.gform-system-report__copy-button-copied .gform-button__icon {
+			opacity: 0;
+		}
+
+.gform-system-report__copy-button.gform-system-report__copy-button-copied .gform-system-report__copy-icon, .gform-system-report__copy-button.gform-system-report__copy-button-copied .gform-system-report__copy-copied {
+			opacity: 1;
+		}
+
+.gform-system-report__copy-icon {
+	color: #22a753;
+	font-size: 1.5rem;
+	margin-right: 6px;
+}
+
+.gform-system-report__copy-label {
+	opacity: 1;
+	transition: all 0.15s ease;
+}
+
+.gform-system-report__copy-copied {
+	align-items: center;
+	box-sizing: border-box;
+	display: inline-flex;
+	justify-content: center;
+	left: 0;
+	opacity: 0;
+	position: absolute;
+	text-align: center;
+	width: 100%;
 }
 
 body {
@@ -1169,6 +1188,35 @@ html[dir="rtl"] .gform-settings-field .gform-settings-input__container + .gform-
 	display: flex;
 	flex-wrap: wrap;
 }
+
+.gform-settings-choice--image-select input[type="checkbox"], .gform-settings-choice--image-select input[type="radio"] {
+		display: none;
+	}
+
+.gform-settings-choice--image-select .gform-settings-choice-label {
+		display: none;
+	}
+
+.gform-settings-choice--image-select label > span {
+		display: block;
+		position: relative;
+	}
+
+.gform-settings-choice--image-select input:checked + label > span::before {
+		background-color: #22a753;
+		border-radius: 100%;
+		color: #fff;
+		content: "\e983";
+		display: block;
+		font-family: "gform-icons-admin";
+		font-size: 1rem;
+		height: 17px;
+		padding-left: 1px;
+		position: absolute;
+		right: 0.5rem;
+		top: 0.5625rem;
+		width: 16px;
+	}
 
 .gform-settings-panel--card {
 	background: none;

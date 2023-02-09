@@ -60,6 +60,10 @@ class GF_Admin_Form_Save_Config extends Config\GF_Config {
 		parent::__construct( $parser );
 	}
 
+	public function should_enqueue() {
+		return \GFForms::is_gravity_page();
+	}
+
 	public function data() {
 		$gf_forms = $this->gf_forms;
 		return array(
