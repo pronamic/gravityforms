@@ -121,7 +121,7 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 		$license = rgpost( 'licenseKey' );
 
 		if ( $license ) {
-			update_option( 'rg_gforms_key', $license );
+			\GFFormsModel::update_license_key( $license );
 		}
 
 		if ( ! empty( rgpost( self::PARAM_EMAIL ) && ( ! empty( rgpost( self::PARAM_EMAIL_CONSENT ) ) && rgpost( self::PARAM_EMAIL_CONSENT ) != 'false' ) ) ) {

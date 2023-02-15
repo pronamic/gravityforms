@@ -20,6 +20,15 @@ class GFCommon {
 	private static $plugins;
 	private static $license_info;
 
+	/**
+	 * An array of event start times set by GFCommon::timer_start().
+	 *
+	 * @since 2.7.1
+	 *
+	 * @var float[]
+	 */
+	private static $start_times = array();
+
 	// deprecated; set to GFForms::$version in GFForms::init() for backwards compat
 	public static $version = null;
 
@@ -2099,6 +2108,7 @@ class GFCommon {
 			return;
 		}
 
+		GFCommon::timer_start( __METHOD__ );
 		GFCommon::log_debug( __METHOD__ . "(): Processing notifications for {$event} event for entry #{$entry_id}: " . print_r( $notification_ids, true ) . "\n(only active/applicable notifications are sent)" );
 
 		foreach ( $notification_ids as $notification_id ) {
@@ -2134,6 +2144,7 @@ class GFCommon {
 			self::send_notification( $notification, $form, $lead, $data );
 		}
 
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Sending notifications for entry (#%d) completed in %F seconds.', $entry_id, GFCommon::timer_end( __METHOD__ ) ) );
 	}
 
 	public static function send_form_submission_notifications( $form, $lead ) {
@@ -4439,6 +4450,7 @@ Content-Type: text/html;
 			}
 		}
 
+		self::timer_start( __METHOD__ );
 		$is_spam = false;
 
 		if ( self::akismet_enabled( $form_id ) ) {
@@ -4448,8 +4460,9 @@ Content-Type: text/html;
 			self::set_spam_filter( $form_id, __( 'Akismet Spam Filter', 'gravityforms' ), '' );
 		}
 
-		if ( has_filter( 'gform_entry_is_spam' ) || has_filter( "gform_entry_is_spam_{$form_id}" ) ) {
-
+		$gform_entry_is_spam_args = array( 'gform_entry_is_spam', $form_id );
+		if ( gf_has_filter( $gform_entry_is_spam_args ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Executing functions hooked to gform_entry_is_spam.' );
 			/**
 			 * Allows submissions to be flagged as spam by custom methods.
 			 *
@@ -4460,19 +4473,15 @@ Content-Type: text/html;
 			 * @param array $form    The form currently being processed.
 			 * @param array $entry   The entry currently being processed.
 			 */
-			$is_spam = gf_apply_filters( array( 'gform_entry_is_spam', $form_id ), $is_spam, $form, $entry );
+			$is_spam = gf_apply_filters( $gform_entry_is_spam_args, $is_spam, $form, $entry );
 			self::log_debug( __METHOD__ . '(): Result from gform_entry_is_spam filter: ' . json_encode( $is_spam ) );
-
 		}
-
-
-
-		$log_is_spam = $is_spam ? 'Yes' : 'No';
-		self::log_debug( __METHOD__ . "(): Is submission considered spam? {$log_is_spam}." );
 
 		if ( $use_cache ) {
 			GFFormDisplay::$submission[ $form_id ]['is_spam'] = $is_spam;
 		}
+
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Spam checks completed in %F seconds. Is submission considered spam? %s.', GFCommon::timer_end( __METHOD__ ), $is_spam ? 'Yes' : 'No' ) );
 
 		return $is_spam;
 	}
@@ -7350,27 +7359,48 @@ Content-Type: text/html;
 	 * @return string
 	 */
 	public static function get_db_version() {
-		global $wpdb;
+		static $version;
 
-		$ver = $wpdb->get_var( 'SELECT version();' );
+		if ( empty( $version ) ) {
+			$version = preg_replace( '/[^0-9.].*/', '', self::get_dbms_version() );
+		}
 
-		return preg_replace( '/[^0-9.].*/', '', $ver );
+		return $version;
 	}
 
 	/**
-	 * Return current database management system
+	 * Return current database management system.
 	 *
 	 * @since 2.5
 	 *
 	 * @return string either MySQL or MariaDB
 	 */
 	public static function get_dbms_type() {
-		global $wpdb;
+		static $type;
 
-		$ver = $wpdb->get_var( 'SELECT version();' );
+		if ( empty( $type ) ) {
+			$type = strpos( strtolower( self::get_dbms_version() ), 'mariadb' ) ? 'MariaDB' : 'MySQL';
+		}
 
-		return strpos( strtolower( $ver ), 'mariadb' ) ? 'MariaDB' : 'MySQL';
+		return $type;
+	}
 
+	/**
+	 * Returns the raw value from a SELECT version() db query.
+	 *
+	 * @since 2.7.1
+	 *
+	 * @return string The version number or the version number and system type.
+	 */
+	public static function get_dbms_version() {
+		static $value;
+
+		if ( empty( $value ) ) {
+			global $wpdb;
+			$value = $wpdb->get_var( 'SELECT version();' );
+		}
+
+		return $value;
 	}
 
 	/**
@@ -7565,6 +7595,63 @@ Content-Type: text/html;
 		);
 	}
 
+	/**
+	 * Stashes the start time of the specified event.
+	 *
+	 * @since 2.7.1
+	 *
+	 * @param string $event The event being timed.
+	 *
+	 * @return void
+	 */
+	public static function timer_start( $event ) {
+		self::$start_times[ $event ] = microtime( true );
+	}
+
+	/**
+	 * Returns the number of seconds that have elapsed since the start time was stashed for the specified event.
+	 *
+	 * @since 2.7.1
+	 *
+	 * @param string $event The event being timed.
+	 *
+	 * @return int|float
+	 */
+	public static function timer_end( $event ) {
+		if ( empty( self::$start_times[ $event ] ) ) {
+			return 0;
+		}
+
+		return ( microtime( true ) - self::$start_times[ $event ] );
+	}
+
+	/**
+	 * Maintains a semipersistent record of the 3 most recent events for the specified hook.
+	 *
+	 * @since 2.7.1
+	 *
+	 * @param string $hook The cron hook name.
+	 */
+	public static function record_cron_event( $hook ) {
+		if ( ! defined( 'DOING_CRON' ) || ! DOING_CRON ) {
+			return;
+		}
+
+		$events = GFCache::get( GFCache::KEY_CRON_EVENTS );
+		if ( ! is_array( $events ) ) {
+			$events = array();
+		}
+
+		if ( empty( $events[ $hook ] ) || ! is_array( $events[ $hook ] ) ) {
+			$events[ $hook ] = array( time() );
+		} else {
+			array_unshift( $events[ $hook ], time() );
+			array_splice( $events[ $hook ], 3 );
+		}
+
+		GFCache::set( GFCache::KEY_CRON_EVENTS, $events, true );
+	}
+
 }
 
 class GFCategoryWalker extends Walker {
@@ -7622,6 +7709,9 @@ class GFCategoryWalker extends Walker {
  *
  */
 class GFCache {
+
+	const KEY_CRON_EVENTS = 'cron_events_log';
+
 	private static $_transient_prefix = 'GFCache_';
 	private static $_cache = array();
 

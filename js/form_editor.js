@@ -2390,7 +2390,7 @@ function StartDuplicateField(element) {
 	         * @since @todo
 	         */
 	        field = gform.applyFilters( 'gform_duplicate_field', field, form );
-	        field = gform.applyFilters( 'gform_duplicate_field_{0}'.format( GetInputType( field ) ), field, form );
+	        field = gform.applyFilters( 'gform_duplicate_field_{0}'.gformFormat( GetInputType( field ) ), field, form );
 
             form.fields.splice(fieldIndex, 0, field);
             DuplicateField(field, sourcefieldId);

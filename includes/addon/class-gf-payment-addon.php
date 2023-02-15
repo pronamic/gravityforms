@@ -583,19 +583,19 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			return $validation_result;
 		}
 
-		$form  = $validation_result['form'];
-		$entry = GFFormsModel::create_lead( $form );
-		$feed  = $this->get_payment_feed( $entry, $form );
-
-		if ( ! $feed ) {
-			return $validation_result;
-		}
-
 		global $gf_payment_gateway;
 
 		if ( $gf_payment_gateway && $gf_payment_gateway !== $this->get_slug() ) {
 			$this->log_debug( __METHOD__ . '() Aborting. Submission already processed by ' . $gf_payment_gateway );
 
+			return $validation_result;
+		}
+
+		$form  = $validation_result['form'];
+		$entry = GFFormsModel::get_current_lead( $form );
+		$feed  = $this->get_payment_feed( $entry, $form );
+
+		if ( ! $feed ) {
 			return $validation_result;
 		}
 
@@ -1171,7 +1171,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$submission_feed = false;
 
 		// Only occurs if entry has already been processed and feed has been stored in entry meta.
-		if ( $entry['id'] ) {
+		if ( ! empty( $entry['id'] ) ) {
 			$feeds           = $this->get_feeds_by_entry( $entry['id'] );
 			$submission_feed = empty( $feeds ) ? false : $this->get_feed( $feeds[0] );
 		} elseif ( $form ) {

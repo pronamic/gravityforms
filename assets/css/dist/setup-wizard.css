@@ -418,6 +418,10 @@
 		}
 			}
 
+	.gform-admin .gform-setup-wizard__organization-container .gform-setup-wizard__organization--is-placeholder {
+			color: #5b5e80;
+		}
+
 	@media (min-width: 960px) {
 
 	.gform-admin .gform-setup-wizard__organization-container .gform-setup-wizard__other-container {

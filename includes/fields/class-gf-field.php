@@ -1506,7 +1506,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 					onkeypress='StartDuplicateField(this); return false;'
 					aria-label='" . esc_html( $this->get_field_action_aria_label( $duplicate_aria_action ) ) . "'
 				>
-					<svg width='25' height='25' fill='none' xmlns='http://www.w3.org/2000/svg'>
+					<svg width='25' height='25'  role='presentation' focusable='false'  fill='none' xmlns='http://www.w3.org/2000/svg'>
 						<path class='stroke' d='M6 4.75h14c.69 0 1.25.56 1.25 1.25v14c0 .69-.56 1.25-1.25 1.25H6c-.69 0-1.25-.56-1.25-1.25V6c0-.69.56-1.25 1.25-1.25z' stroke='#242748' stroke-width='1.5'/>
 						<path class='stroke fill' d='M10 5L6 9.5V5h4z' fill='#242748' stroke='#242748'/>
 						<path class='stroke' d='M9 13h8M13 9v8' stroke='#242748' stroke-width='1.5'/>

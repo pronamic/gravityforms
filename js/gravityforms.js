@@ -20,7 +20,12 @@ function announceAJAXValidationErrors() {
 	if ( ! jQuery('.gform_validation_errors').length ) {
 		return;
 	}
-	jQuery( '#gf_form_focus' ).focus();
+	const focusableEl = document.querySelector( '[data-js="gform-focus-validation-error"]' );
+	if ( focusableEl ) {
+		// elements with tabindex="-1" are not focusable by default, but can be focused programmatically
+		focusableEl.setAttribute( 'tabindex', '-1' );
+		focusableEl.focus();
+	}
 	setTimeout( function() {
 	  wp.a11y.speak( jQuery( '.gform_validation_errors > h2' ).text() );
 	}, 1000 );
@@ -1675,11 +1680,11 @@ function gformAdjustRowAttributes( $container ) {
         var $input = jQuery( this ).find( 'input, select, textarea' );
         $input.each( function( index, input ) {
             var $this = jQuery( input );
-            $this.attr( 'aria-label', $this.data( 'aria-label-template' ).format( i + 1 ) );
+            $this.attr( 'aria-label', $this.data( 'aria-label-template' ).gformFormat( i + 1 ) );
         } );
 
         var $remove = jQuery( this ).find( '.delete_list_item' );
-        $remove.attr( 'aria-label', $remove.data( 'aria-label-template' ).format( i + 1 ) );
+        $remove.attr( 'aria-label', $remove.data( 'aria-label-template' ).gformFormat( i + 1 ) );
 
     } );
 
@@ -2086,8 +2091,11 @@ var GFMergeTag = function() {
 
 		switch ( modifier ) {
 			case 'label':
-				var label = field.find('.gfield_label').text();
-				return label;
+				// Remove screen reader text from product field label.
+				var label = field.find('.gfield_label');
+				label.find( '.screen-reader-text' ).remove();
+				var labelText = label.text();
+				return labelText;
 			    break;
 			case 'qty':
 				if ( field.hasClass('gfield_price') ){
@@ -2274,8 +2282,8 @@ var GFCalc = function(formId, formulaFields){
 
         // @since 2.5.10 - namespace event to avoid multiple bindings.
 	    jQuery(document)
-		    .off("gform_post_conditional_logic.gfCalc_{0}".format(formId))
-		    .on("gform_post_conditional_logic.gfCalc_{0}".format(formId), function(){
+		    .off("gform_post_conditional_logic.gfCalc_{0}".gformFormat(formId))
+		    .on("gform_post_conditional_logic.gfCalc_{0}".gformFormat(formId), function(){
 			    calc.runCalcs( formId, formulaFields );
 	    } );
 
@@ -2547,7 +2555,7 @@ function getMatchGroups(expr, patt) {
 
 function gf_get_field_number_format(fieldId, formId, context) {
 
-    var fieldNumberFormats = rgars(window, 'gf_global/number_formats/{0}/{1}'.format(formId, fieldId)),
+    var fieldNumberFormats = rgars(window, 'gf_global/number_formats/{0}/{1}'.gformFormat(formId, fieldId)),
         format = false;
 
     if (fieldNumberFormats === '') {
@@ -2905,7 +2913,7 @@ function gformValidateFileSize( field, max_file_size ) {
                  *  @param {plupload.Uploader} up           Instance of Uploader responsible for uploading current file. See: https://www.plupload.com/docs/v2/Uploader.
                  */
                 statusMarkup = gform.applyFilters( 'gform_file_upload_status_markup', statusMarkup, file, size, strings, removeFileJs, up )
-                    .format( file.id, htmlEncode( file.name ), size, strings.cancel_upload, removeFileJs, strings.cancel );
+	                .gformFormat( file.id, htmlEncode( file.name ), size, strings.cancel_upload, removeFileJs, strings.cancel );
 
                 $( '#' + up.settings.filelist ).prepend( statusMarkup );
 
@@ -3448,11 +3456,22 @@ if( ! window['rgar'] ) {
     }
 }
 
-String.prototype.format = function () {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function (match, number) {
-        return typeof args[number] != 'undefined' ? args[number] : match;
-    });
+if ( ! String.prototype.gformFormat ) {
+	String.prototype.gformFormat = function() {
+		var args = arguments;
+		return this.replace( /{(\d+)}/g, function( match, number ) {
+			return typeof args[ number ] != 'undefined' ? args[ number ] : match;
+		} );
+	};
+}
+
+// deprecated. remove in 2.8
+String.prototype.format = function() {
+	var args = arguments;
+	console.warn( 'String.format will be replaced with String.gformFormat in Gravity Forms version 2.8.' );
+	return this.replace( /{(\d+)}/g, function( match, number ) {
+		return typeof args[ number ] != 'undefined' ? args[ number ] : match;
+	} );
 };
 
 

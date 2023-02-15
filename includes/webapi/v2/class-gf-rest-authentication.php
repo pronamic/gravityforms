@@ -205,6 +205,9 @@ class GF_REST_Authentication {
 
 		$error = $this->get_error();
 		if ( empty( $error ) ) {
+			// rest_handle_options_request() will be called by $this->check_user_permissions().
+			remove_filter( 'rest_pre_dispatch', 'rest_handle_options_request' );
+
 			// Indicate auth succeeded.
 			return true;
 		}
@@ -834,7 +837,7 @@ class GF_REST_Authentication {
 		$this->update_last_access();
 		$this->log_debug( __METHOD__ . '(): Permissions valid.' );
 
-		return null;
+		return rest_handle_options_request( null, $server, $request );
 	}
 
 

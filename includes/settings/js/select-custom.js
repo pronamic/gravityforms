@@ -29,11 +29,14 @@ window.addEventListener( 'load' , function() {
 
 			// Hide input, show drop down.
 			$inputField.style.display = 'none';
-
-			$selectOptions.forEach( function( $select ) {
-				$select.value         = '';
-				$select.style.display = 'block';
-			} );
+			jQuery( this )
+				.closest('div.gform-settings-field__select_custom')
+				.find( 'select' )
+				.each( function( index, element ) {
+					element.value         = '';
+					element.style.display = 'block';
+				}
+			);
 
 		} );
 

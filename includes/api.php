@@ -2129,6 +2129,10 @@ class GFAPI {
 			return self::get_missing_table_wp_error( $table );
 		}
 
+		if ( $form_id !== 0 && $form_id !== '0' && ! self::form_id_exists( $form_id ) ) {
+			return new WP_Error( 'not_found', __( 'Form not found', 'gravityforms' ) );
+		}
+
 		$feed_meta_json = json_encode( $feed_meta );
 		$sql            = $wpdb->prepare( "INSERT INTO {$table} (form_id, meta, addon_slug) VALUES (%d, %s, %s)", $form_id, $feed_meta_json, $addon_slug );
 
@@ -2259,29 +2263,14 @@ class GFAPI {
 		}
 
 		/**
-		 * Allows async (background) processing of notifications to be enabled or disabled.
-		 *
-		 * @since 2.6.9
-		 *
-		 * @param bool   $is_asynchronous       Is async (background) processing of notifications enabled? Default is false.
-		 * @param string $event                 The event the notifications are to be sent for.
-		 * @param array  $notifications_to_send An array containing the IDs of the notifications to be sent.
-		 * @param array  $form                  The form currently being processed.
-		 * @param array  $entry                 The entry currently being processed.
-		 * @param array  $data                  An array of data which can be used in the notifications via the generic {object:property} merge tag. Defaults to empty array.
+		 * @var Async\GF_Notifications_Processor $processor
 		 */
-		$is_asynchronous = gf_apply_filters( array(
-			'gform_is_asynchronous_notifications_enabled',
-			$form_id,
-		), false, $event, $notifications_to_send, $form, $entry, $data );
+		$processor       = GFForms::get_service_container()->get( Async\GF_Background_Process_Service_Provider::NOTIFICATIONS );
+		$is_asynchronous = $processor->is_enabled( $notifications_to_send, $form, $entry, $event, $data );
 
 		if ( $is_asynchronous ) {
 			GFCommon::log_debug( __METHOD__ . sprintf( '(): Adding %d notification(s) to the async processing queue for entry #%d.', count( $notifications_to_send ), $entry_id ) );
 
-			/**
-			 * @var Async\GF_Notifications_Processor $processor
-			 */
-			$processor = GFForms::get_service_container()->get( Async\GF_Background_Process_Service_Provider::NOTIFICATIONS );
 			$processor->push_to_queue( array(
 				'notifications' => $notifications_to_send,
 				'form_id'       => $form_id,

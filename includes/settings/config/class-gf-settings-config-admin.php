@@ -109,7 +109,7 @@ class GF_Settings_Config_Admin extends GF_Config {
 	 */
 	public function get_first_posts_for_type( $post_type, $count ) {
 		$first_posts = array();
-		$posts       = get_posts( array( 'post_type' => $post_type, 'number' => $count ) );
+		$posts       = get_posts( array( 'post_type' => $post_type, 'numberposts' => $count ) );
 
 		if ( ! is_array( $posts ) || empty( $posts ) ) {
 			return false;

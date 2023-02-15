@@ -636,6 +636,7 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 */
 		public function handle_cron_healthcheck() {
 			GFCommon::log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
+			GFCommon::record_cron_event( $this->cron_hook_identifier );
 
 			if ( $this->is_process_running() ) {
 				// Background process already running.

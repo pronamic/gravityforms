@@ -115,7 +115,7 @@ var GFPageConditionalLogic = function (args) {
          * @param int   $formId    The form id.
          */
         gform.doAction('gform_frontend_pages_evaluated', self.options.pages, self.options.formId, self);
-        gform.doAction('gform_frontend_pages_evaluated_{0}'.format(self.options.formId), self.options.pages, self.options.formId, self);
+        gform.doAction('gform_frontend_pages_evaluated_{0}'.gformFormat(self.options.formId), self.options.pages, self.options.formId, self);
 
     };
 
@@ -192,7 +192,7 @@ var GFPageConditionalLogic = function (args) {
          * @param int   $formId The form id.
          */
         gform.doAction('gform_frontend_page_visible', page, self.options.formId);
-        gform.doAction('gform_frontend_page_visible_{0}'.format(self.options.formId), page, self.options.formId);
+        gform.doAction('gform_frontend_page_visible_{0}'.gformFormat(self.options.formId), page, self.options.formId);
 
     };
 
@@ -216,7 +216,7 @@ var GFPageConditionalLogic = function (args) {
          * @param int   $formId The form id.
          */
         gform.doAction('gform_frontend_page_hidden', page, self.options.formId);
-        gform.doAction('gform_frontend_page_hidden_{0}'.format(self.options.formId), page, self.options.formId);
+        gform.doAction('gform_frontend_page_hidden_{0}'.gformFormat(self.options.formId), page, self.options.formId);
 
     };
 

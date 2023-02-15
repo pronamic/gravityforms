@@ -324,25 +324,25 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		text-align: center;
 	}
 
-.gform_wrapper.gravity-theme .gfield_password_strength .short, .gform_wrapper.gravity-theme .gfield_password_strength .mismatch {
+.gform_wrapper.gravity-theme .gfield_password_strength.short, .gform_wrapper.gravity-theme .gfield_password_strength.mismatch {
 			background-color: #ffa0a0;
 			border-bottom: 3px solid #f04040;
 			border-color: #f04040;
 		}
 
-.gform_wrapper.gravity-theme .gfield_password_strength .bad {
+.gform_wrapper.gravity-theme .gfield_password_strength.bad {
 			background-color: #ffb78c;
 			border-bottom: 3px solid #ff853c;
 			border-color: #ff853c;
 		}
 
-.gform_wrapper.gravity-theme .gfield_password_strength .good {
+.gform_wrapper.gravity-theme .gfield_password_strength.good {
 			background-color: #ffec8b;
 			border-bottom: 3px solid #fc0;
 			border-color: #fc0;
 		}
 
-.gform_wrapper.gravity-theme .gfield_password_strength .strong {
+.gform_wrapper.gravity-theme .gfield_password_strength.strong {
 			background-color: #c3ff88;
 			border-bottom: 3px solid #8dff1c;
 			border-color: #8dff1c;

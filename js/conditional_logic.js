@@ -134,9 +134,9 @@ function gf_is_match( formId, rule ) {
 		$inputs;
 
 	if( isInputSpecific ) {
-		$inputs = $( '#input_{0}_{1}_{2}'.format( formId, fieldId, inputIndex ) );
+		$inputs = $( '#input_{0}_{1}_{2}'.gformFormat( formId, fieldId, inputIndex ) );
 	} else {
-		$inputs = $( 'input[id="input_{0}_{1}"], input[id^="input_{0}_{1}_"], input[id^="choice_{0}_{1}_"], select#input_{0}_{1}, textarea#input_{0}_{1}'.format( formId, fieldId ) );
+		$inputs = $( 'input[id="input_{0}_{1}"], input[id^="input_{0}_{1}_"], input[id^="choice_{0}_{1}_"], select#input_{0}_{1}, textarea#input_{0}_{1}'.gformFormat( formId, fieldId ) );
 	}
 
 	var isCheckable = $.inArray( $inputs.attr( 'type' ), [ 'checkbox', 'radio' ] ) !== -1;
@@ -172,7 +172,7 @@ function gf_is_match_checkable( $inputs, rule, formId, fieldId ) {
 		}
 		// if the 'other' choice is selected, get the value from the 'other' text input
 		else if ( fieldValue == 'gf_other_choice' ) {
-			fieldValue = jQuery( '#input_{0}_{1}_other'.format( formId, fieldId ) ).val();
+			fieldValue = jQuery( '#input_{0}_{1}_other'.gformFormat( formId, fieldId ) ).val();
 		}
 
 		if( gf_matches_operation( fieldValue, rule.value, rule.operator ) ) {

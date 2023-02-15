@@ -581,8 +581,8 @@ class GF_Field_Repeater extends GF_Field {
 		$replaced = array();
 		foreach ( $matches as $match ) {
 			if ( ! in_array( $match[1], $replaced ) ) {
-				$input_id      = $match[1] . "-{$index}";
-				$field_content = str_replace( $match[1], $input_id, $field_content );
+				$input_id      = str_replace( $match[1], $match[1] . "-${index}", $match[0] );
+				$field_content = str_replace( $match[0], $input_id, $field_content );
 				$replaced[]    = $match[1];
 			}
 		}

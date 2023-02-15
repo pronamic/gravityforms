@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.7
+Version: 2.7.1
 Requires at least: 4.0
 Requires PHP: 5.6
 Author: Gravity Forms
@@ -141,6 +141,16 @@ if ( ! defined( 'GRAVITY_MANAGER_URL' ) ) {
 	define( 'GRAVITY_MANAGER_URL', 'https://gravityapi.com/wp-content/plugins/gravitymanager' );
 }
 
+/**
+ * The name of the plugin extracted from its path.
+ *
+ * @since 2.7
+ *
+ * @var string
+ */
+define( 'GF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+
+
 require_once GF_PLUGIN_DIR_PATH . 'includes/class-gf-service-container.php';
 require_once GF_PLUGIN_DIR_PATH . 'includes/class-gf-service-provider.php';
 require_once GF_PLUGIN_DIR_PATH . 'includes/transients/interface-gf-transient-strategy.php';
@@ -236,7 +246,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.7';
+	public static $version = '2.7.1';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -312,6 +322,7 @@ class GFForms {
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Form_Display\GF_Form_Display_Service_Provider() );
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Environment_Config\GF_Environment_Config_Service_Provider() );
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Async\GF_Background_Process_Service_Provider() );
+		$container->add_provider( new \GF_System_Report_Service_Provider() );
 	}
 
 	/**
@@ -343,6 +354,7 @@ class GFForms {
 		require_once GF_PLUGIN_DIR_PATH . '/includes/template-library/class-gf-template-library-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/environment-config/class-gf-environment-config-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/async/class-gf-background-process-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/system-status/class-gf-system-report-service-provider.php';
 
 		if ( ! empty( self::$container ) ) {
 			return self::$container;
@@ -2778,7 +2790,6 @@ class GFForms {
 		wp_register_script( 'gform_gravityforms_theme_vendors', $base_url . "/assets/js/dist/vendor-theme{$min}.js", array(
 			'gform_gravityforms_utils',
 			'gform_gravityforms',
-			'gform_simplebar',
 		), $version, true );
 		wp_register_script( 'gform_gravityforms_theme', $base_url . "/assets/js/dist/scripts-theme{$min}.js", array(
 			'gform_gravityforms_theme_vendors',
@@ -6383,6 +6394,7 @@ class GFForms {
 	public static function cron() {
 
 		GFCommon::log_debug( __METHOD__ . '(): Starting cron.' );
+		GFCommon::record_cron_event( 'gravityforms_cron' );
 
 		self::add_security_files();
 

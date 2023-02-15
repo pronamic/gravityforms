@@ -247,13 +247,16 @@ class GF_Form_CRUD_Handler {
 		$gf_forms_model = $this->gf_forms_model;
 		$gf_common      = $this->gf_common;
 		$gf_forms       = $this->gf_forms;
+		$action         = rgpost( 'action' );
 
-		// Clean up form meta JSON.
-		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Form meta json before stripslashes: ' . $this->form_json );
+		if ( $action !== 'create_from_template' ) {
+			// Clean up form meta JSON.
+			$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Form meta json before stripslashes: ' . $this->form_json );
 
-		$this->form_json = stripslashes( $this->form_json );
+			$this->form_json = stripslashes( $this->form_json );
+		}
+
 		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Form meta json before nl2br: ' . $this->form_json );
-
 		$this->form_json = nl2br( $this->form_json );
 		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Final form meta json: ' . $this->form_json );
 

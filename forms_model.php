@@ -1008,9 +1008,7 @@ class GFFormsModel {
 		}
 
 		// Ensure the fields property is in the correct format, an associative array will cause warnings and js errors in the form editor.
-		if ( isset( $form['fields'] ) && is_array( $form['fields'] ) ) {
-			$form['fields'] = array_values( $form['fields'] );
-		}
+		$form['fields'] = is_array( rgar( $form, 'fields' ) ) ? array_values( $form['fields'] ) : array();
 
 		// Loading notifications
 		$form['notifications'] = self::unserialize( $form_row['notifications'] );
@@ -1085,39 +1083,38 @@ class GFFormsModel {
 	 * @return array $form The Form object after the field objects are converted.
 	 */
 	public static function convert_field_objects( $form ) {
-		$page_number = 1;
-		if ( is_array( rgar( $form, 'fields' ) ) ) {
-			foreach ( $form['fields'] as &$field ) {
+		$page_number    = 1;
+		$form['fields'] = is_array( rgar( $form, 'fields' ) ) ? array_values( $form['fields'] ) : array();
 
-				// convert adminOnly property to visibility
-				if ( ! isset( $field['visibility'] ) ) {
-					$field['visibility'] = isset( $field['adminOnly'] ) && $field['adminOnly'] ? 'administrative' : 'visible';
-					unset( $field['adminOnly'] );
-				}
-
-				$field = GF_Fields::create( $field );
-				if ( isset( $form['id'] ) ) {
-					$field->formId = $form['id'];
-				}
-
-				$field->pageNumber = $page_number;
-
-				if ( is_array( $field->fields ) ) {
-					self::convert_sub_field_objects( $field, $form['id'], $page_number );
-				}
-
-				if ( $field->type == 'page' ) {
-					$page_number ++;
-					$field->pageNumber = $page_number;
-				}
-
-				// Populate required cssClass property with empty string if not set to avoid JS errors when rendering.
-				if ( ! isset( $field->cssClass ) ) {
-					$field->cssClass = '';
-				}
-
-				$field->post_convert_field();
+		foreach ( $form['fields'] as &$field ) {
+			// convert adminOnly property to visibility
+			if ( ! isset( $field['visibility'] ) ) {
+				$field['visibility'] = isset( $field['adminOnly'] ) && $field['adminOnly'] ? 'administrative' : 'visible';
+				unset( $field['adminOnly'] );
 			}
+
+			$field = GF_Fields::create( $field );
+			if ( isset( $form['id'] ) ) {
+				$field->formId = $form['id'];
+			}
+
+			$field->pageNumber = $page_number;
+
+			if ( is_array( $field->fields ) ) {
+				self::convert_sub_field_objects( $field, $form['id'], $page_number );
+			}
+
+			if ( $field->type == 'page' ) {
+				$page_number ++;
+				$field->pageNumber = $page_number;
+			}
+
+			// Populate required cssClass property with empty string if not set to avoid JS errors when rendering.
+			if ( ! isset( $field->cssClass ) ) {
+				$field->cssClass = '';
+			}
+
+			$field->post_convert_field();
 		}
 
 		return $form;
@@ -2908,6 +2905,7 @@ class GFFormsModel {
 			return;
 		}
 
+		GFCommon::timer_start( __METHOD__ );
 		GFCommon::log_debug( __METHOD__ . '(): Saving entry.' );
 
 		$is_form_editor  = GFCommon::is_form_editor();
@@ -2930,6 +2928,7 @@ class GFFormsModel {
 			// Force a new entry to be saved when an entry does not exist for the supplied id.
 			$entry       = array();
 			$is_new_lead = true;
+			GFCommon::log_debug( __METHOD__ . '(): Existing entry not found. Saving new entry instead.' );
 		}
 
 		$die_message = esc_html__( 'An error prevented the entry for this form submission being saved. Please contact support.', 'gravityforms' );
@@ -3102,6 +3101,7 @@ class GFFormsModel {
 			/* @var WP_Error $error */
 			$error = $results['inserts'];
 			GFCommon::log_error( __METHOD__ . '(): Error while saving field values for new entry. ' . $error->get_error_message() );
+			self::add_note( $entry['id'], 0, 'Gravity Forms', sprintf( esc_html__( 'Error while saving field values: %s', 'gravityforms' ), $error->get_error_message() ), 'save_entry', 'error' );
 			wp_die( $die_message );
 		}
 
@@ -3123,6 +3123,7 @@ class GFFormsModel {
 				/* @var WP_Error $error */
 				$error = $results['inserts'];
 				GFCommon::log_error( __METHOD__ . '(): Error while saving calculation field values for new entry. ' . $error->get_error_message() );
+				self::add_note( $entry['id'], 0, 'Gravity Forms', sprintf( esc_html__( 'Error while saving calculation field values: %s', 'gravityforms' ), $error->get_error_message() ), 'save_entry', 'error' );
 				wp_die( $die_message );
 			}
 
@@ -3141,6 +3142,7 @@ class GFFormsModel {
 				/* @var WP_Error $error */
 				$error = $results['inserts'];
 				GFCommon::log_error( __METHOD__ . '(): Error while saving total field values for new entry. ' . $error->get_error_message() );
+				self::add_note( $entry['id'], 0, 'Gravity Forms', sprintf( esc_html__( 'Error while saving total field values: %s', 'gravityforms' ), $error->get_error_message() ), 'save_entry', 'error' );
 				wp_die( $die_message );
 			}
 		}
@@ -3182,6 +3184,7 @@ class GFFormsModel {
 		self::hydrate_repeaters( $entry, $form );
 
 		GFCommon::log_debug( __METHOD__ . '(): Finished saving entry fields.' );
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): %s entry completed in %F seconds.', $is_new_lead ? 'Saving' : 'Updating', GFCommon::timer_end( __METHOD__ ) ) );
 	}
 
 
@@ -3290,6 +3293,9 @@ class GFFormsModel {
 	}
 
 	public static function create_lead( $form ) {
+		GFCommon::timer_start( __METHOD__ );
+		$form_id = absint( rgar( $form, 'id' ) );
+
 		global $current_user;
 
 		$total_fields       = array();
@@ -3300,7 +3306,7 @@ class GFFormsModel {
 		$lead['post_id']      = null;
 		$lead['date_created'] = null;
 		$lead['date_updated'] = null;
-		$lead['form_id']      = $form['id'];
+		$lead['form_id']      = rgar( $form, 'id' );
 		$lead['ip']           = rgars( $form, 'personalData/preventIP' ) ? '' : self::get_ip();
 		$source_url           = self::truncate( self::get_current_page_url(), 200 );
 		$lead['source_url']   = esc_url_raw( $source_url );
@@ -3315,7 +3321,7 @@ class GFFormsModel {
 		 * @param array $form The form currently being processed.
 		 *
 		 */
-		$lead['currency'] = gf_apply_filters( array( 'gform_currency_pre_save_entry', $form['id'] ), GFCommon::get_currency(), $form );
+		$lead['currency'] = gf_apply_filters( array( 'gform_currency_pre_save_entry', $form_id ), GFCommon::get_currency(), $form );
 
 		foreach ( $form['fields'] as $field ) {
 			/* @var $field GF_Field */
@@ -3384,6 +3390,8 @@ class GFFormsModel {
 				$lead[ $total_field->id ] = self::get_prepared_input_value( $form, $total_field, $lead, $total_field->id );
 			}
 		}
+
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Draft entry created for form (#%d) in %F seconds.', $form_id, GFCommon::timer_end( __METHOD__ ) ) );
 
 		return $lead;
 	}
@@ -4793,7 +4801,7 @@ class GFFormsModel {
 	}
 
 	public static function create_post( $form, &$lead ) {
-
+		GFCommon::timer_start( __METHOD__ );
 		GFCommon::log_debug( 'GFFormsModel::create_post(): Starting.' );
 
 		$has_post_field = false;
@@ -5012,15 +5020,22 @@ class GFFormsModel {
 		GFCommon::log_debug( 'GFFormsModel::create_post(): Updating entry with post id.' );
 		self::update_lead_property( $lead['id'], 'post_id', $post_id );
 
-		/**
-		 * Fires after a post, from a form with post fields, is created
-		 *
-		 * @param int   $form['id'] The ID of the form where the new post was created
-		 * @param int   $post_id    The new Post ID created after submission
-		 * @param array $lead       The Lead Object
-		 * @param array $form       The Form Object for the form used to create the post
-		 */
-		gf_do_action( array( 'gform_after_create_post', $form['id'] ), $post_id, $lead, $form );
+		$gform_after_create_post_args = array( 'gform_after_create_post', $form['id'] );
+		if ( gf_has_action( $gform_after_create_post_args ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Executing functions hooked to gform_after_create_post.' );
+			/**
+			 * Fires after a post, from a form with post fields, is created
+			 *
+			 * @param int   $form    ['id'] The ID of the form where the new post was created
+			 * @param int   $post_id The new Post ID created after submission
+			 * @param array $lead    The Lead Object
+			 * @param array $form    The Form Object for the form used to create the post
+			 */
+			gf_do_action( $gform_after_create_post_args, $post_id, $lead, $form );
+			GFCommon::log_debug( __METHOD__ . '(): Completed gform_after_create_post.' );
+		}
+
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Post creation completed in %F seconds.', GFCommon::timer_end( __METHOD__ ) ) );
 
 		return $post_id;
 	}
@@ -6252,20 +6267,27 @@ class GFFormsModel {
 
 		if ( empty( $new_key ) ) {
 
+			if ( is_multisite() && is_main_site() ) {
+				$sites = get_sites();
+				foreach ( $sites as $site ) {
+					delete_blog_option( $site->blog_id, 'rg_gforms_key' );
+				}
+			}
+
 			delete_option( 'rg_gforms_key' );
 
 			// Unlink the site with the license key on Gravity API.
 			$license_connector->update_site_registration( '' );
 
 		} elseif ( $previous_key != $new_key ) {
-			update_option( 'rg_gforms_key', $new_key_md5 );
+			self::update_license_key( $new_key_md5 );
 
 			// Updating site registration with Gravity Server.
 			$result = $license_connector->update_site_registration( $new_key_md5, true );
 
 			// New key is invalid, revert to old key.
 			if ( ! $result->can_be_used() ) {
-				update_option( 'rg_gforms_key', $previous_key );
+				self::update_license_key( $previous_key );
 			}
 		} else {
 			// Updating site registration with Gravity Server.
@@ -6781,17 +6803,26 @@ class GFFormsModel {
 	 * Return the current lead being processed. Should only be called when a form has been submitted.
 	 * If called before the "real" lead has been saved to the database, uses self::create_lead() to create
 	 * a temporary lead to work with.
+	 *
+	 * @since Unknown
+	 * @since 2.7.1 Added the optional $form arg.
+	 *
+	 * @param array $form The form being processed or an empty array to get the form based on the ID from the gform_submit input.
+	 *
+	 * @return false|array
 	 */
-	public static function get_current_lead() {
+	public static function get_current_lead( $form = array() ) {
+		$form_id = absint( rgpost( 'gform_submit' ) );
 
-		// if a GF submission is not in process, always return false
-		if ( ! rgpost( 'gform_submit' ) ) {
+		// If a GF submission is not in process, always return false.
+		if ( empty( $form_id ) ) {
 			return false;
 		}
 
-		if ( ! self::$_current_lead ) {
-			$form_id             = absint( rgpost( 'gform_submit' ) );
-			$form                = self::get_form_meta( $form_id );
+		if ( rgar( self::$_current_lead, 'form_id' ) != $form_id ) {
+			if ( absint( rgar( $form, 'id' ) ) !== $form_id ) {
+				$form = self::get_form_meta( $form_id );
+			}
 			self::$_current_lead = self::create_lead( $form );
 		}
 
@@ -7074,16 +7105,20 @@ class GFFormsModel {
 	}
 
 	public static function set_entry_meta( $lead, $form ) {
+		GFCommon::timer_start( __METHOD__ );
+		$entry_id   = absint( rgar( $lead, 'id' ) );
 		$entry_meta = self::get_entry_meta( $form['id'] );
 		$keys       = array_keys( $entry_meta );
 		foreach ( $keys as $key ) {
 			if ( isset( $entry_meta[ $key ]['update_entry_meta_callback'] ) ) {
 				$callback = $entry_meta[ $key ]['update_entry_meta_callback'];
 				$value    = call_user_func_array( $callback, array( $key, $lead, $form ) );
-				gform_update_meta( $lead['id'], $key, $value );
+				gform_update_meta( $entry_id, $key, $value );
 				$lead[ $key ] = $value;
 			}
 		}
+
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Saving meta for entry (#%d) completed in %F seconds.', $entry_id, GFCommon::timer_end( __METHOD__ ) ) );
 
 		return $lead;
 	}
@@ -8112,6 +8147,27 @@ class GFFormsModel {
 		}
 
 		return (bool) $result;
+	}
+
+	/**
+	 * Updates the license key, If multisite, it updates the license key for all sites in the network.
+	 *
+	 * @since 2.7
+	 *
+	 * @param string $license The license key.
+	 *
+	 * @return void
+	 */
+	public static function update_license_key( $license ) {
+		if ( is_multisite() && is_main_site() ) {
+			$sites = get_sites();
+			foreach ( $sites as $site ) {
+				update_blog_option( $site->blog_id, 'rg_gforms_key', $license );
+				update_blog_option( $site->blog_id, 'gform_pending_installation', false );
+			}
+		}
+
+		update_option( 'rg_gforms_key', $license );
 	}
 
 }

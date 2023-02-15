@@ -34,9 +34,24 @@ class Full_Screen_Handler {
 	}
 
 	/**
+	 * Indicates if the given database management system version and type support the JSON_CONTAINS function.
+	 *
+	 * @since 2.7.1
+	 *
+	 * @param string $version The database management system version number.
+	 * @param string $type    The database management system type.
+	 *
+	 * @return bool
+	 */
+	public static function db_supports_json_contains( $version, $type ) {
+		return ( $type === 'MySQL' && version_compare( $version, '5.7.8', '>=' ) ) || ( $type === 'MariaDB' && version_compare( $version, '10.2.25', '>=' ) );
+	}
+
+	/**
 	 * Get the MySQL version for the current server environment.
 	 *
 	 * @since 2.7
+	 * @deprecated 2.7.1
 	 *
 	 * @return string
 	 */

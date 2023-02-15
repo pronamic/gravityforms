@@ -94,6 +94,8 @@ class GF_REST_Form_Feeds_Controller extends GF_REST_Controller {
 
 		$feed_id = GFAPI::add_feed( $form_id, $feed['meta'], $feed['addon_slug'] );
 		if ( is_wp_error( $feed_id ) ) {
+			$feed_id->add_data( array( 'status' => $this->get_error_status( $feed_id ) ) );
+
 			return $feed_id;
 		}
 
@@ -199,7 +201,7 @@ class GF_REST_Form_Feeds_Controller extends GF_REST_Controller {
 			$form_id = rgar( $feed, 'form_id' );
 		}
 
-		if ( $form_id ) {
+		if ( isset( $form_id ) ) {
 			$feed['form_id'] = absint( $form_id );
 		} else {
 			return new WP_Error( 'missing_form_id', __( 'Missing form id', 'gravityforms' ), array( 'status' => 400 ) );

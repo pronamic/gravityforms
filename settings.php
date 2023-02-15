@@ -377,11 +377,18 @@ class GFSettings {
 	 * @return array
 	 */
 	private static function plugin_settings_fields() {
+		$license_section_description = esc_html__( 'A valid license key is required for access to automatic plugin upgrades and product support.', 'gravityforms' );
+		$is_hidden                   = false;
+		if ( is_multisite() && ! is_main_site() && is_plugin_active_for_network( GF_PLUGIN_BASENAME ) ) {
+			$is_hidden                   = true;
+			$license_section_description = esc_html__( 'License key is managed by the administrator of this network', 'gravityforms' );
+		}
+
 		$fields = array(
 			'license_key'         => array(
 				'title'       => esc_html__( 'Support License Key', 'gravityforms' ),
 				'class'       => 'gform-settings-panel--full',
-				'description' => esc_html__( 'A valid license key is required for access to automatic plugin upgrades and product support.', 'gravityforms' ),
+				'description' => $license_section_description,
 				'fields'      => array(
 					array(
 						'name'                => 'license_key',
@@ -391,6 +398,7 @@ class GFSettings {
 						'callback'            => array( 'GFSettings', 'license_key_render_callback' ),
 						'class'               => 'gform-admin-input',
 						'validation_callback' => array( 'GFSettings', 'license_key_validation_callback' ),
+						'hidden'              => $is_hidden,
 						'after_input'         => function () {
 							/**
 							 * @var License\GF_License_API_Connector $license_connector
@@ -916,11 +924,11 @@ class GFSettings {
 						'id'          => 'recpatcha',
 						'title'       => esc_html__( 'reCAPTCHA Settings', 'gravityforms' ),
 						'description' => sprintf(
-							'%s <strong>%s</strong> %s <a href="http://www.google.com/recaptcha/" target="_blank">%s</a>',
+							'%s <strong>%s</strong> %s <a href="https://www.google.com/recaptcha/admin/create" target="_blank">%s</a>',
 							esc_html__( 'Gravity Forms integrates with reCAPTCHA, a free CAPTCHA service that uses an advanced risk analysis engine and adaptive challenges to keep automated software from engaging in abusive activities on your site. ', 'gravityforms' ),
 							esc_html__( 'Please note, only v2 keys are supported and checkbox keys are not compatible with invisible reCAPTCHA.', 'gravityforms' ),
 							esc_html__( 'These settings are required only if you decide to use the reCAPTCHA field.', 'gravityforms' ),
-							esc_html__( 'Read more about reCAPTCHA.', 'gravityforms' )
+							esc_html__( 'Get your reCAPTCHA Keys.', 'gravityforms' )
 						),
 						'class'       => 'gform-settings-panel--full',
 						'fields'      => array(

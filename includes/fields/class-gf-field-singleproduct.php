@@ -187,11 +187,11 @@ class GF_Field_SingleProduct extends GF_Field {
 			$field_label = rgar( $value, $this->id . '.1' );
 		}
 
-		if ( $this->disableQuantity || ! $force_frontend_label ) {
+		if ( $this->disableQuantity || ! $this->get_context_property( 'rendering_form' ) ) {
 			$label = esc_html( $field_label );
 		} else {
 			$product_quantity_sub_label = $this->get_product_quantity_label( $this->formId );
-			$label                      = '<span class="gform-field-label gform-field-label--type-sub gfield_label_product">' . esc_html( $field_label ) . '</span>' . ' <span class="screen-reader-text">' . $product_quantity_sub_label . '</span>';
+			$label                      = '<span class="gform-field-label gfield_label_product">' . esc_html( $field_label ) . '</span>' . ' <span class="screen-reader-text">' . $product_quantity_sub_label . '</span>';
 		}
 		return $label;
 	}

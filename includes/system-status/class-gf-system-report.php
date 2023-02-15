@@ -24,6 +24,21 @@ class GF_System_Report {
 	 */
 	public static $background_tasks = null;
 
+
+	/**
+	 * Remove WordPress's emoji scripts and styles from the system report page.
+	 *
+	 * Can be removed when WordPress has full support for the wp-exclude-emoji class.
+	 *
+	 * @since 2.7.1
+	 *
+	 * @return void
+	 */
+	public function remove_emoji_script() {
+		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+		remove_action( 'admin_print_styles', 'print_emoji_styles' );
+	}
+
 	/**
 	 * Display system report page.
 	 *
@@ -48,8 +63,6 @@ class GF_System_Report {
 		$sections           = self::get_system_report();
 		$system_report_text = self::get_system_report_text( $sections );
 
-		wp_print_styles( array( 'thickbox' ) );
-
 		?>
 
 		<div class="alert info">
@@ -65,36 +78,15 @@ class GF_System_Report {
 				</span>
 			</button>
 
-			<div id="gform-system-report-text" class="gform-system-report__text" aria-hidden="true" data-js="system-report-text" ><?php echo esc_html( $system_report_text ) ?></div>
+			<div id="gform-system-report-text" class="gform-system-report__text wp-exclude-emoji" aria-hidden="true" data-js="system-report-text" ><?php echo esc_html( $system_report_text ) ?></div>
 		</div>
 
-		<form method="post" id="gf_system_report_form" data-js="system-report-form">
+		<form method="post" id="gf_system_report_form" data-js="system-report-form" class="wp-exclude-emoji">
 			<input type="hidden" name="gf_action" id="gf_action" data-js="system-report-action" />
 			<input type="hidden" name="gf_arg" id="gf_arg" data-js="system-report-action-arg"/>
 
 		<?php
 		wp_nonce_field( 'gf_sytem_report_action', 'gf_sytem_report_action' );
-
-
-		if ( ! gapi()->is_site_registered() ) {
-
-			?>
-			<div id="gform_register_site">
-				<h3>
-				<?php esc_html_e( 'Site Registration', 'gravityforms' ); ?>
-				</h3>
-				<div>
-					<p>
-					<?php esc_html_e( 'To register your site, enter your license key below.', 'gravityforms' ); ?>
-					</p>
-					<input type="text" id="gform_license_key" name="gform_license_key" placeholder="<?php esc_html_e( 'Enter Your License Key', 'gravityforms' ); ?>"/>
-					<p>
-						<a class="button-primary" onclick="jQuery('#gf_arg').val( jQuery('#gform_license_key').val() ); gfDoAction('register_site');">Register</a>
-					</p>
-				</div>
-			</div>
-			<?php
-		}
 
 		// Loop through system report sections.
 		foreach ( $sections as $i => $section ) {
@@ -297,23 +289,6 @@ class GF_System_Report {
 
 				break;
 
-			case 'register_site':
-				GFForms::include_gravity_api();
-
-				$new_key = rgpost( 'gf_arg' );
-				if ( ! empty( $new_key ) && ! gapi()->is_site_registered() ) {
-
-					$new_key_md5 = md5( trim( $new_key ) );
-					$previous_key_md5 = get_option( 'rg_gforms_key' );
-
-					if ( $new_key_md5 != $previous_key_md5 ) {
-						update_option( 'rg_gforms_key', $new_key_md5 );
-					} else {
-						GFSettings::update_site_registration( $previous_key_md5, $new_key_md5 );
-					}
-				}
-				break;
-
 			default:
 				break;
 
@@ -409,6 +384,11 @@ class GF_System_Report {
 						'title'        => esc_html__( 'Log Files', 'gravityforms' ),
 						'title_export' => 'Log Files',
 						'items'        => self::get_available_logs(),
+					),
+					array(
+						'title'        => esc_html__( 'Scheduled (Cron) Events Log', 'gravityforms' ),
+						'title_export' => 'Scheduled (Cron) Events Log',
+						'items'        => self::get_cron_events_log(),
 					),
 				),
 			),
@@ -839,19 +819,6 @@ class GF_System_Report {
 		$no_conflict_mode = get_option( 'gform_enable_noconflict' );
 		$updates          = get_option( 'gform_enable_background_updates' );
 
-		GFForms::include_gravity_api();
-		$site_key      = gapi()->get_site_key();
-		$is_registered = gapi()->is_site_registered();
-
-		if ( $is_registered ) {
-			$validation_message = '';
-		} elseif ( rgpost( 'gf_action' ) == 'register_site' ) {
-			//if there was an error during site registration, display appropriate message
-			$validation_message = sprintf( esc_html__( 'There was an error registering your site. Please check that the licence key entered is valid and not expired. If the problem persists, please contact support. %1$sRegister Site%2$s.', 'gravityforms' ), '<a class="thickbox" href="#TB_inline?width=400&inlineId=gform_register_site">', '</a>' );
-		} else {
-			$validation_message = sprintf( esc_html__( 'This site has not been registered. %1$sPlease register your site%2$s.', 'gravityforms' ), '<a class="thickbox" href="#TB_inline?width=400&inlineId=gform_register_site">', '</a>' );
-		}
-
 		$web_api       = GFWebAPI::get_instance();
 		$is_v2_enabled = $web_api->is_v2_enabled( $web_api->get_plugin_settings() );
 
@@ -916,16 +883,6 @@ class GF_System_Report {
 				'label_export' => 'REST API v2',
 				'value'        => $is_v2_enabled ? __( 'Yes', 'gravityforms' ) : __( 'No', 'gravityforms' ),
 				'value_export' => $is_v2_enabled ? 'Yes' : 'No',
-			),
-			array(
-				'export_only'               => true,
-				'label'                     => esc_html__( 'Registration', 'gravityforms' ),
-				'label_export'              => 'Registration',
-				'value'                     => $is_registered ? esc_html__( 'Site registered ', 'gravityforms' ) . ' ( ' . $site_key . ' ) ' : '',
-				'is_valid'                  => $is_registered,
-				'value_export'              => $is_registered ? 'Site registered ( ' . $site_key . ' ) ' : 'Site not registered',
-				'validation_message'        => $validation_message,
-				'validation_message_export' => '',
 			),
 		);
 
@@ -1703,6 +1660,38 @@ class GF_System_Report {
 		}
 
 		return $items;
+	}
+
+	/**
+	 * Gets the items for the cron events log section.
+	 *
+	 * @since 2.7.1
+	 *
+	 * @return array
+	 */
+	public static function get_cron_events_log() {
+		$events = GFCache::get( GFCache::KEY_CRON_EVENTS );
+
+		if ( empty( $events ) ) {
+			return array();
+		}
+
+		$items = array();
+
+		foreach ( $events as $hook => $timestamps ) {
+			foreach ( $timestamps as $timestamp ) {
+				$full_dt = date( 'c', $timestamp );
+
+				$items[] = array(
+					'label'        => $hook,
+					'value'        => GFCommon::format_date( $full_dt ),
+					'value_export' => GFCommon::format_date( $full_dt, false, 'Y-m-d H:i:s', false ),
+					'timestamp'    => $timestamp,
+				);
+			}
+		}
+
+		return wp_list_sort( $items, 'timestamp', 'DESC' );
 	}
 
 }

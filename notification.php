@@ -1496,7 +1496,7 @@ class GFNotificationTable extends WP_List_Table {
 		}
 		?>
 		<button type="button" class="gform-status-indicator <?php echo esc_attr( $class ); ?>" onclick="ToggleActive( this, '<?php echo esc_js( $item['id'] ); ?>' );" onkeypress="ToggleActive( this, '<?php echo esc_js( $item['id'] ); ?>' );">
-			<svg viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="2" r="1" stroke-width="2"/></svg>
+			<svg role="presentation" focusable="false" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="2" r="1" stroke-width="2"/></svg>
 			<span class="gform-status-indicator-status"><?php echo esc_html( $text ); ?></span>
 		</button>
 		<?php

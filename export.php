@@ -1117,12 +1117,12 @@ class GFExport {
 		array_push( $form['fields'], array( 'id' => 'created_by', 'label' => __( 'Created By (User Id)', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'id', 'label' => __( 'Entry Id', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'date_created', 'label' => __( 'Entry Date', 'gravityforms' ) ) );
+		array_push( $form['fields'], array( 'id' => 'date_updated', 'label' => __( 'Date Updated', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'source_url', 'label' => __( 'Source Url', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'transaction_id', 'label' => __( 'Transaction Id', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'payment_amount', 'label' => __( 'Payment Amount', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'payment_date', 'label' => __( 'Payment Date', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'payment_status', 'label' => __( 'Payment Status', 'gravityforms' ) ) );
-		//array_push($form['fields'],array('id' => 'payment_method' , 'label' => __('Payment Method', 'gravityforms'))); //wait until all payment gateways have been released
 		array_push( $form['fields'], array( 'id' => 'post_id', 'label' => __( 'Post Id', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'user_agent', 'label' => __( 'User Agent', 'gravityforms' ) ) );
 		array_push( $form['fields'], array( 'id' => 'ip', 'label' => __( 'User IP', 'gravityforms' ) ) );
@@ -1162,7 +1162,7 @@ class GFExport {
 
 		$setting_tabs = array();
 		if ( GFCommon::current_user_can_any( 'gravityforms_export_entries' ) ) {
-			$icon               = '<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>export entries</title><g fill="none" class="nc-icon-wrapper"><path stroke="#000" stroke-width="1.5" d="M8 19.25h7"/><path stroke="#000" stroke-width="1.5" d="M8 15.25h12"/><path stroke="#000" stroke-width="1.5" d="M4 19.25h2"/><path stroke="#000" stroke-width="1.5" d="M4 15.25h2"/><path d="M7.614 5L5 7.1M7.614 5v6m0-6L10 7.1" stroke="#1E1E1E" stroke-width="1.5"/></g></svg>';
+			$icon               = '<svg width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>export entries</title><g fill="none" class="nc-icon-wrapper"><path stroke="#000" stroke-width="1.5" d="M8 19.25h7"/><path stroke="#000" stroke-width="1.5" d="M8 15.25h12"/><path stroke="#000" stroke-width="1.5" d="M4 19.25h2"/><path stroke="#000" stroke-width="1.5" d="M4 15.25h2"/><path d="M7.614 5L5 7.1M7.614 5v6m0-6L10 7.1" stroke="#1E1E1E" stroke-width="1.5"/></g></svg>';
 			$setting_tabs['10'] = array(
 				'name'  => 'export_entry',
 				'label' => __( 'Export Entries', 'gravityforms' ),
@@ -1171,7 +1171,7 @@ class GFExport {
 		}
 
 		if ( GFCommon::current_user_can_any( 'gravityforms_edit_forms' ) ) {
-			$icon               = '<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>export form</title><g fill="none" class="nc-icon-wrapper"><path d="M5 3.75h14c.69 0 1.25.56 1.25 1.25v14c0 .69-.56 1.25-1.25 1.25H5c-.69 0-1.25-.56-1.25-1.25V5c0-.69.56-1.25 1.25-1.25z" stroke="#111111" stroke-width="1.5"/><path d="M9 4L5 8.5V4h4z" fill="#111111" stroke="#111111"/><path d="M15.286 11L12 8l-3 3" stroke="#111111" stroke-width="1.5"/><path fill="#111111" d="M11 9h2v8h-2z"/></g></svg>';
+			$icon               = '<svg width="24" height="24" role="presentation" focusable="false"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>export form</title><g fill="none" class="nc-icon-wrapper"><path d="M5 3.75h14c.69 0 1.25.56 1.25 1.25v14c0 .69-.56 1.25-1.25 1.25H5c-.69 0-1.25-.56-1.25-1.25V5c0-.69.56-1.25 1.25-1.25z" stroke="#111111" stroke-width="1.5"/><path d="M9 4L5 8.5V4h4z" fill="#111111" stroke="#111111"/><path d="M15.286 11L12 8l-3 3" stroke="#111111" stroke-width="1.5"/><path fill="#111111" d="M11 9h2v8h-2z"/></g></svg>';
 			$setting_tabs['20'] = array(
 				'name'  => 'export_form',
 				'label' => __( 'Export Forms', 'gravityforms' ),
@@ -1179,7 +1179,7 @@ class GFExport {
 			);
 
 			if ( GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) {
-				$icon               = '<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>import form</title><g fill="none" class="nc-icon-wrapper"><path d="M5 3.75h14c.69 0 1.25.56 1.25 1.25v14c0 .69-.56 1.25-1.25 1.25H5c-.69 0-1.25-.56-1.25-1.25V5c0-.69.56-1.25 1.25-1.25z" stroke="#111111" stroke-width="1.5"/><path d="M9 4L5 8.5V4h4z" fill="#111111" stroke="#111111"/><path d="M9 13l3.286 3 3-3" stroke="#111111" stroke-width="1.5"/><path d="M13.286 15h-2V7h2v8z" fill="#111111"/></g></svg>';
+				$icon               = '<svg width="24" height="24" role="presentation" focusable="false"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>import form</title><g fill="none" class="nc-icon-wrapper"><path d="M5 3.75h14c.69 0 1.25.56 1.25 1.25v14c0 .69-.56 1.25-1.25 1.25H5c-.69 0-1.25-.56-1.25-1.25V5c0-.69.56-1.25 1.25-1.25z" stroke="#111111" stroke-width="1.5"/><path d="M9 4L5 8.5V4h4z" fill="#111111" stroke="#111111"/><path d="M9 13l3.286 3 3-3" stroke="#111111" stroke-width="1.5"/><path d="M13.286 15h-2V7h2v8z" fill="#111111"/></g></svg>';
 				$setting_tabs['30'] = array(
 					'name'  => 'import_form',
 					'label' => __( 'Import Forms', 'gravityforms' ),

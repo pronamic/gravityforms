@@ -353,6 +353,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 							'form_id'  => $form['id'],
 						)
 					);
+					$this->delay_feed( $feed, $entry, $form );
 
 				} else {
 

@@ -418,7 +418,7 @@ class GF_Field_Name extends GF_Field {
 					$style        = ( $is_admin && rgar( $first_input, 'isHidden' ) ) ? "style='display:none;'" : '';
 					if ( $is_admin || ! rgar( $first_input, 'isHidden' ) ) {
 						$first_markup = "<span id='{$field_id}_3_container' class='name_first gform-grid-col' {$style}>
-                                                    <input type='text' name='input_{$id}.3' id='{$field_id}_3' value='{$first}' {$first_tabindex} {$disabled_text} {$first_aria_attributes} {$first_placeholder_attribute} {/>
+                                                    <input type='text' name='input_{$id}.3' id='{$field_id}_3' value='{$first}' {$first_tabindex} {$disabled_text} {$first_aria_attributes} {$first_placeholder_attribute} />
                                                     <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$first_name_sub_label}</label>
                                                </span>";
 					}

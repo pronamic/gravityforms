@@ -5166,6 +5166,7 @@ ul#form_notification_container li label, ul#form_autoresponder_container li labe
 		}
 
 .gform-splash__footer p {
+		color: #ecedf8;
 		font-size: 1.125rem;
 		line-height: 156%;
 		margin: 0 auto 1.25rem auto;
@@ -5307,6 +5308,23 @@ html[dir="rtl"] .toplevel_page_gf_splash #wpcontent {
 				padding-right: 6%;
 			}
 	}
+
+.gform-admin .gform-dialog .gform-dialog__content .gform-splash__header p {
+				color: #ecedf8;
+				font-size: 1.25rem;
+				line-height: 150%;
+				margin: 0 auto 2.125rem auto;
+				max-width: 48rem;
+				text-align: center;
+			}
+
+.gform-admin .gform-dialog .gform-dialog__content .gform-splash__footer p {
+				color: #ecedf8;
+				font-size: 1.125rem;
+				line-height: 156%;
+				margin: 0 auto 1.25rem auto;
+				max-width: 32rem;
+			}
 
 /* Content */
 

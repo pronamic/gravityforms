@@ -51,7 +51,7 @@ class GF_Setup_Wizard_Config extends GF_Config {
 							'innerDialogOpen'   => false,
 							'isOpen'            => true,
 							'licenseKey'        => '',
-							'organization'      => 'blog',
+							'organization'      => '',
 							'organizationOther' => '',
 							'services'          => $this->get_services_options(),
 							'servicesOther'     => '',
@@ -197,6 +197,13 @@ class GF_Setup_Wizard_Config extends GF_Config {
 
 	private function get_organization_options() {
 		return array(
+			array(
+				'value'                  => '',
+				'label'                  => __( 'Select a Website Type', 'gravityforms' ),
+				'customOptionAttributes' => array(
+					'disabled' => true,
+				),
+			),
 			array(
 				'value' => 'blog',
 				'label' => __( 'Blog', 'gravityforms' ),

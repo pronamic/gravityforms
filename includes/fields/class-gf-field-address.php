@@ -1233,7 +1233,7 @@ class GF_Field_Address extends GF_Field {
 			if ( ! empty( $address ) && $format == 'html' && ! $map_link_disabled ) {
 				$address_qs = str_replace( $line_break, ' ', $address ); //replacing <br/> and \n with spaces
 				$address_qs = urlencode( $address_qs );
-				$address .= "<br/><a href='http://maps.google.com/maps?q={$address_qs}' target='_blank' class='map-it-link'>Map It</a>";
+				$address .= "<br/><a href='https://maps.google.com/maps?q={$address_qs}' target='_blank' class='map-it-link'>Map It</a>";
 			}
 
 			return $address;

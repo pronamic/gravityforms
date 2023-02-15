@@ -471,12 +471,32 @@ class GF_Field_FileUpload extends GF_Field {
 
 	public function is_value_submission_empty( $form_id ) {
 		$input_name = 'input_' . $this->id;
+		$tmp_path   = GFFormsModel::get_upload_path( $form_id ) . '/tmp/';
 
 		if ( $this->multipleFiles ) {
 			$uploaded_files = GFFormsModel::$uploaded_files[ $form_id ];
 			$file_info      = rgar( $uploaded_files, $input_name );
 
-			return empty( $file_info );
+			if ( empty( $file_info ) ) {
+				return true;
+			}
+
+			foreach ( $file_info as $key => $file ) {
+				$exists = false;
+				if ( ! empty( $file['temp_filename'] ) ) {
+					$tmp_file = $tmp_path . wp_basename( $file['temp_filename'] );
+					if ( file_exists( $tmp_file ) ) {
+						$exists = true;
+					}
+				}
+
+				if ( ! $exists ) {
+					GFCommon::log_debug( __METHOD__ . "(): Removing invalid file for {$input_name} key {$key}." );
+					unset( GFFormsModel::$uploaded_files[ $form_id ][ $input_name ][ $key ] );
+				}
+			}
+
+			return empty( GFFormsModel::$uploaded_files[ $form_id ][ $input_name ] );
 		} else {
 			$file_info = GFFormsModel::get_temp_filename( $form_id, $input_name );
 
@@ -792,7 +812,7 @@ class GF_Field_FileUpload extends GF_Field {
 			$value = $format == 'html' ? join( '<br />', $files ) : join( ', ', $files );
 
 		} else {
-			$value = $this->get_download_url( $value, $force_download );
+			$value = $this->get_download_url( $raw_value, $force_download );
 			$value = str_replace( ' ', '%20', $value );
 		}
 

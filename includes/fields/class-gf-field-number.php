@@ -135,6 +135,27 @@ class GF_Field_Number extends GF_Field {
 	}
 
 	/**
+	 * Is the given value considered empty for this field.
+	 *
+	 * Adds a check to the parent method because a value of 0 returns a false positive.
+	 *
+	 * @since 2.7.1
+	 *
+	 * @param $value
+	 *
+	 * @return bool
+	 */
+	public function is_value_empty( $value ) {
+		$empty = parent::is_value_empty( $value );
+
+		if ( $empty && ! rgblank( $value ) ) {
+			return false;
+		}
+
+		return $empty;
+	}
+
+	/**
 	 * Validates the range of the number according to the field settings.
 	 *
 	 * @param string $value A decimal_dot formatted string

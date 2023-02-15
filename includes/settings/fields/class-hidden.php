@@ -42,7 +42,7 @@ class Hidden extends Base {
 
 		// Prepare markup.
 		$html = sprintf(
-			'<input type="hidden" name="%1$s_%2$s" id="%2$s" value=\'%3$s\' %s />',
+			'<input type="hidden" name="%1$s_%2$s" value=\'%3$s\' %4$s />',
 			esc_attr( $this->settings->get_input_name_prefix() ),
 			esc_attr( $this->name ),
 			esc_attr( $value ),

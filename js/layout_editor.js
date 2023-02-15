@@ -37,7 +37,7 @@ function initLayoutEditor( $ ) {
 
 		var field;
 
-		this.css( 'grid-column', 'span {0}'.format( span ) );
+		this.css( 'grid-column', 'span {0}'.gformFormat( span ) );
 
 		this.each( function () {
 			// Spacer fields are pseudo-fields; they are generated when the last field in the group is resized and are
@@ -84,9 +84,20 @@ function initLayoutEditor( $ ) {
 	 *
 	 * @returns {string}
 	 */
-	String.prototype.format = function () {
+	if ( ! String.prototype.gformFormat ) {
+		String.prototype.gformFormat = function() {
+			var args = arguments;
+			return this.replace( /{(\d+)}/g, function( match, number ) {
+				return typeof args[ number ] != 'undefined' ? args[ number ] : match;
+			} );
+		};
+	}
+
+	// deprecated. remove in 2.8
+	String.prototype.format = function() {
 		var args = arguments;
-		return this.replace( /{(\d+)}/g, function ( match, number ) {
+		console.warn( 'String.format will be replaced with String.gformFormat in Gravity Forms version 2.8.' );
+		return this.replace( /{(\d+)}/g, function( match, number ) {
 			return typeof args[ number ] != 'undefined' ? args[ number ] : match;
 		} );
 	};
@@ -1165,11 +1176,11 @@ function initLayoutEditor( $ ) {
 	function getGroup( groupId, spacers ) {
 		if ( spacers || 'undefined' === typeof( spacers ) ) {
 			return $elements()
-				.filter( '[data-groupId="{0}"]'.format( groupId ) )
+				.filter( '[data-groupId="{0}"]'.gformFormat( groupId ) )
 				.not( '.ui-draggable-dragging' );
 		} else {
 			return $elements()
-				.filter( '[data-groupId="{0}"]'.format( groupId ) )
+				.filter( '[data-groupId="{0}"]'.gformFormat( groupId ) )
 				.not( '.ui-draggable-dragging' )
 				.not( '.spacer' );
 		}
