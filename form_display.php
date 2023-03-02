@@ -3961,7 +3961,7 @@ class GFFormDisplay {
 		$selectable_class   = $is_admin ? 'selectable' : '';
 		$hidden_class       = in_array( $input_type, array( 'hidden', 'hiddenproduct' ) ) ? 'gform_hidden' : '';
 
-		$choice_input_type_class = $field->type === 'checkbox' || $field->type === 'radio' || $field->inputType === 'consent' || ( isset( $field->inputType ) && ( $field->inputType === 'checkbox' || $field->inputType === 'radio' ) ) ? 'gfield--type-choice' : '';
+		$choice_input_type_class = $field->type === 'checkbox' || $field->type === 'radio' || $field->type === 'consent' || ( isset( $field->inputType ) && ( $field->inputType === 'checkbox' || $field->inputType === 'radio' || $field->inputType === 'consent' ) ) ? 'gfield--type-choice' : '';
 		$field_input_type_class  = isset( $field->inputType ) && ! empty( $field->inputType ) ? sprintf( 'gfield--input-type-%s', $field->inputType ) : '';
 
 		$field_specific_class = $field->get_field_css_class();

@@ -70,7 +70,46 @@ class GF_Setup_Wizard_Service_Provider extends GF_Service_Provider {
 			return new GF_Setup_Wizard_Endpoint_Validate_License( $container->get( GF_License_Service_Provider::LICENSE_API_CONNECTOR ) );
 		} );
 
+		$this->register_wizard_app( $container );
 		$this->add_configs( $container );
+	}
+
+	private function register_wizard_app( GF_Service_Container $container ) {
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+
+		$args = array(
+			'app_name'     => 'setup_wizard',
+			'script_name'  => 'gform_gravityforms_admin_vendors',
+			'object_name'  => 'gform_admin_config',
+			'chunk'        => './setup-wizard',
+			'enqueue'      => array( $this, 'should_enqueue_setup_wizard' ),
+			'css'          => array(
+				'handle' => 'setup_wizard_styles',
+				'src'    => \GFCommon::get_base_url() . "/assets/css/dist/setup-wizard{$min}.css",
+				'deps'   => array( 'gform_admin_components' ),
+				'ver'    => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? filemtime( \GFCommon::get_base_path() . "/assets/css/dist/setup-wizard{$min}.css" ) : \GFForms::$version,
+			),
+			'root_element' => 'setup-wizard',
+		);
+
+		$this->register_app( $args );
+	}
+
+	public function should_enqueue_setup_wizard() {
+		if ( ! \GFForms::is_gravity_page() ) {
+			return false;
+		}
+
+		// Don't display on the system status page.
+		if ( rgget( 'page' ) == 'gf_system_status' ) {
+			return false;
+		}
+
+		if ( defined( 'GF_DISPLAY_SETUP_WIZARD' ) && GF_DISPLAY_SETUP_WIZARD ) {
+			return true;
+		}
+
+		return (bool) get_option( 'gform_pending_installation' );
 	}
 
 	/**

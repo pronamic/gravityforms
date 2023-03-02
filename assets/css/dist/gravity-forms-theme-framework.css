@@ -37,43 +37,6 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-theme--framework {
 
-	/*
-	NOTE:
-	These global color properties will be updated and changed in 2.7.1.
-	We recommend not using, extending, or overriding them programmatically until then.
-    */
-
-	/* Color: Primary - checkbox, radio, primary button */
-	--gform-theme-color-primary: #204ce5;
-	--gform-theme-color-primary-rgb: 45, 127, 251;
-	--gform-theme-color-primary-contrast: #fff;
-	--gform-theme-color-primary-contrast-rgb: 255, 255, 255;
-	--gform-theme-color-primary-shade: #044ad3;
-
-	/* Color: Secondary - controls/inputs, secondary button */
-	--gform-theme-color-secondary: #fff;
-	--gform-theme-color-secondary-rgb: 255, 255, 255;
-	--gform-theme-color-secondary-contrast: #112337;
-	--gform-theme-color-secondary-contrast-rgb: 17, 35, 55;
-	--gform-theme-color-secondary-shade: #f2f3f5;
-
-	/* Color: Danger - validation */
-	--gform-theme-color-danger: #c02b0a;
-
-	/* Color: Success */
-	--gform-theme-color-success: #399f4b;
-
-	/* Color: Neutral - Medium - various form element text and ui (list in detail for each) */
-	--gform-theme-color-light: #e5e7eb;
-	--gform-theme-color-light-shade: #d2d5db;
-	--gform-theme-color-light-tint: #f2f3f5;
-
-	/* Color: Neutral - Dark - various form element text and ui (list in detail for each) */
-	--gform-theme-color-dark: #585e6a;
-	--gform-theme-color-dark-rgb: 88, 94, 106;
-	--gform-theme-color-dark-shade: #112337;
-	--gform-theme-color-dark-tint: #686e77;
-
 	/* Typography */
 	--gform-theme-font-family: initial;
 	--gform-theme-font-style-base: normal;
@@ -82,6 +45,627 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-border-radius: 3px;
 	--gform-theme-transition-duration: 0.15s;
 	--gform-theme-transition-control: var(--gform-theme-transition-duration);
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Primary
+	 * The primary accent color used for various form elements.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Primary
+
+	Used by:
+	* --gform-theme-control-accent-color
+	* --gform-theme-control-border-color-focus
+	* --gform-theme-control-button-background-color-primary
+	* --gform-theme-control-file-drop-area-icon-color
+	* --gform-theme-control-file-upload-progress-bar-background-color-loading
+	* --gform-theme-control-select-dropdown-option-box-shadow-hover
+	* --gform-theme-control-multiselect-selected-item-background-color
+	* --gform-theme-control-date-datepicker-table-cell-content-background-color-selected
+	* --gform-theme-control-date-datepicker-table-cell-content-border
+	* --gform-theme-control-choice-check-color
+	* --gform-theme-field-page-steps-number-background-color-complete
+	* --gform-theme-field-page-steps-number-border-color-complete
+	* --gform-theme-form-spinner-foreground-color
+
+	This global CSS API color property is set at the
+	form block theme level using the following setting: Primary button background color
+	*/
+	--gform-theme-color-primary: #204ce5;
+
+	/*
+	Color: Primary (rgb channels)
+
+	Used by:
+	* --gform-theme-control-box-shadow-color-focus
+	* --gform-theme-form-spinner-background-color
+
+	This global CSS API color property is set at the
+	form block theme level using the following setting: Primary button background color
+	*/
+	--gform-theme-color-primary-rgb: 45, 127, 251;
+
+	/*
+	Color: Primary - Contrast
+	The contrasting color to be used against the primary color.
+
+	Used by:
+	* --gform-theme-control-button-color-primary
+	* --gform-theme-control-multiselect-selected-item-color
+	* --gform-theme-control-multiselect-selected-item-remove-icon-color
+	* --gform-theme-control-date-datepicker-table-cell-content-color-selected
+	* --gform-theme-field-page-steps-number-color-complete
+
+	This global CSS API color property is set at the
+	form block theme level using the following setting: Primary button color
+	*/
+	--gform-theme-color-primary-contrast: #fff;
+
+	/*
+	Color: Primary - Contrast (rgb channels)
+	The contrasting color to be used against the primary color.
+
+	This global CSS API color property is set at the
+	form block theme level using the following setting: Primary button color
+	*/
+	--gform-theme-color-primary-contrast-rgb: 255, 255, 255;
+
+	/*
+	Color: Primary - Darker
+	A slightly darker version of the primary color.
+
+	Used by:
+	* --gform-theme-control-button-background-color-hover-primary
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting: Primary button background color
+	*/
+	--gform-theme-color-primary-darker: #044ad3;
+
+	/*
+	Color: Primary - Lighter
+	A slightly lighter version of the primary color.
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting: Primary button background color
+	*/
+	--gform-theme-color-primary-lighter: #044ad3;
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Secondary
+	 * The secondary accent color used for various form elements.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Secondary
+
+	Used by:
+	* --gform-theme-control-button-background-color-secondary
+	* --gform-theme-control-file-button-background-color-hover
+
+	This global CSS API color property is set at the form block theme
+	level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-secondary: #fff;
+
+	/*
+	Color: Secondary (rgb channels)
+
+	This global CSS API color property is set at the form block theme
+	level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-secondary-rgb: 255, 255, 255;
+
+	/*
+	Color: Secondary - Contrast
+	The contrasting color to be used against the secondary color.
+
+	Used by:
+	* --gform-theme-control-button-color-secondary
+	* --gform-theme-control-date-datepicker-title-color
+	* --gform-theme-control-date-datepicker-table-cell-content-color
+
+	This global CSS API color property is set at the form block theme
+	level using the following setting (inside of form control context): Input color
+	*/
+	--gform-theme-color-secondary-contrast: #112337;
+
+	/*
+	Color: Secondary - Contrast (rgb channels)
+	The contrasting color to be used against the secondary color.
+
+	Used by:
+	* --gform-theme-control-file-button-color
+
+	This global CSS API color property is set at the form block theme
+	level using the following setting (inside of form control context): Input color
+	*/
+	--gform-theme-color-secondary-contrast-rgb: 17, 35, 55;
+
+	/*
+	Color: Secondary - Darker
+	A slightly darker version of the secondary color.
+
+	Used by:
+	* --gform-theme-control-file-button-background-color
+	* --gform-theme-control-button-background-color-hover-secondary
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-secondary-darker: #f2f3f5;
+
+	/*
+	Color: Secondary - Lighter
+	A slightly lighter version of the secondary color.
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-secondary-lighter: #f2f3f5;
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Form UI - Dark
+	 * Used for the various form element text and UI that
+	 * live outside of form controls.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Form UI - Dark
+
+	Used by:
+	* --gform-theme-control-button-color-hover-simple
+	* --gform-theme-control-description-color
+	* --gform-theme-control-label-color-tertiary
+	* --gform-theme-control-label-color-quaternary
+	* --gform-theme-field-page-progress-color
+	* --gform-theme-field-page-progress-bar-background-color-gray
+	* --gform-theme-field-page-steps-number-color
+	* --gform-theme-field-password-strength-color
+
+	This global CSS API color property is set at the form block
+	theme level using the following setting (outside of form control context): Description color
+	*/
+	--gform-theme-color-outside-control-dark: #585e6a;
+
+	/*
+	Color: Form UI - Dark (rgb channels)
+
+	Used by:
+	* --gform-theme-control-button-color-simple
+
+	This global CSS API color property is set at the form block
+	theme level using the following setting (outside of form control context): Description color
+	*/
+	--gform-theme-color-outside-control-dark-rgb: 88, 94, 106;
+
+	/*
+	Color: Form UI - Dark - Darker
+	A slightly darker version of the dark form UI color.
+
+	Used by:
+	* --gform-theme-control-label-color-primary
+	* --gform-theme-control-label-color-secondary
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input color
+	*/
+	--gform-theme-color-outside-control-dark-darker: #112337;
+
+	/*
+	Color: Form UI - Dark - Lighter
+	A slightly lighter version of the dark form UI color.
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input color
+	*/
+	--gform-theme-color-outside-control-dark-lighter: #686e77;
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Form UI - Light
+	 * Used for the various form element text and UI that
+	 * live outside of form controls.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Form UI - Light
+
+	Used by:
+	* --gform-theme-control-file-upload-progress-bar-background-color
+	* --gform-theme-field-page-progress-bar-background-color
+	* --gform-theme-field-page-steps-number-background-color-active
+	* --gform-theme-field-password-strength-indicator-background-color
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (outside of form control context): Label color
+	*/
+	--gform-theme-color-outside-control-light: #e5e7eb;
+
+	/*
+	Color: Form UI - Light (rgb channels)
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (outside of form control context): Label color
+	*/
+	--gform-theme-color-outside-control-light-rgb: 229, 231, 235;
+
+	/*
+	Color: Form UI - Light - Darker
+	A slightly darker version of the light form UI color.
+
+	Used by:
+	* --gform-theme-field-section-border-color
+	* --gform-theme-field-repeater-nested-border-color
+	* --gform-theme-field-page-steps-number-border-color
+	* --gform-theme-field-repeater-separator-color
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input border color
+	*/
+	--gform-theme-color-outside-control-light-darker: #d2d5db;
+
+	/*
+	Color: Form UI - Light - Lighter
+	A slightly lighter version of the light form UI color.
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-outside-control-light-lighter: #f2f3f5;
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Control
+	 * Used for the various form element controls and UI that
+	 * live inside of form controls.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Control
+
+	Used by:
+	* --gform-theme-control-background-color
+
+	This global CSS API color property is set at the form block theme
+	level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-inside-control: #fff;
+
+	/*
+	Color: Control (rgb channels)
+
+	This global CSS API color property is set at the form block theme
+	level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-inside-control-rgb: 255, 255, 255;
+
+	/*
+	Color: Control - Contrast
+	The contrasting color to be used against the control color.
+
+	Used by:
+	* --gform-theme-control-color
+
+	This global CSS API color property is set at the form block theme
+	level using the following setting (inside of form control context): Input color
+	*/
+	--gform-theme-color-inside-control-contrast: #112337;
+
+	/*
+	Color: Control - Contrast (rgb channels)
+	The contrasting color to be used against the control color.
+
+	Used by:
+	* --gform-theme-control-color-disabled
+	* --gform-theme-control-placeholder-color
+	* --gform-theme-control-choice-check-color-disabled
+	* --gform-theme-control-file-drop-area-color
+
+	This global CSS API color property is set at the form block theme
+	level using the following setting (inside of form control context): Input color
+	*/
+	--gform-theme-color-inside-control-contrast-rgb: 17, 35, 55;
+
+	/*
+	Color: Control - Darker
+	A slightly darker version of the control color.
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-inside-control-darker: #f2f3f5;
+
+	/*
+	Color: Control - Lighter
+	A slightly lighter version of the control color.
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-inside-control-lighter: #f2f3f5;
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Control UI - Dark
+	 * Used for the various form element controls and UI that
+	 * live inside of form controls.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Control UI - Dark
+
+	This global CSS API color property is set at the form block
+	theme level using the following setting (outside of form control context): Description color
+	*/
+	--gform-theme-color-inside-control-dark: #585e6a;
+
+	/*
+	Color: Control UI - Dark (rgb channels)
+
+	This global CSS API color property is set at the form block
+	theme level using the following setting (outside of form control context): Description color
+	*/
+	--gform-theme-color-inside-control-dark-rgb: 88, 94, 106;
+
+	/*
+	Color: Control UI - Dark - Darker
+	A slightly darker version of the dark control UI color.
+
+	Used by:
+	* --gform-theme-control-icon-color-hover
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input color
+	*/
+	--gform-theme-color-inside-control-dark-darker: #112337;
+
+	/*
+	Color: Control UI - Dark - Lighter
+	A slightly lighter version of the dark control UI color.
+
+	Used by:
+	* --gform-theme-control-border-color
+	* --gform-theme-control-icon-color
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input color
+	*/
+	--gform-theme-color-inside-control-dark-lighter: #686e77;
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Control UI - Light
+	 * Used for the various form element controls and UI that
+	 * live inside of form controls.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Control UI - Light
+
+	Used by:
+	* select[multiple] option:checked background color
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (outside of form control context): Label color
+	*/
+	--gform-theme-color-inside-control-light: #e5e7eb;
+
+	/*
+	Color: Control UI - Light (rgb channels)
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (outside of form control context): Label color
+	*/
+	--gform-theme-color-inside-control-light-rgb: 229, 231, 235;
+
+	/*
+	Color: Control UI - Light - Darker
+	A slightly darker version of the light control UI color.
+
+	Used by:
+	* --gform-theme-control-border-color-disabled
+	* --gform-theme-control-button-border-color-secondary
+	* --gform-theme-control-date-datepicker-dropdown-border-color
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input border color
+	*/
+	--gform-theme-color-inside-control-light-darker: #d2d5db;
+
+	/*
+	Color: Control UI - Light - Lighter
+	A slightly lighter version of the light control UI color.
+
+	Used by:
+	* --gform-theme-control-background-color-disabled
+	* --gform-theme-control-select-dropdown-option-background-color-hover
+
+	This global CSS API color property is dynamically generated at the form block
+	theme level using the following setting (inside of form control context): Input background color
+	*/
+	--gform-theme-color-inside-control-light-lighter: #f2f3f5;
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Danger
+	 * Used for form element error text and UI.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Danger
+
+	Used by:
+	* --gform-theme-control-border-color-error
+	* --gform-theme-control-description-color-error
+	* --gform-theme-control-label-color-required
+	* --gform-theme-form-validation-color
+	* .gform_required_legend .gfield_required color
+	*/
+	--gform-theme-color-danger: #c02b0a;
+
+	/*
+	Color: Danger (rgb channels)
+
+	Used by:
+	* --gform-theme-form-validation-background-color
+	* --gform-theme-form-validation-border-color
+	* --gform-theme-form-validation-heading-icon-background-color
+	*/
+	--gform-theme-color-danger-rgb: 192, 43, 10;
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Success
+	 * Used for form success error text and UI.
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Success
+
+	Used by:
+	* --gform-theme-control-file-upload-progress-button-icon-color-complete
+	*/
+	--gform-theme-color-success: #399f4b;
+
+	/*
+	Color: Success (rgb channels)
+
+	Used by:
+	* Nothing at the moment
+	*/
+	--gform-theme-color-success-rgb: 57, 159, 75;
+}
+
+/* Gravity Forms Theme Framework | Global CSS API: Theme (DEPRECATED) */
+
+.gform-theme--framework {
+
+	/*
+	DEPRECATION NOTICE: These global CSS API color properties are deprecated as of version 2.7.2
+
+	Deprecated version: 2.7.2
+	End of support version: 2.8.0
+	*/
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Primary
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Primary - Darker
+	Used for various form elements which require a darker primary color.
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting: Primary button background
+
+	Deprecated: --gform-theme-color-primary-shade
+	Replaced with: --gform-theme-color-primary-darker
+	*/
+	--gform-theme-color-primary-shade: var(--gform-theme-color-primary-darker);
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Secondary
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Secondary - Darker
+	Used for controls/inputs and secondary button variation.
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting (inside of form control context): Input background color
+
+	Deprecated: --gform-theme-color-secondary-shade
+	Replaced with: --gform-theme-color-secondary-darker
+	*/
+	--gform-theme-color-secondary-shade: var(--gform-theme-color-secondary-darker);
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Neutral - Light
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Neutral - Light
+	Used for various form element text and ui.
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting (outside of form control context): Label color
+
+	Deprecated: --gform-theme-color-light
+	Replaced with: --gform-theme-color-outside-control-light
+	*/
+	--gform-theme-color-light: var(--gform-theme-color-outside-control-light);
+
+	/*
+	Color: Neutral - Light - Darker
+	Used for various form element text and ui.
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting (inside of form control context): Input border color
+
+	Deprecated: --gform-theme-color-light-shade
+	Replaced with: --gform-theme-color-inside-control-light-darker
+	*/
+	--gform-theme-color-light-shade: var(--gform-theme-color-inside-control-light-darker);
+
+	/*
+	Color: Neutral - Light - Lighter
+	Used for various form element text and ui.
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting (inside of form control context): Input background color
+
+	Deprecated: --gform-theme-color-light-tint
+	Replaced with: --gform-theme-color-inside-control-light-lighter
+	*/
+	--gform-theme-color-light-tint: var(--gform-theme-color-inside-control-light-lighter);
+
+	/* -----------------------------------------------------------------------------
+	 * Color: Neutral - Dark
+	 * ----------------------------------------------------------------------------- */
+
+	/*
+	Color: Neutral - Dark
+	Used for various form element text and ui.
+
+	This global CSS API color property is set at the
+	form block theme level using the following setting (outside of form control context): Description color
+
+	Deprecated: --gform-theme-color-dark
+	Replaced with: --gform-theme-color-outside-control-dark
+	*/
+	--gform-theme-color-dark: var(--gform-theme-color-outside-control-dark);
+
+	/*
+	Color: Neutral - Dark (rgb channels)
+	Used for various form element text and ui.
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting (outside of form control context): Description color
+
+	Deprecated: --gform-theme-color-dark-rgb
+	Replaced with: --gform-theme-color-outside-control-dark-rgb
+	*/
+	--gform-theme-color-dark-rgb: var(--gform-theme-color-outside-control-dark-rgb);
+
+	/*
+	Color: Neutral - Dark - Darker
+	Used for various form element text and ui.
+
+	This global CSS API color property is set at the
+	form block theme level using the following setting (inside of form control context): Input color
+
+	Deprecated: --gform-theme-color-dark-shade
+	Replaced with: --gform-theme-color-inside-control-dark-darker
+	*/
+	--gform-theme-color-dark-shade: var(--gform-theme-color-inside-control-dark-darker);
+
+	/*
+	Color: Neutral - Dark - Lighter
+	Used for various form element text and ui.
+
+	This global CSS API color property is dynamically generated at the
+	form block theme level using the following setting (inside of form control context): Input color
+
+	Deprecated: --gform-theme-color-dark-tint
+	Replaced with: --gform-theme-color-inside-control-dark-lighter
+	*/
+	--gform-theme-color-dark-tint: var(--gform-theme-color-inside-control-dark-lighter);
 }
 
 /* Gravity Forms Theme Framework | Global CSS API: Spacing */
@@ -180,16 +764,16 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-accent-color: var(--gform-theme-color-primary);
 	--gform-theme-control-appearance: none;
 
-	--gform-theme-control-background-color: var(--gform-theme-color-secondary);
+	--gform-theme-control-background-color: var(--gform-theme-color-inside-control);
 	--gform-theme-control-background-color-hover: var(--gform-theme-control-background-color);
 	--gform-theme-control-background-color-focus: var(--gform-theme-control-background-color);
-	--gform-theme-control-background-color-disabled: var(--gform-theme-color-light-tint);
+	--gform-theme-control-background-color-disabled: var(--gform-theme-color-inside-control-light-lighter);
 	--gform-theme-control-background-color-error: var(--gform-theme-control-background-color);
 
-	--gform-theme-control-border-color: var(--gform-theme-color-dark-tint);
+	--gform-theme-control-border-color: var(--gform-theme-color-inside-control-dark-lighter);
 	--gform-theme-control-border-color-hover: var(--gform-theme-control-border-color);
 	--gform-theme-control-border-color-focus: var(--gform-theme-color-primary);
-	--gform-theme-control-border-color-disabled: var(--gform-theme-color-light-shade);
+	--gform-theme-control-border-color-disabled: var(--gform-theme-color-inside-control-light-darker);
 	--gform-theme-control-border-color-error: var(--gform-theme-color-danger);
 	--gform-theme-control-border-radius: var(--gform-theme-border-radius);
 	--gform-theme-control-border-style: solid;
@@ -202,14 +786,14 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-box-shadow-offset-size-focus: 0;
 	--gform-theme-control-box-shadow-focus: 0 0 0 var(--gform-theme-control-box-shadow-offset-size-focus) var(--gform-theme-control-box-shadow-offset-color-focus), 0 0 0 var(--gform-theme-control-box-shadow-size-focus) var(--gform-theme-control-box-shadow-color-focus);
 
-	--gform-theme-control-color: var(--gform-theme-color-secondary-contrast);
+	--gform-theme-control-color: var(--gform-theme-color-inside-control-contrast);
 	--gform-theme-control-color-hover: var(--gform-theme-control-color);
 	--gform-theme-control-color-focus: var(--gform-theme-control-color);
-	--gform-theme-control-color-disabled: rgba(var(--gform-theme-color-secondary-contrast-rgb), 0.6);
+	--gform-theme-control-color-disabled: rgba(var(--gform-theme-color-inside-control-contrast-rgb), 0.6);
 	--gform-theme-control-color-error: var(--gform-theme-control-color);
 
-	--gform-theme-control-icon-color: var(--gform-theme-color-dark-tint);
-	--gform-theme-control-icon-color-hover: var(--gform-theme-color-dark-shade);
+	--gform-theme-control-icon-color: var(--gform-theme-color-inside-control-dark-lighter);
+	--gform-theme-control-icon-color-hover: var(--gform-theme-color-inside-control-dark-darker);
 	--gform-theme-control-icon-color-focus: var(--gform-theme-control-icon-color-hover);
 	--gform-theme-control-icon-color-disabled: var(--gform-theme-control-icon-color);
 
@@ -235,7 +819,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-transition: var(--gform-theme-transition-control);
 
 	/* Placeholder */
-	--gform-theme-control-placeholder-color: rgba(var(--gform-theme-color-secondary-contrast-rgb), 0.7);
+	--gform-theme-control-placeholder-color: rgba(var(--gform-theme-color-inside-control-contrast-rgb), 0.7);
 	--gform-theme-control-placeholder-font-family: var(--gform-theme-control-font-family);
 	--gform-theme-control-placeholder-font-size: var(--gform-theme-control-font-size);
 	--gform-theme-control-placeholder-font-style: var(--gform-theme-control-font-style);
@@ -306,7 +890,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 	/* Primary Button */
 	--gform-theme-control-button-background-color-primary: var(--gform-theme-color-primary);
-	--gform-theme-control-button-background-color-hover-primary: var(--gform-theme-color-primary-shade);
+	--gform-theme-control-button-background-color-hover-primary: var(--gform-theme-color-primary-darker);
 	--gform-theme-control-button-background-color-focus-primary: var(--gform-theme-control-button-background-color-primary);
 	--gform-theme-control-button-background-color-disabled-primary: var(--gform-theme-control-button-background-color-primary);
 	--gform-theme-control-button-border-color-primary: transparent;
@@ -327,10 +911,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 	/* Secondary Button */
 	--gform-theme-control-button-background-color-secondary: var(--gform-theme-color-secondary);
-	--gform-theme-control-button-background-color-hover-secondary: var(--gform-theme-color-secondary-shade);
+	--gform-theme-control-button-background-color-hover-secondary: var(--gform-theme-color-secondary-darker);
 	--gform-theme-control-button-background-color-focus-secondary: var(--gform-theme-control-button-background-color-secondary);
 	--gform-theme-control-button-background-color-disabled-secondary: var(--gform-theme-control-button-background-color-secondary);
-	--gform-theme-control-button-border-color-secondary: var(--gform-theme-color-light-shade);
+	--gform-theme-control-button-border-color-secondary: var(--gform-theme-color-inside-control-light-darker);
 	--gform-theme-control-button-border-color-hover-secondary: var(--gform-theme-control-button-border-color-secondary);
 	--gform-theme-control-button-border-color-focus-secondary: var(--gform-theme-control-button-background-color-hover-primary);
 	--gform-theme-control-button-border-color-disabled-secondary: var(--gform-theme-control-button-border-color-secondary);
@@ -362,8 +946,8 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-button-box-shadow-hover-simple: var(--gform-theme-control-button-box-shadow-simple);
 	--gform-theme-control-button-box-shadow-focus-simple: var(--gform-theme-control-box-shadow-focus);
 	--gform-theme-control-button-box-shadow-disabled-simple: var(--gform-theme-control-button-box-shadow-simple);
-	--gform-theme-control-button-color-simple: rgba(var(--gform-theme-color-dark-rgb), 0.65);
-	--gform-theme-control-button-color-hover-simple: var(--gform-theme-color-dark);
+	--gform-theme-control-button-color-simple: rgba(var(--gform-theme-color-outside-control-dark-rgb), 0.65);
+	--gform-theme-control-button-color-hover-simple: var(--gform-theme-color-outside-control-dark);
 	--gform-theme-control-button-color-focus-simple: var(--gform-theme-control-button-color-hover-simple);
 	--gform-theme-control-button-color-disabled-simple: var(--gform-theme-control-button-color-simple);
 	--gform-theme-control-button-size-simple: 24px;
@@ -377,7 +961,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-theme--framework {
 	--gform-theme-control-choice-check-color: var(--gform-theme-color-primary);
-	--gform-theme-control-choice-check-color-disabled: rgba(var(--gform-theme-color-secondary-contrast-rgb), 0.2);
+	--gform-theme-control-choice-check-color-disabled: rgba(var(--gform-theme-color-inside-control-contrast-rgb), 0.2);
 	--gform-theme-control-choice-size-sm: 18px;
 	--gform-theme-control-choice-size-md: 20px;
 	--gform-theme-control-choice-size-lg: 22px;
@@ -424,7 +1008,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-date-datepicker-dropdown-background-image: var(--gform-theme-icon-control-select);
 	--gform-theme-control-date-datepicker-dropdown-background-position: var(--gform-theme-control-select-icon-position);
 	--gform-theme-control-date-datepicker-dropdown-background-size: var(--gform-theme-control-select-icon-size);
-	--gform-theme-control-date-datepicker-dropdown-border-color: var(--gform-theme-color-light-shade);
+	--gform-theme-control-date-datepicker-dropdown-border-color: var(--gform-theme-color-inside-control-light-darker);
 	--gform-theme-control-date-datepicker-dropdown-border-style: var(--gform-theme-control-border-style);
 	--gform-theme-control-date-datepicker-dropdown-border-width: var(--gform-theme-control-border-width);
 	--gform-theme-control-date-datepicker-dropdown-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -452,14 +1036,14 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-date-datepicker-table-cell-content-border-radius-max: 3px;
 	--gform-theme-control-date-datepicker-table-cell-content-color: var(--gform-theme-color-secondary-contrast);
 	--gform-theme-control-date-datepicker-table-cell-content-color-disabled: #cfd3d9;
-	--gform-theme-control-date-datepicker-table-cell-content-color-hover: var(--gform-theme-color-secondary-contrast);
+	--gform-theme-control-date-datepicker-table-cell-content-color-hover: var(--gform-theme-control-date-datepicker-table-cell-content-color);
 	--gform-theme-control-date-datepicker-table-cell-content-color-selected: var(--gform-theme-color-primary-contrast);
 }
 
 /* Gravity Forms Theme Framework | Global CSS API: Control - Description */
 
 .gform-theme--framework {
-	--gform-theme-control-description-color: var(--gform-theme-color-dark);
+	--gform-theme-control-description-color: var(--gform-theme-color-outside-control-dark);
 	--gform-theme-control-description-font-family: var(--gform-theme-font-family-tertiary);
 	--gform-theme-control-description-font-size: var(--gform-theme-font-size-tertiary);
 	--gform-theme-control-description-font-style: var(--gform-theme-font-style-tertiary);
@@ -483,8 +1067,8 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-file-padding-inline: 0 var(--gform-theme-control-padding-inline);
 
 	/* File input "button" */
-	--gform-theme-control-file-button-background-color: var(--gform-theme-color-light-tint);
-	--gform-theme-control-file-button-background-color-hover: var(--gform-theme-color-light);
+	--gform-theme-control-file-button-background-color: var(--gform-theme-color-secondary-darker);
+	--gform-theme-control-file-button-background-color-hover: var(--gform-theme-color-secondary);
 	--gform-theme-control-file-button-background-color-focus: var(--gform-theme-control-file-button-background-color);
 	--gform-theme-control-file-button-background-color-disabled: var(--gform-theme-control-file-button-background-color);
 	--gform-theme-control-file-button-border-inline-end-width: 1px;
@@ -514,7 +1098,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-file-drop-area-block-size: auto;
 	--gform-theme-control-file-drop-area-border-style: dashed;
 	--gform-theme-control-file-drop-area-border-radius-max: 8px;
-	--gform-theme-control-file-drop-area-color: rgba(var(--gform-theme-color-secondary-contrast-rgb), 0.725);
+	--gform-theme-control-file-drop-area-color: rgba(var(--gform-theme-color-inside-control-contrast-rgb), 0.725);
 	--gform-theme-control-file-drop-area-font-weight: 500;
 	--gform-theme-control-file-drop-area-line-height: 1;
 	--gform-theme-control-file-drop-area-padding-inline: 40px;
@@ -530,7 +1114,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-file-upload-progress-ui-gap: 12px;
 	--gform-theme-control-file-upload-progress-ui-size: var(--gform-theme-icon-font-size);
 
-	--gform-theme-control-file-upload-progress-bar-background-color: var(--gform-theme-color-light);
+	--gform-theme-control-file-upload-progress-bar-background-color: var(--gform-theme-color-outside-control-light);
 	--gform-theme-control-file-upload-progress-bar-background-color-loading: var(--gform-theme-color-primary);
 	--gform-theme-control-file-upload-progress-bar-block-size: 6px;
 	--gform-theme-control-file-upload-progress-bar-border-radius: var(--gform-theme-border-radius);
@@ -574,7 +1158,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 .gform-theme--framework {
 
 	/* Primary Labels: Labels for fields */
-	--gform-theme-control-label-color-primary: var(--gform-theme-color-dark-shade);
+	--gform-theme-control-label-color-primary: var(--gform-theme-color-outside-control-dark-darker);
 	--gform-theme-control-label-font-family-primary: var(--gform-theme-font-family-secondary);
 	--gform-theme-control-label-font-size-primary: var(--gform-theme-font-size-secondary);
 	--gform-theme-control-label-font-style-primary: var(--gform-theme-font-style-secondary);
@@ -583,7 +1167,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-label-line-height-primary: var(--gform-theme-line-height-secondary);
 
 	/* Secondary Labels: Labels for radio, checkbox, and consent fields */
-	--gform-theme-control-label-color-secondary: var(--gform-theme-color-dark-shade);
+	--gform-theme-control-label-color-secondary: var(--gform-theme-color-outside-control-dark-darker);
 	--gform-theme-control-label-font-family-secondary: var(--gform-theme-font-family-secondary);
 	--gform-theme-control-label-font-size-secondary: var(--gform-theme-font-size-secondary);
 	--gform-theme-control-label-font-style-secondary: var(--gform-theme-font-style-secondary);
@@ -592,7 +1176,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-label-line-height-secondary: var(--gform-theme-line-height-secondary);
 
 	/* Tertiary Labels: Labels for complex fields/fieldsets */
-	--gform-theme-control-label-color-tertiary: var(--gform-theme-color-dark);
+	--gform-theme-control-label-color-tertiary: var(--gform-theme-color-outside-control-dark);
 	--gform-theme-control-label-font-family-tertiary: var(--gform-theme-font-family-tertiary);
 	--gform-theme-control-label-font-size-tertiary: var(--gform-theme-font-size-tertiary);
 	--gform-theme-control-label-font-style-tertiary: var(--gform-theme-font-style-tertiary);
@@ -601,7 +1185,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-label-line-height-tertiary: var(--gform-theme-line-height-tertiary);
 
 	/* Quaternary Labels: Labels for product pricing  */
-	--gform-theme-control-label-color-quaternary: var(--gform-theme-color-dark);
+	--gform-theme-control-label-color-quaternary: var(--gform-theme-color-outside-control-dark);
 	--gform-theme-control-label-font-family-quaternary: var(--gform-theme-font-family-tertiary);
 	--gform-theme-control-label-font-size-quaternary: var(--gform-theme-font-size-secondary);
 	--gform-theme-control-label-font-style-quaternary: var(--gform-theme-font-style-tertiary);
@@ -641,10 +1225,11 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-select-dropdown-shadow: 0 0 1px rgba(18, 25, 97, 0.24), 0 24px 24px rgba(18, 25, 97, 0.03), 0 2px 2px rgba(18, 25, 97, 0.03), 0 4px 4px rgba(18, 25, 97, 0.03), 0 8px 8px rgba(18, 25, 97, 0.03), 0 16px 16px rgba(18, 25, 97, 0.03);
 	--gform-theme-control-select-dropdown-border-color: transparent;
 	--gform-theme-control-select-dropdown-border-radius-max: 3px;
-	--gform-theme-control-select-dropdown-option-background-color-hover: var(--gform-theme-color-light-tint);
+	--gform-theme-control-select-dropdown-option-background-color-hover: var(--gform-theme-color-inside-control-light-lighter);
 	--gform-theme-control-select-dropdown-option-box-shadow-hover: inset 3px 0 0 var(--gform-theme-color-primary);
 	--gform-theme-control-select-search-icon-size: var(--gform-theme-icon-font-size);
 	--gform-theme-control-select-search-icon-position: var(--gform-theme-control-padding-inline) center;
+	--gform-theme-control-select-search-padding-inline: calc(var(--gform-theme-control-select-search-icon-size) + var(--gform-theme-control-padding-inline) + 8px) var(--gform-theme-control-padding-inline);
 
 	/* Multi Select */
 	--gform-theme-control-multiselect-block-size: 130px;
@@ -713,7 +1298,7 @@ html[dir="rtl"] .gform-theme--framework {
 /* Gravity Forms Theme Framework | Global CSS API: Field - Page */
 
 .gform-theme--framework {
-	--gform-theme-field-page-progress-color: var(--gform-theme-color-dark);
+	--gform-theme-field-page-progress-color: var(--gform-theme-color-outside-control-dark);
 	--gform-theme-field-page-progress-font-family: var(--gform-theme-font-family);
 	--gform-theme-field-page-progress-font-size: 14px;
 	--gform-theme-field-page-progress-font-style: var(--gform-theme-font-style-base);
@@ -726,9 +1311,9 @@ html[dir="rtl"] .gform-theme--framework {
 	--gform-theme-field-page-progress-title-margin-block-end: 16px;
 
 	/* Progress Bar */
-	--gform-theme-field-page-progress-bar-background-color: var(--gform-theme-color-light);
+	--gform-theme-field-page-progress-bar-background-color: var(--gform-theme-color-outside-control-light);
 	--gform-theme-field-page-progress-bar-background-color-blue: #204ce5;
-	--gform-theme-field-page-progress-bar-background-color-gray: var(--gform-theme-color-dark);
+	--gform-theme-field-page-progress-bar-background-color-gray: var(--gform-theme-color-outside-control-dark);
 	--gform-theme-field-page-progress-bar-background-color-green: #31c48d;
 	--gform-theme-field-page-progress-bar-background-color-orange: #ff5a1f;
 	--gform-theme-field-page-progress-bar-background-color-red: #c02b0a;
@@ -741,15 +1326,15 @@ html[dir="rtl"] .gform-theme--framework {
 	/* Steps */
 	--gform-theme-field-page-steps-step-gap: 12px;
 	--gform-theme-field-page-steps-number-background-color: transparent;
-	--gform-theme-field-page-steps-number-background-color-active: var(--gform-theme-color-light);
+	--gform-theme-field-page-steps-number-background-color-active: var(--gform-theme-color-outside-control-light);
 	--gform-theme-field-page-steps-number-background-color-complete: var(--gform-theme-color-primary);
-	--gform-theme-field-page-steps-number-border-color: var(--gform-theme-color-light-shade);
+	--gform-theme-field-page-steps-number-border-color: var(--gform-theme-color-outside-control-light-darker);
 	--gform-theme-field-page-steps-number-border-color-active: transparent;
 	--gform-theme-field-page-steps-number-border-color-complete: var(--gform-theme-color-primary);
 	--gform-theme-field-page-steps-number-border-radius: 50%;
 	--gform-theme-field-page-steps-number-border-style: solid;
 	--gform-theme-field-page-steps-number-border-width: 2px;
-	--gform-theme-field-page-steps-number-color: var(--gform-theme-color-dark);
+	--gform-theme-field-page-steps-number-color: var(--gform-theme-color-outside-control-dark);
 	--gform-theme-field-page-steps-number-color-active: var(--gform-theme-field-page-steps-number-color);
 	--gform-theme-field-page-steps-number-color-complete: var(--gform-theme-color-primary-contrast);
 	--gform-theme-field-page-steps-number-size: 32px;
@@ -776,7 +1361,7 @@ html[dir="rtl"] .gform-theme--framework {
 	--gform-theme-field-password-strength-border-radius: 0;
 	--gform-theme-field-password-strength-border-style: var(--gform-theme-control-border-style);
 	--gform-theme-field-password-strength-border-width: 0;
-	--gform-theme-field-password-strength-color: var(--gform-theme-color-dark);
+	--gform-theme-field-password-strength-color: var(--gform-theme-color-outside-control-dark);
 	--gform-theme-field-password-strength-color-mismatch: #c02b0a;
 	--gform-theme-field-password-strength-color-short: #c02b0a;
 	--gform-theme-field-password-strength-color-bad: #ff5a1f;
@@ -795,7 +1380,7 @@ html[dir="rtl"] .gform-theme--framework {
 	--gform-theme-field-password-strength-transition: var(--gform-theme-transition-control);
 
 	/* Strength Indicator */
-	--gform-theme-field-password-strength-indicator-background-color: var(--gform-theme-color-light);
+	--gform-theme-field-password-strength-indicator-background-color: var(--gform-theme-color-outside-control-light);
 	--gform-theme-field-password-strength-indicator-background-color-mismatch: var(--gform-theme-field-password-strength-color-mismatch);
 	--gform-theme-field-password-strength-indicator-background-color-short: var(--gform-theme-field-password-strength-color-short);
 	--gform-theme-field-password-strength-indicator-background-color-bad: var(--gform-theme-field-password-strength-color-bad);
@@ -832,9 +1417,9 @@ html[dir="rtl"] .gform-theme--framework {
 .gform-theme--framework {
 	--gform-theme-field-repeater-row-gap: var(--gform-theme-form-row-gap);
 	--gform-theme-field-repeater-button-inline-gap: var(--gform-theme-form-col-gap);
-	--gform-theme-field-repeater-separator-color: var(--gform-theme-color-light-shade);
+	--gform-theme-field-repeater-separator-color: var(--gform-theme-color-outside-control-light-darker);
 	--gform-theme-field-repeater-separator-size: 1px;
-	--gform-theme-field-repeater-nested-border-color: var(--gform-theme-color-light-shade);
+	--gform-theme-field-repeater-nested-border-color: var(--gform-theme-color-outside-control-light-darker);
 	--gform-theme-field-repeater-nested-border-size: 1px;
 	--gform-theme-field-repeater-nested-border-style: solid;
 	--gform-theme-field-repeater-nested-padding-inline-start: 20px;
@@ -843,7 +1428,7 @@ html[dir="rtl"] .gform-theme--framework {
 /* Gravity Forms Theme Framework | Global CSS API: Field - Section */
 
 .gform-theme--framework {
-	--gform-theme-field-section-border-color: var(--gform-theme-color-light-shade);
+	--gform-theme-field-section-border-color: var(--gform-theme-color-outside-control-light-darker);
 	--gform-theme-field-section-border-style: solid;
 	--gform-theme-field-section-border-width: 1px;
 	--gform-theme-field-section-padding-block-end: 8px;
@@ -855,8 +1440,8 @@ html[dir="rtl"] .gform-theme--framework {
 
 .gform-theme--framework {
 
-	--gform-theme-form-validation-background-color: #fff9f9;
-	--gform-theme-form-validation-border-color: #ffc7bb;
+	--gform-theme-form-validation-background-color: rgba(var(--gform-theme-color-danger-rgb), 0.03);
+	--gform-theme-form-validation-border-color: rgba(var(--gform-theme-color-danger-rgb), 0.25);
 	--gform-theme-form-validation-border-width: 1px;
 	--gform-theme-form-validation-border-style: solid;
 	--gform-theme-form-validation-border-radius-max: 3px;
@@ -879,7 +1464,7 @@ html[dir="rtl"] .gform-theme--framework {
 	--gform-theme-form-validation-heading-gap: 12px;
 
 	/* Validation Heading Icon */
-	--gform-theme-form-validation-heading-icon-background-color: #feefef;
+	--gform-theme-form-validation-heading-icon-background-color: rgba(var(--gform-theme-color-danger-rgb), 0.05);
 	--gform-theme-form-validation-heading-icon-border-color: var(--gform-theme-form-validation-border-color);
 	--gform-theme-form-validation-heading-icon-border-width: 2px;
 	--gform-theme-form-validation-heading-icon-border-style: var(--gform-theme-form-validation-border-style);
@@ -1671,7 +2256,7 @@ html[dir="rtl"] .gform-theme--framework {
 	}
 
 .gform-theme--framework select[multiple] option:checked {
-			background: var(--gform-theme-color-light);
+			background: var(--gform-theme-color-inside-control-light);
 		}
 
 /* Styles for select with enhanced UI */
@@ -1735,7 +2320,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 				/* Local CSS API Overrides */
 				--gform-theme-local-block-size: var(--gform-theme-control-size-md);
-				--gform-theme-local-padding-inline: var(--gform-theme-control-select-padding-inline);
+				--gform-theme-local-padding-inline: var(--gform-theme-control-select-search-padding-inline);
 
 				/* Styles */
 				background-image: var(--gform-theme-icon-control-search) !important; /* Chosen uses !important, so we have to use it too */

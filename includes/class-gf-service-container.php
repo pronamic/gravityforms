@@ -86,6 +86,7 @@ class GF_Service_Container {
 
 		$this->providers[ $provider_name ] = $provider;
 
+		$provider->set_container( $this );
 		$provider->register( $this );
 		$provider->init( $this );
 	}

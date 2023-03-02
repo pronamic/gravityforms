@@ -64,6 +64,7 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-config-collection.php' );
 		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-config.php' );
 		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-config-data-parser.php' );
+		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-app-config.php' );
 		require_once( plugin_dir_path( __FILE__ ) . 'items/class-gf-config-global.php' );
 
 		// Add to container

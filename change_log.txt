@@ -1,3 +1,10 @@
+### 2.7.2 | 2023-03-01
+- Fixed an issue that causes certain Gravity Forms css files in the WordPress admin to load when they aren't needed.
+- Fixed an issue for sites hosted with WordPress.com where the “Enable auto-updates” spinner on the installed plugins page spins indefinitely.
+- Fixed an issue where the WP-CLI `wp plugin auto-updates` commands aren't compatible with the background updates setting.
+- API: Deprecated some of the form Theme Framework's global CSS API color system.
+- API: Updated and simplified the form Theme Framework's global CSS API color system.
+
 ### 2.7.1 | 2023-02-14
 - Added "Date Updated" to the list of default exported entry values. Credit: The GravityKit team.
 - Updated the setup wizard to use a placeholder instead of default value of "blog" in the website type dropdown.

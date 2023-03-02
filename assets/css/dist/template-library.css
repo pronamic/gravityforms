@@ -1,0 +1,162 @@
+.gform-admin.gform-setup-wizard--open [data-js="gf-template-library"] {
+			display: none;
+		}
+
+	.gform-admin .gform-template-library__mask, .gform-admin .gform-template-library__mask::before, .gform-admin .gform-template-library__mask::after, .gform-admin .gform-template-library__mask *, .gform-admin .gform-template-library__mask *::before, .gform-admin .gform-template-library__mask *::after {
+				box-sizing: border-box;
+			}
+
+	.gform-admin .gform-template-library__mask.gform-template-library--flyout-open .gform-template-library__alert .gform-dialog__content::before {
+				content: none;
+			}
+
+	.gform-admin .gform-template-library__flyout {
+		background-color: #f6f9fc;
+		overflow-y: auto;
+		padding: 0;
+	}
+
+	.gform-admin .gform-template-library__flyout .simplebar-content {
+			display: flex;
+			flex-flow: row wrap;
+			height: 100%;
+		}
+
+	.gform-admin .gform-template-library__flyout.gform-flyout.gform-flyout--fixed {
+			inset-block-start: 0;
+		}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__head {
+			align-self: start;
+			background-color: #fff;
+			padding-block: 3.1875rem;
+			padding-inline: 3.5625rem;
+			width: 100%;
+		}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__close.gform-button.gform-button--size-xs {
+			inset-inline-end: 1.25rem;
+			padding: 0;
+			inset-block-start: 1.25rem;
+		}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__body {
+			flex-grow: 1;
+			overflow-y: unset;
+			padding-block: 2.5rem;
+			padding-inline: 3.5625rem;
+		}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__body .gform-input-help-text--required {
+				color: #dd301d;
+				font-size: 0.875rem;
+				font-weight: 500;
+				vertical-align: bottom;
+			}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__body .gform-input--textarea {
+				font-size: 0.875rem;
+				min-block-size: 8rem;
+			}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__body-inner {
+			margin: 0 auto;
+			max-inline-size: 32.5rem;
+		}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__footer {
+			align-items: center;
+			align-self: end;
+			background-color: #fff;
+			box-shadow: 0 -4px 33px rgba(18, 25, 97, 0.07);
+			display: flex;
+			flex-flow: column;
+			inline-size: 100%;
+		}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__footer::before {
+				background: #ecedf8;
+				content: "";
+				block-size: 0.0625rem;
+				inline-size: 100%;
+			}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__footer .gform-flyout__footer-inner {
+				align-items: flex-start;
+				display: flex;
+				justify-content: flex-end;
+				padding-block: 2rem;
+				padding-inline: 2.5rem;
+				inline-size: 100%;
+			}
+
+	.gform-admin .gform-template-library__flyout .gform-flyout__footer .gform-flyout__footer-inner .gform-flyout__footer-primary-button {
+					-webkit-margin-start: 0.75rem;
+					        margin-inline-start: 0.75rem;
+				}
+
+	.gform-admin .gform-template-library__flyout-alert.gform-alert--error .gform-alert__message {
+		color: #dd301d;
+	}
+
+	.gform-admin .gform-template-library {
+		border-radius: 0.1875rem;
+		block-size: 100vh;
+		max-inline-size: none;
+		min-inline-size: 22.5rem;
+		padding: 0;
+		inline-size: 100vw;
+	}
+
+	@media (min-width: 960px) {
+
+	.gform-admin .gform-template-library {
+			block-size: 90vh;
+			inline-size: 90vw
+	}
+		}
+
+	.gform-admin .gform-template-library .gform-template-library__exit-button {
+			inset-inline-end: 1.25rem;
+			inset-block-start: 1.25rem;
+		}
+
+	.gform-admin .gform-template-library [data-simplebar] {
+			block-size: 100%;
+			overflow-y: auto;
+		}
+
+	.gform-admin .gform-template-library .simplebar-content-wrapper {
+			background-color: #f6f9fc;
+		}
+
+	.gform-admin .gform-template-library .gform-dialog__content {
+			display: flex;
+			flex-direction: column;
+			block-size: 100%;
+			padding: 0;
+		}
+
+	.gform-admin .gform-template-library__card-grid-container {
+		padding: 2.75rem 3.5625rem;
+	}
+
+	.gform-admin .gform-template-library__card-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(18.5rem, 1fr));
+	}
+
+	.gform-admin .gform-template-library__heading {
+		border-bottom: 1px solid #ecedf8;
+		padding: 2.0625rem 3.5625rem;
+	}
+
+	.gform-admin .gform-template-library__alert {
+		max-width: 25rem;
+	}
+
+html[dir="rtl"] .gform-template-library .gform-image__image {
+			transform: scale(-1, 1);
+		}
+
+/*# sourceMappingURL=template-library.css.map */

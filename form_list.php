@@ -205,7 +205,6 @@ class GFFormList {
                     <?php $table->display(); ?>
                     </form>
                 </div>
-				<div data-js="gf-template-library"></div>
 	<?php
 		GFForms::admin_footer();
 	}

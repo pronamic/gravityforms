@@ -28,7 +28,6 @@ class GF_Admin_Style_Dependencies extends GF_Dependencies {
 		'gform_admin_icons',
 		'gform_admin_components',
 		'gform_admin_css_utilities',
-		'gform_admin_setup_wizard',
 	);
 
 	/**
