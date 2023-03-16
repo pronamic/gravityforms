@@ -180,7 +180,8 @@ class GF_Query {
 				$field = GFAPI::get_field( $form_id, $sort_field );
 
 				if ( $field instanceof GF_Field ) {
-					$force_order_numeric = $field->get_input_type() == 'number';
+					$numeric_fields = array( 'number', 'total', 'calculation', 'price', 'quantity', 'shipping', 'singleshipping', 'product', 'singleproduct' );
+					$force_order_numeric = in_array( $field->get_input_type(), $numeric_fields );
 				} else {
 					$entry_meta          = GFFormsModel::get_entry_meta( $form_id );
 					$force_order_numeric = rgars( $entry_meta, $sort_field . '/is_numeric' );

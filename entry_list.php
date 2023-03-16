@@ -741,7 +741,8 @@ final class GF_Entry_List_Table extends WP_List_Table {
 			$sort_field_meta = GFAPI::get_field( $form_id, $sort_field );
 
 			if ( $sort_field_meta instanceof GF_Field ) {
-				$is_numeric = $sort_field_meta->get_input_type() == 'number';
+				$numeric_fields = array( 'number', 'total', 'calculation', 'price', 'quantity', 'shipping', 'singleshipping', 'product', 'singleproduct' );
+				$is_numeric = in_array( $sort_field_meta->get_input_type(), $numeric_fields );
 			} else {
 				$entry_meta = GFFormsModel::get_entry_meta( $form_id );
 				$is_numeric = rgars( $entry_meta, $sort_field . '/is_numeric' );

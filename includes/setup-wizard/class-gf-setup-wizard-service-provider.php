@@ -105,6 +105,10 @@ class GF_Setup_Wizard_Service_Provider extends GF_Service_Provider {
 			return false;
 		}
 
+		if ( rgget( 'page' ) == 'gf_settings' && rgar( $_COOKIE, GF_Setup_Wizard_Config::INVALID_KEY_COOKIE ) ) {
+			return false;
+		}
+
 		if ( defined( 'GF_DISPLAY_SETUP_WIZARD' ) && GF_DISPLAY_SETUP_WIZARD ) {
 			return true;
 		}

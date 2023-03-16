@@ -1,9 +1,25 @@
+### 2.7.3 | 2023-03-15
+- Fixed an issue that prevents accessing the settings page after failed license validation in the setup wizard.
+- Fixed an issue that prevents the template library stylesheet from loading in no-conflict mode and makes the template library unusable.
+- Fixed a compatibility issue with WordPress 6.2 where forms are not rendered properly in the Block Editor.
+- Fixed an issue where some CSS files are loading when the Output Default CSS setting is turned off.
+- Fixed an error on the widgets page that prevents the Gravity Forms block from working as a widget.
+- Fixed an issue which prevents sorting by number in the total field.
+- Fixed an issue that removes some inputs' sublabels when forms are saved.
+- Removed the about page images from the codebase to reduce the codebase size.
+- API: Added CSS API global custom properties for the contrast color for the theme framework's danger and success colors.
+- API: Added CSS API global custom properties to allow for specifying of the various max border-radius sizes we support.
+- API: Added CSS API global custom properties for the checkbox, date, file, select, and textarea border-radius property.
+- API: Fixed an issue where the Radio and Card settings fields do not render choice IDs.
+
 ### 2.7.2 | 2023-03-01
-- Fixed an issue that causes certain Gravity Forms css files in the WordPress admin to load when they aren't needed.
+- Fixed an issue where some Gravity Forms CSS files load in the WordPress admin when they aren't needed.
 - Fixed an issue for sites hosted with WordPress.com where the “Enable auto-updates” spinner on the installed plugins page spins indefinitely.
 - Fixed an issue where the WP-CLI `wp plugin auto-updates` commands aren't compatible with the background updates setting.
-- API: Deprecated some of the form Theme Framework's global CSS API color system.
+- Fixed deprecation notices in PHP 8.1.
 - API: Updated and simplified the form Theme Framework's global CSS API color system.
+- API: Deprecated some of the form Theme Framework's global CSS API color system.
+- API: Fixed the add/remove buttons on the generic field map field so that they always display horizontally.
 
 ### 2.7.1 | 2023-02-14
 - Added "Date Updated" to the list of default exported entry values. Credit: The GravityKit team.

@@ -43,6 +43,9 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 	/* Miscellaneous */
 	--gform-theme-border-radius: 3px;
+	--gform-theme-border-radius-max-sm: 2px;
+	--gform-theme-border-radius-max-md: 3px;
+	--gform-theme-border-radius-max-lg: 8px;
 	--gform-theme-transition-duration: 0.15s;
 	--gform-theme-transition-control: var(--gform-theme-transition-duration);
 
@@ -510,6 +513,18 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	*/
 	--gform-theme-color-danger-rgb: 192, 43, 10;
 
+	/*
+	Color: Danger - Contrast
+	The contrasting color to be used against the danger color.
+	*/
+	--gform-theme-color-danger-contrast: #fff;
+
+	/*
+	Color: Danger - Contrast (rgb channels)
+	The contrasting color to be used against the danger color.
+	*/
+	--gform-theme-color-danger-contrast-rgb: 255, 255, 255;
+
 	/* -----------------------------------------------------------------------------
 	 * Color: Success
 	 * Used for form success error text and UI.
@@ -530,6 +545,18 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	* Nothing at the moment
 	*/
 	--gform-theme-color-success-rgb: 57, 159, 75;
+
+	/*
+	Color: Success - Contrast
+	The contrasting color to be used against the success color.
+	*/
+	--gform-theme-color-success-contrast: #fff;
+
+	/*
+	Color: Success - Contrast (rgb channels)
+	The contrasting color to be used against the success color.
+	*/
+	--gform-theme-color-success-contrast-rgb: 255, 255, 255;
 }
 
 /* Gravity Forms Theme Framework | Global CSS API: Theme (DEPRECATED) */
@@ -775,9 +802,13 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-border-color-focus: var(--gform-theme-color-primary);
 	--gform-theme-control-border-color-disabled: var(--gform-theme-color-inside-control-light-darker);
 	--gform-theme-control-border-color-error: var(--gform-theme-color-danger);
-	--gform-theme-control-border-radius: var(--gform-theme-border-radius);
 	--gform-theme-control-border-style: solid;
 	--gform-theme-control-border-width: 1px;
+
+	--gform-theme-control-border-radius: var(--gform-theme-border-radius);
+	--gform-theme-control-border-radius-max-sm: min(var(--gform-theme-control-border-radius), var(--gform-theme-border-radius-max-sm));
+	--gform-theme-control-border-radius-max-md: min(var(--gform-theme-control-border-radius), var(--gform-theme-border-radius-max-md));
+	--gform-theme-control-border-radius-max-lg: min(var(--gform-theme-control-border-radius), var(--gform-theme-border-radius-max-lg));
 
 	--gform-theme-control-box-shadow: 0 1px 4px rgba(18, 25, 97, 0.0779552);
 	--gform-theme-control-box-shadow-color-focus: rgba(var(--gform-theme-color-primary-rgb), 0.3);
@@ -969,7 +1000,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-choice-size: var(--gform-theme-control-choice-size-md);
 
 	/* Checkbox Control */
-	--gform-theme-control-checkbox-check-border-radius-max: 2px;
+	--gform-theme-control-checkbox-check-border-radius: var(--gform-theme-control-border-radius-max-sm);
 	--gform-theme-control-checkbox-check-size-sm: 12px;
 	--gform-theme-control-checkbox-check-size-md: initial;
 	--gform-theme-control-checkbox-check-size-lg: 15px;
@@ -991,7 +1022,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-date-datepicker-box-shadow: 0 0 1px rgba(18, 25, 97, 0.24), 0 24px 24px rgba(18, 25, 97, 0.03), 0 2px 2px rgba(18, 25, 97, 0.03), 0 4px 4px rgba(18, 25, 97, 0.03), 0 8px 8px rgba(18, 25, 97, 0.03), 0 16px 16px rgba(18, 25, 97, 0.03);
 	--gform-theme-control-date-datepicker-padding-block: 16px;
 	--gform-theme-control-date-datepicker-padding-inline: 16px;
-	--gform-theme-control-date-datepicker-border-radius-max: 3px;
+	--gform-theme-control-date-datepicker-border-radius: var(--gform-theme-control-border-radius-max-md);
 	--gform-theme-control-date-datepicker-inline-size: 300px;
 	--gform-theme-control-date-datepicker-margin-block-start: 12px;
 
@@ -1033,7 +1064,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-date-datepicker-table-cell-content-background-color-hover: #f4f8ff;
 	--gform-theme-control-date-datepicker-table-cell-content-background-color-selected: var(--gform-theme-color-primary);
 	--gform-theme-control-date-datepicker-table-cell-content-border: var(--gform-theme-control-border-width) var(--gform-theme-control-border-style) var(--gform-theme-color-primary);
-	--gform-theme-control-date-datepicker-table-cell-content-border-radius-max: 3px;
+	--gform-theme-control-date-datepicker-table-cell-content-border-radius: var(--gform-theme-control-border-radius-max-md);
 	--gform-theme-control-date-datepicker-table-cell-content-color: var(--gform-theme-color-secondary-contrast);
 	--gform-theme-control-date-datepicker-table-cell-content-color-disabled: #cfd3d9;
 	--gform-theme-control-date-datepicker-table-cell-content-color-hover: var(--gform-theme-control-date-datepicker-table-cell-content-color);
@@ -1097,7 +1128,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	/* Enhanced UI File Upload Drop Area */
 	--gform-theme-control-file-drop-area-block-size: auto;
 	--gform-theme-control-file-drop-area-border-style: dashed;
-	--gform-theme-control-file-drop-area-border-radius-max: 8px;
+	--gform-theme-control-file-drop-area-border-radius: var(--gform-theme-control-border-radius-max-lg);
 	--gform-theme-control-file-drop-area-color: rgba(var(--gform-theme-color-inside-control-contrast-rgb), 0.725);
 	--gform-theme-control-file-drop-area-font-weight: 500;
 	--gform-theme-control-file-drop-area-line-height: 1;
@@ -1224,7 +1255,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	/* Enhanced UI Select */
 	--gform-theme-control-select-dropdown-shadow: 0 0 1px rgba(18, 25, 97, 0.24), 0 24px 24px rgba(18, 25, 97, 0.03), 0 2px 2px rgba(18, 25, 97, 0.03), 0 4px 4px rgba(18, 25, 97, 0.03), 0 8px 8px rgba(18, 25, 97, 0.03), 0 16px 16px rgba(18, 25, 97, 0.03);
 	--gform-theme-control-select-dropdown-border-color: transparent;
-	--gform-theme-control-select-dropdown-border-radius-max: 3px;
+	--gform-theme-control-select-dropdown-border-radius: var(--gform-theme-control-border-radius-max-md);
 	--gform-theme-control-select-dropdown-option-background-color-hover: var(--gform-theme-color-inside-control-light-lighter);
 	--gform-theme-control-select-dropdown-option-box-shadow-hover: inset 3px 0 0 var(--gform-theme-color-primary);
 	--gform-theme-control-select-search-icon-size: var(--gform-theme-icon-font-size);
@@ -1233,6 +1264,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 	/* Multi Select */
 	--gform-theme-control-multiselect-block-size: 130px;
+	--gform-theme-control-multiselect-border-radius: var(--gform-theme-control-border-radius-max-lg);
 	--gform-theme-control-multiselect-line-height: 1.5;
 	--gform-theme-control-multiselect-padding-block: var(--gform-theme-padding-block);
 
@@ -1257,7 +1289,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 .gform-theme--framework {
 	--gform-theme-control-textarea-block-size: 130px;
-	--gform-theme-control-textarea-border-radius-max: 8px;
+	--gform-theme-control-textarea-border-radius: var(--gform-theme-control-border-radius-max-lg);
 	--gform-theme-control-textarea-line-height: 1.5;
 	--gform-theme-control-textarea-padding-block: var(--gform-theme-padding-block);
 	--gform-theme-control-textarea-resize: vertical;
@@ -1444,7 +1476,7 @@ html[dir="rtl"] .gform-theme--framework {
 	--gform-theme-form-validation-border-color: rgba(var(--gform-theme-color-danger-rgb), 0.25);
 	--gform-theme-form-validation-border-width: 1px;
 	--gform-theme-form-validation-border-style: solid;
-	--gform-theme-form-validation-border-radius-max: 3px;
+	--gform-theme-form-validation-border-radius: var(--gform-theme-control-border-radius-max-md);
 	--gform-theme-form-validation-box-shadow: 0 1px 4px rgba(18, 25, 97, 0.0779552);
 	--gform-theme-form-validation-color: var(--gform-theme-color-danger);
 	--gform-theme-form-validation-font-family: var(--gform-theme-font-family-primary);
@@ -2012,7 +2044,7 @@ html[dir="rtl"] .gform-theme--framework {
 .gform-theme--framework textarea {
 
 		/* Local CSS API Overrides */
-		--gform-theme-local-border-radius: min(var(--gform-theme-control-border-radius), var(--gform-theme-control-textarea-border-radius-max));
+		--gform-theme-local-border-radius: var(--gform-theme-control-textarea-border-radius);
 		--gform-theme-local-block-size: var(--gform-theme-control-textarea-block-size);
 		--gform-theme-local-line-height: var(--gform-theme-control-textarea-line-height);
 		--gform-theme-local-padding-block: var(--gform-theme-control-textarea-padding-block);
@@ -2027,7 +2059,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 		/* Styles */
 		border: var(--gform-theme-control-border-width) var(--gform-theme-control-border-style) var(--gform-theme-control-border-color);
-		border-radius: min(var(--gform-theme-control-border-radius), var(--gform-theme-control-textarea-border-radius-max));
+		border-radius: var(--gform-theme-control-textarea-border-radius);
 		overflow: hidden;
 
 		/* Note there isn't currently a way to apply focus styles to
@@ -2107,7 +2139,7 @@ html[dir="rtl"] .gform-theme--framework {
 .gform-theme--framework input[type="checkbox"] {
 
 		/* Local CSS API Overrides */
-		--gform-theme-local-border-radius: min(var(--gform-theme-control-border-radius), var(--gform-theme-control-checkbox-check-border-radius-max));
+		--gform-theme-local-border-radius: var(--gform-theme-control-checkbox-check-border-radius);
 	}
 
 .gform-theme--framework input[type="checkbox"]::before {
@@ -2248,6 +2280,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 		/* Local CSS API Overrides */
 		--gform-theme-local-block-size: var(--gform-theme-control-multiselect-block-size);
+		--gform-theme-local-border-radius: var(--gform-theme-control-multiselect-border-radius);
 		--gform-theme-local-line-height: var(--gform-theme-control-multiselect-line-height);
 		--gform-theme-local-padding-block: var(--gform-theme-control-multiselect-padding-block);
 
@@ -2334,6 +2367,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 		/* Local CSS API Overrides */
 		--gform-theme-local-block-size: auto;
+		--gform-theme-local-border-radius: var(--gform-theme-control-multiselect-border-radius);
 
 		/* Styles */
 		padding-inline: 0;
@@ -2465,7 +2499,7 @@ html[dir="rtl"] .gform-theme--framework {
 			/* Styles */
 			background-color: var(--gform-theme-control-background-color);
 			border: var(--gform-theme-control-select-dropdown-border-color);
-			border-radius: min(var(--gform-theme-control-border-radius), var(--gform-theme-control-select-dropdown-border-radius-max));
+			border-radius: var(--gform-theme-control-select-dropdown-border-radius);
 			box-shadow: var(--gform-theme-control-select-dropdown-shadow);
 			overflow: hidden;
 			padding-block: 0;
@@ -3046,7 +3080,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-block-size: var(--gform-theme-control-file-drop-area-block-size);
-			--gform-theme-local-border-radius: min(var(--gform-theme-control-border-radius), var(--gform-theme-control-file-drop-area-border-radius-max));
+			--gform-theme-local-border-radius: var(--gform-theme-control-file-drop-area-border-radius);
 			--gform-theme-local-border-style: var(--gform-theme-control-file-drop-area-border-style);
 			--gform-theme-local-color: var(--gform-theme-control-file-drop-area-color);
 			--gform-theme-local-font-weight: var(--gform-theme-control-file-drop-area-font-weight);
@@ -3240,7 +3274,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 .gform-theme--framework.ui-datepicker {
 	background-color: var(--gform-theme-control-date-datepicker-background-color);
-	border-radius: min(var(--gform-theme-control-border-radius), var(--gform-theme-control-date-datepicker-border-radius-max));
+	border-radius: var(--gform-theme-control-date-datepicker-border-radius);
 	box-shadow: var(--gform-theme-control-date-datepicker-box-shadow);
 	display: none;
 	inline-size: var(--gform-theme-control-date-datepicker-inline-size);
@@ -3398,7 +3432,7 @@ html[dir="rtl"] .gform-theme--framework {
 				background-color: var(--gform-theme-local-background-color);
 				block-size: 100%;
 				border: var(--gform-theme-local-border);
-				border-radius: min(var(--gform-theme-control-border-radius), var(--gform-theme-control-date-datepicker-table-cell-content-border-radius-max));
+				border-radius: var(--gform-theme-control-date-datepicker-table-cell-content-border-radius);
 				color: var(--gform-theme-local-color);
 				display: flex;
 				inline-size: 100%;
@@ -4180,7 +4214,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 		/* Styles */
 		background-color: var(--gform-theme-form-validation-background-color);
 		border: var(--gform-theme-form-validation-border-width) var(--gform-theme-form-validation-border-style) var(--gform-theme-form-validation-border-color);
-		border-radius: min(var(--gform-theme-control-border-radius), var(--gform-theme-form-validation-border-radius-max));
+		border-radius: var(--gform-theme-form-validation-border-radius);
 		box-shadow: var(--gform-theme-form-validation-box-shadow);
 		display: flex;
 		flex-direction: column;

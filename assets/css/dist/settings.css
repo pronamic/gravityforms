@@ -1397,6 +1397,10 @@ html[dir="rtl"] .gform-settings-field .gform-settings-input__container + .gform-
 				margin-left: -0.03125rem;
 			}
 
+.gform-settings-generic-map__column--buttons {
+	min-width: 3rem;
+}
+
 .gform-settings-generic-map__column--key {
 
 	font-size: 0.875rem;

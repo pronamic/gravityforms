@@ -51,7 +51,7 @@ class GF_Splash_Page {
 
 		$this->tags = $tags;
 
-		$this->img_dir = GFCommon::get_base_url() . '/includes/splash-page/images/';
+		$this->img_dir = 'https://cdn.gravity.com/gravityforms/about-page/2.7/';
 	}
 
 	/**

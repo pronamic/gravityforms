@@ -6397,6 +6397,10 @@ abstract class GFAddOn {
 	 * @since 2.4.17
 	 */
 	public function update_path() {
+		if ( ! $this->_path || ! $this->_full_path ) {
+			return;
+		}
+
 		$path_dirname = dirname( $this->_path );
 		if ( $path_dirname !== '.' ) {
 			$full_path_dirname = basename( dirname( $this->_full_path ) );

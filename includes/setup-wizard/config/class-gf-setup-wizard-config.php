@@ -11,6 +11,8 @@ use Gravity_Forms\Gravity_Forms\Config\GF_Config;
  */
 class GF_Setup_Wizard_Config extends GF_Config {
 
+	const INVALID_KEY_COOKIE = 'gf_setup_wizard_invalid_key';
+
 	protected $name               = 'gform_admin_config';
 	protected $script_to_localize = 'gform_gravityforms_admin_vendors';
 
@@ -39,7 +41,7 @@ class GF_Setup_Wizard_Config extends GF_Config {
 						'redirect_url'  => get_dashboard_url() . 'admin.php?page=gf_edit_forms',
 						'video_id'      => 'KiYWpQYTD8a1Hbmb19KLKC',
 						'defaults'      => array(
-							'activeStep'        => 1,
+							'activeStep'        => empty( \GFCommon::get_key() ) ? 1 : 2,
 							'autoUpdate'        => true,
 							'currency'          => 'USD',
 							'dataCollection'    => false,
@@ -57,8 +59,11 @@ class GF_Setup_Wizard_Config extends GF_Config {
 							'servicesOther'     => '',
 						),
 						'options'  => array(
-							'currencies'   => \RGCurrency::get_grouped_currency_options( false ),
-							'organization' => $this->get_organization_options(),
+							'currencies'           => \RGCurrency::get_grouped_currency_options( false ),
+							'organization'         => $this->get_organization_options(),
+							'invalidKeyCookieName' => self::INVALID_KEY_COOKIE,
+							'hasLicense'           => ! empty( \GFCommon::get_key() ),
+							'isSettingsPage'       => rgget( 'page' ) == 'gf_settings',
 						),
 						'shouldDisplay' => $this->get_should_display(),
 					),
