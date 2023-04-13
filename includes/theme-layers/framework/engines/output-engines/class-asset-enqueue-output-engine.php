@@ -2,6 +2,8 @@
 
 namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Engines\Output_Engines;
 
+use GFAPI;
+
 /**
  * Handles enqueuing various script and style assets.
  *
@@ -19,6 +21,7 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 	protected $type = 'enqueued_asset';
 	protected $styles;
 	protected $scripts;
+
 
 	/**
 	 * Setter for styles.
@@ -52,6 +55,20 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 	public function output() {
 		$self = $this;
 
+		// Enqueue scripts and styles for blocks.
+		add_action( 'gform_post_enqueue_scripts', function ( $found_forms, $found_blocks, $post ) use ( $self ) {
+			foreach ( $found_blocks as $block ) {
+				$settings = $self->get_settings( $block['attrs']['formId'] );
+				$form     = \GFFormsModel::get_form( $block['attrs']['formId'] );
+				$styles   = call_user_func_array( $self->styles, array( $form, false, $settings, $block['attrs'] ) );
+				$scripts  = call_user_func_array( $self->scripts, array( $form, false, $settings, $block['attrs'] ) );
+
+				$this->process_form_assets( $styles, $scripts );
+			}
+
+		}, 999, 3 );
+
+		// Enqueue scripts and styles for forms that aren't in blocks.
 		add_action( 'gform_enqueue_scripts', function ( $form, $ajax ) use ( $self ) {
 			$page_instance  = isset( $form['page_instance'] ) ? $form['page_instance'] : - 1;
 			$settings       = $this->get_settings( $form['id'] );
@@ -59,16 +76,8 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 			$styles         = call_user_func_array( $self->styles, array( $form, $ajax, $settings, $block_settings ) );
 			$scripts        = call_user_func_array( $self->scripts, array( $form, $ajax, $settings, $block_settings ) );
 
-			// Loop through each of the scripts and styles, enqueueing them with the associated arguments.
-			foreach ( $scripts as $script_args ) {
-				if ( ! is_array( $script_args ) ) {
-					$script_args = array( $script_args );
-				}
+			$this->process_form_assets( $styles, $scripts );
 
-				call_user_func_array( 'wp_enqueue_script', $script_args );
-			}
-
-			$this->process_styles( $styles );
 		}, 999, 2 );
 
 		add_action( 'gform_enqueue_scripts', function () use ( $self ) {
@@ -136,6 +145,26 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 
 		// Return sorting value based on group assets are in.
 		return $a_key < $b_key ? - 1 : 1;
+	}
+
+	/**
+	 * Enqueue the styles and scripts for a form.
+	 *
+	 * @since 2.7.4
+	 *
+	 * @param array $styles  Styles to enqueue
+	 * @param array $scripts Scripts to enqueue
+	 */
+	public function process_form_assets( $styles, $scripts ) {
+		foreach ( $scripts as $script_args ) {
+			if ( ! is_array( $script_args ) ) {
+				$script_args = array( $script_args );
+			}
+
+			call_user_func_array( 'wp_enqueue_script', $script_args );
+		}
+
+		$this->process_styles( $styles );
 	}
 
 	private function process_styles( $styles ) {

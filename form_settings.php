@@ -919,6 +919,11 @@ class GFFormSettings {
 		$current_tab  = rgempty( 'subview', $_GET ) ? 'settings' : rgget( 'subview' );
 		$setting_tabs = GFFormSettings::get_tabs( $form['id'] );
 
+		// If theme_layer is set in $_GET, we're on a theme layer and should use it as the current tab slug
+		if ( ! rgempty( 'theme_layer', $_GET ) ) {
+			$current_tab = rgget( 'theme_layer' );
+		}
+
 		// Kind of boring having to pass the title, optionally get it from the settings tab
 		if ( ! $title ) {
 			foreach ( $setting_tabs as $tab ) {
@@ -948,7 +953,8 @@ class GFFormSettings {
 
 				<nav class="gform-settings__navigation">
 				<?php
-					foreach ( $setting_tabs as $tab ) {
+
+				    foreach ( $setting_tabs as $tab ) {
 
 						if ( rgar( $tab, 'capabilities' ) && ! GFCommon::current_user_can_any( $tab['capabilities'] ) ) {
 							continue;
@@ -1052,9 +1058,48 @@ class GFFormSettings {
 		 * @param int   $form_id      The ID of the form being accessed.
 		 */
 		$setting_tabs = apply_filters( 'gform_form_settings_menu', $setting_tabs, $form_id );
-		ksort( $setting_tabs, SORT_NUMERIC );
 
-		return $setting_tabs;
+		$primary_settings_tab_keys = array(
+			'confirmation',
+			'notification',
+			'personal-data',
+			'settings',
+		);
+
+		return self::sorting_tabs_alphabetical( $setting_tabs, $primary_settings_tab_keys );
+	}
+
+	/**
+	 * Orders tabs array into alphabetical order
+	 *
+	 * @return array
+	 *
+	 * @since  2.7.4
+	 * @access public
+	 *
+	 * @used-by GFFormSettings::get_tabs()
+	 */
+	public static function sorting_tabs_alphabetical( array $settings_tab, array $primary_settings_tab_keys ) {
+		usort( $settings_tab, function( $a, $b ) use ( $primary_settings_tab_keys ) {
+			if ( $a['name'] === 'settings' ) {
+				return -1;
+			} elseif ( $b['name'] === 'settings' ) {
+				return 1;
+			}
+
+			$key_a = in_array( $a['name'], $primary_settings_tab_keys );
+			$key_b = in_array( $b['name'], $primary_settings_tab_keys );
+
+			if ( $key_a !== false && $key_b === false ) {
+				return -1;
+			} elseif ( $key_a === false && $key_b !== false ) {
+				return 1;
+			} else {
+				return strcasecmp( $a['label'], $b['label'] );
+			}
+		});
+
+		return $settings_tab;
 	}
 
 	/**

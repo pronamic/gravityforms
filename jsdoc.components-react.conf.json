@@ -17,7 +17,7 @@
     "monospaceLinks": false
   },
   "gf_opts": {
-    "static_dirs": ["jsdoc/fonts","jsdoc/images"],
+    "static_dirs": ["assets/jsdoc/fonts","assets/jsdoc/images"],
     "output_dir": "docs/js/components-react/"
   },
   "opts": {
@@ -33,8 +33,8 @@
     "theme_opts": {
       "title": "<span class=\"gform-gravity-logo\"></span>",
       "default_theme": "light",
-      "include_css": ["../../../jsdoc/custom-styles.css"],
-      "include_js": ["../../../jsdoc/custom-scripts.js"],
+      "include_css": ["../../../assets/jsdoc/custom-styles.css"],
+      "include_js": ["../../../assets/jsdoc/custom-scripts.js"],
       "menu" : [
         {
           "title": "HTML Components",

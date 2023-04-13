@@ -143,7 +143,7 @@ class GF_Theme_Layers_Provider extends GF_Service_Provider {
 	 * @return void
 	 */
 	public function output_settings( GF_Service_Container $container ) {
-		add_filter( 'gform_form_settings_fields', function ( $sections, $form ) use ( $container ) {
+		add_filter( 'gform_addon_form_settings_fields', function ( $sections, $form ) use ( $container ) {
 			/**
 			 * @var GF_Theme_Layer[]
 			 */

@@ -7,7 +7,7 @@ return array(
 		'template_background'   => 'sazerac-yellow',
 		'template_thumbnail'    => 'BasicContact.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/contact-form/',
-		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'basic', 'multi', 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'ltsingle', 'basic', 'multi', 'ltmulti', 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'labelPlacement'             => 'top_label',
 			'useCurrentUserAsAuthor'     => '1',
@@ -352,7 +352,7 @@ return array(
 		'template_background'   => 'porcelain-gray',
 		'template_thumbnail'    => 'AdvanceContact.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/advanced-contact-form/',
-		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'basic', 'multi', 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'ltsingle', 'basic', 'multi', 'ltmulti', 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'labelPlacement'             => 'top_label',
 			'useCurrentUserAsAuthor'     => '1',
@@ -1328,7 +1328,7 @@ return array(
 		'template_background'   => 'panache-green',
 		'template_thumbnail'    => 'Contest.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/contest-entry-form/',
-		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'basic', 'multi', 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'ltsingle', 'basic', 'multi', 'ltmulti', 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Form Template Library: Contest Entry Form', 'gravityforms' ),
 			'description'                => esc_html__( 'Enter our competition today to be in with a chance of winning...', 'gravityforms' ),
@@ -1740,7 +1740,7 @@ return array(
 		'template_background'   => 'hawkes-blue',
 		'template_thumbnail'    => 'Donation.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/donation-form/',
-		'template_access_level' => [ 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Donation Form', 'gravityforms' ),
 			'description'                => esc_html__( 'Help us provide care and support for vulnerable adults.', 'gravityforms' ),
@@ -2269,7 +2269,7 @@ return array(
 		'template_background'   => 'iceberg-blue',
 		'template_thumbnail'    => 'eCommerce.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/ecommerce-form/',
-		'template_access_level' => [ 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'eCommerce Form', 'gravityforms' ),
 			'description'                => esc_html__( 'A form that allows you to sell products and let your customers pay via different payment gateways', 'gravityforms' ),
@@ -3224,7 +3224,7 @@ return array(
 		'template_background'   => 'iceberg-blue',
 		'template_thumbnail'    => 'eCommerceStripe.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/ecommerce-stripe-form/',
-		'template_access_level' => [ 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Stripe Checkout Form', 'gravityforms' ),
 			'description'                => esc_html__( 'A form that allows you to sell products and let your customers pay via Stripe', 'gravityforms' ),
@@ -4087,7 +4087,7 @@ return array(
 		'template_background'   => 'iceberg-blue',
 		'template_thumbnail'    => 'eCommercePayPal.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/ecommerce-paypal-form/',
-		'template_access_level' => [ 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'PayPal Checkout Form', 'gravityforms' ),
 			'description'                => esc_html__( 'A form that allows you to sell products and let your customers pay via PayPal', 'gravityforms' ),
@@ -4983,7 +4983,7 @@ return array(
 		'template_background'   => 'maverick-purple',
 		'template_thumbnail'    => 'Employment.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/employment-application-form/',
-		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'basic', 'multi', 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'ltsingle', 'basic', 'multi', 'ltmulti', 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Employment Application Form', 'gravityforms' ),
 			'description'                => '',
@@ -6136,7 +6136,7 @@ return array(
 		'template_background'   => 'porcelain-gray',
 		'template_thumbnail'    => 'Event.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/event-registration-form/',
-		'template_access_level' => [ 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Event Registration Form', 'gravityforms' ),
 			'description'                => esc_html__( 'Please complete this form to register for the event.', 'gravityforms' ),
@@ -7269,7 +7269,7 @@ return array(
 		'template_background'   => 'sazerac-yellow',
 		'template_thumbnail'    => 'Gift.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/gift-certificate-order-form/',
-		'template_access_level' => [ 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Gift Certificate Order Form', 'gravityforms' ),
 			'description'                => esc_html__( 'Purchase a gift certificate today for your nearest and dearest...', 'gravityforms' ),
@@ -8244,7 +8244,7 @@ return array(
 		'template_background'   => 'panache-green',
 		'template_thumbnail'    => 'Newsletter.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/newsletter-signup-form/',
-		'template_access_level' => [ 'basic', 'multi', 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'basic', 'multi', 'ltmulti', 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Form Template Library: Newsletter Signup Form', 'gravityforms' ),
 			'description'                => esc_html__( 'If you want to keep up to date with what\'s happening on the blog, sign up for our newsletter!', 'gravityforms' ),
@@ -8605,7 +8605,7 @@ return array(
 		'template_background'   => 'hawkes-blue',
 		'template_thumbnail'    => 'Quote.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/request-a-quote/',
-		'template_access_level' => [ 'basic', 'multi', 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'basic', 'multi', 'ltmulti', 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Request a Quote Form', 'gravityforms' ),
 			'description'                => esc_html__( 'Please fill out the information below and we will be in touch shortly with your personalized quote.', 'gravityforms' ),
@@ -9163,7 +9163,7 @@ return array(
 		'template_background'   => 'iceberg-blue',
 		'template_thumbnail'    => 'Survey.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/survey/',
-		'template_access_level' => [ 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Survey Form', 'gravityforms' ),
 			'description'                => esc_html__( 'Tell us what you think about Acme Products...', 'gravityforms' ),
@@ -10263,7 +10263,7 @@ return array(
 		'template_background'   => 'maverick-purple',
 		'template_thumbnail'    => 'UserRegistration.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/user-registration/',
-		'template_access_level' => [ 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'User Registration Form', 'gravityforms' ),
 			'description'                => esc_html__( 'Please complete the following form to register on our site. Thanks.', 'gravityforms' ),
@@ -10663,7 +10663,7 @@ return array(
 		'template_background'   => 'porcelain-gray',
 		'template_thumbnail'    => 'WebinarRegistration.svg',
 		'template_preview_url'  => 'https://www.gravityforms.com/form-templates/webinar-registration-form/',
-		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'basic', 'multi', 'pro', 'dev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
+		'template_access_level' => [ 'godaddy', 'gravityflow', 'gravityview', 'single', 'ltsingle', 'basic', 'multi', 'ltmulti', 'pro', 'dev', 'ltdev', 'nonprofit', 'elite', 'enterprise', 'wpcom' ],
 		'form_meta'             => array(
 			'title'                      => esc_html__( 'Webinar Registration Form', 'gravityforms' ),
 			'description'                => esc_html__( 'Register for our latest webinar...', 'gravityforms' ),

@@ -413,6 +413,11 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 		$target.data( 'gf-disabled-assessed', true );
 	}
 
+	// honeypot should not be impacted by conditional logic.
+	if( $target.hasClass( 'gfield--type-honeypot') ) {
+		return;
+	}
+
 	if(action == "show"){
 
 		// reset tabindex for selects
@@ -426,6 +431,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 				$target.find(':input:hidden:not(.gf-default-disabled)').removeAttr( 'disabled' );
 				if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 					$target.removeAttr( 'disabled' ).css( 'display', '' );
+					$target.attr( 'data-conditional-logic', 'hidden' );
 					if ( '1' == gf_legacy.is_legacy ) {
 						// for legacy markup, remove screen reader class.
 						$target.removeClass( 'screen-reader-text' );
@@ -444,17 +450,23 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if ( display == '' || display == 'none' ){
 				display = '1' === gf_legacy.is_legacy ? 'list-item' : 'block';
 			}
-			$target.find(':input:hidden:not(.gf-default-disabled)').removeAttr( 'disabled' );
+			$target.find(':input:hidden:not(.gf-default-disabled)').removeAttr( 'disabled' ).attr( 'data-conditional-logic', 'visible' );
 
 			// Handle conditional submit and next buttons.
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 				$target.removeAttr( 'disabled' ).css( 'display', '' );
+				$target.attr( 'data-conditional-logic', 'visible' );
 				if ( '1' == gf_legacy.is_legacy ) {
 					// for legacy markup, remove screen reader class.
 					$target.removeClass( 'screen-reader-text' );
 				}
 			} else {
 				$target.css( 'display', display );
+				if( display == 'none' ) {
+					$target.attr( 'data-conditional-logic', 'hidden' );
+				} else {
+					$target.attr( 'data-conditional-logic', 'visible' );
+				}
 			}
 
 			if(callback){
@@ -508,6 +520,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 				}
 			} else {
 				$target.css( 'display', 'none' );
+				$target.attr( 'data-conditional-logic', 'hidden' );
 			}
 			$target.find(':input:hidden:not(.gf-default-disabled)').attr( 'disabled', 'disabled' );
 			if(callback){

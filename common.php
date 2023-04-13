@@ -2849,7 +2849,9 @@ Content-Type: text/html;
 	 * @return string Returns the support URL.
 	 */
 	public static function get_support_url() {
-		return self::get_environment_setting( 'support_url' );
+		$env_handler = GFForms::get_service_container()->get( Gravity_Forms\Gravity_Forms\Environment_Config\GF_Environment_Config_Service_Provider::GF_ENVIRONMENT_CONFIG_HANDLER );
+
+		return $env_handler->get_support_url();
 	}
 
 	/**
@@ -2859,7 +2861,7 @@ Content-Type: text/html;
 	 *
 	 * @param string $name The env variable name (without the "gf_env_" prefix. i.e. support_url).
 	 *
-	 * @return string Returns the environmentment variable.
+	 * @return string Returns the environment variable.
 	 */
 	public static function get_environment_setting( $name ) {
 		$env_handler = GFForms::get_service_container()->get( Gravity_Forms\Gravity_Forms\Environment_Config\GF_Environment_Config_Service_Provider::GF_ENVIRONMENT_CONFIG_HANDLER );

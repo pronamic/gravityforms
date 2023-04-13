@@ -156,17 +156,7 @@ class GF_Field_List extends GF_Field {
 		$form_id        = $form['id'];
 		$is_form_editor = $this->is_form_editor();
 
-		if ( ! empty( $value ) ) {
-			$value = maybe_unserialize( $value );
-		}
-
-		if ( is_array( $value ) ) {
-			if ( ! is_array( $value[0] ) ) {
-				$value = $this->create_list_array( $value );
-			}
-		} else {
-			$value = array( array() );
-		}
+		$value = $this->to_array( $value );
 
 		$has_columns       = is_array( $this->choices );
 		$columns           = $has_columns ? $this->choices : array( array() );
@@ -275,17 +265,7 @@ class GF_Field_List extends GF_Field {
 		$form_id        = $form['id'];
 		$is_form_editor = $this->is_form_editor();
 
-		if ( ! empty( $value ) ) {
-			$value = maybe_unserialize( $value );
-		}
-
-		if ( is_array( $value ) ) {
-			if ( ! is_array( $value[0] ) ) {
-				$value = $this->create_list_array( $value );
-			}
-		} else {
-			$value = array( array() );
-		}
+		$value = $this->to_array( $value );
 
 		$has_columns = is_array( $this->choices );
 		$columns     = $has_columns ? $this->choices : array( array() );
@@ -919,6 +899,40 @@ class GF_Field_List extends GF_Field {
 
 			return $rows;
 		}
+	}
+
+	/**
+	 * Converts a string to an array.
+	 *
+	 * @since 2.7.4.1
+	 * @access public
+	 *
+	 * @uses \GF_Field_MultiSelect::$storageType
+	 *
+	 * @param string $value A serialized string to convert.
+	 *
+	 * @return array The converted array.
+	 */
+	public function to_array( $value ) {
+		$default = array( array() );
+
+		if ( empty( $value ) ) {
+			return $default;
+		} elseif ( is_array( $value ) ) {
+			if ( ! is_array( $value[0] ) ) {
+				$value = $this->create_list_array( $value );
+			}
+
+			return $value;
+		} elseif ( is_serialized( $value ) ) {
+			$value = @unserialize(
+				trim( $value ),
+				array( 'allowed_classes' => false )
+			);
+			return is_array( $value ) ? $value : $default;
+		}
+
+		return $default;
 	}
 
 	/**

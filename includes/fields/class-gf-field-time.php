@@ -110,6 +110,38 @@ class GF_Field_Time extends GF_Field {
 	}
 
 	/**
+	 * Get the default properties.
+	 *
+	 * Inputs are required for the field to function correctly, so this ensures that the inputs exist.
+	 *
+	 * @since 2.7.4
+	 *
+	 * @return array[] Array of default properties.
+	 */
+	public function get_default_properties() {
+		return array(
+			'inputs' => array(
+				array(
+					'id' => "{$this->id}.1",
+					'label' => 'Hour',
+					'name' => '',
+				),
+				array(
+					'id' => "{$this->id}.2",
+					'label' => 'Minute',
+					'name' => '',
+				),
+				array(
+					'id' => "{$this->id}.3",
+					'label' => 'AM/PM',
+					'name' => '',
+				),
+			)
+		);
+	}
+
+
+	/**
 	 * Validates the field inputs.
 	 *
 	 * @since 1.9

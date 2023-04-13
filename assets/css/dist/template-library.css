@@ -95,6 +95,10 @@
 					        margin-inline-start: 0.75rem;
 				}
 
+	.gform-admin .gform-template-library__flyout .gform-template-library__flyout-textarea {
+			resize: none;
+		}
+
 	.gform-admin .gform-template-library__flyout-alert.gform-alert--error .gform-alert__message {
 		color: #dd301d;
 	}

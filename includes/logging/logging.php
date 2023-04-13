@@ -559,12 +559,12 @@ class GFLogging extends GFAddOn {
 		$plugin_setting = $instance->get_plugin_setting( $plugin );
 
 		// If logging is turned off, exit.
-		if ( rgempty( 'enable', $plugin_setting ) ) {
+		if ( ! rgar( $plugin_setting, 'enable' ) ) {
 			return;
 		}
 
 		// Log message.
-		$log = $instance->get_logger( $plugin, $plugin_setting['log_level'] );
+		$log = $instance->get_logger( $plugin, rgar( $plugin_setting, 'log_level', KLogger::DEBUG ) );
 
 		/**
 		* Filters the logging message.
@@ -672,7 +672,7 @@ class GFLogging extends GFAddOn {
 
 		$plugin_setting = $this->get_plugin_setting( $plugin_name );
 
-		if ( rgempty( 'file_name', $plugin_setting ) ) {
+		if ( ! rgar( $plugin_setting, 'file_name' ) ) {
 			return '';
 		}
 

@@ -1,3 +1,20 @@
+### 2.7.4 | 2023-04-11
+- Added security enhancements.
+- Fixed an issue that causes block style settings to disappear on a form with validation errors.
+- Fixed PHP warnings on the time field in some versions of PHP.
+- Fixed an issue that blocks the Color Picker Input Border Styles from displaying.
+- Fixed an issue that prevents the honeypot from working if the last section of a form is hidden by conditional logic.
+- Fixed an issue that prevents new installations of Gravity Forms from showing up in the user account page on gravityforms.com.
+- Fixed an issue that causes incorrect "Upgrade" notifications on the form template library for some license types.
+- Updated the link for the "open a support ticket" text on the help page.
+- Updated the textarea in the new form dialog to prevent layout problems and unnecessary scrollbars.
+- Updated the new form dialog for better keyboard accessibility.
+- Updated how conditional logic is handled to add data attributes to hidden and visible fields.
+- API: Added new filter `gform_addon_form_settings_fields` to allow addons to modify the settings fields displayed on a given form settings page.
+- API: Added a new filter `gform_validate_required_file_exists` to allow developers to override the default behavior of the file upload field when validating required files.
+- AF: Fixed a fatal error that occurs when when saving settings that include a setting named "enable" when logging has not been configured for an add-on.
+
+
 ### 2.7.3 | 2023-03-15
 - Fixed an issue that prevents accessing the settings page after failed license validation in the setup wizard.
 - Fixed an issue that prevents the template library stylesheet from loading in no-conflict mode and makes the template library unusable.

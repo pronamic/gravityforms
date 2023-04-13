@@ -125,6 +125,7 @@ class Block_Styles_Handler {
 	}
 
 	public function styles( $form, $ajax, $settings, $block_settings ) {
+
 		$theme_slug = \GFFormDisplay::get_form_theme_slug( $form );
 
 		if ( $theme_slug !== 'orbital' ) {

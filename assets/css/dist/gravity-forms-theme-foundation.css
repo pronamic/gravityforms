@@ -20,6 +20,44 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 ----------------------------------------------------------------
 */
 
+/**
+ @navignore
+ # Theme Foundation Styles & CSS API
+
+A Gravity Forms theme framework foundation responsible for layout, out-of-the-box enhanced ui, and other basic required styles.
+
+![Alt text](https://media.tenor.com/0yli7fSvvL0AAAAC/raccoon-yes.gif)
+
+## Usage
+
+Irony celiac hexagon try-hard migas plaid asymmetrical synth tonx kogi beard. Mukbang affogato banjo chartreuse taxidermy mustache. Woke fanny pack kombucha, pork belly PBR&B yes plz messenger bag.
+
+Migas swag gatekeep banh mi distillery pinterest farm-to-table four dollar toast typewriter next level. Post-ironic next level poutine, deep v mustache palo santo unicorn. Vegan drinking vinegar asymmetrical lomo fanny pack selvage narwhal deep v swag authentic.
+
+Fashion :smile: axe celiac big mood yr waistcoat, edison bulb listicle distillery normcore ascot pour-over drinking vinegar.
+
+1. Ordered Item
+2. Ordered Item
+3. Ordered Item
+
+- List item 1
+- List item 2
+- List item 3
+
+> Blockquotes are very handy in email to emulate reply text.
+
+*This text will be italic*
+**This text will be bold**
+
+Here's an idea: why don't we take `SuperiorProject` and turn it into `**Reasonable**Project`.
+
+## Copyright
+
+Gravity Forms is a Rocketgenius project
+copyright 2008-2022 Rocketgenius Inc.
+https://www.rocketgenius.com
+*/
+
 /* Global API: Handles the top-level global CSS API */
 
 /* -----------------------------------------------------------------------------
@@ -31,27 +69,126 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
  *
  * ----------------------------------------------------------------------------- */
 
-/* Gravity Forms Foundation Theme | Global CSS API: Layout */
+/**
+# Global CSS API: Layout
+
+The core layout engine for forms on the frontend. Control grid gaps and global properties here.<br /><br />
+
+## CSS Custom Properties
+ */
 
 .gform-theme--foundation {
+
+	/**
+	@cssprop
+	Name: --gform-theme-form-row-gap
+	Description: Row gap for the form grid.
+	Default: --gform-theme-spacer-10
+	*/
 	--gform-theme-form-row-gap: 40px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-form-col-gap
+	Description: Column gap for the form grid.
+	Default: --gform-theme-spacer-4
+	*/
 	--gform-theme-form-col-gap: 16px;
+
+	/**
+	@cssprop
+	Description: Row gap for a field on the grid.
+	Default: --gform-theme-spacer-3
+	Name: --gform-theme-field-row-gap
+	*/
 	--gform-theme-field-row-gap: 12px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-field-col-gap
+	Default: --gform-theme-spacer-3
+	Description: Column gap for a field.
+	*/
 	--gform-theme-field-col-gap: 12px;
 
+	/**
+	@cssprop
+	Name: --gform-theme-label-horizontal-layout-width
+	Description: Width of the label in a horizontal layout.
+	Default: 30%
+	 */
 	--gform-theme-label-horizontal-layout-width: 30%;
+
+	/**
+	@cssprop
+	Name: --gform-theme-label-required-gap
+	Description: Gap between the label and the required indicator.
+	Default: 6px
+	 */
 	--gform-theme-label-required-gap: 6px;
 
+	/**
+	@cssprop
+	Name: --gform-theme-form-footer-margin-block-start
+	Description: Margin top for the form footer.
+	Default: --gform-theme-spacer-6
+	 */
 	--gform-theme-form-footer-margin-block-start: 24px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-form-footer-gap
+	Description: Gap between the form footer and the form.
+	Default: --gform-theme-spacer-2
+	 */
 	--gform-theme-form-footer-gap: 8px;
 
+	/**
+	@cssprop
+	Name: --gform-theme-field-date-inline-size
+	Description: Width of the date field in an inline layout.
+	Default: 168px
+	 */
 	--gform-theme-field-date-inline-size: 168px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-field-time-inline-size
+	Description: Width of the time field in an inline layout.
+	Default: 110px
+	 */
 	--gform-theme-field-time-inline-size: 110px;
 
+	/**
+	@cssprop
+	Name: --gform-theme-field-list-buttons-gap
+	Description: Gap between the buttons in a list field.
+	Default: --gform-theme-spacer-2
+	 */
 	--gform-theme-field-list-buttons-gap: 8px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-field-list-buttons-inline-size
+	Description: Width of the buttons in a list field in an inline layout.
+	Default: calc(32px + var(--gform-theme-field-list-buttons-gap) + var(--gform-theme-field-col-gap))
+	 */
 	--gform-theme-field-list-buttons-inline-size: calc(32px + var(--gform-theme-field-list-buttons-gap) + var(--gform-theme-field-col-gap));
 
+	/**
+	@cssprop
+	Name: --gform-theme-field-page-steps-row-gap
+	Description: Row gap for the page steps.
+	Default: --gform-theme-spacer-2
+	 */
 	--gform-theme-field-page-steps-row-gap: 8px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-field-page-steps-col-gap
+	Description: Column gap for the page steps.
+	Default: --gform-theme-spacer-6
+	 */
 	--gform-theme-field-page-steps-col-gap: 24px;
 }
 
@@ -122,8 +259,41 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	width: auto;
 }
 
-/*
- * Utility classes to handle styles across various contexts.
+/**
+# Base: Utility Classes
+
+Utility classes to handle styles across various contexts.
+
+## Selectors
+
+Apply these with enough specificity to override the default styles.
+
+@cssselector .gform-ul-reset
+A list of items with no bullets or padding.
+
+@cssselector div #yes [class*="gform-test"] > .gform-ul-reset
+
+@cssselector [class*="gform-test"]
+
+@cssselector #pound-it
+
+Example usage (this seems to work for the JS based readme.md files for the code highlighting too):
+
+@cssexample
+	.gform-ul-reset {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+	}
  */
 
 .gform-theme--foundation .gform-ul-reset {
@@ -132,7 +302,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	padding: 0;
 }
 
-/* readonly form controls */
+/**
+@cssselector .gform-text-input-reset
+A reset for text inputs.
+ */
 
 .gform-theme--foundation .gform-text-input-reset {
 	background-color: transparent;
@@ -500,6 +673,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
  *
  * ----------------------------------------------------------------------------- */
 
+/**
+@navlabel File Upload
+ */
+
 .gform-theme--foundation .gform_drop_area {
 		background-color: #fff;
 		border: 1px dashed #686e77;
@@ -511,6 +688,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 .gform-theme--foundation .gform_drop_instructions, .gform-theme--foundation .gform_fileupload_rules {
 		display: block;
 	}
+
+/**
+@navsection Controls
+ */
 
 .gform-theme--foundation.ui-datepicker {
 	background-color: #fff;
@@ -673,6 +854,11 @@ Copyright (c) 2011-2018 Harvest http://getharvest.com
 MIT License, https://github.com/harvesthq/chosen/blob/master/LICENSE.md
 This file is generated by `grunt build`, do not edit it by hand.
 */
+
+/**
+@navsection Controls
+@navlabel Select
+ */
 
 /* Base */
 
@@ -1154,12 +1340,22 @@ This file is generated by `grunt build`, do not edit it by hand.
 		padding-inline: 10px;
 	}
 
+/**
+@navsection Fields
+@navlabel Address
+ */
+
 @media (min-width: 640px) {
 
 		.gform-theme--foundation .ginput_address_city, .gform-theme--foundation .ginput_address_state, .gform-theme--foundation .ginput_address_zip, .gform-theme--foundation .ginput_address_country {
 			inline-size: 50%;
 		}
 	}
+
+/**
+@navsection Fields
+@navlabel Credit Card
+ */
 
 .gform-theme--foundation .gform_card_icon_container {
 		block-size: 32px;

@@ -292,6 +292,20 @@ class GF_Field extends stdClass implements ArrayAccess {
 	}
 
 
+	/**
+	 * Get default properties for a field.
+	 *
+	 * Used to populate a field with default properties if any properties are required for a field to function correctly.
+	 *
+	 * @since 2.7.4
+	 *
+	 * @return array
+	 */
+	public function get_default_properties() {
+		return array();
+	}
+
+
 	// # FORM EDITOR & FIELD MARKUP -------------------------------------------------------------------------------------
 
 	/**
@@ -2490,6 +2504,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 *
 	 * @since 2.1.3  Clear any field validation errors that have been saved to the form in the database.
 	 * @since 2.5.11 Set validateState property for back-compat.
+	 * @since 2.7.4  Set default properties.
 	 */
 	public function post_convert_field() {
 		unset( $this->failed_validation );
@@ -2501,6 +2516,15 @@ class GF_Field extends stdClass implements ArrayAccess {
 			&& ( in_array( $this->type, array( 'consent', 'donation' ) ) || GFCommon::is_product_field( $this->type ) )
 		) {
 			$this->validateState = true;
+		}
+
+		$default_properties = $this->get_default_properties();
+		if ( ! empty( $default_properties ) ) {
+			foreach( $default_properties as $property => $value ) {
+				if ( ! isset ( $this[ $property ] ) ) {
+					$this[ $property ] = $value;
+				}
+			}
 		}
 	}
 

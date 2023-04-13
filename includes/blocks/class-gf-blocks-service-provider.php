@@ -4,6 +4,7 @@ namespace Gravity_Forms\Gravity_Forms\Blocks;
 
 use Gravity_Forms\Gravity_Forms\Config\GF_Config_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Blocks\Config\GF_Blocks_Config;
+use Gravity_Forms\Gravity_Forms\Blocks\GF_Block_Attributes;
 
 use Gravity_Forms\Gravity_Forms\GF_Service_Container;
 use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
@@ -22,6 +23,8 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 
 	// Attributes
 	const FORM_BLOCK_ATTRIBUTES = 'form_block_attributes';
+
+	const BLOCK_ATTRIBUTES = 'block_attributes';
 
 	/**
 	 * Array mapping config class names to their container ID.
@@ -42,7 +45,8 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 	 * @param GF_Service_Container $container
 	 */
 	public function register( GF_Service_Container $container ) {
-		// Configs
+
+		require_once( plugin_dir_path( __FILE__ ) . 'class-gf-block-attributes.php' );
 		require_once( plugin_dir_path( __FILE__ ) . '/config/class-gf-blocks-config.php' );
 
 		$container->add( self::FORM_BLOCK_ATTRIBUTES, function () {
@@ -148,10 +152,11 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 		} );
 
 		$this->add_configs( $container );
+		$this->block_attributes( $container );
 	}
 
 	/**
-	 * Initiailize any actions or hooks.
+	 * Initialize any actions or hooks.
 	 *
 	 * @since
 	 *
@@ -160,7 +165,13 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 	 * @return void
 	 */
 	public function init( GF_Service_Container $container ) {
-		// add hooks or filters here.
+
+		add_action( 'gform_post_enqueue_scripts', function( $found_forms, $found_blocks, $post ) use ( $container ) {
+			foreach( $found_blocks as $block ) {
+				$attributes = $block['attrs'];
+				$container->get( self::BLOCK_ATTRIBUTES )->store( $attributes );
+			}
+		}, -10, 3 );
 	}
 
 	/**
@@ -184,6 +195,21 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 
 			$container->get( GF_Config_Service_Provider::CONFIG_COLLECTION )->add_config( $container->get( $name ) );
 		}
+	}
+
+	/**
+	 * Register Block services.
+	 *
+	 * @since 2.7.4
+	 *
+	 * @param GF_Service_Container $container
+	 *
+	 * @return void
+	 */
+	private function block_attributes( GF_Service_Container $container ) {
+		$container->add( self::BLOCK_ATTRIBUTES, function () use ( $container ) {
+			return new GF_Block_Attributes();
+		} );
 	}
 
 }

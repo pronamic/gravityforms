@@ -339,9 +339,13 @@ abstract class GFAddOn {
 
 		$this->setup();
 
-		// Add form settings only when there are form settings fields configured or form_settings() method is implemented
-		if ( self::has_form_settings_page() ) {
-			$this->form_settings_init();
+		// Add form settings only when there are form settings fields configured or form_settings() method is implemented.
+		if ( $this::has_form_settings_page() ) {
+			/*
+			 * Despite the "init_admin" name, the parent function is executed at init hook,
+			 * so we need to run form_settings_init in admin_init to allow addons filter the settings.
+			 */
+			add_action( 'admin_init', array( $this, 'form_settings_init' ) );
 		}
 
 		// Add plugin page when there is a plugin page configured or plugin_page() method is implemented
@@ -4186,7 +4190,7 @@ abstract class GFAddOn {
 				 *
 				 * @return array
 				 */
-				$sections = gf_apply_filters( array( 'gform_form_settings_fields', rgar( $form, 'id' ), $this->_slug ), $sections, $form );
+				$sections = gf_apply_filters( array( 'gform_addon_form_settings_fields', rgar( $form, 'id' ), $this->_slug ), $sections, $form );
 
 
 				$sections = $this->prepare_settings_sections( $sections, 'form_settings' );

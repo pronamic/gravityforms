@@ -177,17 +177,7 @@ class GF_Block_Form extends GF_Block {
 	 * @return string
 	 */
 	public function render_block( $attributes = array() ) {
-
-		add_filter( 'gform_form_block_attribute_values', function( $attr ) use ( $attributes ) {
-			$form_id = rgar( $attributes, 'formId', 0 );
-
-			if ( ! array_key_exists( $form_id, $attr ) ) {
-				$attr[ $form_id ] = array();
-			}
-
-			$attr[ $form_id ][] = $attributes;
-			return $attr;
-		} );
+		GFForms::get_service_container()->get( 'block_attributes' )->store( $attributes );
 
 		// Prepare variables.
 		$form_id      = rgar( $attributes, 'formId' ) ? $attributes['formId'] : false;

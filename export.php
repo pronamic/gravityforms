@@ -1188,8 +1188,6 @@ class GFExport {
 			}
 		}
 
-
-
 		$setting_tabs = apply_filters( 'gform_export_menu', $setting_tabs );
 		ksort( $setting_tabs, SORT_NUMERIC );
 

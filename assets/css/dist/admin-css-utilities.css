@@ -186,6 +186,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		background-color: #639cc1;
 	}
 
+.gform-admin .gform-util-gform-admin-background-color-secondary-text {
+		background-color: #6a6a80;
+	}
+
 .gform-admin .gform-util-gform-admin-background-color-focus {
 		background-color: #bed8ed;
 	}
@@ -460,6 +464,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-admin .gform-util-gform-admin-color-button-disabled {
 		color: #639cc1;
+	}
+
+.gform-admin .gform-util-gform-admin-color-secondary-text {
+		color: #6a6a80;
 	}
 
 .gform-admin .gform-util-gform-admin-color-focus {

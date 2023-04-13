@@ -118,7 +118,7 @@ class GF_Environment_Config_Handler {
 	 * @return string The support link config value.
 	 */
 	public function get_support_url() {
-		return $this->get_environment_setting( 'support_url', 'https://gravityforms.com/support/' );
+		return $this->get_environment_setting( 'support_url', 'https://www.gravityforms.com/open-support-ticket/' );
 	}
 
 	/**

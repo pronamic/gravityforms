@@ -1206,10 +1206,11 @@ class GFFormDisplay {
 
 			//add first page if this form has any page fields
 			if ( $has_pages ) {
-				$style = self::is_page_active( $form_id, 1 ) ? '' : "style='display:none;'";
-				$class = ' ' . rgar( $form, 'firstPageCssClass', '' );
-				$class = esc_attr( $class );
-				$form_string .= "<div id='gform_page_{$form_id}_1' class='gform_page{$class}' {$style}>
+				$style         = self::is_page_active( $form_id, 1 ) ? '' : "style='display:none;'";
+				$class         = ' ' . rgar( $form, 'firstPageCssClass', '' );
+				$class         = esc_attr( $class );
+				$page_field_id = intval( $form['nextFieldId'] ) - 1;
+				$form_string .= "<div id='gform_page_{$form_id}_1' class='gform_page{$class}' data-js='page-field-id-{$page_field_id}' {$style}>
                                     <div class='gform_page_fields'>";
 			}
 
@@ -3934,7 +3935,7 @@ class GFFormDisplay {
                         {$previous_button} {$next_button} {$save_button}
                     </div>
                 </div>
-                <div id='gform_page_{$form['id']}_{$field->pageNumber}' class='gform_page{$custom_class}' {$style}>
+                <div id='gform_page_{$form['id']}_{$field->pageNumber}' class='gform_page{$custom_class}' data-js='page-field-id-{$field->id}' {$style}>
                     <div class='gform_page_fields'>
                         <{$tag} id='gform_fields_{$form['id']}_{$field->pageNumber}' class='" . GFCommon::get_ul_classes( $form ) . "'>";
 
