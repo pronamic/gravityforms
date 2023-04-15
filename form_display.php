@@ -2501,7 +2501,7 @@ class GFFormDisplay {
 			}
 
 			$found_forms = $found_blocks = array();
-			self::parse_forms( $post->post_content, $found_forms, $found_blocks );
+			self::parse_forms( $post->ID, $post->post_content, $found_forms, $found_blocks );
 
 			if ( ! empty( $found_forms ) ) {
 				foreach ( $found_forms as $form_id => $ajax ) {
@@ -2531,11 +2531,12 @@ class GFFormDisplay {
 	 *
 	 * @since 2.4.18
 	 *
+	 * @param int    $post_id The ID of the post to be parsed.
 	 * @param string $post_content The post content to be parsed.
 	 * @param array  $found_forms  An array of found forms using the form ID as the key to the ajax status.
 	 * @param array  $found_blocks An array of found GF blocks.
 	 */
-	public static function parse_forms( $post_content, &$found_forms, &$found_blocks ) {
+	public static function parse_forms( $post_id, $post_content, &$found_forms, &$found_blocks ) {
 		if ( empty( $post_content ) ) {
 			return;
 		}
@@ -2546,7 +2547,7 @@ class GFFormDisplay {
 			return;
 		}
 
-		self::parse_forms_from_blocks( parse_blocks( $post_content ), $found_forms, $found_blocks );
+		self::parse_forms_from_blocks( $post_id, parse_blocks( $post_content ), $found_forms, $found_blocks );
 	}
 
 	/**
@@ -2554,11 +2555,12 @@ class GFFormDisplay {
 	 *
 	 * @since 2.4.18
 	 *
+	 * @param int   $post_id      The ID of the post being parsed.
 	 * @param array $blocks       The blocks found in the post content.
 	 * @param array $found_forms  An array of found forms using the form ID as the key to the ajax status.
 	 * @param array $found_blocks An array of found GF blocks.
 	 */
-	public static function parse_forms_from_blocks( $blocks, &$found_forms, &$found_blocks ) {
+	public static function parse_forms_from_blocks( $post_id, $blocks, &$found_forms, &$found_blocks ) {
 		if ( ! method_exists( 'GF_Blocks', 'get_all_types' ) ) {
 			return;
 		}
@@ -2571,12 +2573,12 @@ class GFFormDisplay {
 			}
 
 			if ( $block['blockName'] === 'core/block' ) {
-				self::parse_forms_from_reusable_block( $block, $found_forms, $found_blocks );
+				self::parse_forms_from_reusable_block( $post_id, $block, $found_forms, $found_blocks );
 				continue;
 			}
 
 			if ( ! empty( $block['innerBlocks'] ) ) {
-				self::parse_forms_from_blocks( $block['innerBlocks'], $found_forms, $found_blocks );
+				self::parse_forms_from_blocks( $post_id, $block['innerBlocks'], $found_forms, $found_blocks );
 				continue;
 			}
 
@@ -2603,22 +2605,23 @@ class GFFormDisplay {
 	 *
 	 * @since 2.4.18
 	 *
+	 * @param int   $post_id      The ID of the post being parsed.
 	 * @param array $block        The block to be processed.
 	 * @param array $found_forms  An array of found forms using the form ID as the key to the ajax status.
 	 * @param array $found_blocks An array of found GF blocks.
 	 */
-	public static function parse_forms_from_reusable_block( $block, &$found_forms, &$found_blocks ) {
+	public static function parse_forms_from_reusable_block( $post_id, $block, &$found_forms, &$found_blocks ) {
 		if ( empty( $block['attrs']['ref'] ) ) {
 			return;
 		}
 
 		$reusable_block = get_post( $block['attrs']['ref'] );
 
-		if ( empty( $reusable_block ) || $reusable_block->post_type !== 'wp_block' ) {
+		if ( empty( $reusable_block ) || $reusable_block->post_type !== 'wp_block' || $reusable_block->ID === $post_id ) {
 			return;
 		}
 
-		self::parse_forms( $reusable_block->post_content, $found_forms, $found_blocks );
+		self::parse_forms( $reusable_block->ID, $reusable_block->post_content, $found_forms, $found_blocks );
 	}
 
 	/**
