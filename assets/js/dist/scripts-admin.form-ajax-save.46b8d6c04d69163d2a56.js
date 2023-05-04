@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkgravityforms=self.webpackChunkgravityforms||[]).push([[646],{6878:function(n,a,e){e.r(a);var i=e(2340),s=e.n(i),r=e(7329),o=e.n(r),t=e(8355),v=(null===o()||void 0===o()?void 0:o().admin_save_form)||{};s().instances=(null===s()||void 0===s()?void 0:s().instances)||{},a.default=function(){var n=new t.Z(v,{});s().instances.adminFormSaver=n,s().instances.formSaverEventsManager=n.eventsManager,console.info("Gravity Forms Admin: Initialized Admin Form AJAX Saver.")}}}]);
-//# sourceMappingURL=scripts-admin.form-ajax-save.46b8d6c04d69163d2a56.js.map

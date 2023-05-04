@@ -805,6 +805,8 @@ class GFFormDisplay {
 	 */
 	public static function get_form_theme_slug( $form ) {
 
+		$form = (array) $form;
+
 		// If form is legacy, return that early to avoid calculating orbital styles.
 		if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
 			$slug = 'legacy';

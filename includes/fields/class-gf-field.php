@@ -2346,7 +2346,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 			}
 
 			if ( isset( $choice['text'] ) ) {
-				$choice['text'] = $this->maybe_wp_kses( $choice['text'] );
+				$choice['text'] = wp_kses( $choice['text'], 'post' );
 			}
 
 			if ( isset( $choice['value'] ) ) {

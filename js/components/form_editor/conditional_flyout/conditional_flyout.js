@@ -324,12 +324,13 @@ function generateGFConditionalLogic( fieldId, objectType ) {
  * @return {boolean}
  */
 function isValidFlyoutClick( e ) {
-	return (
+	var isValidFlyoutClick = (
 		'jsConditonalToggle' in e.target.dataset ||
 		'jsAddRule' in e.target.dataset ||
 		'jsDeleteRule' in e.target.dataset ||
 		e.target.classList.contains( 'gform-field__toggle-input' )
 	);
+	return gform.applyFilters( 'gform_conditional_logic_is_valid_flyout_click', isValidFlyoutClick, e );
 }
 
 /**

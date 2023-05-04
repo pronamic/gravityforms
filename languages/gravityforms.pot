@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.7.4\n"
+"Project-Id-Version: Gravity Forms 2.7.5\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-04-12T18:27:02+00:00\n"
+"POT-Creation-Date: 2023-05-03T17:02:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: gravityforms\n"
@@ -24,8 +24,8 @@ msgstr ""
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:754
 #: assets/js/src/admin/block-editor/blocks/form/index.js:24
-#: assets/js/dist/scripts-admin.js:1166
-#: assets/js/dist/scripts-admin.js:1231
+#: assets/js/dist/scripts-admin.js:1158
+#: assets/js/dist/scripts-admin.js:1223
 msgid "Gravity Forms"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 #: tooltips.php:24
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:275
-#: assets/js/dist/scripts-admin.js:687
+#: assets/js/dist/scripts-admin.js:679
 msgid "Form Title"
 msgstr ""
 
@@ -212,11 +212,11 @@ msgstr ""
 #: common.php:941
 #: form_detail.php:895
 #: form_detail.php:1602
-#: form_display.php:3507
+#: form_display.php:3509
 #: includes/fields/class-gf-field.php:2543
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:376
-#: assets/js/dist/scripts-admin.js:788
+#: assets/js/dist/scripts-admin.js:780
 msgid "Medium"
 msgstr ""
 
@@ -238,7 +238,7 @@ msgstr ""
 #: includes/fields/class-gf-field.php:2544
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:377
-#: assets/js/dist/scripts-admin.js:789
+#: assets/js/dist/scripts-admin.js:781
 msgid "Large"
 msgstr ""
 
@@ -318,7 +318,7 @@ msgstr ""
 #: gravityforms.php:5642
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:557
-#: assets/js/dist/scripts-admin.js:969
+#: assets/js/dist/scripts-admin.js:961
 msgid "Preview"
 msgstr ""
 
@@ -399,8 +399,8 @@ msgstr ""
 
 #: common.php:5346
 #: form_display.php:336
-#: form_display.php:1256
-#: form_display.php:3905
+#: form_display.php:1258
+#: form_display.php:3907
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:51
 #: includes/template-library/templates/templates.php:2516
 #: includes/template-library/templates/templates.php:2712
@@ -463,7 +463,7 @@ msgid "Thanks for contacting us! We will get in touch with you shortly."
 msgstr ""
 
 #: common.php:5355
-#: form_display.php:1609
+#: form_display.php:1611
 #: form_list.php:325
 #: gravityforms.php:3185
 #: includes/fields/class-gf-field-submit.php:158
@@ -1292,7 +1292,7 @@ msgstr ""
 #: select_columns.php:277
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:114
-#: assets/js/dist/scripts-admin.js:526
+#: assets/js/dist/scripts-admin.js:518
 msgid "Cancel"
 msgstr ""
 
@@ -1668,7 +1668,7 @@ msgstr ""
 #: includes/config/items/class-gf-config-admin-i18n.php:43
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:201
-#: assets/js/dist/scripts-admin.js:613
+#: assets/js/dist/scripts-admin.js:605
 msgid "Edit Form"
 msgstr ""
 
@@ -1745,7 +1745,7 @@ msgstr ""
 #: widget.php:142
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:83
-#: assets/js/dist/scripts-admin.js:495
+#: assets/js/dist/scripts-admin.js:487
 msgid "Select a Form"
 msgstr ""
 
@@ -1823,7 +1823,7 @@ msgstr ""
 #: forms_model.php:1829
 #: forms_model.php:1862
 #: forms_model.php:1898
-#: forms_model.php:8124
+#: forms_model.php:8170
 #: includes/api.php:131
 #: includes/api.php:158
 #: includes/api.php:180
@@ -1925,24 +1925,24 @@ msgstr ""
 msgid "The link was sent to the following email address:"
 msgstr ""
 
-#: forms_model.php:8116
+#: forms_model.php:8162
 msgid "Updating the id property is not supported"
 msgstr ""
 
-#: forms_model.php:8120
+#: forms_model.php:8166
 msgid "%s is not a valid feed property"
 msgstr ""
 
-#: forms_model.php:8133
+#: forms_model.php:8179
 msgid "Feed meta should be an associative array or JSON"
 msgstr ""
 
-#: forms_model.php:8142
+#: forms_model.php:8188
 #: includes/api.php:2100
 msgid "There was an error while updating feed id %s"
 msgstr ""
 
-#: forms_model.php:8146
+#: forms_model.php:8192
 #: includes/api.php:2061
 msgid "Feed id %s not found"
 msgstr ""
@@ -1962,7 +1962,7 @@ msgstr ""
 #: form_detail.php:2267
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:549
-#: assets/js/dist/scripts-admin.js:961
+#: assets/js/dist/scripts-admin.js:953
 msgid "Advanced"
 msgstr ""
 
@@ -2163,7 +2163,7 @@ msgstr ""
 #: form_detail.php:790
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:300
-#: assets/js/dist/scripts-admin.js:712
+#: assets/js/dist/scripts-admin.js:704
 msgid "Default"
 msgstr ""
 
@@ -2206,10 +2206,10 @@ msgstr ""
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:458
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:490
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:524
-#: assets/js/dist/scripts-admin.js:830
-#: assets/js/dist/scripts-admin.js:870
-#: assets/js/dist/scripts-admin.js:902
-#: assets/js/dist/scripts-admin.js:936
+#: assets/js/dist/scripts-admin.js:822
+#: assets/js/dist/scripts-admin.js:862
+#: assets/js/dist/scripts-admin.js:894
+#: assets/js/dist/scripts-admin.js:928
 msgid "Text"
 msgstr ""
 
@@ -2451,7 +2451,7 @@ msgstr ""
 #: form_detail.php:1602
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:372
-#: assets/js/dist/scripts-admin.js:784
+#: assets/js/dist/scripts-admin.js:776
 msgid "Size"
 msgstr ""
 
@@ -2460,7 +2460,7 @@ msgstr ""
 #: includes/fields/class-gf-field.php:2542
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:375
-#: assets/js/dist/scripts-admin.js:787
+#: assets/js/dist/scripts-admin.js:779
 msgid "Small"
 msgstr ""
 
@@ -3587,7 +3587,7 @@ msgid "Good"
 msgstr ""
 
 #: form_detail.php:1763
-#: form_display.php:3507
+#: form_display.php:3509
 msgid "Strong"
 msgstr ""
 
@@ -3597,7 +3597,7 @@ msgid "Number Format"
 msgstr ""
 
 #: form_detail.php:1779
-#: includes/system-status/class-gf-system-report.php:871
+#: includes/system-status/class-gf-system-report.php:870
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:20
 #: tooltips.php:154
 msgid "Currency"
@@ -4286,112 +4286,112 @@ msgstr ""
 msgid "Review Form"
 msgstr ""
 
-#: form_display.php:1012
+#: form_display.php:1014
 msgid "Sorry. You must be logged in to view this form."
 msgstr ""
 
 #. Translators: the text or symbol that indicates a field is required
-#: form_display.php:1144
+#: form_display.php:1146
 msgid "\"%s\" indicates required fields"
 msgstr ""
 
-#: form_display.php:1174
+#: form_display.php:1176
 msgid "Save and Continue link used is expired or invalid."
 msgstr ""
 
-#: form_display.php:1255
-#: form_display.php:3904
+#: form_display.php:1257
+#: form_display.php:3906
 msgid "Previous Page"
 msgstr ""
 
-#: form_display.php:1316
+#: form_display.php:1318
 msgid "This iframe contains the logic required to handle Ajax powered Gravity Forms."
 msgstr ""
 
-#: form_display.php:1877
+#: form_display.php:1879
 msgid "Spam Filter"
 msgstr ""
 
-#: form_display.php:1878
+#: form_display.php:1880
 msgid "This entry has been flagged as spam."
 msgstr ""
 
 #. translators: Variable is a complete sentence containing the reason the entry was marked as spam.
-#: form_display.php:1881
+#: form_display.php:1883
 msgid "Reason: %s"
 msgstr ""
 
-#: form_display.php:2252
+#: form_display.php:2254
 msgid "At least one field must be filled out"
 msgstr ""
 
-#: form_display.php:2321
+#: form_display.php:2323
 msgid "This date has already been taken. Please select a new date."
 msgstr ""
 
-#: form_display.php:2325
+#: form_display.php:2327
 msgid "This field requires a unique entry and the values you entered have already been used."
 msgstr ""
 
-#: form_display.php:2326
+#: form_display.php:2328
 msgid "This field requires a unique entry and '%s' has already been used"
 msgstr ""
 
-#: form_display.php:2355
+#: form_display.php:2357
 msgid "Please enter a valid value."
 msgstr ""
 
-#: form_display.php:2355
+#: form_display.php:2357
 msgid "Invalid selection. Please select from the available choices."
 msgstr ""
 
-#: form_display.php:2782
+#: form_display.php:2784
 msgid "All choices are selected."
 msgstr ""
 
-#: form_display.php:2783
+#: form_display.php:2785
 msgid "All choices are unselected."
 msgstr ""
 
-#: form_display.php:3436
+#: form_display.php:3438
 msgid "No results matched"
 msgstr ""
 
-#: form_display.php:3490
-#: form_display.php:4147
+#: form_display.php:3492
+#: form_display.php:4149
 msgid "of"
 msgstr ""
 
-#: form_display.php:3490
+#: form_display.php:3492
 msgid "max characters"
 msgstr ""
 
-#: form_display.php:3507
+#: form_display.php:3509
 #: includes/fields/class-gf-field-password.php:193
 msgid "Strength indicator"
 msgstr ""
 
-#: form_display.php:3507
+#: form_display.php:3509
 msgid "Mismatch"
 msgstr ""
 
-#: form_display.php:3507
+#: form_display.php:3509
 msgid "Password strength unknown"
 msgstr ""
 
-#: form_display.php:3507
+#: form_display.php:3509
 msgid "Weak"
 msgstr ""
 
-#: form_display.php:3507
+#: form_display.php:3509
 msgid "Very weak"
 msgstr ""
 
-#: form_display.php:3910
+#: form_display.php:3912
 msgid "Next Page"
 msgstr ""
 
-#: form_display.php:3911
+#: form_display.php:3913
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:50
 #: includes/template-library/templates/templates.php:2511
 #: includes/template-library/templates/templates.php:2707
@@ -4409,48 +4409,48 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: form_display.php:4147
+#: form_display.php:4149
 msgid "Step"
 msgstr ""
 
-#: form_display.php:4254
+#: form_display.php:4256
 msgid "Sorry. This form is no longer accepting new submissions."
 msgstr ""
 
-#: form_display.php:4275
+#: form_display.php:4277
 msgid "This form is not yet available."
 msgstr ""
 
-#: form_display.php:4281
+#: form_display.php:4283
 msgid "Sorry. This form is no longer available."
 msgstr ""
 
-#: form_display.php:4439
+#: form_display.php:4441
 msgid "Send Link"
 msgstr ""
 
-#: form_display.php:4440
+#: form_display.php:4442
 #: notification.php:293
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: form_display.php:4441
+#: form_display.php:4443
 msgid "Email Address"
 msgstr ""
 
-#: form_display.php:4807
+#: form_display.php:4809
 msgid "Oops! We could not locate your form."
 msgstr ""
 
-#: form_display.php:4838
+#: form_display.php:4840
 msgid "Your form was not submitted. Please try again in a few minutes."
 msgstr ""
 
-#: form_display.php:4840
+#: form_display.php:4842
 msgid "There was a problem with your submission."
 msgstr ""
 
-#: form_display.php:4840
+#: form_display.php:4842
 msgid "Please review the fields below."
 msgstr ""
 
@@ -4460,7 +4460,7 @@ msgstr ""
 #: tooltips.php:25
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:281
-#: assets/js/dist/scripts-admin.js:693
+#: assets/js/dist/scripts-admin.js:685
 msgid "Form Description"
 msgstr ""
 
@@ -4931,8 +4931,8 @@ msgstr ""
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:222
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:264
-#: assets/js/dist/scripts-admin.js:634
-#: assets/js/dist/scripts-admin.js:676
+#: assets/js/dist/scripts-admin.js:626
+#: assets/js/dist/scripts-admin.js:668
 msgid "Form Settings"
 msgstr ""
 
@@ -5275,7 +5275,7 @@ msgstr ""
 #: widget.php:38
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:268
-#: assets/js/dist/scripts-admin.js:680
+#: assets/js/dist/scripts-admin.js:672
 msgid "Form"
 msgstr ""
 
@@ -5622,7 +5622,6 @@ msgstr ""
 
 #: includes/addon/class-gf-addon.php:3748
 #: includes/fields/class-gf-field-calculation.php:32
-#: includes/fields/class-gf-field-consent.php:321
 #: includes/fields/class-gf-field-hiddenproduct.php:37
 #: includes/fields/class-gf-field-radio.php:90
 #: includes/fields/class-gf-field-repeater.php:598
@@ -7075,7 +7074,7 @@ msgstr ""
 #: includes/embed-form/config/class-gf-embed-config-i18n.php:39
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:680
-#: assets/js/dist/scripts-admin.js:1092
+#: assets/js/dist/scripts-admin.js:1084
 msgid "Form ID: %s"
 msgstr ""
 
@@ -8639,8 +8638,8 @@ msgstr ""
 msgid "Offers a “yes/no” consent checkbox and a detailed description of what is being consented to."
 msgstr ""
 
-#: includes/fields/class-gf-field-consent.php:481
-#: includes/fields/class-gf-field-consent.php:552
+#: includes/fields/class-gf-field-consent.php:478
+#: includes/fields/class-gf-field-consent.php:549
 #: includes/template-library/templates/templates.php:1608
 #: includes/template-library/templates/templates.php:5987
 #: includes/template-library/templates/templates.php:11227
@@ -8648,7 +8647,7 @@ msgstr ""
 msgid "Checked"
 msgstr ""
 
-#: includes/fields/class-gf-field-consent.php:481
+#: includes/fields/class-gf-field-consent.php:478
 msgid "Not Checked"
 msgstr ""
 
@@ -9472,12 +9471,12 @@ msgstr ""
 #: includes/form-editor/save-form/config/class-gf-form-editor-form-save-config.php:43
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:52
 #: includes/template-library/config/class-gf-template-library-config.php:93
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:115
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:127
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:127
-#: assets/js/dist/scripts-admin.js:527
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:127
+#: assets/js/dist/scripts-admin.js:519
 msgid "Close"
 msgstr ""
 
@@ -10492,11 +10491,11 @@ msgstr ""
 #: includes/system-status/class-gf-system-report.php:582
 #: includes/system-status/class-gf-system-report.php:594
 #: includes/system-status/class-gf-system-report.php:600
-#: includes/system-status/class-gf-system-report.php:855
-#: includes/system-status/class-gf-system-report.php:861
-#: includes/system-status/class-gf-system-report.php:867
-#: includes/system-status/class-gf-system-report.php:878
-#: includes/system-status/class-gf-system-report.php:884
+#: includes/system-status/class-gf-system-report.php:854
+#: includes/system-status/class-gf-system-report.php:860
+#: includes/system-status/class-gf-system-report.php:866
+#: includes/system-status/class-gf-system-report.php:877
+#: includes/system-status/class-gf-system-report.php:883
 #: includes/template-library/templates/templates.php:9709
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:71
 msgid "Yes"
@@ -10513,11 +10512,11 @@ msgstr ""
 #: includes/system-status/class-gf-system-report.php:588
 #: includes/system-status/class-gf-system-report.php:594
 #: includes/system-status/class-gf-system-report.php:600
-#: includes/system-status/class-gf-system-report.php:855
-#: includes/system-status/class-gf-system-report.php:861
-#: includes/system-status/class-gf-system-report.php:867
-#: includes/system-status/class-gf-system-report.php:878
-#: includes/system-status/class-gf-system-report.php:884
+#: includes/system-status/class-gf-system-report.php:854
+#: includes/system-status/class-gf-system-report.php:860
+#: includes/system-status/class-gf-system-report.php:866
+#: includes/system-status/class-gf-system-report.php:877
+#: includes/system-status/class-gf-system-report.php:883
 #: includes/template-library/templates/templates.php:9715
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:72
 msgid "No"
@@ -10589,7 +10588,7 @@ msgstr ""
 
 #: includes/system-status/class-gf-system-report.php:541
 #: includes/system-status/class-gf-system-report.php:621
-#: includes/system-status/class-gf-system-report.php:828
+#: includes/system-status/class-gf-system-report.php:827
 msgid "Version"
 msgstr ""
 
@@ -10690,165 +10689,165 @@ msgstr ""
 msgid "PHP - Local time"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:835
-#: includes/system-status/class-gf-system-report.php:1197
+#: includes/system-status/class-gf-system-report.php:834
+#: includes/system-status/class-gf-system-report.php:1196
 msgid "New version %s available."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:840
+#: includes/system-status/class-gf-system-report.php:839
 msgid "Upload folder"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:845
+#: includes/system-status/class-gf-system-report.php:844
 msgid "Upload folder permissions"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:847
+#: includes/system-status/class-gf-system-report.php:846
 msgid "Writable"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:847
+#: includes/system-status/class-gf-system-report.php:846
 msgid "Not writable"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:850
+#: includes/system-status/class-gf-system-report.php:849
 msgid "File uploads, entry exports, and logging will not function properly."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:853
+#: includes/system-status/class-gf-system-report.php:852
 #: tooltips.php:148
 msgid "Output CSS"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:859
+#: includes/system-status/class-gf-system-report.php:858
 #: settings.php:602
 #: settings.php:610
 #: tooltips.php:149
 msgid "Output HTML5"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:865
+#: includes/system-status/class-gf-system-report.php:864
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:44
 #: tooltips.php:150
 msgid "No-Conflict Mode"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:876
+#: includes/system-status/class-gf-system-report.php:875
 msgid "Background updates"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:882
+#: includes/system-status/class-gf-system-report.php:881
 msgid "REST API v2"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:919
-#: includes/system-status/class-gf-system-report.php:1016
+#: includes/system-status/class-gf-system-report.php:918
+#: includes/system-status/class-gf-system-report.php:1015
 msgid "Database Version"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:963
+#: includes/system-status/class-gf-system-report.php:962
 msgid "Table does not exist"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:969
+#: includes/system-status/class-gf-system-report.php:968
 msgid "Table has incorrect auto-increment settings."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:975
+#: includes/system-status/class-gf-system-report.php:974
 msgid "Table has not been upgraded successfully."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:991
+#: includes/system-status/class-gf-system-report.php:990
 msgid "WARNING! Re-running the upgrade process is only recommended if you are currently experiencing issues with your database. This process may take several minutes to complete. 'OK' to upgrade. 'Cancel' to abort."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:998
+#: includes/system-status/class-gf-system-report.php:997
 msgid "Current Status: %s"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1000
+#: includes/system-status/class-gf-system-report.php:999
 msgid "%s%% complete."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1003
+#: includes/system-status/class-gf-system-report.php:1002
 msgid "Automatic background migration is disabled but the database needs to be upgraded to version %s. %s"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1004
+#: includes/system-status/class-gf-system-report.php:1003
 msgid "Force the migration manually"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1006
+#: includes/system-status/class-gf-system-report.php:1005
 msgid "The database is currently being upgraded to version %s. %s"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1008
+#: includes/system-status/class-gf-system-report.php:1007
 msgid "As this site doesn't support background tasks the upgrade process will take longer than usual and the status will change infrequently."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1010
+#: includes/system-status/class-gf-system-report.php:1009
 msgid "Force the upgrade"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1032
+#: includes/system-status/class-gf-system-report.php:1031
 msgid "Upgrade database"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1037
+#: includes/system-status/class-gf-system-report.php:1036
 msgid "Your database version is out of date."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1049
-#: includes/system-status/class-gf-system-report.php:1065
+#: includes/system-status/class-gf-system-report.php:1048
+#: includes/system-status/class-gf-system-report.php:1064
 msgid "Re-run database upgrade"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1054
+#: includes/system-status/class-gf-system-report.php:1053
 msgid "Database upgrade failed."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1054
+#: includes/system-status/class-gf-system-report.php:1053
 msgid "There are issues with your database."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1070
+#: includes/system-status/class-gf-system-report.php:1069
 msgid "Database upgraded successfully."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1070
+#: includes/system-status/class-gf-system-report.php:1069
 msgid "Your database is up-to-date."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1070
+#: includes/system-status/class-gf-system-report.php:1069
 msgid "Warning: downgrading Gravity Forms is not recommended."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1203
+#: includes/system-status/class-gf-system-report.php:1202
 msgid "Your system does not meet the minimum requirements for this Add-On (%d errors)."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1223
-#: includes/system-status/class-gf-system-report.php:1230
-#: includes/system-status/class-gf-system-report.php:1243
-#: includes/system-status/class-gf-system-report.php:1306
-#: includes/system-status/class-gf-system-report.php:1314
+#: includes/system-status/class-gf-system-report.php:1222
+#: includes/system-status/class-gf-system-report.php:1229
+#: includes/system-status/class-gf-system-report.php:1242
+#: includes/system-status/class-gf-system-report.php:1305
+#: includes/system-status/class-gf-system-report.php:1313
+#: includes/system-status/class-gf-system-report.php:1487
 #: includes/system-status/class-gf-system-report.php:1488
-#: includes/system-status/class-gf-system-report.php:1489
+#: includes/system-status/class-gf-system-report.php:1503
 #: includes/system-status/class-gf-system-report.php:1504
-#: includes/system-status/class-gf-system-report.php:1505
 msgid "by"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1502
+#: includes/system-status/class-gf-system-report.php:1501
 msgid "Parent"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1623
+#: includes/system-status/class-gf-system-report.php:1622
 msgid "Site Locale"
 msgstr ""
 
 #. translators: %d: The ID of the currently logged in user.
-#: includes/system-status/class-gf-system-report.php:1632
+#: includes/system-status/class-gf-system-report.php:1631
 msgid "User (ID: %d) Locale"
 msgstr ""
 
@@ -14722,117 +14721,117 @@ msgstr ""
 msgid "Tab Index Start"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:125
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:125
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:125
 msgid "OK"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:151
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:151
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:151
 msgid "Copy / Paste Not Available"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:151
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:151
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:151
 msgid "Copy and paste functionality requires a secure connection. Reload this page using an HTTPS URL and try again."
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:168
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:168
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:168
 msgid "Paste Not Available"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:168
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:168
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:168
 msgid "Your browser does not have permission to paste from the clipboard. <p>Please navigate to <strong>about:config</strong> and change the preference <strong>dom.events.asyncClipboard.readText</strong> to <strong>true</strong>."
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:22
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:22
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:22
 msgid "Copy Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:28
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:28
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:28
 msgid "Paste Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:69
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:69
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:69
 msgid "Invalid Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:69
-#: assets/js/dist/scripts-admin.block-editor.0bbf4929601acfa4bebd.js:69
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:69
 msgid "Please ensure the form styles you are trying to paste are in the correct format."
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:288
-#: assets/js/dist/scripts-admin.js:700
+#: assets/js/dist/scripts-admin.js:692
 msgid "Form Styles"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:297
-#: assets/js/dist/scripts-admin.js:709
+#: assets/js/dist/scripts-admin.js:701
 msgid "Form Theme"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:301
-#: assets/js/dist/scripts-admin.js:713
+#: assets/js/dist/scripts-admin.js:705
 msgid "Orbital"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:311
-#: assets/js/dist/scripts-admin.js:723
+#: assets/js/dist/scripts-admin.js:715
 msgid "Reset Defaults"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:112
-#: assets/js/dist/scripts-admin.js:524
+#: assets/js/dist/scripts-admin.js:516
 msgid "Restore Defaults"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:113
-#: assets/js/dist/scripts-admin.js:525
+#: assets/js/dist/scripts-admin.js:517
 msgid "This will restore your form styles back to their default values and cannot be undone. Are you sure you want to continue?"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:123
-#: assets/js/dist/scripts-admin.js:535
+#: assets/js/dist/scripts-admin.js:527
 msgid "Restore Default Styles"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:348
-#: assets/js/dist/scripts-admin.js:760
+#: assets/js/dist/scripts-admin.js:752
 msgid "Form style options are not available for forms that use %1$slegacy mode%2$s."
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:353
-#: assets/js/dist/scripts-admin.js:765
+#: assets/js/dist/scripts-admin.js:757
 msgid "Input Styles"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:386
-#: assets/js/dist/scripts-admin.js:798
+#: assets/js/dist/scripts-admin.js:790
 msgid "Border Radius"
 msgstr ""
 
@@ -14840,67 +14839,67 @@ msgstr ""
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:387
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:447
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:479
-#: assets/js/dist/scripts-admin.js:799
-#: assets/js/dist/scripts-admin.js:859
-#: assets/js/dist/scripts-admin.js:891
+#: assets/js/dist/scripts-admin.js:791
+#: assets/js/dist/scripts-admin.js:851
+#: assets/js/dist/scripts-admin.js:883
 msgid "In pixels."
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:398
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:514
-#: assets/js/dist/scripts-admin.js:810
-#: assets/js/dist/scripts-admin.js:926
+#: assets/js/dist/scripts-admin.js:802
+#: assets/js/dist/scripts-admin.js:918
 msgid "Background"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:408
-#: assets/js/dist/scripts-admin.js:820
+#: assets/js/dist/scripts-admin.js:812
 msgid "Border"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:438
-#: assets/js/dist/scripts-admin.js:850
+#: assets/js/dist/scripts-admin.js:842
 msgid "Label Styles"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:446
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:478
-#: assets/js/dist/scripts-admin.js:858
-#: assets/js/dist/scripts-admin.js:890
+#: assets/js/dist/scripts-admin.js:850
+#: assets/js/dist/scripts-admin.js:882
 msgid "Font Size"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:470
-#: assets/js/dist/scripts-admin.js:882
+#: assets/js/dist/scripts-admin.js:874
 msgid "Description Styles"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:502
-#: assets/js/dist/scripts-admin.js:914
+#: assets/js/dist/scripts-admin.js:906
 msgid "Button Styles"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:563
-#: assets/js/dist/scripts-admin.js:975
+#: assets/js/dist/scripts-admin.js:967
 msgid "AJAX"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:569
-#: assets/js/dist/scripts-admin.js:981
+#: assets/js/dist/scripts-admin.js:973
 msgid "Field Values"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:578
-#: assets/js/dist/scripts-admin.js:990
+#: assets/js/dist/scripts-admin.js:982
 msgid "Tabindex"
 msgstr ""
 
@@ -14909,33 +14908,33 @@ msgstr ""
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:637
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:647
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:656
-#: assets/js/dist/scripts-admin.js:1034
-#: assets/js/dist/scripts-admin.js:1049
-#: assets/js/dist/scripts-admin.js:1059
-#: assets/js/dist/scripts-admin.js:1068
+#: assets/js/dist/scripts-admin.js:1026
+#: assets/js/dist/scripts-admin.js:1041
+#: assets/js/dist/scripts-admin.js:1051
+#: assets/js/dist/scripts-admin.js:1060
 msgid "Colors"
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:662
-#: assets/js/dist/scripts-admin.js:1074
+#: assets/js/dist/scripts-admin.js:1066
 msgid "Also used for form UI elements such as checkbox and radio."
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:748
-#: assets/js/dist/scripts-admin.js:1160
+#: assets/js/dist/scripts-admin.js:1152
 msgid "The selected form has been deleted or trashed. Please select a new form."
 msgstr ""
 
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:768
-#: assets/js/dist/scripts-admin.js:1180
+#: assets/js/dist/scripts-admin.js:1172
 msgid "You must have at least one form to use the block."
 msgstr ""
 
 #: assets/js/src/admin/block-editor/blocks/form/index.js:25
-#: assets/js/dist/scripts-admin.js:1232
+#: assets/js/dist/scripts-admin.js:1224
 msgid "Select and display one of your forms."
 msgstr ""
 

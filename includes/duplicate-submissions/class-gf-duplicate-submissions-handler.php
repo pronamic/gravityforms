@@ -123,7 +123,7 @@ class GF_Duplicate_Submissions_Handler {
 
 		// Get the submission URL from the $_SERVER, and strip out our redirect param.
 		$submission_url = filter_input( INPUT_SERVER, 'HTTP_REFERER', FILTER_SANITIZE_URL );
-		$base_url       = remove_query_arg( self::SAFARI_REDIRECT_PARAM, $submission_url );
+		$base_url       = esc_url( remove_query_arg( self::SAFARI_REDIRECT_PARAM, $submission_url ) );
 
 		// Redirect to the form's page URL as a GET request.
 		wp_safe_redirect( $base_url, 303 );

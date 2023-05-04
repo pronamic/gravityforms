@@ -1,3 +1,16 @@
+### 2.7.5 | 2023-05-03
+- Added security enhancements.
+- Fixed an issue where `GF_Field_Consent::is_value_submission_empty()` returns the wrong result when editable fields are validated during progress save on the Gravity Flow User Input step.
+- Fixed an issue where Conversational Forms with similar slug names to a post or page are not rendered.
+- Fixed an issue where turning off Legacy Markup with the `gform_enable_legacy_markup` filter results in a fatal error.
+- Updated the minimum WordPress version on the System Status page to 6.1.
+- Updated the location of our NPM packages.
+- API: Added a new function `GFFormsModel::get_forms_columns()`` to get a list of specified form data. Credit: The GravityKit team.
+- API: Added "date_updated" to the list of form database columns. Credit: The GravityKit team.
+- API: Added the `gform_conditional_logic_is_valid_flyout_click` filter to allow third parties to designate valid conditional logic flyout clicks. Credit: GravityWiz.
+- API: Fixed a bug that prevents developers from overriding the button setting default values. Credit: The GravityKit team.
+
+
 ### 2.7.4 | 2023-04-11
 - Added security enhancements.
 - Fixed an issue that causes block style settings to disappear on a form with validation errors.

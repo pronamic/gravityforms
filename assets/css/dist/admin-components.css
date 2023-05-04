@@ -536,6 +536,56 @@ html[dir="rtl"] .gform-alert.gform-alert--inline .gform-alert__message-wrap {
 			color: #c3c5db;
 		}
 
+.gform-admin .gform-button--icon-white, .gform-admin .gform-button--icon-grey {
+		block-size: 1.875rem;
+		color: #5b5e80;
+		inline-size: 1.875rem;
+		padding: 0.25rem;
+	}
+
+.gform-admin .gform-button--icon-white {
+		background: #fdfdff;
+		border-color: #d5d7e9;
+	}
+
+.gform-admin .gform-button--icon-white:hover, .gform-admin .gform-button--icon-white:active {
+			box-shadow: 0 3px 8px rgba(18, 25, 97, 0.15), 0 1px 1px rgba(18, 25, 97, 0.16), 0 2px 1px rgba(18, 25, 97, 0.04);
+		}
+
+.gform-admin .gform-button--icon-white:focus {
+			border-color: #c3c5db;
+			outline: 0.125rem solid #ecedf8;
+		}
+
+.gform-admin .gform-button--icon-white:disabled {
+			border-color: #d5d7e9;
+			opacity: 0.5;
+		}
+
+.gform-admin .gform-button--icon-grey {
+		background: #fff;
+		border-color: #fff;
+		box-shadow: none;
+	}
+
+.gform-admin .gform-button--icon-grey:hover, .gform-admin .gform-button--icon-grey:active {
+			background: #ecedf8;
+			border-color: #ecedf8;
+		}
+
+.gform-admin .gform-button--icon-grey:focus {
+			background: #d5d7e9;
+			border-color: #c3c5db;
+			outline: 0.125rem solid #ecedf8;
+		}
+
+.gform-admin .gform-button--icon-grey:disabled {
+			background: #fdfdff;
+			border-color: #fdfdff;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+			opacity: 0.5;
+		}
+
 /*
 	 * Size variants
 	 */
@@ -2442,16 +2492,18 @@ html[dir="rtl"] .gform-admin .gform-flyout.gform-flyout--expanded.gform-flyout--
 
 .gform-admin .gform-meta-box__header {
 		border-bottom: 1px solid #e4e4ee;
-		padding: 20px 24px;
+		padding-block: 1.25rem;
+		padding-inline: 1.5rem;
 	}
 
 .gform-admin .gform-meta-box__content {
-		padding: 20px 24px;
+		padding-block: 1.25rem;
+		padding-inline: 1.5rem;
 	}
 
 .gform-admin .gform-meta-box__footer {
 		border-top: 1px solid #e4e4ee;
-		padding: 20px 24px;
+		padding: 1rem;
 	}
 
 .gform-admin .gform-nav-bar {
@@ -4890,6 +4942,10 @@ html[dir="rtl"] .gform-admin .gform-table {
 		color: #242748;
 	}
 
+.gform-admin .gform-text--color-comet {
+		color: #5b5e80;
+	}
+
 .gform-admin .gform-text--color-secondary-text {
 		color: #6a6a80;
 	}
@@ -5502,18 +5558,6 @@ html[dir="rtl"] .gform-admin .gform-toggle--size-l input[type="checkbox"].gform-
 		width: 100%;
 	}
 
-.gform-admin .gform-card:hover, .gform-admin .gform-card[focus-within] {
-			box-shadow: 0 -10px 65px rgba(18, 25, 97, 0.09), 0 30px 30px rgba(18, 25, 97, 0.07), 0 15px 15px rgba(18, 25, 97, 0.06), 0 10px 8px rgba(18, 25, 97, 0.05), 0 4px 4px rgba(18, 25, 97, 0.04), 0 2px 2px rgba(18, 25, 97, 0.03);
-		}
-
-.gform-admin .gform-card:hover, .gform-admin .gform-card[focus-within] {
-			box-shadow: 0 -10px 65px rgba(18, 25, 97, 0.09), 0 30px 30px rgba(18, 25, 97, 0.07), 0 15px 15px rgba(18, 25, 97, 0.06), 0 10px 8px rgba(18, 25, 97, 0.05), 0 4px 4px rgba(18, 25, 97, 0.04), 0 2px 2px rgba(18, 25, 97, 0.03);
-		}
-
-.gform-admin .gform-card:hover, .gform-admin .gform-card:focus-within {
-			box-shadow: 0 -10px 65px rgba(18, 25, 97, 0.09), 0 30px 30px rgba(18, 25, 97, 0.07), 0 15px 15px rgba(18, 25, 97, 0.06), 0 10px 8px rgba(18, 25, 97, 0.05), 0 4px 4px rgba(18, 25, 97, 0.04), 0 2px 2px rgba(18, 25, 97, 0.03);
-		}
-
 .gform-admin .gform-card, .gform-admin .gform-card * {
 			box-sizing: border-box;
 		}
@@ -5536,6 +5580,18 @@ html[dir="rtl"] .gform-admin .gform-toggle--size-l input[type="checkbox"].gform-
 		width: 100%;
 		z-index: 1;
 	}
+
+.gform-admin .gform-card--form-template-blank:hover, .gform-admin .gform-card--form-template-blank[focus-within], .gform-admin .gform-card--form-template:hover, .gform-admin .gform-card--form-template[focus-within] {
+			box-shadow: 0 -10px 65px rgba(18, 25, 97, 0.09), 0 30px 30px rgba(18, 25, 97, 0.07), 0 15px 15px rgba(18, 25, 97, 0.06), 0 10px 8px rgba(18, 25, 97, 0.05), 0 4px 4px rgba(18, 25, 97, 0.04), 0 2px 2px rgba(18, 25, 97, 0.03);
+		}
+
+.gform-admin .gform-card--form-template-blank:hover, .gform-admin .gform-card--form-template-blank[focus-within], .gform-admin .gform-card--form-template:hover, .gform-admin .gform-card--form-template[focus-within] {
+			box-shadow: 0 -10px 65px rgba(18, 25, 97, 0.09), 0 30px 30px rgba(18, 25, 97, 0.07), 0 15px 15px rgba(18, 25, 97, 0.06), 0 10px 8px rgba(18, 25, 97, 0.05), 0 4px 4px rgba(18, 25, 97, 0.04), 0 2px 2px rgba(18, 25, 97, 0.03);
+		}
+
+.gform-admin .gform-card--form-template-blank:hover, .gform-admin .gform-card--form-template-blank:focus-within, .gform-admin .gform-card--form-template:hover, .gform-admin .gform-card--form-template:focus-within {
+			box-shadow: 0 -10px 65px rgba(18, 25, 97, 0.09), 0 30px 30px rgba(18, 25, 97, 0.07), 0 15px 15px rgba(18, 25, 97, 0.06), 0 10px 8px rgba(18, 25, 97, 0.05), 0 4px 4px rgba(18, 25, 97, 0.04), 0 2px 2px rgba(18, 25, 97, 0.03);
+		}
 
 /* ----------------------------------------------------------------------
 	 * FORM TEMPLATE BLANK

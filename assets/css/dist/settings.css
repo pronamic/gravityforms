@@ -1024,8 +1024,6 @@ html[dir="rtl"] .gform-settings-field__toggleable-inputs {
 }
 
 .gform-settings__wrapper .button.primary {
-
-	-webkit-backface-visibility: hidden;
 	backface-visibility: hidden;
 	background: #3e7da6;
 	border: 1px solid transparent;

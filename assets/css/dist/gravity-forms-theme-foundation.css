@@ -20,44 +20,6 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 ----------------------------------------------------------------
 */
 
-/**
- @navignore
- # Theme Foundation Styles & CSS API
-
-A Gravity Forms theme framework foundation responsible for layout, out-of-the-box enhanced ui, and other basic required styles.
-
-![Alt text](https://media.tenor.com/0yli7fSvvL0AAAAC/raccoon-yes.gif)
-
-## Usage
-
-Irony celiac hexagon try-hard migas plaid asymmetrical synth tonx kogi beard. Mukbang affogato banjo chartreuse taxidermy mustache. Woke fanny pack kombucha, pork belly PBR&B yes plz messenger bag.
-
-Migas swag gatekeep banh mi distillery pinterest farm-to-table four dollar toast typewriter next level. Post-ironic next level poutine, deep v mustache palo santo unicorn. Vegan drinking vinegar asymmetrical lomo fanny pack selvage narwhal deep v swag authentic.
-
-Fashion :smile: axe celiac big mood yr waistcoat, edison bulb listicle distillery normcore ascot pour-over drinking vinegar.
-
-1. Ordered Item
-2. Ordered Item
-3. Ordered Item
-
-- List item 1
-- List item 2
-- List item 3
-
-> Blockquotes are very handy in email to emulate reply text.
-
-*This text will be italic*
-**This text will be bold**
-
-Here's an idea: why don't we take `SuperiorProject` and turn it into `**Reasonable**Project`.
-
-## Copyright
-
-Gravity Forms is a Rocketgenius project
-copyright 2008-2022 Rocketgenius Inc.
-https://www.rocketgenius.com
-*/
-
 /* Global API: Handles the top-level global CSS API */
 
 /* -----------------------------------------------------------------------------

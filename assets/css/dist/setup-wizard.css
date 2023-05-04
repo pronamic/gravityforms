@@ -1,6 +1,11 @@
 .gform-admin .gform-setup-wizard--not-fullscreen {
-		block-size: calc(100vh - 32px);
+		block-size: calc(100vh - 46px);
 	}
+
+		@media (min-width: 783px) {.gform-admin .gform-setup-wizard--not-fullscreen {
+			block-size: calc(100vh - 32px)
+	}
+		}
 
 		.gform-admin .gform-setup-wizard--not-fullscreen .gform-setup-wizard.gform-setup-wizard--step-1 .gform-list {
 					display: none;

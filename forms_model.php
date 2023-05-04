@@ -644,7 +644,7 @@ class GFFormsModel {
 	 * @return array The column IDs
 	 */
 	public static function get_form_db_columns() {
-		return array( 'id', 'title', 'date_created', 'is_active', 'is_trash' );
+		return array( 'id', 'title', 'date_created', 'date_updated', 'is_active', 'is_trash' );
 	}
 
 	/**
@@ -7080,6 +7080,52 @@ class GFFormsModel {
 		}
 
 		return $wpdb->get_col( $sql );
+	}
+
+	/**
+	 * Get forms and return any form column(s).
+	 *
+	 * @see GFFormsModel::get_form_ids()
+	 * @since 2.7.5
+	 *
+	 * @param bool   $active      True if active forms are returned. False to get inactive forms. Defaults to true.
+	 * @param bool   $trash       True if trashed forms are returned. False to exclude trash. Defaults to false.
+	 * @param string $sort_column The column to sort the results on.
+	 * @param string $sort_dir    The sort direction, ASC or DESC.
+	 * @param array  $columns     The columns to return. Defaults to ['id']. Other options are 'title', 'date_created', 'is_active', 'is_trash'. 'date_updated' may be supported, depending on the Gravity Forms version.
+	 *
+	 * @return array Forms indexed from 0 by SQL result row number. Each row is an associative array (column => value).
+	 */
+	public static function get_forms_columns( $active = true, $trash = false, $sort_column = 'id', $sort_dir = 'ASC', $columns = array( 'id' ) ) {
+		global $wpdb;
+
+		// Only allow valid columns.
+		$columns = array_intersect( $columns, GFFormsModel::get_form_db_columns() );
+
+		$sql   = 'SELECT ' . implode( ', ', $columns ) . ' FROM ' . GFFormsModel::get_form_table_name();
+		$where = array();
+
+		if ( null !== $active ) {
+			$where[] = $wpdb->prepare( 'is_active=%d', $active );
+		}
+
+		if ( null !== $trash ) {
+			$where[] = $wpdb->prepare( 'is_trash=%d', $trash );
+		}
+
+		if ( ! empty( $where ) ) {
+			$sql .= ' WHERE ' . join( ' AND ', $where );
+		}
+
+		if ( ! in_array( strtolower( $sort_column ), GFFormsModel::get_form_db_columns() ) ) {
+			$sort_column = 'id';
+		}
+
+		if ( ! empty( $sort_column ) ) {
+			$sql .= " ORDER BY $sort_column " . ( $sort_dir == 'ASC' ? 'ASC' : 'DESC' );
+		}
+
+		return $wpdb->get_results( $sql, ARRAY_A );
 	}
 
 	public static function get_entry_meta( $form_ids ) {

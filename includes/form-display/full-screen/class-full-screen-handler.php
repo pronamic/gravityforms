@@ -31,6 +31,17 @@ class Full_Screen_Handler {
 
 	public function __construct( GF_JSON_Handler $handler ) {
 		$this->json_handler = $handler;
+
+		add_filter( 'redirect_canonical', function ( $redirect_url ) use ( $handler ) {
+
+			$form_for_display = apply_filters( 'gform_full_screen_form_for_display', null, '', $handler );
+
+			if ( is_404() && ! empty( $form_for_display ) ) {
+				return false;
+			}
+
+			return $redirect_url;
+		}, 10, 1 );
 	}
 
 	/**

@@ -1240,7 +1240,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		if ( $this->is_feed_list_page() ) {
 			$title = $this->form_settings_title();
 			$url = add_query_arg( array( 'fid' => 0 ) );
-			return $title . " <a class='add-new-h2' href='" . esc_html( $url ) . "'>" . esc_html__( 'Add New', 'gravityforms' ) . '</a>';
+			return $title . " <a class='add-new-h2' href='" . esc_url( $url ) . "'>" . esc_html__( 'Add New', 'gravityforms' ) . '</a>';
 		}
 	}
 
@@ -1280,7 +1280,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 					// If feed IDs do not match, redirect.
 					if ( $feed_id !== $this->_current_feed_id && $this->_multiple_feeds ) {
-						wp_safe_redirect( add_query_arg( array( 'fid' => $this->_current_feed_id ) ) );
+						wp_safe_redirect( esc_url_raw( add_query_arg( array( 'fid' => $this->_current_feed_id ) ) ) );
 					}
 
 				},

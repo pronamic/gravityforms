@@ -777,7 +777,6 @@ class GF_System_Report {
 				}
 
 				if ( isset( $item['action'] ) && ! $is_export ) {
-					$url = add_query_arg( array( 'action' => $item['action']['code'] ) );
 					$value .= "&nbsp;<a href='#' onclick='gfDoAction(\"{$item['action']['code']}\", \"" . esc_attr( $item['action']['confirm'] ) . "\");'>{$item['action']['label']}</a>";
 				}
 

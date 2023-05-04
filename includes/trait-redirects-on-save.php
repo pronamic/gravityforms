@@ -44,7 +44,7 @@ trait Redirects_On_Save {
 
 		self::save_flash_message();
 
-		wp_safe_redirect( $url );
+		wp_safe_redirect( esc_url_raw( $url ) );
 	}
 
 	/**

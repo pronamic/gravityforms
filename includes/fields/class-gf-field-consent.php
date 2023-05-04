@@ -305,21 +305,18 @@ class GF_Field_Consent extends GF_Field {
 	}
 
 	/**
-	 * Return the result (bool) by setting $this->failed_validation.
-	 * Return the validation message (string) by setting $this->validation_message.
+	 * Used when determining if the field has failed required validation.
 	 *
-	 * @since 2.4
+	 * The consent field has three inputs; only the checkbox is required.
 	 *
-	 * @param string|array $value The field value from get_value_submission().
-	 * @param array        $form  The Form Object currently being processed.
+	 * @since 2.7.5
+	 *
+	 * @param int $form_id The ID of the form currently being processed.
+	 *
+	 * @return bool
 	 */
-	public function validate( $value, $form ) {
-		$consent = rgget( $this->id . '.1', $value );
-
-		if ( $this->isRequired && rgblank( $consent ) ) {
-			$this->failed_validation  = true;
-			$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'This field is required.', 'gravityforms' ) : $this->errorMessage;
-		}
+	public function is_value_submission_empty( $form_id ) {
+		return rgblank( rgpost( 'input_' . $this->id . '_1' ) );
 	}
 
 	/**
