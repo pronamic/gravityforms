@@ -36,7 +36,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 .gform-theme--framework *:where(
 		:not(html):not(iframe):not(canvas):not(img):not(svg):not(video)
 		:not(svg *):not(symbol *)
-		:not(.gform-theme__no-reset--el):not(.gform-theme__no-reset--children *):not(.gform_heading *):not(.gfield--type-html *):not(.gfield--type-section *):not(.form_saved_message > *):not(.wp-editor-container):not(.mce-tinymce):not(.mce-tinymce *):not(.wp-editor-area)
+		:not(.gform-theme__no-reset--el):not(.gform-theme__no-reset--children *):not(.gform_heading *):not(.gfield--type-html *):not(.gfield--type-section *):not(.form_saved_message > *):not(.form_saved_message_sent > *):not(.gform_confirmation_message *):not(.wp-editor-container):not(.mce-tinymce):not(.mce-tinymce *):not(.wp-editor-area)
 	) {
 		all: unset;
 		display: revert;

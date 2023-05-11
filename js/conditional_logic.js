@@ -14,11 +14,21 @@ gform.addAction( 'gform_input_change', function( elem, formId, fieldId ) {
 function gf_apply_rules(formId, fields, isInit){
 
 	jQuery(document).trigger( 'gform_pre_conditional_logic', [ formId, fields, isInit ] );
+	gform.utils.trigger( {
+		event: 'gform/conditionalLogic/applyRules/start',
+		native: false,
+		data: { formId: formId, fields: fields, isInit: isInit },
+	} );
 	for(var i=0; i < fields.length; i++){
 		gf_apply_field_rule(formId, fields[i], isInit, function(){
 			var is_last_field = ( i >= fields.length - 1 );
 			if( is_last_field ) {
 				jQuery(document).trigger('gform_post_conditional_logic', [formId, fields, isInit]);
+				gform.utils.trigger( {
+					event: 'gform/conditionalLogic/applyRules/end',
+					native: false,
+					data: { formId: formId, fields: fields, isInit: isInit },
+				} );
 				if(window["gformCalculateTotalPrice"]){
 					window["gformCalculateTotalPrice"](formId);
 				}
@@ -514,6 +524,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			// Handle conditional submit and next buttons.
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 				$target.attr( 'disabled', 'disabled' ).hide();
+				$target.attr( 'data-conditional-logic', 'hidden' );
 				if ( '1' === gf_legacy.is_legacy ) {
 					// for legacy markup, let screen readers read the button.
 					$target.addClass( 'screen-reader-text' );
