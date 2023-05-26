@@ -3300,7 +3300,6 @@ function GetSelectedField() {
 		return false;
 	}
     var id = $field[0].id.substr( 6 );
-
     return GetFieldById( id );
 }
 
@@ -4571,9 +4570,7 @@ function resetAllFieldNotices() {
  */
 function ResetFieldAccessibilityWarning( fieldSetting ) {
 	if ( typeof fieldSetting !== 'undefined' ) {
-		jQuery( '.' + fieldSetting )
-			.nextAll( '.gform-alert--accessibility' ).remove()
-			.prevAll( '.gform-alert--accessibility' ).remove();
+		jQuery( '.gform-alert--accessibility[data-field-setting="' + fieldSetting + '"]' ).remove()
 	}
 }
 
@@ -4638,20 +4635,19 @@ function setFieldError( fieldSetting, position, message ) {
 		message = getFieldErrorMessage( fieldSetting );
 	}
 
-	var errorDiv = '<div class="gform-alert gform-alert--error gform-alert--inline">';
+	var errorDiv = '<div class="gform-alert gform-alert--error gform-alert--inline" data-field-setting="' + fieldSetting + '">';
 		errorDiv += '<span class="gform-alert__icon gform-icon gform-icon--circle-error-fine" aria-hidden="true"></span>';
 		errorDiv += '<div class="gform-alert__message-wrap">' + message + '</div>';
 		errorDiv += '</div>';
 
 	// Display the error message.
-	var fieldSetting = jQuery( '.' + fieldSetting );
-	fieldSetting.addClass( 'error' );
+	var fieldSettingContainer = jQuery( '.' + fieldSetting );
+	fieldSettingContainer.addClass( 'error' );
+	jQuery( '.gform-alert--error[data-field-setting="' + fieldSetting + '"]' ).remove();
 	if ( position === 'above' ) {
-		fieldSetting.prevAll( '.gform-alert--error' ).remove();
-		fieldSetting.before( errorDiv );
+		fieldSettingContainer.before( errorDiv );
 	} else {
-		fieldSetting.nextAll( '.gform-alert--error' ).remove();
-		fieldSetting.after( errorDiv );
+		fieldSettingContainer.after( errorDiv );
 	}
 }
 
@@ -4667,10 +4663,8 @@ function resetFieldError( fieldSetting ) {
 	var errorProperties = field.hasOwnProperty( 'errors' ) ? field.errors : [];
 
 	if ( typeof fieldSetting !== 'undefined' ) {
-		jQuery( '.' + fieldSetting )
-			.nextAll( '.gform-alert--error' ).remove()
-			.prevAll( '.gform-alert--error' ).remove();
 
+		jQuery( '.gform-alert--error[data-field-setting="' + fieldSetting + '"]' ).remove()
 		jQuery( '.' + fieldSetting ).removeClass( 'error' );
 
 		var index = errorProperties.indexOf( fieldSetting );

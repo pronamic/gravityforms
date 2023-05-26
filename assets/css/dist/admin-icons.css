@@ -33,10 +33,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 @font-face {
 	font-family: 'gform-icons-admin';
 	src:
-		url('../../../fonts/gform-icons-admin.woff2?sm120k') format('woff2'),
-		url('../../../fonts/gform-icons-admin.ttf?sm120k') format('truetype'),
-		url('../../../fonts/gform-icons-admin.woff?sm120k') format('woff'),
-		url('../../../fonts/gform-icons-admin.svg?sm120k#gform-icons-admin') format('svg');
+		url('../../../fonts/gform-icons-admin.woff2?62kdc1') format('woff2'),
+		url('../../../fonts/gform-icons-admin.ttf?62kdc1') format('truetype'),
+		url('../../../fonts/gform-icons-admin.woff?62kdc1') format('woff'),
+		url('../../../fonts/gform-icons-admin.svg?62kdc1#gform-icons-admin') format('svg');
 	font-weight: normal;
 	font-style: normal;
 	font-display: block;

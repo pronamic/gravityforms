@@ -35,9 +35,9 @@
 		}
 
 	.gform-admin .gform-template-library__flyout .gform-flyout__close.gform-button.gform-button--size-xs {
+			inset-block-start: 1.25rem;
 			inset-inline-end: 1.25rem;
 			padding: 0;
-			inset-block-start: 1.25rem;
 		}
 
 	.gform-admin .gform-template-library__flyout .gform-flyout__body {
@@ -76,18 +76,18 @@
 
 	.gform-admin .gform-template-library__flyout .gform-flyout__footer::before {
 				background: #ecedf8;
-				content: "";
 				block-size: 0.0625rem;
+				content: "";
 				inline-size: 100%;
 			}
 
 	.gform-admin .gform-template-library__flyout .gform-flyout__footer .gform-flyout__footer-inner {
 				align-items: flex-start;
 				display: flex;
+				inline-size: 100%;
 				justify-content: flex-end;
 				padding-block: 2rem;
 				padding-inline: 2.5rem;
-				inline-size: 100%;
 			}
 
 	.gform-admin .gform-template-library__flyout .gform-flyout__footer .gform-flyout__footer-inner .gform-flyout__footer-primary-button {
@@ -104,12 +104,12 @@
 	}
 
 	.gform-admin .gform-template-library {
-		border-radius: 0.1875rem;
 		block-size: 100vh;
+		border-radius: 0.1875rem;
+		inline-size: 100vw;
 		max-inline-size: none;
 		min-inline-size: 22.5rem;
 		padding: 0;
-		inline-size: 100vw;
 	}
 
 	@media (min-width: 960px) {
@@ -121,8 +121,8 @@
 		}
 
 	.gform-admin .gform-template-library .gform-template-library__exit-button {
-			inset-inline-end: 1.25rem;
 			inset-block-start: 1.25rem;
+			inset-inline-end: 1.25rem;
 		}
 
 	.gform-admin .gform-template-library [data-simplebar] {
@@ -135,9 +135,9 @@
 		}
 
 	.gform-admin .gform-template-library .gform-dialog__content {
+			block-size: 100%;
 			display: flex;
 			flex-direction: column;
-			block-size: 100%;
 			padding: 0;
 		}
 

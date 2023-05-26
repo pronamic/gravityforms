@@ -1537,18 +1537,17 @@ if ( ! class_exists( 'GFForms' ) ) {
 			fieldSetting = 'label_setting';
 		}
 
-		var warningDiv = '<div class="gform-alert gform-alert--accessibility gform-alert--inline">';
+		var warningDiv = '<div class="gform-alert gform-alert--accessibility gform-alert--inline" data-field-setting="' + fieldSetting + '">';
 			warningDiv += '<span class="gform-alert__icon gform-icon gform-icon--accessibility" aria-hidden="true"></span>';
 			warningDiv += '<div class="gform-alert__message-wrap">' + message + '</div>';
 			warningDiv += '</div>';
 
-		var fieldSetting = jQuery( '.' + fieldSetting );
+		var fieldSettingContainer = jQuery( '.' + fieldSetting );
+		jQuery( '.gform-alert--accessibility[data-field-setting="' + fieldSetting + '"]' ).remove();
 		if ( position === 'above' ) {
-			fieldSetting.prevAll( '.accessibility_warning' ).remove();
-			fieldSetting.before( warningDiv );
+			fieldSettingContainer.before( warningDiv );
 		} else {
-			fieldSetting.nextAll( '.accessibility_warning' ).remove();
-			fieldSetting.after( warningDiv );
+			fieldSettingContainer.after( warningDiv );
 		}
 	}
 

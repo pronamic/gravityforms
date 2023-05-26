@@ -2002,12 +2002,12 @@ html[dir="rtl"] .gform-settings-field__select-enhanced-container .select2-result
 	outline: none;
 }
 
-.field_setting.error input {
+.field_setting.error input, .field_setting.error select, .field_setting.error textarea {
 	border: 1px solid #dd301d;
 	color: #dd301d;
 }
 
-.field_setting.error input:focus {
+.field_setting.error input:focus, .field_setting.error select:focus, .field_setting.error textarea:focus {
 		padding: 0 0.75rem;
 	}
 

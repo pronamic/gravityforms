@@ -93,8 +93,8 @@
 	.gform-admin .gform-setup-wizard .gform-dialog__close.gform-setup-wizard--exit-button.gform-button {
 				background: transparent;
 				block-size: 34px;
-				border-radius: 3px;
 				border: 1px solid #374b6b;
+				border-radius: 3px;
 				inline-size: 34px;
 				inset-block-start: 105px;
 				inset-inline-start: 24px;
@@ -139,10 +139,10 @@
 
 	.gform-admin .gform-setup-wizard > .gform-dialog__content .gform-setup-wizard__fullscreen-toggle {
 				block-size: 30px;
-				position: absolute;
-				inset-inline-end: 25px;
-				inset-block-start: 25px;
 				inline-size: 30px;
+				inset-block-start: 25px;
+				inset-inline-end: 25px;
+				position: absolute;
 				z-index: 10;
 			}
 
@@ -172,18 +172,18 @@
 		align-items: center;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
 		inline-size: 100%;
+		justify-content: center;
 	}
 
 	.gform-admin .gform-setup-wizard__content-mask {
 		block-size: 100%;
+		inline-size: 100%;
+		inset-block-start: 0;
 		inset-inline-start: 0;
 		opacity: 1;
 		position: absolute;
-		inset-block-start: 0;
 		transition: opacity 200ms ease-in-out;
-		inline-size: 100%;
 		z-index: 1;
 	}
 
@@ -197,9 +197,9 @@
 	.gform-admin .gform-setup-wizard__footer {
 		-webkit-border-before: 1px solid #ecedf8;
 		        border-block-start: 1px solid #ecedf8;
+		inline-size: 100%;
 		-webkit-padding-before: 2.75rem;
 		        padding-block-start: 2.75rem;
-		inline-size: 100%;
 	}
 
 	.gform-admin .gform-setup-wizard__footer .gform-setup-wizard__nav-next-alt {
@@ -227,7 +227,7 @@
 			inset-block-end: 0;
 			inset-inline-start: 80px;
 			justify-content: flex-start;
-			margin:0;
+			margin: 0;
 			-webkit-margin-before: 5rem;
 			        margin-block-start: 5rem;
 			padding: 1.75rem;
@@ -302,7 +302,7 @@
 			display: flex;
 			flex-direction: column;
 			inline-size: 100%;
-			padding:0;
+			padding: 0;
 		}
 
 	.gform-admin .gform-dialog.gform-setup-wizard__email-dialog .gform-dialog__close {
@@ -313,12 +313,12 @@
 		}
 
 	.gform-admin .gform-dialog.gform-setup-wizard__email-dialog .gform-dialog__close[focus-within] {
-				box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 2px #BED8ED;
+				box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 2px #bed8ed;
 				outline: 1px;
 			}
 
 	.gform-admin .gform-dialog.gform-setup-wizard__email-dialog .gform-dialog__close:focus-within {
-				box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 2px #BED8ED;
+				box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 2px #bed8ed;
 				outline: 1px;
 			}
 
@@ -348,8 +348,8 @@
 		background-repeat: no-repeat;
 		background-size: 45px 48px;
 		block-size: 105px;
-		border-radius: 100%;
 		border: 1px solid rgba(18, 25, 97, 0.0417516);
+		border-radius: 100%;
 		box-shadow: 0 4px 10px rgba(18, 25, 97, 0.0779552);
 		inline-size: 105px;
 		-webkit-margin-after: 10px;
@@ -430,24 +430,24 @@
 	@media (min-width: 960px) {
 
 	.gform-admin .gform-setup-wizard__organization-container .gform-setup-wizard__other-container {
+				inline-size: 20rem;
 				margin-block: 0;
-				margin-inline: 1.25rem 0;
-				inline-size: 20rem
+				margin-inline: 1.25rem 0
 		}
 			}
 
 	@media (min-width: 960px) {
 
 	.gform-admin .gform-setup-wizard__organization-container .gform-setup-wizard__other-container .gform-label {
+					block-size: 1px;
 					border: 0;
 					clip: rect(0, 0, 0, 0);
-					block-size: 1px;
+					inline-size: 1px;
 					margin: -1px;
 					overflow: hidden;
-					padding:0;
+					padding: 0;
 					position: absolute;
-					white-space: nowrap;
-					inline-size: 1px
+					white-space: nowrap
 			}
 				}
 

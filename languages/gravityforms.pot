@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.7.6\n"
+"Project-Id-Version: Gravity Forms 2.7.7\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-05-10T16:05:10+00:00\n"
+"POT-Creation-Date: 2023-05-25T18:26:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: gravityforms\n"
@@ -1085,8 +1085,8 @@ msgid "You don't have adequate permission to restore entries."
 msgstr ""
 
 #: entry_detail.php:436
-#: entry_list.php:1437
-#: entry_list.php:1476
+#: entry_list.php:1441
+#: entry_list.php:1480
 #: form_list.php:876
 msgid "You don't have adequate permission to delete entries."
 msgstr ""
@@ -1100,7 +1100,7 @@ msgid "Ajax error while deleting field."
 msgstr ""
 
 #: entry_detail.php:548
-#: entry_list.php:1781
+#: entry_list.php:1785
 msgid "You must select at least one type of notification to resend."
 msgstr ""
 
@@ -1204,8 +1204,8 @@ msgid "Include Notes"
 msgstr ""
 
 #: entry_detail.php:1269
-#: entry_list.php:1353
-#: entry_list.php:2206
+#: entry_list.php:1357
+#: entry_list.php:2210
 msgid "Print"
 msgstr ""
 
@@ -1235,8 +1235,8 @@ msgid "Edit Post"
 msgstr ""
 
 #: entry_detail.php:1359
-#: entry_list.php:1230
-#: entry_list.php:1341
+#: entry_list.php:1234
+#: entry_list.php:1345
 msgid "Not Spam"
 msgstr ""
 
@@ -1247,16 +1247,16 @@ msgstr ""
 
 #: entry_detail.php:1364
 #: entry_detail.php:1375
-#: entry_list.php:1208
-#: entry_list.php:1239
-#: entry_list.php:1337
-#: entry_list.php:1343
+#: entry_list.php:1212
+#: entry_list.php:1243
+#: entry_list.php:1341
+#: entry_list.php:1347
 msgid "Delete Permanently"
 msgstr ""
 
 #: entry_detail.php:1373
-#: entry_list.php:1202
-#: entry_list.php:1336
+#: entry_list.php:1206
+#: entry_list.php:1340
 #: form_list.php:514
 #: form_list.php:666
 msgid "Restore"
@@ -1301,12 +1301,12 @@ msgid "You cannot resend notifications for this entry because this form does not
 msgstr ""
 
 #: entry_detail.php:1444
-#: entry_list.php:2143
+#: entry_list.php:2147
 msgid "Configure Notifications"
 msgstr ""
 
 #: entry_detail.php:1460
-#: entry_list.php:2163
+#: entry_list.php:2167
 #: notification.php:206
 msgid "Send To"
 msgstr ""
@@ -1316,18 +1316,18 @@ msgid "Resend"
 msgstr ""
 
 #: entry_detail.php:1468
-#: entry_list.php:2170
+#: entry_list.php:2174
 msgid "Resending..."
 msgstr ""
 
 #: entry_list.php:47
-#: entry_list.php:1494
+#: entry_list.php:1498
 msgid "%s restored from the Trash."
 msgstr ""
 
 #: entry_list.php:48
 #: entry_list.php:62
-#: entry_list.php:1466
+#: entry_list.php:1470
 msgid "1 entry"
 msgstr ""
 
@@ -1388,14 +1388,14 @@ msgid "Starred"
 msgstr ""
 
 #: entry_list.php:495
-#: entry_list.php:1268
-#: entry_list.php:1356
+#: entry_list.php:1272
+#: entry_list.php:1360
 msgid "Spam"
 msgstr ""
 
 #: entry_list.php:502
-#: entry_list.php:1277
-#: entry_list.php:1359
+#: entry_list.php:1281
+#: entry_list.php:1363
 #: form_list.php:701
 msgid "Trash"
 msgstr ""
@@ -1408,239 +1408,239 @@ msgstr ""
 msgid "click to select columns to display"
 msgstr ""
 
-#: entry_list.php:1022
+#: entry_list.php:1026
 msgid "View this entry"
 msgstr ""
 
-#: entry_list.php:1142
+#: entry_list.php:1146
 msgid "This form does not have any unread entries matching the search criteria."
 msgstr ""
 
-#: entry_list.php:1142
+#: entry_list.php:1146
 msgid "This form does not have any unread entries."
 msgstr ""
 
-#: entry_list.php:1146
+#: entry_list.php:1150
 msgid "This form does not have any starred entries matching the search criteria."
 msgstr ""
 
-#: entry_list.php:1146
+#: entry_list.php:1150
 msgid "This form does not have any starred entries."
 msgstr ""
 
-#: entry_list.php:1150
+#: entry_list.php:1154
 msgid "This form does not have any spam."
 msgstr ""
 
-#: entry_list.php:1154
+#: entry_list.php:1158
 msgid "This form does not have any entries in the trash matching the search criteria."
 msgstr ""
 
-#: entry_list.php:1154
+#: entry_list.php:1158
 msgid "This form does not have any entries in the trash."
 msgstr ""
 
-#: entry_list.php:1158
+#: entry_list.php:1162
 msgid "This form does not have any entries matching the search criteria."
 msgstr ""
 
-#: entry_list.php:1158
+#: entry_list.php:1162
 msgid "This form does not have any entries yet."
 msgstr ""
 
-#: entry_list.php:1194
-#: entry_list.php:1225
-#: entry_list.php:1257
+#: entry_list.php:1198
+#: entry_list.php:1229
+#: entry_list.php:1261
 #: includes/addon/class-gf-payment-addon.php:3288
 #: includes/addon/class-gf-payment-addon.php:3289
 msgid "View"
 msgstr ""
 
-#: entry_list.php:1230
+#: entry_list.php:1234
 msgid "Mark this entry as not spam"
 msgstr ""
 
-#: entry_list.php:1261
+#: entry_list.php:1265
 msgid "Mark read"
 msgstr ""
 
-#: entry_list.php:1261
+#: entry_list.php:1265
 msgid "Mark this entry as unread"
 msgstr ""
 
-#: entry_list.php:1261
+#: entry_list.php:1265
 msgid "Mark unread"
 msgstr ""
 
-#: entry_list.php:1268
+#: entry_list.php:1272
 msgid "Mark this entry as spam"
 msgstr ""
 
-#: entry_list.php:1277
+#: entry_list.php:1281
 msgid "Move this entry to the trash"
 msgstr ""
 
-#: entry_list.php:1348
+#: entry_list.php:1352
 msgid "Mark as Read"
 msgstr ""
 
-#: entry_list.php:1349
+#: entry_list.php:1353
 msgid "Mark as Unread"
 msgstr ""
 
-#: entry_list.php:1350
+#: entry_list.php:1354
 msgid "Add Star"
 msgstr ""
 
-#: entry_list.php:1351
+#: entry_list.php:1355
 msgid "Remove Star"
 msgstr ""
 
-#: entry_list.php:1352
-#: entry_list.php:1738
-#: entry_list.php:2101
-#: entry_list.php:2168
+#: entry_list.php:1356
+#: entry_list.php:1742
+#: entry_list.php:2105
+#: entry_list.php:2172
 msgid "Resend Notifications"
 msgstr ""
 
-#: entry_list.php:1393
+#: entry_list.php:1397
 msgid "WARNING! This operation cannot be undone. Empty trash? 'Ok' to empty trash. 'Cancel' to abort."
 msgstr ""
 
-#: entry_list.php:1393
+#: entry_list.php:1397
 msgid "WARNING! This operation cannot be undone. Permanently delete all spam? 'Ok' to delete. 'Cancel' to abort."
 msgstr ""
 
-#: entry_list.php:1394
+#: entry_list.php:1398
 msgid "Empty Trash"
 msgstr ""
 
-#: entry_list.php:1394
+#: entry_list.php:1398
 msgid "Delete All Spam"
 msgstr ""
 
-#: entry_list.php:1435
+#: entry_list.php:1439
 msgid "Entry deleted."
 msgstr ""
 
-#: entry_list.php:1466
+#: entry_list.php:1470
 msgid "%d entries"
 msgstr ""
 
-#: entry_list.php:1474
+#: entry_list.php:1478
 msgid "%s deleted."
 msgstr ""
 
-#: entry_list.php:1484
+#: entry_list.php:1488
 msgid "%s moved to Trash."
 msgstr ""
 
-#: entry_list.php:1486
+#: entry_list.php:1490
 msgid "You don't have adequate permissions to trash entries."
 msgstr ""
 
-#: entry_list.php:1496
+#: entry_list.php:1500
 msgid "You don't have adequate permissions to restore entries."
 msgstr ""
 
-#: entry_list.php:1503
+#: entry_list.php:1507
 msgid "%s restored from the spam."
 msgstr ""
 
-#: entry_list.php:1508
+#: entry_list.php:1512
 msgid "%s marked as spam."
 msgstr ""
 
-#: entry_list.php:1513
+#: entry_list.php:1517
 msgid "%s marked as read."
 msgstr ""
 
-#: entry_list.php:1518
+#: entry_list.php:1522
 msgid "%s marked as unread."
 msgstr ""
 
-#: entry_list.php:1523
+#: entry_list.php:1527
 msgid "%s starred."
 msgstr ""
 
-#: entry_list.php:1528
+#: entry_list.php:1532
 msgid "%s unstarred."
 msgstr ""
 
-#: entry_list.php:1673
+#: entry_list.php:1677
 msgid "Ajax error while setting lead property"
 msgstr ""
 
-#: entry_list.php:1730
+#: entry_list.php:1734
 msgid "Please select at least one entry."
 msgstr ""
 
-#: entry_list.php:1744
-#: entry_list.php:2107
+#: entry_list.php:1748
+#: entry_list.php:2111
 msgid "Print Entries"
 msgstr ""
 
-#: entry_list.php:1806
+#: entry_list.php:1810
 msgid "Notifications for %s were resent successfully."
 msgstr ""
 
-#: entry_list.php:1808
+#: entry_list.php:1812
 msgid "entry"
 msgstr ""
 
-#: entry_list.php:1808
+#: entry_list.php:1812
 msgid "entries"
 msgstr ""
 
-#: entry_list.php:1928
+#: entry_list.php:1932
 msgid "All %s{0}%s entries on this page are selected."
 msgstr ""
 
-#: entry_list.php:1929
+#: entry_list.php:1933
 msgid "Select all %s{0}%s entries."
 msgstr ""
 
-#: entry_list.php:1930
+#: entry_list.php:1934
 msgid "All %s{0}%s entries have been selected."
 msgstr ""
 
-#: entry_list.php:1931
+#: entry_list.php:1935
 msgid "Clear selection"
 msgstr ""
 
-#: entry_list.php:2028
+#: entry_list.php:2032
 msgid "Entry List"
 msgstr ""
 
-#: entry_list.php:2093
+#: entry_list.php:2097
 msgid "Please select at least one entry..."
 msgstr ""
 
-#: entry_list.php:2141
+#: entry_list.php:2145
 msgid "You cannot resend notifications for these entries because this form does not currently have any notifications configured."
 msgstr ""
 
-#: entry_list.php:2147
+#: entry_list.php:2151
 msgid "Specify which notifications you would like to resend for the selected entries."
 msgstr ""
 
-#: entry_list.php:2161
+#: entry_list.php:2165
 msgid "You may override the default notification settings by entering a comma delimited list of emails to which the selected notifications should be sent."
 msgstr ""
 
-#: entry_list.php:2179
+#: entry_list.php:2183
 msgid "Close Window"
 msgstr ""
 
-#: entry_list.php:2194
+#: entry_list.php:2198
 msgid "Print all of the selected entries at once."
 msgstr ""
 
-#: entry_list.php:2198
+#: entry_list.php:2202
 msgid "Include notes"
 msgstr ""
 
-#: entry_list.php:2203
+#: entry_list.php:2207
 msgid "Add page break between entries"
 msgstr ""
 
@@ -9471,11 +9471,11 @@ msgstr ""
 #: includes/form-editor/save-form/config/class-gf-form-editor-form-save-config.php:43
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:52
 #: includes/template-library/config/class-gf-template-library-config.php:93
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:115
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:127
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:127
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:127
 #: assets/js/dist/scripts-admin.js:519
 msgid "Close"
 msgstr ""
@@ -13092,7 +13092,7 @@ msgstr ""
 
 #: js.php:429
 #: js.php:1525
-#: js.php:1575
+#: js.php:1574
 msgid "Learn more"
 msgstr ""
 
@@ -13319,19 +13319,19 @@ msgid "This field has accessibility issues."
 msgstr ""
 
 #. translators: 1. Open abbr tag 2. Close abbr tag
-#: js.php:1567
+#: js.php:1566
 msgid "An empty label violates %1$sWCAG%2$s. Please use descriptive text for your label. To hide the label, use the \"Field Label Visibility\" setting."
 msgstr ""
 
-#: js.php:1579
+#: js.php:1578
 msgid "This field has errors."
 msgstr ""
 
-#: js.php:1597
+#: js.php:1596
 msgid "The submit button can't be placed inline on multi-page forms."
 msgstr ""
 
-#: js.php:1598
+#: js.php:1597
 msgid "If a valid image url is not present a text-only submit button will be used."
 msgstr ""
 
@@ -14721,57 +14721,57 @@ msgstr ""
 msgid "Tab Index Start"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:125
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:125
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:125
 msgid "OK"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:151
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:151
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:151
 msgid "Copy / Paste Not Available"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:151
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:151
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:151
 msgid "Copy and paste functionality requires a secure connection. Reload this page using an HTTPS URL and try again."
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:168
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:168
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:168
 msgid "Paste Not Available"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:168
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:168
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:168
 msgid "Your browser does not have permission to paste from the clipboard. <p>Please navigate to <strong>about:config</strong> and change the preference <strong>dom.events.asyncClipboard.readText</strong> to <strong>true</strong>."
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:22
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:22
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:22
 msgid "Copy Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:28
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:28
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:28
 msgid "Paste Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:69
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:69
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:69
 msgid "Invalid Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:69
-#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:69
+#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:69
 msgid "Please ensure the form styles you are trying to paste are in the correct format."
 msgstr ""
 

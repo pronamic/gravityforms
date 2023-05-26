@@ -58,6 +58,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		background-color: #c3c5db;
 	}
 
+.gform-admin .gform-util-gform-admin-background-color-metal-gray {
+		background-color: #d3d3e0;
+	}
+
 .gform-admin .gform-util-gform-admin-background-color-white-lilac {
 		background-color: #ecedf8;
 	}
@@ -116,6 +120,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-admin .gform-util-gform-admin-background-color-red {
 		background-color: #dd301d;
+	}
+
+.gform-admin .gform-util-gform-admin-background-color-spanish-pink {
+		background-color: #ffc7bb;
 	}
 
 .gform-admin .gform-util-gform-admin-background-color-background-red {
@@ -180,6 +188,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-admin .gform-util-gform-admin-background-color-border {
 		background-color: #9092b2;
+	}
+
+.gform-admin .gform-util-gform-admin-background-color-secondary-border {
+		background-color: #e4e4ee;
 	}
 
 .gform-admin .gform-util-gform-admin-background-color-button-disabled {
@@ -338,6 +350,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		color: #c3c5db;
 	}
 
+.gform-admin .gform-util-gform-admin-color-metal-gray {
+		color: #d3d3e0;
+	}
+
 .gform-admin .gform-util-gform-admin-color-white-lilac {
 		color: #ecedf8;
 	}
@@ -396,6 +412,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-admin .gform-util-gform-admin-color-red {
 		color: #dd301d;
+	}
+
+.gform-admin .gform-util-gform-admin-color-spanish-pink {
+		color: #ffc7bb;
 	}
 
 .gform-admin .gform-util-gform-admin-color-background-red {
@@ -460,6 +480,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-admin .gform-util-gform-admin-color-border {
 		color: #9092b2;
+	}
+
+.gform-admin .gform-util-gform-admin-color-secondary-border {
+		color: #e4e4ee;
 	}
 
 .gform-admin .gform-util-gform-admin-color-button-disabled {

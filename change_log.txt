@@ -1,3 +1,9 @@
+### 2.7.7 | 2023-05-25
+- Added the ability to display error messages for Drop Downs and Textareas on form editor's field settings panel.
+- Fixed a bug that prevented HTML tags from using theme styles in the Orbital theme.
+- Updated how the form block is rendered so it no longer uses the shortcode.
+- Updated the entry list to support array values for custom entry meta.  Credit: The GravityWiz team.
+
 ### 2.7.6 | 2023-05-10
 - Fixed an issue where the HTML field filters out JavaScript.
 - Updated the handling of submit button conditional logic to add a data attribute indicating whether a button is hidden or not.

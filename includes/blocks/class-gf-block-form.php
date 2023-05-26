@@ -227,7 +227,7 @@ class GF_Block_Form extends GF_Block {
 			$field_values = '';
 		}
 
-		return sprintf( '[gravityforms id="%d" title="%s" description="%s" ajax="%s" tabindex="%d" field_values="%s"]', $form_id, ( $title ? 'true' : 'false' ), ( $description ? 'true' : 'false' ), ( $ajax ? 'true' : 'false' ), $tabindex, $field_values );
+		return gravity_form( $form_id, $title, $description, false, $field_values, $ajax, $tabindex, false );
 
 	}
 
