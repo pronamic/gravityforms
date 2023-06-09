@@ -1,3 +1,6 @@
+### 2.7.8 | 2023-06-08
+- Fixed a bug that prevented dynamic population from working in the block settings.
+
 ### 2.7.7 | 2023-05-25
 - Added the ability to display error messages for Drop Downs and Textareas on form editor's field settings panel.
 - Fixed a bug that prevented HTML tags from using theme styles in the Orbital theme.
@@ -22,7 +25,6 @@
 - API: Added the `gform_conditional_logic_is_valid_flyout_click` filter to allow third parties to designate valid conditional logic flyout clicks. Credit: GravityWiz.
 - API: Fixed a bug that prevents developers from overriding the button setting default values. Credit: The GravityKit team.
 
-
 ### 2.7.4 | 2023-04-11
 - Added security enhancements.
 - Fixed an issue that causes block style settings to disappear on a form with validation errors.
@@ -38,7 +40,6 @@
 - API: Added new filter `gform_addon_form_settings_fields` to allow addons to modify the settings fields displayed on a given form settings page.
 - API: Added a new filter `gform_validate_required_file_exists` to allow developers to override the default behavior of the file upload field when validating required files.
 - AF: Fixed a fatal error that occurs when when saving settings that include a setting named "enable" when logging has not been configured for an add-on.
-
 
 ### 2.7.3 | 2023-03-15
 - Fixed an issue that prevents accessing the settings page after failed license validation in the setup wizard.

@@ -218,12 +218,13 @@ class GF_Block_Form extends GF_Block {
 		}
 
 		// Encode field values.
-		$field_values = htmlspecialchars( $field_values );
-		$field_values = str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), $field_values );
+		$field_values = htmlspecialchars_decode( $field_values );
+		$field_values = str_replace( array( '&#038;', '&#091;', '&#093;' ), array( '&', '[', ']' ), $field_values );
+		parse_str( $field_values, $field_value_array ); //parsing query string like string for field values and placing them into an associative array
+		$field_values = stripslashes_deep( $field_value_array );
 
-		// If no field values are set, set field values to a empty string
-		parse_str( $field_values, $field_value_array );
-		if ( empty( $field_value_array ) ) {
+		// If no field values are set, set field values to an empty string
+		if ( empty( $field_values ) ) {
 			$field_values = '';
 		}
 
