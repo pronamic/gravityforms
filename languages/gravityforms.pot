@@ -2,16 +2,16 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.7.8\n"
+"Project-Id-Version: Gravity Forms 2.7.9\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-06-08T15:43:54+00:00\n"
+"POT-Creation-Date: 2023-06-22T17:17:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.7.1\n"
+"X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: gravityforms\n"
 
 #. Plugin Name of the plugin
@@ -212,7 +212,7 @@ msgstr ""
 #: common.php:941
 #: form_detail.php:895
 #: form_detail.php:1602
-#: form_display.php:3518
+#: form_display.php:3517
 #: includes/fields/class-gf-field.php:2543
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:376
@@ -399,8 +399,8 @@ msgstr ""
 
 #: common.php:5346
 #: form_display.php:336
-#: form_display.php:1258
-#: form_display.php:3916
+#: form_display.php:1257
+#: form_display.php:3915
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:51
 #: includes/template-library/templates/templates.php:2516
 #: includes/template-library/templates/templates.php:2712
@@ -463,7 +463,7 @@ msgid "Thanks for contacting us! We will get in touch with you shortly."
 msgstr ""
 
 #: common.php:5355
-#: form_display.php:1618
+#: form_display.php:1617
 #: form_list.php:325
 #: gravityforms.php:3185
 #: includes/fields/class-gf-field-submit.php:158
@@ -3587,7 +3587,7 @@ msgid "Good"
 msgstr ""
 
 #: form_detail.php:1763
-#: form_display.php:3518
+#: form_display.php:3517
 msgid "Strong"
 msgstr ""
 
@@ -4299,99 +4299,99 @@ msgstr ""
 msgid "Save and Continue link used is expired or invalid."
 msgstr ""
 
-#: form_display.php:1257
-#: form_display.php:3915
+#: form_display.php:1256
+#: form_display.php:3914
 msgid "Previous Page"
 msgstr ""
 
-#: form_display.php:1318
+#: form_display.php:1317
 msgid "This iframe contains the logic required to handle Ajax powered Gravity Forms."
 msgstr ""
 
-#: form_display.php:1886
+#: form_display.php:1885
 msgid "Spam Filter"
 msgstr ""
 
-#: form_display.php:1887
+#: form_display.php:1886
 msgid "This entry has been flagged as spam."
 msgstr ""
 
 #. translators: Variable is a complete sentence containing the reason the entry was marked as spam.
-#: form_display.php:1890
+#: form_display.php:1889
 msgid "Reason: %s"
 msgstr ""
 
-#: form_display.php:2261
+#: form_display.php:2260
 msgid "At least one field must be filled out"
 msgstr ""
 
-#: form_display.php:2330
+#: form_display.php:2329
 msgid "This date has already been taken. Please select a new date."
 msgstr ""
 
-#: form_display.php:2334
+#: form_display.php:2333
 msgid "This field requires a unique entry and the values you entered have already been used."
 msgstr ""
 
-#: form_display.php:2335
+#: form_display.php:2334
 msgid "This field requires a unique entry and '%s' has already been used"
 msgstr ""
 
-#: form_display.php:2364
+#: form_display.php:2363
 msgid "Please enter a valid value."
 msgstr ""
 
-#: form_display.php:2364
+#: form_display.php:2363
 msgid "Invalid selection. Please select from the available choices."
 msgstr ""
 
-#: form_display.php:2791
+#: form_display.php:2790
 msgid "All choices are selected."
 msgstr ""
 
-#: form_display.php:2792
+#: form_display.php:2791
 msgid "All choices are unselected."
 msgstr ""
 
-#: form_display.php:3447
+#: form_display.php:3446
 msgid "No results matched"
 msgstr ""
 
-#: form_display.php:3501
-#: form_display.php:4158
+#: form_display.php:3500
+#: form_display.php:4157
 msgid "of"
 msgstr ""
 
-#: form_display.php:3501
+#: form_display.php:3500
 msgid "max characters"
 msgstr ""
 
-#: form_display.php:3518
+#: form_display.php:3517
 #: includes/fields/class-gf-field-password.php:193
 msgid "Strength indicator"
 msgstr ""
 
-#: form_display.php:3518
+#: form_display.php:3517
 msgid "Mismatch"
 msgstr ""
 
-#: form_display.php:3518
+#: form_display.php:3517
 msgid "Password strength unknown"
 msgstr ""
 
-#: form_display.php:3518
+#: form_display.php:3517
 msgid "Weak"
 msgstr ""
 
-#: form_display.php:3518
+#: form_display.php:3517
 msgid "Very weak"
 msgstr ""
 
-#: form_display.php:3921
+#: form_display.php:3920
 msgid "Next Page"
 msgstr ""
 
-#: form_display.php:3922
+#: form_display.php:3921
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:50
 #: includes/template-library/templates/templates.php:2511
 #: includes/template-library/templates/templates.php:2707
@@ -4409,48 +4409,48 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: form_display.php:4158
+#: form_display.php:4157
 msgid "Step"
 msgstr ""
 
-#: form_display.php:4265
+#: form_display.php:4264
 msgid "Sorry. This form is no longer accepting new submissions."
 msgstr ""
 
-#: form_display.php:4286
+#: form_display.php:4285
 msgid "This form is not yet available."
 msgstr ""
 
-#: form_display.php:4292
+#: form_display.php:4291
 msgid "Sorry. This form is no longer available."
 msgstr ""
 
-#: form_display.php:4450
+#: form_display.php:4449
 msgid "Send Link"
 msgstr ""
 
-#: form_display.php:4451
+#: form_display.php:4450
 #: notification.php:293
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: form_display.php:4452
+#: form_display.php:4451
 msgid "Email Address"
 msgstr ""
 
-#: form_display.php:4818
+#: form_display.php:4817
 msgid "Oops! We could not locate your form."
 msgstr ""
 
-#: form_display.php:4849
+#: form_display.php:4848
 msgid "Your form was not submitted. Please try again in a few minutes."
 msgstr ""
 
-#: form_display.php:4851
+#: form_display.php:4850
 msgid "There was a problem with your submission."
 msgstr ""
 
-#: form_display.php:4851
+#: form_display.php:4850
 msgid "Please review the fields below."
 msgstr ""
 
@@ -8565,7 +8565,7 @@ msgstr ""
 
 #: includes/fields/class-gf-field-calculation.php:35
 #: includes/fields/class-gf-field-hiddenproduct.php:40
-#: includes/fields/class-gf-field-number.php:131
+#: includes/fields/class-gf-field-number.php:132
 #: includes/fields/class-gf-field-singleproduct.php:47
 msgid "Please enter a valid quantity"
 msgstr ""
@@ -9131,23 +9131,23 @@ msgstr ""
 msgid "Allows users to enter a number."
 msgstr ""
 
-#: includes/fields/class-gf-field-number.php:128
+#: includes/fields/class-gf-field-number.php:129
 msgid "Please enter a valid quantity. Quantity cannot contain decimals."
 msgstr ""
 
-#: includes/fields/class-gf-field-number.php:198
+#: includes/fields/class-gf-field-number.php:199
 msgid "Please enter a number from %1$s to %2$s."
 msgstr ""
 
-#: includes/fields/class-gf-field-number.php:200
+#: includes/fields/class-gf-field-number.php:201
 msgid "Please enter a number greater than or equal to %s."
 msgstr ""
 
-#: includes/fields/class-gf-field-number.php:202
+#: includes/fields/class-gf-field-number.php:203
 msgid "Please enter a number less than or equal to %s."
 msgstr ""
 
-#: includes/fields/class-gf-field-number.php:204
+#: includes/fields/class-gf-field-number.php:205
 msgid "Please enter a valid number."
 msgstr ""
 
@@ -9471,11 +9471,11 @@ msgstr ""
 #: includes/form-editor/save-form/config/class-gf-form-editor-form-save-config.php:43
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:52
 #: includes/template-library/config/class-gf-template-library-config.php:93
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:115
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:127
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:127
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:127
 #: assets/js/dist/scripts-admin.js:519
 msgid "Close"
 msgstr ""
@@ -9534,25 +9534,18 @@ msgid "Upgrade"
 msgstr ""
 
 #: includes/license/class-gf-license-api-response.php:299
-#: tests/unit-tests/license/test-license-api-response.php:495
-#: tests/unit-tests/license/test-license-api-response.php:511
 msgid "Expired On"
 msgstr ""
 
 #: includes/license/class-gf-license-api-response.php:306
-#: tests/unit-tests/license/test-license-api-response.php:523
 msgid "Renews On"
 msgstr ""
 
 #: includes/license/class-gf-license-api-response.php:309
-#: tests/unit-tests/license/test-license-api-response.php:533
-#: tests/unit-tests/license/test-license-api-response.php:542
-#: tests/unit-tests/license/test-license-api-response.php:551
 msgid "Expires On"
 msgstr ""
 
 #: includes/license/class-gf-license-api-response.php:321
-#: tests/unit-tests/license/test-license-api-response.php:420
 msgid "Does not expire"
 msgstr ""
 
@@ -11150,10 +11143,6 @@ msgstr ""
 #: includes/template-library/templates/templates.php:4967
 #: includes/template-library/templates/templates.php:6122
 #: includes/template-library/templates/templates.php:7254
-#: tests/unit-tests/save-form/test-form-crud-handler.php:152
-#: tests/unit-tests/save-form/test-form-crud-handler.php:282
-#: tests/unit-tests/save-form/test-form-crud-handler.php:584
-#: tests/unit-tests/save-form/test-form-crud-handler.php:699
 msgid "New submission from {form_title}"
 msgstr ""
 
@@ -11162,13 +11151,6 @@ msgstr ""
 #: includes/template-library/templates/templates.php:7232
 #: includes/template-library/templates/templates.php:9138
 #: includes/template-library/templates/templates.php:10238
-#: tests/unit-tests/save-form/test-form-crud-handler.php:176
-#: tests/unit-tests/save-form/test-form-crud-handler.php:295
-#: tests/unit-tests/save-form/test-form-crud-handler.php:597
-#: tests/unit-tests/save-form/test-form-crud-handler.php:809
-#: tests/unit-tests/save-form/test-form-crud-handler.php:852
-#: tests/unit-tests/save-form/test-form-crud-handler.php:912
-#: tests/unit-tests/save-form/test-form-crud-handler.php:955
 msgid "Thank you for contacting us! We will get in touch with you shortly."
 msgstr ""
 
@@ -14721,57 +14703,57 @@ msgstr ""
 msgid "Tab Index Start"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:125
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:125
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:125
 msgid "OK"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:151
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:151
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:151
 msgid "Copy / Paste Not Available"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:151
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:151
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:151
 msgid "Copy and paste functionality requires a secure connection. Reload this page using an HTTPS URL and try again."
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:168
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:168
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:168
 msgid "Paste Not Available"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:168
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:168
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:168
 msgid "Your browser does not have permission to paste from the clipboard. <p>Please navigate to <strong>about:config</strong> and change the preference <strong>dom.events.asyncClipboard.readText</strong> to <strong>true</strong>."
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:22
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:22
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:22
 msgid "Copy Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:28
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:28
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:28
 msgid "Paste Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:69
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:69
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:69
 msgid "Invalid Form Styles"
 msgstr ""
 
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:1
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:1
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:69
-#: assets/js/dist/scripts-admin.block-editor.d9da091876c33260cf27.js:69
+#: assets/js/dist/scripts-admin.block-editor.b8eca6a85c54af7ae4c9.js:69
 msgid "Please ensure the form styles you are trying to paste are in the correct format."
 msgstr ""
 

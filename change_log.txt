@@ -1,5 +1,13 @@
+### 2.7.9 | 2023-06-22
+- Fixed an issue where an empty Number type Quantity field fails validation with a decimals-related error message.
+- Fixed an issue where the custom validation message is not applied when a Number type Quantity field fails validation.
+- Fixed an issue where the first page of a form gets an incorrect data attribute.
+- Updated the Post Custom Field with List input type to look the same as the normal List field in the Orbital theme.
+- API: Fixed an issue in the color setting component where the selected indicator for custom colors can't be seen on light backgrounds.
+
+
 ### 2.7.8 | 2023-06-08
-- Fixed a bug that prevented dynamic population from working in the block settings.
+- Fixed a bug that prevents dynamic population from working in the block settings.
 
 ### 2.7.7 | 2023-05-25
 - Added the ability to display error messages for Drop Downs and Textareas on form editor's field settings panel.

@@ -1211,8 +1211,7 @@ class GFFormDisplay {
 				$style         = self::is_page_active( $form_id, 1 ) ? '' : "style='display:none;'";
 				$class         = ' ' . rgar( $form, 'firstPageCssClass', '' );
 				$class         = esc_attr( $class );
-				$page_field_id = intval( $form['nextFieldId'] ) - 1;
-				$form_string .= "<div id='gform_page_{$form_id}_1' class='gform_page{$class}' data-js='page-field-id-{$page_field_id}' {$style}>
+				$form_string .= "<div id='gform_page_{$form_id}_1' class='gform_page{$class}' data-js='page-field-id-1' {$style}>
                                     <div class='gform_page_fields'>";
 			}
 

@@ -116,19 +116,20 @@ class GF_Field_Number extends GF_Field {
 		// If the POST value is an array then the field is inside a repeater so use $value.
 		$raw_value = isset( $_POST[ 'input_' . $this->id ] ) && ! is_array( $_POST[ 'input_' . $this->id ] ) ? GFCommon::maybe_add_leading_zero( rgpost( 'input_' . $this->id ) ) : $value;
 
-		$requires_valid_number = ! rgblank( $raw_value ) && ! $this->has_calculation();
+		$has_raw_value         = ! rgblank( trim( $raw_value ) );
+		$requires_valid_number = $has_raw_value && ! $this->has_calculation();
 		$is_valid_number       = $this->validate_range( $value ) && GFCommon::is_numeric( $raw_value, $this->numberFormat );
 
 		if ( $requires_valid_number && ! $is_valid_number ) {
 			$this->failed_validation  = true;
 			$this->validation_message = empty( $this->errorMessage ) ? $this->get_range_message() : $this->errorMessage;
-		} elseif ( $this->type == 'quantity' ) {
+		} elseif ( $this->type == 'quantity' && $has_raw_value ) {
 			if ( intval( $value ) != $value ) {
 				$this->failed_validation  = true;
-				$this->validation_message = empty( $field['errorMessage'] ) ? esc_html__( 'Please enter a valid quantity. Quantity cannot contain decimals.', 'gravityforms' ) : $field['errorMessage'];
-			} elseif ( ! empty( $value ) && ( ! is_numeric( $value ) || intval( $value ) != floatval( $value ) || intval( $value ) < 0 ) ) {
+				$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'Please enter a valid quantity. Quantity cannot contain decimals.', 'gravityforms' ) : $this->errorMessage;
+			} elseif ( ( ! is_numeric( $value ) || intval( $value ) != floatval( $value ) || intval( $value ) < 0 ) ) {
 				$this->failed_validation  = true;
-				$this->validation_message = empty( $field['errorMessage'] ) ? esc_html__( 'Please enter a valid quantity', 'gravityforms' ) : $field['errorMessage'];
+				$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'Please enter a valid quantity', 'gravityforms' ) : $this->errorMessage;
 			}
 		}
 

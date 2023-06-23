@@ -3669,7 +3669,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 
 /* List Item Add/Remove Buttons */
 
-.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.add_list_item, .gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.delete_list_item {
+.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.add_list_item, .gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.delete_list_item, .gform-theme--framework.gform-theme.gform_wrapper .gfield--input-type-list button.add_list_item, .gform-theme--framework.gform-theme.gform_wrapper .gfield--input-type-list button.delete_list_item {
 
 		/* Local CSS API Overrides */
 		--gform-theme-local-block-size: var(--gform-theme-field-list-button-size);
@@ -3684,13 +3684,13 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 		--gform-theme-local-padding-inline: var(--gform-theme-field-list-button-padding-inline);
 	}
 
-.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.add_list_item::before {
+.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.add_list_item::before, .gform-theme--framework.gform-theme.gform_wrapper .gfield--input-type-list button.add_list_item::before {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-content: var(--gform-theme-icon-control-list-item-add);
 		}
 
-.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.delete_list_item::before {
+.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.delete_list_item::before, .gform-theme--framework.gform-theme.gform_wrapper .gfield--input-type-list button.delete_list_item::before {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-content: var(--gform-theme-icon-control-list-item-remove);
