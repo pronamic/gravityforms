@@ -100,6 +100,11 @@ class GFAsyncUpload {
 			die();
 		}
 
+		if ( GFCommon::file_name_has_disallowed_extension( $file_name ) || GFCommon::file_name_has_disallowed_extension( $uploaded_filename ) ) {
+			GFCommon::log_debug( "GFAsyncUpload::upload(): Illegal file extension: {$file_name}" );
+			self::die_error( 104, __( 'The uploaded file type is not allowed.', 'gravityforms' ) );
+		}
+
 		$file_name = sanitize_file_name( $file_name );
 		$uploaded_filename = sanitize_file_name( $uploaded_filename );
 
@@ -110,11 +115,6 @@ class GFAsyncUpload {
 
 		if ( $_FILES['file']['size'] > 0 && $_FILES['file']['size'] > $max_upload_size_in_bytes ) {
 			self::die_error( 104,sprintf( __( 'File exceeds size limit. Maximum file size: %dMB', 'gravityforms' ), $max_upload_size_in_mb ) );
-		}
-
-		if ( GFCommon::file_name_has_disallowed_extension( $file_name ) || GFCommon::file_name_has_disallowed_extension( $uploaded_filename ) ) {
-			GFCommon::log_debug( "GFAsyncUpload::upload(): Illegal file extension: {$file_name}" );
-			self::die_error( 104, __( 'The uploaded file type is not allowed.', 'gravityforms' ) );
 		}
 
 		if ( ! empty( $allowed_extensions ) ) {

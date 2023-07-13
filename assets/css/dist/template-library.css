@@ -106,6 +106,8 @@
 	.gform-admin .gform-template-library {
 		block-size: 100vh;
 		border-radius: 0.1875rem;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 		inline-size: 100vw;
 		max-inline-size: none;
 		min-inline-size: 22.5rem;

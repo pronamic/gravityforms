@@ -5716,6 +5716,8 @@ class GFFormsModel {
 			}
 		}
 
+		$file_name = sanitize_file_name( $file_name );
+
 		//Add the original filename to our target path.
 		//Result is "uploads/filename.extension"
 		$extension = pathinfo( $file_name, PATHINFO_EXTENSION );
@@ -5724,7 +5726,6 @@ class GFFormsModel {
 		}
 
 		$file_name = wp_basename( $file_name, $extension );
-		$file_name = sanitize_file_name( $file_name );
 
 		$counter     = 1;
 		$target_path = $target_root . $file_name . $extension;

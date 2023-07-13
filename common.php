@@ -2219,8 +2219,8 @@ class GFCommon {
 		$entry_id = rgar( $entry, 'id' );
 
 		$to    = str_replace( ' ', '', $to );
-		$bcc   = str_replace( ' ', '', $bcc );
-		$cc    = str_replace( ' ', '', $cc );
+		$bcc   = $bcc ? str_replace( ' ', '', $bcc ) : '';
+		$cc    = $cc ? str_replace( ' ', '', $cc ) : '';
 
 		if ( ! GFCommon::is_valid_email( $from ) ) {
 			$from = get_bloginfo( 'admin_email' );
@@ -5739,7 +5739,7 @@ Content-Type: text/html;
 	 *
 	 * @since 2.5
 	 *
-	 * @return bool
+	 * @return void
 	 */
 	public static function find_admin_notices() {
 		if ( ! GFForms::is_gravity_page() ) {
@@ -5747,30 +5747,35 @@ Content-Type: text/html;
 		}
 
 		global $wp_filter;
-		$notices         = $wp_filter['admin_notices']->callbacks;
-		$network_notices = array();
-		if ( rgar( $wp_filter, 'network_admin_notices' ) ) {
-			$network_notices = $wp_filter['network_admin_notices']->callbacks;
-		}
 
-		$all_notices = array_replace( $notices, $network_notices );
+		$hooks = array(
+			'admin_notices',
+			'network_admin_notices',
+		);
 
-		$has_non_gf_notices = false;
-		foreach ( $all_notices as $priority => $notice ) {
-			foreach ( $notice as $name => $callback ) {
-				if ( ! is_callable( $callback['function'] ) ) {
-					continue;
-				}
+		foreach ( $hooks as $hook ) {
+			if ( empty( $wp_filter[ $hook ] ) || ! is_array( $wp_filter[ $hook ]->callbacks ) ) {
+				continue;
+			}
 
-				ob_start();
-				call_user_func( $callback['function'] );
-				$content = ob_get_clean();
+			$callbacks = $wp_filter[ $hook ]->callbacks;
 
-				if ( strpos( $content, 'gf-notice' ) == false ) {
-					remove_action( 'admin_notices', $name, $priority );
-					remove_action( 'network_admin_notices', $name, $priority );
+			foreach ( $callbacks as $priority => $notice ) {
+				foreach ( $notice as $name => $callback ) {
+					if ( ! is_callable( $callback['function'] ) ) {
+						continue;
+					}
+
+					ob_start();
+					call_user_func( $callback['function'] );
+					$content = ob_get_clean();
+
+					if ( strpos( $content, 'gf-notice' ) == false ) {
+						remove_action( $hook, $name, $priority );
+					}
 				}
 			}
+
 		}
 	}
 

@@ -1,10 +1,19 @@
+### 2.7.10 | 2023-07-12
+- Added security enhancements.
+- Fixed a PHP fatal error that occurs when the theme or another plugin sets an invalid property value on the $wp_filter global variable.
+- Fixed an issue for the Orbital theme where hidden inputs were receiving focus in Safari during keyboard navigation.
+- Fixed various deprecation notices in PHP 8.1.
+- Fixed the enhanced UI for select and multiselect fields to work within conversational forms.
+- Updated the Orbital theme to support max-height/scroll for the consent field.
+- Updated the thumbnail image in the template library for the eCommerce template.
+- Updated the name of the form block to "Form" to make it easier to find in the block inserter.
+
 ### 2.7.9 | 2023-06-22
 - Fixed an issue where an empty Number type Quantity field fails validation with a decimals-related error message.
 - Fixed an issue where the custom validation message is not applied when a Number type Quantity field fails validation.
 - Fixed an issue where the first page of a form gets an incorrect data attribute.
 - Updated the Post Custom Field with List input type to look the same as the normal List field in the Orbital theme.
 - API: Fixed an issue in the color setting component where the selected indicator for custom colors can't be seen on light backgrounds.
-
 
 ### 2.7.8 | 2023-06-08
 - Fixed a bug that prevents dynamic population from working in the block settings.

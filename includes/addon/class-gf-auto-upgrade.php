@@ -141,7 +141,7 @@ class GFAutoUpgrade {
 			'plugin'      => $this->_path,
 			'url'         => $this->_url,
 			'slug'        => $this->_slug,
-			'package'     => str_replace( '{KEY}', $key, $version_info['url'] ),
+			'package'     => $version_info['url'] ? str_replace( '{KEY}', $key, $version_info['url'] ) : '',
 			'new_version' => $version_info['version'],
 			'id'          => '0',
 		);

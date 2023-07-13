@@ -1999,10 +1999,10 @@ function gformToggleCreditCard(){
 //------ CHOSEN DROP DOWN FIELD ----------
 //----------------------------------------
 
-function gformInitChosenFields(fieldList, noResultsText){
-    return jQuery(fieldList).each(function(){
-
-        var element = jQuery( this );
+function gformInitChosenFields( fieldList, noResultsText ) {
+    return jQuery( fieldList ).each( function(){
+		var element = jQuery( this );
+	    var isConvoForm = typeof gfcf_theme_config !== 'undefined' ? ( gfcf_theme_config !== null && typeof gfcf_theme_config.data !== 'undefined' ? gfcf_theme_config.data.is_conversational_form : undefined ) : false;
 
         // RTL support
         if( jQuery( 'html' ).attr( 'dir' ) == 'rtl' ) {
@@ -2010,11 +2010,14 @@ function gformInitChosenFields(fieldList, noResultsText){
         }
 
         // only initialize once
-        if( element.is(":visible") && element.siblings(".chosen-container").length == 0 ){
-            var options = gform.applyFilters( 'gform_chosen_options', { no_results_text: noResultsText }, element );
+        if( ( element.is( ':visible' ) || isConvoForm ) && element.siblings( '.chosen-container' ).length == 0 ) {
+			var chosenOptions = { no_results_text: noResultsText };
+			if ( isConvoForm ) {
+				chosenOptions.width = element.css( 'inline-size' );
+			}
+            var options = gform.applyFilters( 'gform_chosen_options', chosenOptions, element );
             element.chosen( options );
         }
-
     });
 }
 

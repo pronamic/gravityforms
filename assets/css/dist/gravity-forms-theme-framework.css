@@ -298,6 +298,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	A slightly darker version of the light form UI color.
 
 	Used by:
+	* --gform-theme-control-description-border-color-consent
 	* --gform-theme-field-section-border-color
 	* --gform-theme-field-repeater-nested-border-color
 	* --gform-theme-field-page-steps-number-border-color
@@ -1090,6 +1091,12 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gform-theme-control-description-font-weight-error: var(--gform-theme-control-description-font-weight);
 	--gform-theme-control-description-letter-spacing-error: var(--gform-theme-control-description-letter-spacing);
 	--gform-theme-control-description-line-height-error: var(--gform-theme-control-description-line-height);
+
+	/* Consent Description */
+	--gform-theme-control-description-border-color-consent: var(--gform-theme-color-outside-control-light-darker);
+	--gform-theme-control-description-border-style-consent: solid;
+	--gform-theme-control-description-border-width-consent: 1px;
+	--gform-theme-control-description-max-height-consent: 456px;
 }
 
 /* Gravity Forms Theme Framework | Global CSS API: Control - File */
@@ -1866,7 +1873,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Utility Class: apply the theme framework form control styles/api if this class is present */
 
-.gform-theme--framework .gform-theme-field-control, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset)), .gform-theme--framework textarea, .gform-theme--framework select, .gform-theme--framework select[multiple], .gform-theme--framework .gfield--type-select .chosen-single, .gform-theme--framework .gfield--type-select .chosen-search input[type="text"], .gform-theme--framework .gfield--type-multiselect .chosen-container-multi, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)) {
+.gform-theme--framework .gform-theme-field-control, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])), .gform-theme--framework textarea, .gform-theme--framework select, .gform-theme--framework select[multiple], .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-single, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-search input[type="text"], .gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)), .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)) {
 
 		/* Local CSS API */
 		--gform-theme-local-appearance: var(--gform-theme-control-appearance);
@@ -1932,7 +1939,7 @@ html[dir="rtl"] .gform-theme--framework {
 		transition: var(--gform-theme-local-transition);
 	}
 
-.gform-theme--framework .gform-theme-field-control:hover, .gform-theme--framework .gform-theme-field-control .gform-theme-field-control--hover, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset)):hover, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset)) .gform-theme-field-control--hover, .gform-theme--framework textarea:hover, .gform-theme--framework textarea .gform-theme-field-control--hover, .gform-theme--framework select:hover, .gform-theme--framework select .gform-theme-field-control--hover, .gform-theme--framework select[multiple]:hover, .gform-theme--framework select[multiple] .gform-theme-field-control--hover, .gform-theme--framework .gfield--type-select .chosen-single:hover, .gform-theme--framework .gfield--type-select .chosen-single .gform-theme-field-control--hover, .gform-theme--framework .gfield--type-select .chosen-search input[type="text"]:hover, .gform-theme--framework .gfield--type-select .chosen-search input[type="text"] .gform-theme-field-control--hover, .gform-theme--framework .gfield--type-multiselect .chosen-container-multi:hover, .gform-theme--framework .gfield--type-multiselect .chosen-container-multi .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover {
+.gform-theme--framework .gform-theme-field-control:hover, .gform-theme--framework .gform-theme-field-control .gform-theme-field-control--hover, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])):hover, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])) .gform-theme-field-control--hover, .gform-theme--framework textarea:hover, .gform-theme--framework textarea .gform-theme-field-control--hover, .gform-theme--framework select:hover, .gform-theme--framework select .gform-theme-field-control--hover, .gform-theme--framework select[multiple]:hover, .gform-theme--framework select[multiple] .gform-theme-field-control--hover, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-single:hover, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-single .gform-theme-field-control--hover, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-search input[type="text"]:hover, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-search input[type="text"] .gform-theme-field-control--hover, .gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi:hover, .gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)):hover, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--hover {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-background-color: var(--gform-theme-control-background-color-hover);
@@ -1940,7 +1947,7 @@ html[dir="rtl"] .gform-theme--framework {
 			--gform-theme-local-color: var(--gform-theme-control-color-hover);
 		}
 
-.gform-theme--framework .gform-theme-field-control:focus, .gform-theme--framework .gform-theme-field-control .gform-theme-field-control--focus, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset)):focus, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset)) .gform-theme-field-control--focus, .gform-theme--framework textarea:focus, .gform-theme--framework textarea .gform-theme-field-control--focus, .gform-theme--framework select:focus, .gform-theme--framework select .gform-theme-field-control--focus, .gform-theme--framework select[multiple]:focus, .gform-theme--framework select[multiple] .gform-theme-field-control--focus, .gform-theme--framework .gfield--type-select .chosen-single:focus, .gform-theme--framework .gfield--type-select .chosen-single .gform-theme-field-control--focus, .gform-theme--framework .gfield--type-select .chosen-search input[type="text"]:focus, .gform-theme--framework .gfield--type-select .chosen-search input[type="text"] .gform-theme-field-control--focus, .gform-theme--framework .gfield--type-multiselect .chosen-container-multi:focus, .gform-theme--framework .gfield--type-multiselect .chosen-container-multi .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus {
+.gform-theme--framework .gform-theme-field-control:focus, .gform-theme--framework .gform-theme-field-control .gform-theme-field-control--focus, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])):focus, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])) .gform-theme-field-control--focus, .gform-theme--framework textarea:focus, .gform-theme--framework textarea .gform-theme-field-control--focus, .gform-theme--framework select:focus, .gform-theme--framework select .gform-theme-field-control--focus, .gform-theme--framework select[multiple]:focus, .gform-theme--framework select[multiple] .gform-theme-field-control--focus, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-single:focus, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-single .gform-theme-field-control--focus, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-search input[type="text"]:focus, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-search input[type="text"] .gform-theme-field-control--focus, .gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi:focus, .gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)):focus, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--focus {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-background-color: var(--gform-theme-control-background-color-focus);
@@ -1949,7 +1956,7 @@ html[dir="rtl"] .gform-theme--framework {
 			--gform-theme-local-color: var(--gform-theme-control-color-focus);
 		}
 
-.gform-theme--framework .gform-theme-field-control:disabled, .gform-theme--framework .gform-theme-field-control .gform-theme-field-control--disabled, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset)):disabled, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset)) .gform-theme-field-control--disabled, .gform-theme--framework textarea:disabled, .gform-theme--framework textarea .gform-theme-field-control--disabled, .gform-theme--framework select:disabled, .gform-theme--framework select .gform-theme-field-control--disabled, .gform-theme--framework select[multiple]:disabled, .gform-theme--framework select[multiple] .gform-theme-field-control--disabled, .gform-theme--framework .gfield--type-select .chosen-single:disabled, .gform-theme--framework .gfield--type-select .chosen-single .gform-theme-field-control--disabled, .gform-theme--framework .gfield--type-select .chosen-search input[type="text"]:disabled, .gform-theme--framework .gfield--type-select .chosen-search input[type="text"] .gform-theme-field-control--disabled, .gform-theme--framework .gfield--type-multiselect .chosen-container-multi:disabled, .gform-theme--framework .gfield--type-multiselect .chosen-container-multi .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled {
+.gform-theme--framework .gform-theme-field-control:disabled, .gform-theme--framework .gform-theme-field-control .gform-theme-field-control--disabled, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])):disabled, .gform-theme--framework input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])) .gform-theme-field-control--disabled, .gform-theme--framework textarea:disabled, .gform-theme--framework textarea .gform-theme-field-control--disabled, .gform-theme--framework select:disabled, .gform-theme--framework select .gform-theme-field-control--disabled, .gform-theme--framework select[multiple]:disabled, .gform-theme--framework select[multiple] .gform-theme-field-control--disabled, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-single:disabled, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-single .gform-theme-field-control--disabled, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-search input[type="text"]:disabled, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-search input[type="text"] .gform-theme-field-control--disabled, .gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi:disabled, .gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper .gform-theme-button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper .button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper :where(:not(.mce-splitbtn)) > button:not([id*="mceu_"]):not(.mce-open):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper button.button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]):where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper input:is([type="submit"], [type="button"], [type="reset"]).button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)):disabled, .gform-theme--framework.gform-theme.gform_wrapper input[type="submit"].button.gform_button:where(:not(.gform-theme-no-framework)) .gform-theme-field-control--disabled {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-background-color: var(--gform-theme-control-background-color-disabled);
@@ -1959,7 +1966,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Control State: Error */
 
-.gform-theme--framework .gfield_error .gform-theme-field-control, .gform-theme--framework .gfield_error input[type]:where(:not(.gform-text-input-reset)), .gform-theme--framework .gfield_error textarea, .gform-theme--framework .gfield_error select, .gform-theme--framework .gfield_error select[multiple] {
+.gform-theme--framework .gfield_error .gform-theme-field-control, .gform-theme--framework .gfield_error input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])), .gform-theme--framework .gfield_error textarea, .gform-theme--framework .gfield_error select, .gform-theme--framework .gfield_error select[multiple] {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-background-color: var(--gform-theme-control-background-color-error);
@@ -1969,7 +1976,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Control Size: Small */
 
-.gform-theme--framework .gform-field--size-sm input[type]:where(:not(.gform-text-input-reset)), .gform-theme--framework .gform-field--size-sm textarea, .gform-theme--framework .gform-field--size-sm select, .gform-theme--framework .gform-field--size-sm select[multiple] {
+.gform-theme--framework .gform-field--size-sm input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])), .gform-theme--framework .gform-field--size-sm textarea, .gform-theme--framework .gform-field--size-sm select, .gform-theme--framework .gform-field--size-sm select[multiple] {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-block-size: var(--gform-theme-control-size-sm);
@@ -1978,7 +1985,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Control Size: Medium */
 
-.gform-theme--framework .gform-field--size-md input[type]:where(:not(.gform-text-input-reset)), .gform-theme--framework .gform-field--size-md textarea, .gform-theme--framework .gform-field--size-md select, .gform-theme--framework .gform-field--size-md select[multiple] {
+.gform-theme--framework .gform-field--size-md input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])), .gform-theme--framework .gform-field--size-md textarea, .gform-theme--framework .gform-field--size-md select, .gform-theme--framework .gform-field--size-md select[multiple] {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-block-size: var(--gform-theme-control-size-md);
@@ -1987,7 +1994,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Control Size: Large */
 
-.gform-theme--framework .gform-field--size-lg input[type]:where(:not(.gform-text-input-reset)), .gform-theme--framework .gform-field--size-lg textarea, .gform-theme--framework .gform-field--size-lg select, .gform-theme--framework .gform-field--size-lg select[multiple] {
+.gform-theme--framework .gform-field--size-lg input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])), .gform-theme--framework .gform-field--size-lg textarea, .gform-theme--framework .gform-field--size-lg select, .gform-theme--framework .gform-field--size-lg select[multiple] {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-block-size: var(--gform-theme-control-size-lg);
@@ -1996,7 +2003,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Control Size: Extra Large */
 
-.gform-theme--framework .gform-field--size-xl input[type]:where(:not(.gform-text-input-reset)), .gform-theme--framework .gform-field--size-xl textarea, .gform-theme--framework .gform-field--size-xl select, .gform-theme--framework .gform-field--size-xl select[multiple] {
+.gform-theme--framework .gform-field--size-xl input[type]:where(:not(.gform-text-input-reset):not([type="hidden"])), .gform-theme--framework .gform-field--size-xl textarea, .gform-theme--framework .gform-field--size-xl select, .gform-theme--framework .gform-field--size-xl select[multiple] {
 
 			/* Local CSS API Overrides */
 			--gform-theme-local-block-size: var(--gform-theme-control-size-xl);
@@ -2300,7 +2307,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Select input */
 
-.gform-theme--framework .gfield--type-select .chosen-container-single .chosen-single {
+.gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-single {
 
 			/* Styles */
 			background-image: var(--gform-theme-icon-control-select);
@@ -2309,14 +2316,14 @@ html[dir="rtl"] .gform-theme--framework {
 			background-size: var(--gform-theme-control-select-icon-size);
 		}
 
-.gform-theme--framework .gfield--type-select .chosen-container-single .chosen-single span {
+.gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-single span {
 
 				/* Styles */
 				-webkit-margin-end: var(--gform-theme-control-select-search-icon-size);
 				        margin-inline-end: var(--gform-theme-control-select-search-icon-size);
 			}
 
-.gform-theme--framework .gfield--type-select .chosen-container-single .chosen-single abbr, .gform-theme--framework .gfield--type-select .chosen-container-single .chosen-single div b {
+.gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-single abbr, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-single div b {
 
 				/* Styles */
 				background-image: none !important;
@@ -2326,7 +2333,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Select input */
 
-.gform-theme--framework .gfield--type-select .chosen-container-single.chosen-container-active .chosen-single, .gform-theme--framework .gfield--type-select .chosen-container-single.chosen-container-active.chosen-with-drop .chosen-single {
+.gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single.chosen-container-active .chosen-single, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single.chosen-container-active.chosen-with-drop .chosen-single {
 
 				/* Local CSS API Overrides */
 				--gform-theme-local-background-color: var(--gform-theme-control-background-color-focus);
@@ -2335,7 +2342,7 @@ html[dir="rtl"] .gform-theme--framework {
 				--gform-theme-local-color: var(--gform-theme-control-color-focus);
 			}
 
-.gform-theme--framework .gfield--type-select .chosen-container-single.chosen-container-active.chosen-with-drop .chosen-single {
+.gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single.chosen-container-active.chosen-with-drop .chosen-single {
 
 				/* Styles / TODO: clean this up so don't have to duplicate above here... */
 				border-bottom-left-radius: var(--gform-theme-control-border-radius);
@@ -2346,14 +2353,14 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Search */
 
-.gform-theme--framework .gfield--type-select .chosen-container-single .chosen-search {
+.gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-search {
 
 			/* Styles */
 			padding-block: var(--gform-theme-padding-block) 0;
 			padding-inline: var(--gform-theme-control-padding-inline);
 		}
 
-.gform-theme--framework .gfield--type-select .chosen-container-single .chosen-search input[type="text"] {
+.gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-search input[type="text"] {
 
 				/* Local CSS API Overrides */
 				--gform-theme-local-block-size: var(--gform-theme-control-size-md);
@@ -2367,7 +2374,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Styles for multiple select with enhanced UI */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi {
 
 		/* Local CSS API Overrides */
 		--gform-theme-local-block-size: auto;
@@ -2379,20 +2386,20 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Active / Focus state */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi.chosen-container-active {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi.chosen-container-active {
 
 			/* Styles */
 			border-color: var(--gform-theme-control-border-color-focus);
 			box-shadow: var(--gform-theme-control-box-shadow-focus);
 		}
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi.chosen-container-active .chosen-choices {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi.chosen-container-active .chosen-choices {
 				box-shadow: none;
 			}
 
 /* Dropdown */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi .chosen-choices {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .chosen-choices {
 
 			/* Styles */
 			align-content: center;
@@ -2408,7 +2415,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Search - Placeholder styles */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi .chosen-choices li.search-field input[type="text"].chosen-search-input {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .chosen-choices li.search-field input[type="text"].chosen-search-input {
 
 				/* Styles */
 				color: var(--gform-theme-control-placeholder-color);
@@ -2422,7 +2429,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Search - Non-placeholder styles */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi .chosen-choices .search-choice + li.search-field input[type="text"].chosen-search-input {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .chosen-choices .search-choice + li.search-field input[type="text"].chosen-search-input {
 
 				/* TODO: clean this up so don't have to repeat and don't have to declare styles (mixins, helper class, etc)...
 				Styles (Local CSS API Overrides) */
@@ -2437,7 +2444,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Selected choices */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi .chosen-choices li.search-choice {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .chosen-choices li.search-choice {
 
 				/* Styles */
 				align-self: flex-start;
@@ -2457,7 +2464,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Unselect a selected choice button */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
 
 					/* Styles */
 					background: none;
@@ -2469,7 +2476,7 @@ html[dir="rtl"] .gform-theme--framework {
 					width: var(--gform-theme-control-multiselect-close-icon-size);
 				}
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi .chosen-choices li.search-choice .search-choice-close::before {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .chosen-choices li.search-choice .search-choice-close::before {
 
 						/* Styles */
 						font-family: var(--gform-theme-icon-font-family) !important;
@@ -2490,7 +2497,7 @@ html[dir="rtl"] .gform-theme--framework {
 						width: 100%;
 					}
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container-multi .chosen-choices li.search-choice .search-choice-close:hover, .gform-theme--framework .gfield--type-multiselect .chosen-container-multi .chosen-choices li.search-choice .search-choice-close:focus {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .chosen-choices li.search-choice .search-choice-close:hover, .gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container-multi .chosen-choices li.search-choice .search-choice-close:focus {
 
 						/* Styles */
 						opacity: 1;
@@ -2498,7 +2505,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Dropdown for single and multiple select */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container .chosen-drop, .gform-theme--framework .gfield--type-select .chosen-container .chosen-drop {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container .chosen-drop, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container .chosen-drop {
 
 			/* Styles */
 			background-color: var(--gform-theme-control-background-color);
@@ -2513,7 +2520,7 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Options */
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container .chosen-results, .gform-theme--framework .gfield--type-select .chosen-container .chosen-results {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container .chosen-results, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container .chosen-results {
 
 			/* Styles */
 			margin-block: 0;
@@ -2522,21 +2529,21 @@ html[dir="rtl"] .gform-theme--framework {
 			padding-inline: 0;
 		}
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container .chosen-results li, .gform-theme--framework .gfield--type-select .chosen-container .chosen-results li {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container .chosen-results li, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container .chosen-results li {
 
 				/* Styles */
 				color: var(--gform-theme-control-color);
 				padding: var(--gform-theme-padding-block) var(--gform-theme-control-padding-inline);
 			}
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container .chosen-results li.highlighted, .gform-theme--framework .gfield--type-select .chosen-container .chosen-results li.highlighted {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container .chosen-results li.highlighted, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container .chosen-results li.highlighted {
 
 					/* Styles */
 					background: none;
 					background-color: var(--gform-theme-control-select-dropdown-option-background-color-hover);
 				}
 
-.gform-theme--framework .gfield--type-multiselect .chosen-container .chosen-results li.result-selected, .gform-theme--framework .gfield--type-select .chosen-container .chosen-results li.result-selected {
+.gform-theme--framework .gfield:where(.gfield--type-multiselect, .gfield--input-type-multiselect) .chosen-container .chosen-results li.result-selected, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container .chosen-results li.result-selected {
 
 					/* Styles */
 					background: none;
@@ -2679,6 +2686,17 @@ html[dir="rtl"] .gform-theme--framework {
 		--gform-theme-local-font-weight: var(--gform-theme-control-description-font-weight-error);
 		--gform-theme-local-letter-spacing: var(--gform-theme-control-description-letter-spacing-error);
 		--gform-theme-local-line-height: var(--gform-theme-control-description-line-height-error);
+	}
+
+/* Consent Description */
+
+.gform-theme--framework .gfield_consent_description {
+
+		/* Styles */
+		border: var(--gform-theme-control-description-border-width-consent) var(--gform-theme-control-description-border-style-consent) var(--gform-theme-control-description-border-color-consent);
+		max-height: var(--gform-theme-control-description-max-height-consent);
+		overflow-y: auto;
+		padding: 16px;
 	}
 
 /* Utility Class: exclude buttons from the theme framework if this class is present */
@@ -3080,22 +3098,115 @@ html[dir="rtl"] .gform-theme--framework {
 
 /* Drop Zone Area */
 
-.gform-theme--framework .gfield--input-type-fileupload .gform_drop_area, .gform-theme--framework .gfield--type-fileupload .gform_drop_area {
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .gform_drop_area {
 
-			/* Local CSS API Overrides */
-			--gform-theme-local-block-size: var(--gform-theme-control-file-drop-area-block-size);
-			--gform-theme-local-border-radius: var(--gform-theme-control-file-drop-area-border-radius);
-			--gform-theme-local-border-style: var(--gform-theme-control-file-drop-area-border-style);
-			--gform-theme-local-color: var(--gform-theme-control-file-drop-area-color);
-			--gform-theme-local-font-weight: var(--gform-theme-control-file-drop-area-font-weight);
-			--gform-theme-local-line-height: var(--gform-theme-control-file-drop-area-line-height);
-			--gform-theme-local-padding-inline: var(--gform-theme-control-file-drop-area-padding-inline);
-			--gform-theme-local-padding-block: var(--gform-theme-control-file-drop-area-padding-block);
-		}
+		/* Local CSS API Overrides */
+		--gform-theme-local-block-size: var(--gform-theme-control-file-drop-area-block-size);
+		--gform-theme-local-border-radius: var(--gform-theme-control-file-drop-area-border-radius);
+		--gform-theme-local-border-style: var(--gform-theme-control-file-drop-area-border-style);
+		--gform-theme-local-color: var(--gform-theme-control-file-drop-area-color);
+		--gform-theme-local-font-weight: var(--gform-theme-control-file-drop-area-font-weight);
+		--gform-theme-local-line-height: var(--gform-theme-control-file-drop-area-line-height);
+		--gform-theme-local-padding-inline: var(--gform-theme-control-file-drop-area-padding-inline);
+		--gform-theme-local-padding-block: var(--gform-theme-control-file-drop-area-padding-block);
+	}
 
 /* Icon */
 
-.gform-theme--framework .gfield--input-type-fileupload .gform_drop_area::before, .gform-theme--framework .gfield--type-fileupload .gform_drop_area::before {
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .gform_drop_area::before {
+
+			/* Styles */
+			font-family: var(--gform-theme-icon-font-family) !important;
+			font-style: normal;
+			font-variant: normal;
+			font-weight: normal;
+			line-height: 1;
+			speak: never;
+			text-transform: none;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+
+			color: var(--gform-theme-control-file-drop-area-icon-color);
+			content: var(--gform-theme-icon-control-file-upload);
+			display: block;
+			font-size: var(--gform-theme-control-file-drop-area-icon-font-size);
+			-webkit-margin-after: var(--gform-theme-control-file-drop-area-icon-margin-block-end);
+			        margin-block-end: var(--gform-theme-control-file-drop-area-icon-margin-block-end);
+		}
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .gform_drop_instructions {
+
+		/* Styles */
+		-webkit-margin-after: var(--gform-theme-control-file-drop-area-instructions-margin-block-end);
+		        margin-block-end: var(--gform-theme-control-file-drop-area-instructions-margin-block-end);
+	}
+
+/* Uploaded Files Preview */
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview_list {
+
+		/* Styles */
+		display: flex;
+		flex-direction: column;
+		gap: var(--gform-theme-control-file-preview-area-gap);
+		-webkit-margin-before: var(--gform-theme-control-file-preview-area-margin-block-start);
+		        margin-block-start: var(--gform-theme-control-file-preview-area-margin-block-start);
+		width: 100%;
+	}
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview_list:empty {
+
+			/* Styles */
+			-webkit-margin-before: 0;
+			        margin-block-start: 0;
+		}
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview {
+
+		/* Styles */
+		display: flex;
+		flex-direction: column;
+		font-family: var(--gform-theme-control-file-preview-file-font-family);
+		font-size: var(--gform-theme-control-file-preview-file-font-size);
+		font-style: var(--gform-theme-control-file-preview-file-font-style);
+		font-weight: var(--gform-theme-control-file-preview-file-font-weight);
+		gap: var(--gform-theme-control-file-preview-file-gap);
+		letter-spacing: var(--gform-theme-control-file-preview-file-letter-spacing);
+		line-height: var(--gform-theme-control-file-preview-file-line-height);
+		position: relative;
+	}
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_filename {
+
+			/* Styles */
+			color: var(--gform-theme-control-file-preview-file-name-color);
+			line-height: var(--gform-theme-control-file-preview-file-name-line-height);
+			overflow: var(--gform-theme-control-file-preview-file-name-overflow);
+			-webkit-padding-end: var(--gform-theme-control-file-preview-file-name-padding-inline-end);
+			        padding-inline-end: var(--gform-theme-control-file-preview-file-name-padding-inline-end);
+			text-overflow: var(--gform-theme-control-file-preview-file-name-text-overflow);
+			white-space: var(--gform-theme-control-file-preview-file-name-white-space);
+		}
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_filesize {
+
+			/* Styles */
+			color: var(--gform-theme-control-file-preview-file-size-color);
+		}
+
+/* Upload Progress UI */
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_progress {
+
+			/* Styles */
+			align-items: center;
+			display: flex;
+			gap: var(--gform-theme-control-file-upload-progress-ui-gap);
+		}
+
+/* Progress Complete Icon */
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_progress::after {
 
 				/* Styles */
 				font-family: var(--gform-theme-icon-font-family) !important;
@@ -3108,173 +3219,80 @@ html[dir="rtl"] .gform-theme--framework {
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
 
-				color: var(--gform-theme-control-file-drop-area-icon-color);
-				content: var(--gform-theme-icon-control-file-upload);
-				display: block;
-				font-size: var(--gform-theme-control-file-drop-area-icon-font-size);
-				-webkit-margin-after: var(--gform-theme-control-file-drop-area-icon-margin-block-end);
-				        margin-block-end: var(--gform-theme-control-file-drop-area-icon-margin-block-end);
+				block-size: var(--gform-theme-control-file-upload-progress-button-icon-size);
+				color: var(--gform-theme-control-file-upload-progress-button-icon-color-complete);
+				content: var(--gform-theme-icon-control-file-upload-completed);
+				font-size: var(--gform-theme-control-file-upload-progress-button-icon-size);
+				inline-size: var(--gform-theme-control-file-upload-progress-button-icon-size);
+				min-inline-size: var(--gform-theme-control-file-upload-progress-button-icon-size);
+				opacity: 0;
 			}
 
-.gform-theme--framework .gfield--input-type-fileupload .gform_drop_instructions, .gform-theme--framework .gfield--type-fileupload .gform_drop_instructions {
-
-			/* Styles */
-			-webkit-margin-after: var(--gform-theme-control-file-drop-area-instructions-margin-block-end);
-			        margin-block-end: var(--gform-theme-control-file-drop-area-instructions-margin-block-end);
-		}
-
-/* Uploaded Files Preview */
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview_list, .gform-theme--framework .gfield--type-fileupload .ginput_preview_list {
-
-			/* Styles */
-			display: flex;
-			flex-direction: column;
-			gap: var(--gform-theme-control-file-preview-area-gap);
-			-webkit-margin-before: var(--gform-theme-control-file-preview-area-margin-block-start);
-			        margin-block-start: var(--gform-theme-control-file-preview-area-margin-block-start);
-			width: 100%;
-		}
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview_list:empty, .gform-theme--framework .gfield--type-fileupload .ginput_preview_list:empty {
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_progress_complete::after {
 
 				/* Styles */
-				-webkit-margin-before: 0;
-				        margin-block-start: 0;
+				opacity: 1;
 			}
 
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview, .gform-theme--framework .gfield--type-fileupload .ginput_preview {
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_progressbar, .gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_progressbar_progress {
 
 			/* Styles */
-			display: flex;
-			flex-direction: column;
-			font-family: var(--gform-theme-control-file-preview-file-font-family);
-			font-size: var(--gform-theme-control-file-preview-file-font-size);
-			font-style: var(--gform-theme-control-file-preview-file-font-style);
-			font-weight: var(--gform-theme-control-file-preview-file-font-weight);
-			gap: var(--gform-theme-control-file-preview-file-gap);
-			letter-spacing: var(--gform-theme-control-file-preview-file-letter-spacing);
-			line-height: var(--gform-theme-control-file-preview-file-line-height);
+			block-size: var(--gform-theme-control-file-upload-progress-bar-block-size);
+			border-radius: var(--gform-theme-control-file-upload-progress-bar-border-radius);
+		}
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_progressbar {
+
+			/* Styles */
+			background-color: var(--gform-theme-control-file-upload-progress-bar-background-color);
+			inline-size: 100%;
 			position: relative;
 		}
 
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_filename, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_filename {
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_progressbar_progress {
 
-				/* Styles */
-				color: var(--gform-theme-control-file-preview-file-name-color);
-				line-height: var(--gform-theme-control-file-preview-file-name-line-height);
-				overflow: var(--gform-theme-control-file-preview-file-name-overflow);
-				-webkit-padding-end: var(--gform-theme-control-file-preview-file-name-padding-inline-end);
-				        padding-inline-end: var(--gform-theme-control-file-preview-file-name-padding-inline-end);
-				text-overflow: var(--gform-theme-control-file-preview-file-name-text-overflow);
-				white-space: var(--gform-theme-control-file-preview-file-name-white-space);
-			}
+			/* Styles */
+			background-color: var(--gform-theme-control-file-upload-progress-bar-background-color-loading);
+			inline-size: 1%;
+			position: absolute;
+			transition: var(--gform-theme-control-file-upload-progress-bar-transition);
+		}
 
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_filesize, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_filesize {
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_percent {
 
-				/* Styles */
-				color: var(--gform-theme-control-file-preview-file-size-color);
-			}
-
-/* Upload Progress UI */
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_progress, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_progress {
-
-				/* Styles */
-				align-items: center;
-				display: flex;
-				gap: var(--gform-theme-control-file-upload-progress-ui-gap);
-			}
-
-/* Progress Complete Icon */
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_progress::after, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_progress::after {
-
-					/* Styles */
-					font-family: var(--gform-theme-icon-font-family) !important;
-					font-style: normal;
-					font-variant: normal;
-					font-weight: normal;
-					line-height: 1;
-					speak: never;
-					text-transform: none;
-					-webkit-font-smoothing: antialiased;
-					-moz-osx-font-smoothing: grayscale;
-
-					block-size: var(--gform-theme-control-file-upload-progress-button-icon-size);
-					color: var(--gform-theme-control-file-upload-progress-button-icon-color-complete);
-					content: var(--gform-theme-icon-control-file-upload-completed);
-					font-size: var(--gform-theme-control-file-upload-progress-button-icon-size);
-					inline-size: var(--gform-theme-control-file-upload-progress-button-icon-size);
-					min-inline-size: var(--gform-theme-control-file-upload-progress-button-icon-size);
-					opacity: 0;
-				}
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_progress_complete::after, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_progress_complete::after {
-
-					/* Styles */
-					opacity: 1;
-				}
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_progressbar, .gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_progressbar_progress, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_progressbar, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_progressbar_progress {
-
-				/* Styles */
-				block-size: var(--gform-theme-control-file-upload-progress-bar-block-size);
-				border-radius: var(--gform-theme-control-file-upload-progress-bar-border-radius);
-			}
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_progressbar, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_progressbar {
-
-				/* Styles */
-				background-color: var(--gform-theme-control-file-upload-progress-bar-background-color);
-				inline-size: 100%;
-				position: relative;
-			}
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_progressbar_progress, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_progressbar_progress {
-
-				/* Styles */
-				background-color: var(--gform-theme-control-file-upload-progress-bar-background-color-loading);
-				inline-size: 1%;
-				position: absolute;
-				transition: var(--gform-theme-control-file-upload-progress-bar-transition);
-			}
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_percent, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_percent {
-
-				/* Styles */
-				color: var(--gform-theme-control-file-upload-progress-text-color);
-				font-size: var(--gform-theme-control-file-upload-progress-text-font-size);
-				min-inline-size: var(--gform-theme-control-file-upload-progress-text-min-inline-size);
-			}
+			/* Styles */
+			color: var(--gform-theme-control-file-upload-progress-text-color);
+			font-size: var(--gform-theme-control-file-upload-progress-text-font-size);
+			min-inline-size: var(--gform-theme-control-file-upload-progress-text-min-inline-size);
+		}
 
 /* User Actions */
 
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gform_delete_file, .gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_cancel, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gform_delete_file, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_cancel {
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gform_delete_file, .gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_cancel {
 
-				/* Styles */
-				inset-block-start: var(--gform-theme-control-file-upload-progress-button-inset-block-start);
-				inset-inline-end: var(--gform-theme-control-file-upload-progress-button-inset-inline-end);
-				position: var(--gform-theme-control-file-upload-progress-button-position);
-			}
+			/* Styles */
+			inset-block-start: var(--gform-theme-control-file-upload-progress-button-inset-block-start);
+			inset-inline-end: var(--gform-theme-control-file-upload-progress-button-inset-inline-end);
+			position: var(--gform-theme-control-file-upload-progress-button-position);
+		}
 
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gform_delete_file .dashicons::before, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gform_delete_file .dashicons::before {
-
-						/* Local CSS API Overrides */
-						--gform-theme-control-button-icon: var(--gform-theme-icon-control-file-upload-remove);
-					}
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_cancel, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_cancel {
-
-				/* Local CSS API Overrides */
-				--gform-theme-local-font-size: var(--gform-theme-control-file-upload-progress-button-font-size-cancel);
-			}
-
-.gform-theme--framework .gfield--input-type-fileupload .ginput_preview .gfield_fileupload_cancel::before, .gform-theme--framework .gfield--type-fileupload .ginput_preview .gfield_fileupload_cancel::before {
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gform_delete_file .dashicons::before {
 
 					/* Local CSS API Overrides */
-					--gform-theme-control-button-icon: var(--gform-theme-icon-control-file-upload-cancel);
+					--gform-theme-control-button-icon: var(--gform-theme-icon-control-file-upload-remove);
 				}
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_cancel {
+
+			/* Local CSS API Overrides */
+			--gform-theme-local-font-size: var(--gform-theme-control-file-upload-progress-button-font-size-cancel);
+		}
+
+.gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview .gfield_fileupload_cancel::before {
+
+				/* Local CSS API Overrides */
+				--gform-theme-control-button-icon: var(--gform-theme-icon-control-file-upload-cancel);
+			}
 
 .gform-theme--framework.ui-datepicker {
 	background-color: var(--gform-theme-control-date-datepicker-background-color);
@@ -3669,32 +3687,32 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 
 /* List Item Add/Remove Buttons */
 
-.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.add_list_item, .gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.delete_list_item, .gform-theme--framework.gform-theme.gform_wrapper .gfield--input-type-list button.add_list_item, .gform-theme--framework.gform-theme.gform_wrapper .gfield--input-type-list button.delete_list_item {
-
-		/* Local CSS API Overrides */
-		--gform-theme-local-block-size: var(--gform-theme-field-list-button-size);
-		--gform-theme-local-border-radius: var(--gform-theme-field-list-button-border-radius);
-		--gform-theme-local-column-gap: 0;
-		--gform-theme-local-font-size: var(--gform-theme-field-list-button-font-size);
-		--gform-theme-local-inline-size: var(--gform-theme-field-list-button-size);
-		--gform-theme-local-letter-spacing: 0;
-		--gform-theme-local-line-height: 1;
-		--gform-theme-local-min-block-size: auto;
-		--gform-theme-local-padding-block: var(--gform-theme-field-list-button-padding-block);
-		--gform-theme-local-padding-inline: var(--gform-theme-field-list-button-padding-inline);
-	}
-
-.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.add_list_item::before, .gform-theme--framework.gform-theme.gform_wrapper .gfield--input-type-list button.add_list_item::before {
+.gform-theme--framework.gform-theme.gform_wrapper .gfield:where(.gfield--type-list, .gfield--input-type-list) button.add_list_item, .gform-theme--framework.gform-theme.gform_wrapper .gfield:where(.gfield--type-list, .gfield--input-type-list) button.delete_list_item {
 
 			/* Local CSS API Overrides */
-			--gform-theme-local-content: var(--gform-theme-icon-control-list-item-add);
+			--gform-theme-local-block-size: var(--gform-theme-field-list-button-size);
+			--gform-theme-local-border-radius: var(--gform-theme-field-list-button-border-radius);
+			--gform-theme-local-column-gap: 0;
+			--gform-theme-local-font-size: var(--gform-theme-field-list-button-font-size);
+			--gform-theme-local-inline-size: var(--gform-theme-field-list-button-size);
+			--gform-theme-local-letter-spacing: 0;
+			--gform-theme-local-line-height: 1;
+			--gform-theme-local-min-block-size: auto;
+			--gform-theme-local-padding-block: var(--gform-theme-field-list-button-padding-block);
+			--gform-theme-local-padding-inline: var(--gform-theme-field-list-button-padding-inline);
 		}
 
-.gform-theme--framework.gform-theme.gform_wrapper .gfield--type-list button.delete_list_item::before, .gform-theme--framework.gform-theme.gform_wrapper .gfield--input-type-list button.delete_list_item::before {
+.gform-theme--framework.gform-theme.gform_wrapper .gfield:where(.gfield--type-list, .gfield--input-type-list) button.add_list_item::before {
 
-			/* Local CSS API Overrides */
-			--gform-theme-local-content: var(--gform-theme-icon-control-list-item-remove);
-		}
+				/* Local CSS API Overrides */
+				--gform-theme-local-content: var(--gform-theme-icon-control-list-item-add);
+			}
+
+.gform-theme--framework.gform-theme.gform_wrapper .gfield:where(.gfield--type-list, .gfield--input-type-list) button.delete_list_item::before {
+
+				/* Local CSS API Overrides */
+				--gform-theme-local-content: var(--gform-theme-icon-control-list-item-remove);
+			}
 
 .gform-theme--framework .gf_progressbar_wrapper, .gform-theme--framework .gf_page_steps {
 

@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.7.9\n"
+"Project-Id-Version: Gravity Forms 2.7.10\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-06-22T17:17:54+00:00\n"
+"POT-Creation-Date: 2023-07-12T18:34:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: gravityforms\n"
@@ -23,9 +23,7 @@ msgstr ""
 #: includes/system-status/class-gf-update.php:207
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:754
-#: assets/js/src/admin/block-editor/blocks/form/index.js:24
 #: assets/js/dist/scripts-admin.js:1158
-#: assets/js/dist/scripts-admin.js:1223
 msgid "Gravity Forms"
 msgstr ""
 
@@ -93,7 +91,7 @@ msgstr ""
 #: entry_detail.php:1308
 #: entry_list.php:875
 #: export.php:1118
-#: forms_model.php:6525
+#: forms_model.php:6526
 #: select_columns.php:196
 msgid "Entry Id"
 msgstr ""
@@ -351,7 +349,7 @@ msgid "The form has been saved.  The content contains the link to return and com
 msgstr ""
 
 #: common.php:5342
-#: common.php:6067
+#: common.php:6072
 #: form_list.php:150
 #: form_list.php:606
 #: includes/addon/class-gf-feed-addon.php:2466
@@ -458,7 +456,7 @@ msgstr ""
 
 #: common.php:5354
 #: common.php:5405
-#: forms_model.php:6925
+#: forms_model.php:6926
 msgid "Thanks for contacting us! We will get in touch with you shortly."
 msgstr ""
 
@@ -771,125 +769,125 @@ msgstr ""
 msgid "remove this rule"
 msgstr ""
 
-#: common.php:5889
+#: common.php:5894
 msgid "Any form field"
 msgstr ""
 
-#: common.php:5996
+#: common.php:6001
 #: includes/addon/class-gf-addon.php:3008
 #: includes/settings/fields/class-generic-map.php:564
 msgid "Entry ID"
 msgstr ""
 
-#: common.php:6000
+#: common.php:6005
 #: export.php:1119
-#: forms_model.php:6531
+#: forms_model.php:6532
 #: includes/addon/class-gf-addon.php:3009
 #: includes/settings/fields/class-generic-map.php:568
 #: select_columns.php:197
 msgid "Entry Date"
 msgstr ""
 
-#: common.php:6002
-#: common.php:6035
+#: common.php:6007
+#: common.php:6040
 #: includes/fields/class-gf-field-date.php:895
 #: includes/fields/class-gf-field-date.php:1089
 msgid "yyyy-mm-dd"
 msgstr ""
 
-#: common.php:6006
+#: common.php:6011
 msgid "Starred"
 msgstr ""
 
-#: common.php:6020
+#: common.php:6025
 #: includes/class-personal-data.php:684
 #: tooltips.php:165
 msgid "IP Address"
 msgstr ""
 
-#: common.php:6024
+#: common.php:6029
 msgid "Source URL"
 msgstr ""
 
-#: common.php:6028
+#: common.php:6033
 #: export.php:1125
-#: forms_model.php:6537
+#: forms_model.php:6538
 #: select_columns.php:200
 msgid "Payment Status"
 msgstr ""
 
-#: common.php:6033
+#: common.php:6038
 #: export.php:1124
-#: forms_model.php:6543
+#: forms_model.php:6544
 #: select_columns.php:203
 msgid "Payment Date"
 msgstr ""
 
-#: common.php:6039
+#: common.php:6044
 #: export.php:1123
-#: forms_model.php:6546
+#: forms_model.php:6547
 #: includes/addon/class-gf-payment-addon.php:2485
 #: includes/addon/class-gf-payment-addon.php:2490
 #: select_columns.php:202
 msgid "Payment Amount"
 msgstr ""
 
-#: common.php:6043
+#: common.php:6048
 msgid "Transaction ID"
 msgstr ""
 
-#: common.php:6047
+#: common.php:6052
 #: entry_detail.php:1324
-#: forms_model.php:6549
+#: forms_model.php:6550
 #: includes/webapi/includes/class-gf-api-keys-table.php:28
 #: includes/webapi/webapi.php:401
 #: select_columns.php:204
 msgid "User"
 msgstr ""
 
-#: common.php:6063
+#: common.php:6068
 msgid "Authorized"
 msgstr ""
 
-#: common.php:6064
+#: common.php:6069
 msgid "Paid"
 msgstr ""
 
-#: common.php:6065
+#: common.php:6070
 msgid "Processing"
 msgstr ""
 
-#: common.php:6066
+#: common.php:6071
 msgid "Failed"
 msgstr ""
 
-#: common.php:6068
+#: common.php:6073
 #: includes/config/items/class-gf-config-multifile.php:36
 msgid "Cancelled"
 msgstr ""
 
-#: common.php:6069
+#: common.php:6074
 #: includes/locking/class-gf-locking.php:206
 msgid "Pending"
 msgstr ""
 
-#: common.php:6070
+#: common.php:6075
 msgid "Refunded"
 msgstr ""
 
-#: common.php:6071
+#: common.php:6076
 msgid "Voided"
 msgstr ""
 
-#: common.php:6938
+#: common.php:6943
 msgid "Visible"
 msgstr ""
 
-#: common.php:6940
+#: common.php:6945
 msgid "Default option. The field is visible when viewing the form."
 msgstr ""
 
-#: common.php:6943
+#: common.php:6948
 #: form_detail.php:649
 #: form_detail.php:731
 #: form_detail.php:839
@@ -900,24 +898,24 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#: common.php:6945
+#: common.php:6950
 msgid "The field is hidden when viewing the form. Useful when you require the functionality of this field but do not want the user to be able to see this field."
 msgstr ""
 
-#: common.php:6948
+#: common.php:6953
 msgid "Administrative"
 msgstr ""
 
-#: common.php:6950
+#: common.php:6955
 msgid "The field is only visible when administering submitted entries. The field is not visible or functional when viewing the form."
 msgstr ""
 
-#: common.php:6981
+#: common.php:6986
 #: form_detail.php:2515
 msgid "Visibility"
 msgstr ""
 
-#: common.php:6981
+#: common.php:6986
 msgid "Select the visibility for this field."
 msgstr ""
 
@@ -1183,7 +1181,7 @@ msgstr ""
 
 #: entry_detail.php:1185
 #: export.php:1122
-#: forms_model.php:6540
+#: forms_model.php:6541
 #: select_columns.php:201
 msgid "Transaction Id"
 msgstr ""
@@ -1219,7 +1217,7 @@ msgstr ""
 
 #: entry_detail.php:1318
 #: export.php:1128
-#: forms_model.php:6528
+#: forms_model.php:6529
 #: includes/addon/class-gf-addon.php:3010
 #: includes/settings/fields/class-generic-map.php:572
 #: select_columns.php:198
@@ -1786,7 +1784,7 @@ msgid "Date Updated"
 msgstr ""
 
 #: export.php:1121
-#: forms_model.php:6534
+#: forms_model.php:6535
 #: includes/addon/class-gf-addon.php:3011
 #: includes/settings/fields/class-generic-map.php:576
 #: select_columns.php:199
@@ -1823,7 +1821,7 @@ msgstr ""
 #: forms_model.php:1829
 #: forms_model.php:1862
 #: forms_model.php:1898
-#: forms_model.php:8170
+#: forms_model.php:8171
 #: includes/api.php:131
 #: includes/api.php:158
 #: includes/api.php:180
@@ -1881,68 +1879,68 @@ msgstr ""
 msgid "Error while saving total field values: %s"
 msgstr ""
 
-#: forms_model.php:6636
-#: forms_model.php:6644
-#: forms_model.php:6649
+#: forms_model.php:6637
+#: forms_model.php:6645
+#: forms_model.php:6650
 #: form_settings.php:259
 msgid "(Required)"
 msgstr ""
 
-#: forms_model.php:6858
-#: forms_model.php:6922
+#: forms_model.php:6859
+#: forms_model.php:6923
 msgid "Default Confirmation"
 msgstr ""
 
-#: forms_model.php:6887
+#: forms_model.php:6888
 msgid "Save and Continue Confirmation"
 msgstr ""
 
-#: forms_model.php:6892
+#: forms_model.php:6893
 msgid "Link to continue editing later"
 msgstr ""
 
-#: forms_model.php:6893
+#: forms_model.php:6894
 msgid "Please use the following link to return and complete this form from any computer."
 msgstr ""
 
-#: forms_model.php:6894
+#: forms_model.php:6895
 msgid "Note: This link will expire after 30 days."
 msgstr ""
 
-#: forms_model.php:6895
+#: forms_model.php:6896
 msgid "Enter your email address if you would like to receive the link via email."
 msgstr ""
 
-#: forms_model.php:6906
+#: forms_model.php:6907
 msgid "Save and Continue Email Sent Confirmation"
 msgstr ""
 
-#: forms_model.php:6911
+#: forms_model.php:6912
 msgid "Success!"
 msgstr ""
 
-#: forms_model.php:6912
+#: forms_model.php:6913
 msgid "The link was sent to the following email address:"
 msgstr ""
 
-#: forms_model.php:8162
+#: forms_model.php:8163
 msgid "Updating the id property is not supported"
 msgstr ""
 
-#: forms_model.php:8166
+#: forms_model.php:8167
 msgid "%s is not a valid feed property"
 msgstr ""
 
-#: forms_model.php:8179
+#: forms_model.php:8180
 msgid "Feed meta should be an associative array or JSON"
 msgstr ""
 
-#: forms_model.php:8188
+#: forms_model.php:8189
 #: includes/api.php:2100
 msgid "There was an error while updating feed id %s"
 msgstr ""
 
-#: forms_model.php:8192
+#: forms_model.php:8193
 #: includes/api.php:2061
 msgid "Feed id %s not found"
 msgstr ""
@@ -3751,7 +3749,7 @@ msgid "Rules"
 msgstr ""
 
 #: form_detail.php:2024
-#: includes/settings/class-settings.php:899
+#: includes/settings/class-settings.php:901
 #: includes/template-library/config/class-gf-template-library-config.php:91
 msgid "Required"
 msgstr ""
@@ -5275,7 +5273,9 @@ msgstr ""
 #: widget.php:38
 #: assets/js/dist/scripts-admin.js:1
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:268
+#: assets/js/src/admin/block-editor/blocks/form/index.js:24
 #: assets/js/dist/scripts-admin.js:672
+#: assets/js/dist/scripts-admin.js:1223
 msgid "Form"
 msgstr ""
 
@@ -5549,7 +5549,7 @@ msgid "%s settings updated."
 msgstr ""
 
 #: includes/addon/class-gf-addon.php:2283
-#: includes/settings/class-settings.php:990
+#: includes/settings/class-settings.php:992
 msgid "There was an error while saving your settings."
 msgstr ""
 
@@ -5605,13 +5605,13 @@ msgstr ""
 #: includes/addon/class-gf-addon.php:3049
 #: includes/addon/class-gf-addon.php:3056
 #: includes/addon/class-gf-addon.php:3076
-#: includes/settings/fields/class-field-select.php:233
+#: includes/settings/fields/class-field-select.php:235
 #: includes/settings/fields/class-generic-map.php:498
 msgid "Full"
 msgstr ""
 
 #: includes/addon/class-gf-addon.php:3063
-#: includes/settings/fields/class-field-select.php:244
+#: includes/settings/fields/class-field-select.php:246
 #: includes/settings/fields/class-generic-map.php:475
 msgid "Selected"
 msgstr ""
@@ -5751,7 +5751,7 @@ msgstr ""
 
 #: includes/addon/class-gf-feed-addon.php:1161
 #: includes/addon/class-gf-payment-addon.php:3742
-#: includes/settings/class-settings.php:1493
+#: includes/settings/class-settings.php:1495
 #: includes/webapi/webapi.php:1060
 #: includes/webapi/webapi.php:1068
 #: includes/webapi/webapi.php:1100
@@ -8883,7 +8883,7 @@ msgstr ""
 
 #: includes/fields/class-gf-field-fileupload.php:172
 #: includes/fields/class-gf-field-fileupload.php:184
-#: includes/upload.php:112
+#: includes/upload.php:117
 msgid "File exceeds size limit. Maximum file size: %dMB"
 msgstr ""
 
@@ -8893,7 +8893,7 @@ msgstr ""
 
 #: includes/fields/class-gf-field-fileupload.php:200
 #: includes/fields/class-gf-field-fileupload.php:216
-#: includes/upload.php:117
+#: includes/upload.php:105
 msgid "The uploaded file type is not allowed."
 msgstr ""
 
@@ -9770,11 +9770,11 @@ msgstr ""
 msgid "Toggle %s Section"
 msgstr ""
 
-#: includes/settings/class-settings.php:986
+#: includes/settings/class-settings.php:988
 msgid "Save Settings"
 msgstr ""
 
-#: includes/settings/class-settings.php:989
+#: includes/settings/class-settings.php:991
 #: settings.php:1030
 msgid "Settings updated."
 msgstr ""
