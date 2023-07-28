@@ -1,3 +1,16 @@
+### 2.7.11 | 2023-07-27
+- Added a block theme setting for form input accent color.
+- Fixed an issue that causes JavaScript errors in the theme if certain script optimization plugins are used.
+- Fixed an issue where honeypot validation was failing on multipage forms if the last page was hidden by conditional logic.
+- Fixed an issue where printing an entry with the nested form field is causing a fatal error.
+- Fixed errors that occur when attempting to install translations on a WordPress filesystem that requires credentials.
+- Fixed the "no route found" error when performing an OPTIONS request to the REST API v2 endpoints.
+- Fixed an issue where license validation fails when using a non-standard license key.
+- API: Added support for an accent color for input styles for the theme framework.
+- API: Added a theme framework utility class of `.gform-theme__disable-reset` to disable theme framework reset styles.
+- API: Added a theme framework utility class of `.gform-theme__disable-framework` to disable theme framework styles.
+- API: Added a theme framework utility class of `.gform-theme__disable` to disable theme framework and reset styles.
+
 ### 2.7.10 | 2023-07-12
 - Added security enhancements.
 - Fixed a PHP fatal error that occurs when the theme or another plugin sets an invalid property value on the $wp_filter global variable.

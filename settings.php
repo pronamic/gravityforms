@@ -442,6 +442,8 @@ class GFSettings {
 							return $license_info->get_usability();
 						},
 						'save_callback'       => function( $field, $value ) {
+							// Remove non-alphanumeric characters.
+							$value = preg_replace( '/[^a-zA-Z0-9]/', '', $value );
 							if ( isset( $_POST['_gform_setting_license_key'] ) ) {
 								GFFormsModel::save_key( $value );
 							}

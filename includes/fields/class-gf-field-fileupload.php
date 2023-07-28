@@ -346,7 +346,7 @@ class GF_Field_FileUpload extends GF_Field {
 			$upload             = "<div id='{$container_id}' data-settings='{$plupload_init_json}' class='gform_fileupload_multifile'>
 										<div id='{$drag_drop_id}' class='gform_drop_area gform-theme-field-control'>
 											<span class='gform_drop_instructions'>{$drop_files_here_text} </span>
-											<button type='button' id='{$browse_button_id}' class='button gform_button_select_files' {$describedby} {$tabindex} >{$select_files_text}</button>
+											<button type='button' id='{$browse_button_id}' class='button gform_button_select_files gform-theme-button gform-theme-button--control' {$describedby} {$tabindex} >{$select_files_text}</button>
 										</div>
 									</div>";
 

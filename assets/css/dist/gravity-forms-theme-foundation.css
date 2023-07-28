@@ -39,7 +39,7 @@ The core layout engine for forms on the frontend. Control grid gaps and global p
 ## CSS Custom Properties
  */
 
-.gform-theme--foundation {
+.gform-theme--foundation, .gform-theme--api {
 
 	/**
 	@cssprop

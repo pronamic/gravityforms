@@ -198,8 +198,8 @@ class GF_REST_Authentication {
 	 * @return WP_Error|null|bool
 	 */
 	public function check_authentication_error( $error ) {
-		if ( ! $this->is_request_to_rest_api() ) {
-			// Pass through other errors.
+		if ( ! $this->is_request_to_rest_api() || $_SERVER['REQUEST_METHOD'] === 'OPTIONS' ) {
+			// Pass through OPTIONS requests or those to non-GF endpoints.
 			return $error;
 		}
 

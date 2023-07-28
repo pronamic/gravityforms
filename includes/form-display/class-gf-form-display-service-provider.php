@@ -53,6 +53,10 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 				'inputBorderColor'             => '#686e77',
 				'inputBackgroundColor'         => '#fff',
 				'inputColor'                   => '#112337',
+				// Setting this to empty allows us to set this to what the appropriate default
+				// should be for the theme framework and CSS API. When empty, it defaults to:
+				// buttonPrimaryBackgroundColor
+				'inputPrimaryColor'            => '', // #204ce5
 				'labelFontSize'                => 14,
 				'labelColor'                   => '#112337',
 				'descriptionFontSize'          => 13,

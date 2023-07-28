@@ -118,6 +118,14 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 						'type'    => 'string',
 						'default' => '#112337',
 					),
+				'inputPrimaryColor'            =>
+					array(
+						'type'    => 'string',
+						// Setting this to empty allows us to set this to what the appropriate default
+						// should be from within the block. When empty, it defaults to:
+						// buttonPrimaryBackgroundColor
+						'default' => '', // #204ce5
+					),
 				'labelFontSize'                =>
 					array(
 						'type'    => 'string',

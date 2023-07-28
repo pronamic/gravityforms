@@ -69,6 +69,13 @@ class Block_Styles_Handler {
 			'gform-theme-color-inside-control-darker'       => $color_palette['inside-control']['color-darker'],
 			'gform-theme-color-inside-control-lighter'      => $color_palette['inside-control']['color-lighter'],
 
+			'gform-theme-color-inside-control-primary'              => $color_palette['inside-control-primary']['color'],
+			'gform-theme-color-inside-control-primary-rgb'          => implode( ', ', $color_palette['inside-control-primary']['color-rgb'] ),
+			'gform-theme-color-inside-control-primary-contrast'     => $color_palette['inside-control-primary']['color-contrast'],
+			'gform-theme-color-inside-control-primary-contrast-rgb' => implode( ', ', $color_palette['inside-control-primary']['color-contrast-rgb'] ),
+			'gform-theme-color-inside-control-primary-darker'       => $color_palette['inside-control-primary']['color-darker'],
+			'gform-theme-color-inside-control-primary-lighter'      => $color_palette['inside-control-primary']['color-lighter'],
+
 			'gform-theme-color-inside-control-light'         => $color_palette['inside-control-light']['color'],
 			'gform-theme-color-inside-control-light-rgb'     => implode( ', ', $color_palette['inside-control-light']['color-rgb'] ),
 			'gform-theme-color-inside-control-light-darker'  => $color_palette['inside-control-light']['color-darker'],
@@ -110,7 +117,7 @@ class Block_Styles_Handler {
 			'gform-theme-control-button-border-color-secondary' => $applied_settings['inputBorderColor'],
 
 			/* Global CSS API: Control - File */
-			'gform-theme-control-file-button-background-color-hover' => GFCommon::darken_color( $color_palette['secondary']['color-darker'], 2 ),
+			'gform-theme-control-file-button-background-color-hover' => GFCommon::darken_color( $color_palette['inside-control']['color-darker'], 2 ),
 
 			/* Global CSS API: Field - Page */
 			'gform-theme-field-page-steps-number-color' => 'rgba(' . implode( ', ', GFCommon::darken_color( $applied_settings['labelColor'], 0, 'rgb' ) ) . ', 0.8)',

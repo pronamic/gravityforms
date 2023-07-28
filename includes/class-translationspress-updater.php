@@ -305,6 +305,17 @@ class TranslationsPress_Updater {
 		if ( ! $wp_filesystem ) {
 			require_once ABSPATH . '/wp-admin/includes/admin.php';
 
+			// Same approach as in WP Core: https://github.com/WordPress/wordpress-develop/blob/6.2/src/wp-includes/rest-api/endpoints/class-wp-rest-plugins-controller.php#L853-L869.
+			ob_start();
+			$filesystem_credentials_available = request_filesystem_credentials( self_admin_url() );
+			ob_end_clean();
+
+			if ( ! $filesystem_credentials_available ) {
+				GFCommon::log_error( __METHOD__ . '(): Aborting; filesystem credentials required.' );
+
+				return;
+			}
+
 			if ( ! \WP_Filesystem() ) {
 				GFCommon::log_error( __METHOD__ . '(): Aborting; unable to init WP_Filesystem.' );
 
