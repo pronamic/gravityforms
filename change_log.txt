@@ -1,3 +1,7 @@
+### 2.7.12 | 2023-08-08
+- Fixed a fatal error that occurs when a mapped setup_fee field is hidden by conditional logic.
+- AF: Added the [`$_min_compatible_gravityforms_version`](https://docs.gravityforms.com/gfaddon/#h-the-class-variables) property to the `GFFAddOn` class, enabling add-ons to specify the minimum Gravity Forms version that is compatible with all the add-on features.
+
 ### 2.7.11 | 2023-07-27
 - Added a block theme setting for form input accent color.
 - Fixed an issue that causes JavaScript errors in the theme if certain script optimization plugins are used.

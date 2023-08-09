@@ -27,9 +27,24 @@ abstract class GFAddOn {
 	 */
 	protected $_version;
 	/**
+	 * The minimum Gravity Forms version required for the add-on to load.
+	 *
 	 * @var string Gravity Forms minimum version requirement
 	 */
 	protected $_min_gravityforms_version;
+
+	/**
+	 * The minimum Gravity Forms version required to support all the features of an add-on.
+	 *
+	 * Failing to meet this version won't prevent the add-on from loading, but some features of the add-on will not work as expected or will be disabled,
+	 * A notice will be displayed in the admin asking the user to upgrade to the latest Gravity Form version.
+	 *
+	 * @var string Gravity Forms minimum version for supporting all features.
+	 *
+	 * @since 2.7.12
+	 */
+	protected $_min_compatible_gravityforms_version;
+
 	/**
 	 * @var string URL-friendly identifier used for form settings, add-on settings, text domain localization...
 	 */
@@ -39,7 +54,7 @@ abstract class GFAddOn {
 	 */
 	protected $_path;
 	/**
-	 * @var string Full path the the plugin. Example: __FILE__
+	 * @var string Full path to the plugin. Example: __FILE__
 	 */
 	protected $_full_path;
 	/**
@@ -401,6 +416,7 @@ abstract class GFAddOn {
 		add_filter( 'gform_noconflict_scripts', array( $this, 'register_noconflict_scripts' ) );
 		add_filter( 'gform_noconflict_styles', array( $this, 'register_noconflict_styles' ) );
 		add_action( 'gform_enqueue_scripts', array( $this, 'enqueue_scripts' ), 10, 2 );
+		add_action( 'admin_notices', array( $this, 'maybe_display_upgrade_notice' ) );
 
 	}
 
@@ -5496,6 +5512,11 @@ abstract class GFAddOn {
 			self::display_plugin_message( $message, true );
 		}
 
+		if ( self::is_gravityforms_supported( $this->_min_gravityforms_version ) && ! self::is_gravityforms_compatible() ) {
+			$message = $this->compatibility_message();
+			self::display_plugin_message( $message, true );
+		}
+
 		if ( ! $this->_enable_rg_autoupgrade ) {
 			return;
 		}
@@ -5510,6 +5531,19 @@ abstract class GFAddOn {
 	 */
 	public function plugin_message() {
 		$message = sprintf( esc_html__( 'Gravity Forms %s is required. Activate it now or %spurchase it today!%s', 'gravityforms' ), $this->_min_gravityforms_version, "<a href='https://www.gravityforms.com'>", '</a>' );
+
+		return $message;
+	}
+
+	/**
+	 * Returns the message that will be displayed if the current version of Gravity Forms is not compatible with the add-on.
+	 *
+	 * Override this method to display a custom message.
+	 *
+	 * @since 2.7.12
+	 */
+	public function compatibility_message() {
+		$message = esc_html__( 'Some features of the add-on are not available on the current version of Gravity Forms. Please update to the latest Gravity Forms version for full compatibility.', 'gravityforms' );
 
 		return $message;
 	}
@@ -6041,6 +6075,60 @@ abstract class GFAddOn {
 
 		return version_compare( GFForms::$version, $min_gravityforms_version, '>=' );
 	}
+
+	/**
+	 * Checks whether the current version of Gravity Forms is compatible with all features of an add-on.
+	 *
+	 * @since 2.7.12
+	 *
+	 * @param string $min_compatible_gravityforms_version The version to compare the current version with.
+	 *
+	 * @return bool|mixed
+	 */
+	public function is_gravityforms_compatible( $min_compatible_gravityforms_version = '' ) {
+		if ( isset( $this->_min_gravityforms_version ) && empty( $min_compatible_gravityforms_version ) ) {
+			$min_compatible_gravityforms_version = $this->_min_compatible_gravityforms_version;
+		}
+
+		if ( empty( $min_compatible_gravityforms_version ) ) {
+			return true;
+		}
+
+		static $results = array();
+
+		if ( ! isset( $results[ $min_compatible_gravityforms_version ] ) ) {
+			$results[ $min_compatible_gravityforms_version ] = version_compare( GFForms::$version, $min_compatible_gravityforms_version, '>=' );
+		}
+
+		return $results[ $min_compatible_gravityforms_version ];
+	}
+
+	/**
+	 * Display an upgrade notice if the current version of Gravity Forms is not fully supported.
+	 *
+	 * @since 2.7.12
+	 */
+	public function maybe_display_upgrade_notice() {
+		if ( $this->is_gravityforms_compatible() ) {
+			return;
+		}
+
+		$message = sprintf(
+			/* translators: 1: Add-on title */
+			esc_html__(
+				'Some features of the %1$s Add-on are not available on this version of Gravity Forms. Please update to the latest version for full compatibility.',
+				'gravityforms'
+			),
+			$this->get_short_title()
+		);
+		?>
+
+		<div class="gf-notice notice notice-error">
+			<p><?php echo wp_kses( $message, array( 'a' => array( 'href' => true ) ) ); ?></p>
+		</div>
+		<?php
+	}
+
 
 	/**
 	 * Returns this plugin's short title. Used to display the plugin title in small areas such as tabs

@@ -230,8 +230,10 @@ final class GF_Order_Factory {
 
 		// If the trial product is a form product not a custom amount, set it as line item so it is always shown.
 		if ( rgars( $feed, 'meta/setupFee_enabled' ) ) {
-			$order->get_item( rgars( $feed, 'meta/setupFee_product' ) )->is_setup     = true;
-			$order->get_item( rgars( $feed, 'meta/setupFee_product' ) )->is_line_item = true;
+			if ( $item = $order->get_item( rgars( $feed, 'meta/setupFee_product' ) ) ) {
+				$item->is_setup     = true;
+				$item->is_line_item = true;
+			}
 		}
 
 		// If payment amount is not set to form total, set only the selected products as line items, otherwise mark all as line items.

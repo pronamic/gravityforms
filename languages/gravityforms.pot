@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.7.11\n"
+"Project-Id-Version: Gravity Forms 2.7.12\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-07-27T17:46:57+00:00\n"
+"POT-Creation-Date: 2023-08-08T16:12:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: gravityforms\n"
@@ -108,7 +108,7 @@ msgstr ""
 #: form_list.php:46
 #: form_settings.php:114
 #: gravityforms.php:4637
-#: includes/addon/class-gf-addon.php:3012
+#: includes/addon/class-gf-addon.php:3028
 #: includes/settings/fields/class-generic-map.php:580
 #: includes/template-library/config/class-gf-template-library-config.php:89
 #: js.php:1485
@@ -592,49 +592,49 @@ msgid "of the following match:"
 msgstr ""
 
 #: common.php:5385
-#: includes/addon/class-gf-addon.php:4051
+#: includes/addon/class-gf-addon.php:4067
 #: includes/settings/fields/class-notification-routing.php:76
 #: includes/settings/fields/class-notification-routing.php:227
 msgid "is"
 msgstr ""
 
 #: common.php:5386
-#: includes/addon/class-gf-addon.php:4055
+#: includes/addon/class-gf-addon.php:4071
 #: includes/settings/fields/class-notification-routing.php:77
 #: includes/settings/fields/class-notification-routing.php:228
 msgid "is not"
 msgstr ""
 
 #: common.php:5387
-#: includes/addon/class-gf-addon.php:4059
+#: includes/addon/class-gf-addon.php:4075
 #: includes/settings/fields/class-notification-routing.php:78
 #: includes/settings/fields/class-notification-routing.php:229
 msgid "greater than"
 msgstr ""
 
 #: common.php:5388
-#: includes/addon/class-gf-addon.php:4063
+#: includes/addon/class-gf-addon.php:4079
 #: includes/settings/fields/class-notification-routing.php:79
 #: includes/settings/fields/class-notification-routing.php:230
 msgid "less than"
 msgstr ""
 
 #: common.php:5389
-#: includes/addon/class-gf-addon.php:4067
+#: includes/addon/class-gf-addon.php:4083
 #: includes/settings/fields/class-notification-routing.php:80
 #: includes/settings/fields/class-notification-routing.php:231
 msgid "contains"
 msgstr ""
 
 #: common.php:5390
-#: includes/addon/class-gf-addon.php:4071
+#: includes/addon/class-gf-addon.php:4087
 #: includes/settings/fields/class-notification-routing.php:81
 #: includes/settings/fields/class-notification-routing.php:232
 msgid "starts with"
 msgstr ""
 
 #: common.php:5391
-#: includes/addon/class-gf-addon.php:4075
+#: includes/addon/class-gf-addon.php:4091
 #: includes/settings/fields/class-notification-routing.php:82
 #: includes/settings/fields/class-notification-routing.php:233
 msgid "ends with"
@@ -774,7 +774,7 @@ msgid "Any form field"
 msgstr ""
 
 #: common.php:6001
-#: includes/addon/class-gf-addon.php:3008
+#: includes/addon/class-gf-addon.php:3024
 #: includes/settings/fields/class-generic-map.php:564
 msgid "Entry ID"
 msgstr ""
@@ -782,7 +782,7 @@ msgstr ""
 #: common.php:6005
 #: export.php:1119
 #: forms_model.php:6532
-#: includes/addon/class-gf-addon.php:3009
+#: includes/addon/class-gf-addon.php:3025
 #: includes/settings/fields/class-generic-map.php:568
 #: select_columns.php:197
 msgid "Entry Date"
@@ -1218,7 +1218,7 @@ msgstr ""
 #: entry_detail.php:1318
 #: export.php:1128
 #: forms_model.php:6529
-#: includes/addon/class-gf-addon.php:3010
+#: includes/addon/class-gf-addon.php:3026
 #: includes/settings/fields/class-generic-map.php:572
 #: select_columns.php:198
 msgid "User IP"
@@ -1785,7 +1785,7 @@ msgstr ""
 
 #: export.php:1121
 #: forms_model.php:6535
-#: includes/addon/class-gf-addon.php:3011
+#: includes/addon/class-gf-addon.php:3027
 #: includes/settings/fields/class-generic-map.php:576
 #: select_columns.php:199
 msgid "Source Url"
@@ -4923,7 +4923,7 @@ msgid "Personal Data"
 msgstr ""
 
 #: form_settings.php:1022
-#: includes/addon/class-gf-addon.php:1632
+#: includes/addon/class-gf-addon.php:1648
 #: includes/class-gf-osdxp.php:245
 #: includes/class-gf-osdxp.php:246
 #: assets/js/dist/scripts-admin.js:1
@@ -5058,10 +5058,10 @@ msgstr ""
 #: gravityforms.php:2264
 #: gravityforms.php:5340
 #: gravityforms.php:5626
-#: includes/addon/class-gf-addon.php:4488
-#: includes/addon/class-gf-addon.php:4766
-#: includes/addon/class-gf-addon.php:4939
-#: includes/addon/class-gf-addon.php:5372
+#: includes/addon/class-gf-addon.php:4504
+#: includes/addon/class-gf-addon.php:4782
+#: includes/addon/class-gf-addon.php:4955
+#: includes/addon/class-gf-addon.php:5388
 #: includes/class-gf-osdxp.php:27
 #: includes/fields/class-gf-field.php:1575
 #: includes/system-status/class-gf-update.php:75
@@ -5461,133 +5461,133 @@ msgstr ""
 msgid "gform_noconflict_styles"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:643
+#: includes/addon/class-gf-addon.php:659
 msgid "Required Gravity Forms Add-On is missing: %s."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:651
+#: includes/addon/class-gf-addon.php:667
 msgid "Required Gravity Forms Add-On \"%s\" does not meet minimum version requirement: %s."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:671
+#: includes/addon/class-gf-addon.php:687
 msgid "Required WordPress plugin is missing: %s."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:681
+#: includes/addon/class-gf-addon.php:697
 msgid "Current PHP version (%s) does not meet minimum PHP version requirement (%s)."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:698
+#: includes/addon/class-gf-addon.php:714
 msgid "Required PHP extension missing: %s"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:705
+#: includes/addon/class-gf-addon.php:721
 msgid "Required PHP extension \"%s\" does not meet minimum version requirement: %s."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:720
+#: includes/addon/class-gf-addon.php:736
 msgid "Required PHP function missing: %s"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:733
+#: includes/addon/class-gf-addon.php:749
 msgid "Current WordPress version (%s) does not meet minimum WordPress version requirement (%s)."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:772
+#: includes/addon/class-gf-addon.php:788
 msgid "%s is not able to run because your WordPress environment has not met the minimum requirements."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:773
+#: includes/addon/class-gf-addon.php:789
 msgid "Please resolve the following issues to use %s:"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:1578
+#: includes/addon/class-gf-addon.php:1594
 msgid "GF Add-Ons"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:1635
-#: includes/addon/class-gf-addon.php:4951
-#: includes/addon/class-gf-addon.php:5306
+#: includes/addon/class-gf-addon.php:1651
+#: includes/addon/class-gf-addon.php:4967
+#: includes/addon/class-gf-addon.php:5322
 #: settings.php:1238
 msgid "Uninstall"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:1638
+#: includes/addon/class-gf-addon.php:1654
 msgid "Add-On Page"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:1641
+#: includes/addon/class-gf-addon.php:1657
 msgid "Add-On Settings"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:1646
+#: includes/addon/class-gf-addon.php:1662
 msgid "Results Page"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:1665
+#: includes/addon/class-gf-addon.php:1681
 msgid "Gravity Forms Add-Ons"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:1780
-#: includes/addon/class-gf-addon.php:4827
-#: includes/addon/class-gf-addon.php:5132
+#: includes/addon/class-gf-addon.php:1796
+#: includes/addon/class-gf-addon.php:4843
+#: includes/addon/class-gf-addon.php:5148
 #: includes/addon/class-gf-feed-addon.php:1718
 msgid "%s Settings"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:1980
-#: includes/addon/class-gf-addon.php:2054
+#: includes/addon/class-gf-addon.php:1996
+#: includes/addon/class-gf-addon.php:2070
 msgid "Field could not be rendered."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2069
+#: includes/addon/class-gf-addon.php:2085
 msgid "Field type '%s' has not been implemented"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2277
+#: includes/addon/class-gf-addon.php:2293
 msgid "%s settings updated."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2283
+#: includes/addon/class-gf-addon.php:2299
 #: includes/settings/class-settings.php:992
 msgid "There was an error while saving your settings."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2797
+#: includes/addon/class-gf-addon.php:2813
 msgid "Please add a %s field to your form."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2890
+#: includes/addon/class-gf-addon.php:2906
 #: assets/js/src/legacy/admin/settings/field-map/mapping.js:219
 #: assets/js/dist/field-map.js:399
 msgid "Add Custom Key"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2900
+#: includes/addon/class-gf-addon.php:2916
 #: includes/settings/fields/class-select-custom.php:94
 #: assets/js/src/legacy/admin/settings/field-map/mapping.js:302
 #: assets/js/dist/field-map.js:482
 msgid "Add Custom Value"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2921
+#: includes/addon/class-gf-addon.php:2937
 #: includes/settings/fields/class-select-custom.php:150
 msgid "Reset"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2943
+#: includes/addon/class-gf-addon.php:2959
 #: includes/settings/fields/class-field-map.php:40
 msgid "Form Field"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2961
+#: includes/addon/class-gf-addon.php:2977
 #: includes/settings/fields/class-field-map.php:35
 #: js.php:244
 #: js.php:279
 msgid "Field"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:2993
+#: includes/addon/class-gf-addon.php:3009
 #: includes/settings/fields/class-field-select.php:69
 #: includes/settings/fields/class-generic-map.php:531
 #: notification.php:216
@@ -5596,31 +5596,31 @@ msgstr ""
 msgid "Select a Field"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:3000
+#: includes/addon/class-gf-addon.php:3016
 #: includes/settings/fields/class-field-select.php:80
 #: includes/settings/fields/class-generic-map.php:540
 msgid "Select a %s Field"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:3049
-#: includes/addon/class-gf-addon.php:3056
-#: includes/addon/class-gf-addon.php:3076
+#: includes/addon/class-gf-addon.php:3065
+#: includes/addon/class-gf-addon.php:3072
+#: includes/addon/class-gf-addon.php:3092
 #: includes/settings/fields/class-field-select.php:235
 #: includes/settings/fields/class-generic-map.php:498
 msgid "Full"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:3063
+#: includes/addon/class-gf-addon.php:3079
 #: includes/settings/fields/class-field-select.php:246
 #: includes/settings/fields/class-generic-map.php:475
 msgid "Selected"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:3412
+#: includes/addon/class-gf-addon.php:3428
 msgid "Update Settings"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:3748
+#: includes/addon/class-gf-addon.php:3764
 #: includes/fields/class-gf-field-calculation.php:32
 #: includes/fields/class-gf-field-hiddenproduct.php:37
 #: includes/fields/class-gf-field-radio.php:90
@@ -5632,79 +5632,88 @@ msgstr ""
 msgid "This field is required."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:3793
+#: includes/addon/class-gf-addon.php:3809
 msgid "Validation Error"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:4283
+#: includes/addon/class-gf-addon.php:4299
 msgid "Unable to render form settings."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:4614
-#: includes/addon/class-gf-addon.php:4620
+#: includes/addon/class-gf-addon.php:4630
+#: includes/addon/class-gf-addon.php:4636
 msgid "You don't have adequate permission to view this page"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:4782
+#: includes/addon/class-gf-addon.php:4798
 msgid "This add-on needs to be updated. Please contact the developer."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:4796
-#: includes/addon/class-gf-addon.php:4969
-#: includes/addon/class-gf-addon.php:5090
+#: includes/addon/class-gf-addon.php:4812
+#: includes/addon/class-gf-addon.php:4985
+#: includes/addon/class-gf-addon.php:5106
 msgid "%s has been successfully uninstalled. It can be re-activated from the %splugins page%s."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:4980
-#: includes/addon/class-gf-addon.php:4994
-#: includes/addon/class-gf-addon.php:5304
+#: includes/addon/class-gf-addon.php:4996
+#: includes/addon/class-gf-addon.php:5010
+#: includes/addon/class-gf-addon.php:5320
 msgid "Uninstall %s"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:4986
+#: includes/addon/class-gf-addon.php:5002
 msgid "Warning"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5201
+#: includes/addon/class-gf-addon.php:5217
 msgid "You don't have sufficient permissions to update the settings."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5269
+#: includes/addon/class-gf-addon.php:5285
 msgid "This operation deletes ALL %s settings."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5299
-#: includes/addon/class-gf-addon.php:5366
+#: includes/addon/class-gf-addon.php:5315
+#: includes/addon/class-gf-addon.php:5382
 msgid "%s"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5317
+#: includes/addon/class-gf-addon.php:5333
 msgid "Uninstall %s Add-On"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5336
+#: includes/addon/class-gf-addon.php:5352
 msgid "Uninstall Add-On"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5367
+#: includes/addon/class-gf-addon.php:5383
 msgid "To continue uninstalling this add-on click the settings button."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5381
+#: includes/addon/class-gf-addon.php:5397
 msgid "%sThis operation deletes ALL %s settings%s. If you continue, you will NOT be able to retrieve these settings."
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5385
+#: includes/addon/class-gf-addon.php:5401
 msgid "Warning! ALL %s settings will be deleted. This cannot be undone. 'OK' to delete, 'Cancel' to stop"
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5411
+#: includes/addon/class-gf-addon.php:5427
 msgid "You don't have adequate permission to uninstall this add-on: "
 msgstr ""
 
-#: includes/addon/class-gf-addon.php:5512
+#: includes/addon/class-gf-addon.php:5533
 #: includes/addon/class-gf-auto-upgrade.php:66
 msgid "Gravity Forms %s is required. Activate it now or %spurchase it today!%s"
+msgstr ""
+
+#: includes/addon/class-gf-addon.php:5546
+msgid "Some features of the add-on are not available on the current version of Gravity Forms. Please update to the latest Gravity Forms version for full compatibility."
+msgstr ""
+
+#. translators: 1: Add-on title
+#: includes/addon/class-gf-addon.php:6118
+msgid "Some features of the %1$s Add-on are not available on this version of Gravity Forms. Please update to the latest version for full compatibility."
 msgstr ""
 
 #: includes/addon/class-gf-auto-upgrade.php:198
