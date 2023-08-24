@@ -9,6 +9,7 @@ namespace Gravity_Forms\Gravity_Forms\Async;
 
 use Gravity_Forms\Gravity_Forms\GF_Service_Container;
 use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
+use Gravity_Forms\Gravity_Forms\Telemetry\GF_Telemetry_Processor;
 use GFForms;
 use GF_Background_Process;
 use GF_Background_Upgrader;
@@ -28,6 +29,7 @@ class GF_Background_Process_Service_Provider extends GF_Service_Provider {
 	const UPGRADER = 'upgrade_processor';
 	const FEEDS = 'feeds_processor';
 	const NOTIFICATIONS = 'notifications_processor';
+	const TELEMETRY = 'telemetry_processor';
 
 	/**
 	 * The names and classes of the async (background) processors.
@@ -40,6 +42,7 @@ class GF_Background_Process_Service_Provider extends GF_Service_Provider {
 		self::UPGRADER      => GF_Background_Upgrader::class,
 		self::FEEDS         => GF_Feed_Processor::class,
 		self::NOTIFICATIONS => GF_Notifications_Processor::class,
+		self::TELEMETRY     => GF_Telemetry_Processor::class,
 	);
 
 	/**
@@ -53,6 +56,7 @@ class GF_Background_Process_Service_Provider extends GF_Service_Provider {
 		GFForms::init_background_upgrader();
 		require_once GF_PLUGIN_DIR_PATH . 'includes/addon/class-gf-feed-processor.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/async/class-gf-notifications-processor.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/telemetry/class-gf-telemetry-processor.php';
 
 		foreach ( $this->processors as $name => $class ) {
 			$container->add( $name, function () use ( $name, $class ) {

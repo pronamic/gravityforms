@@ -91,8 +91,7 @@
 			}
 
 	.gform-admin .gform-template-library__flyout .gform-flyout__footer .gform-flyout__footer-inner .gform-flyout__footer-primary-button {
-					-webkit-margin-start: 0.75rem;
-					        margin-inline-start: 0.75rem;
+					margin-inline-start: 0.75rem;
 				}
 
 	.gform-admin .gform-template-library__flyout .gform-template-library__flyout-textarea {

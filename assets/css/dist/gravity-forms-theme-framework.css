@@ -2023,14 +2023,10 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 			        appearance: var(--gform-theme-local-appearance);
 			background-color: var(--gform-theme-local-background-color);
 			block-size: var(--gform-theme-local-block-size);
-			-webkit-border-after: var(--gform-theme-local-border-block-end);
-			        border-block-end: var(--gform-theme-local-border-block-end);
-			-webkit-border-before: var(--gform-theme-local-border-block-start);
-			        border-block-start: var(--gform-theme-local-border-block-start);
-			-webkit-border-end: var(--gform-theme-local-border-inline-end);
-			        border-inline-end: var(--gform-theme-local-border-inline-end);
-			-webkit-border-start: var(--gform-theme-local-border-inline-start);
-			        border-inline-start: var(--gform-theme-local-border-inline-start);
+			border-block-end: var(--gform-theme-local-border-block-end);
+			border-block-start: var(--gform-theme-local-border-block-start);
+			border-inline-end: var(--gform-theme-local-border-inline-end);
+			border-inline-start: var(--gform-theme-local-border-inline-start);
 			border-radius: var(--gform-theme-local-border-radius);
 			box-shadow: var(--gform-theme-local-box-shadow);
 			color: var(--gform-theme-local-color);
@@ -2478,8 +2474,7 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-single span {
 
 				/* Styles */
-				-webkit-margin-end: var(--gform-theme-control-select-search-icon-size);
-				        margin-inline-end: var(--gform-theme-control-select-search-icon-size);
+				margin-inline-end: var(--gform-theme-control-select-search-icon-size);
 			}
 
 .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-single abbr, .gform-theme--framework .gfield:where(.gfield--type-select, .gfield--input-type-select) .chosen-container-single .chosen-single div b {
@@ -3303,8 +3298,7 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 				block-size: 100%;
 				border: 0;
 				border-end-start-radius: var(--gform-theme-control-file-button-border-radius);
-				-webkit-border-end: var(--gform-theme-local-border-inline-end);
-				        border-inline-end: var(--gform-theme-local-border-inline-end);
+				border-inline-end: var(--gform-theme-local-border-inline-end);
 				border-start-start-radius: var(--gform-theme-control-file-button-border-radius);
 				color: var(--gform-theme-local-color);
 				font-family: var(--gform-theme-control-file-button-font-family);
@@ -3358,15 +3352,13 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 			content: var(--gform-theme-icon-control-file-upload);
 			display: block;
 			font-size: var(--gform-theme-control-file-drop-area-icon-font-size);
-			-webkit-margin-after: var(--gform-theme-control-file-drop-area-icon-margin-block-end);
-			        margin-block-end: var(--gform-theme-control-file-drop-area-icon-margin-block-end);
+			margin-block-end: var(--gform-theme-control-file-drop-area-icon-margin-block-end);
 		}
 
 .gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .gform_drop_instructions {
 
 		/* Styles */
-		-webkit-margin-after: var(--gform-theme-control-file-drop-area-instructions-margin-block-end);
-		        margin-block-end: var(--gform-theme-control-file-drop-area-instructions-margin-block-end);
+		margin-block-end: var(--gform-theme-control-file-drop-area-instructions-margin-block-end);
 	}
 
 /* Uploaded Files Preview */
@@ -3377,16 +3369,14 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 		display: flex;
 		flex-direction: column;
 		gap: var(--gform-theme-control-file-preview-area-gap);
-		-webkit-margin-before: var(--gform-theme-control-file-preview-area-margin-block-start);
-		        margin-block-start: var(--gform-theme-control-file-preview-area-margin-block-start);
+		margin-block-start: var(--gform-theme-control-file-preview-area-margin-block-start);
 		width: 100%;
 	}
 
 .gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview_list:empty {
 
 			/* Styles */
-			-webkit-margin-before: 0;
-			        margin-block-start: 0;
+			margin-block-start: 0;
 		}
 
 .gform-theme--framework .gfield:where(.gfield--type-fileupload, .gfield--input-type-fileupload) .ginput_preview {
@@ -3410,8 +3400,7 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 			color: var(--gform-theme-control-file-preview-file-name-color);
 			line-height: var(--gform-theme-control-file-preview-file-name-line-height);
 			overflow: var(--gform-theme-control-file-preview-file-name-overflow);
-			-webkit-padding-end: var(--gform-theme-control-file-preview-file-name-padding-inline-end);
-			        padding-inline-end: var(--gform-theme-control-file-preview-file-name-padding-inline-end);
+			padding-inline-end: var(--gform-theme-control-file-preview-file-name-padding-inline-end);
 			text-overflow: var(--gform-theme-control-file-preview-file-name-text-overflow);
 			white-space: var(--gform-theme-control-file-preview-file-name-white-space);
 		}
@@ -3528,8 +3517,7 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 	box-shadow: var(--gform-theme-control-date-datepicker-box-shadow);
 	display: none;
 	inline-size: var(--gform-theme-control-date-datepicker-inline-size);
-	-webkit-margin-before: var(--gform-theme-control-date-datepicker-margin-block-start);
-	        margin-block-start: var(--gform-theme-control-date-datepicker-margin-block-start);
+	margin-block-start: var(--gform-theme-control-date-datepicker-margin-block-start);
 	padding-block: var(--gform-theme-control-date-datepicker-padding-block);
 	padding-inline: var(--gform-theme-control-date-datepicker-padding-inline);
 }
@@ -3624,10 +3612,8 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 	}
 
 .gform-theme--framework.ui-datepicker table {
-		-webkit-margin-after: 0;
-		        margin-block-end: 0;
-		-webkit-margin-before: 16px;
-		        margin-block-start: 16px;
+		margin-block-end: 0;
+		margin-block-start: 16px;
 	}
 
 .gform-theme--framework.ui-datepicker table th, .gform-theme--framework.ui-datepicker table td {
@@ -3787,8 +3773,7 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 	}
 
 .gform-theme--framework .gfield--type-address .copy_values_option_container + .ginput_container_address {
-			-webkit-margin-before: var(--gform-theme-field-row-gap);
-			        margin-block-start: var(--gform-theme-field-row-gap);
+			margin-block-start: var(--gform-theme-field-row-gap);
 		}
 
 .gform-theme--framework .gfield--type-choice .gfield_checkbox, .gform-theme--framework .gfield--type-choice .gfield_radio {
@@ -3803,8 +3788,7 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 
 .gform-theme--framework .gfield--type-choice .gfield_checkbox > *:last-child:where(:not(.gchoice)), .gform-theme--framework .gfield--type-choice .gfield_radio > *:last-child:where(:not(.gchoice)) {
 			align-self: self-start;
-			-webkit-margin-before: var(--gform-theme-field-choice-meta-margin-block-start);
-			        margin-block-start: var(--gform-theme-field-choice-meta-margin-block-start);
+			margin-block-start: var(--gform-theme-field-choice-meta-margin-block-start);
 		}
 
 .gform-theme--framework .gfield--type-choice .gchoice, .gform-theme--framework .gfield--type-choice .ginput_container_consent {
@@ -3881,8 +3865,7 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 				font-size: var(--gform-theme-icon-font-size);
 				inset-block-start: 0;
 				inset-inline-start: 0;
-				-webkit-margin-start: calc(var(--gform-theme-control-padding-inline) * -1);
-				        margin-inline-start: calc(var(--gform-theme-control-padding-inline) * -1);
+				margin-inline-start: calc(var(--gform-theme-control-padding-inline) * -1);
 				pointer-events: none;
 				transform: translateX(-100%);
 			}
@@ -3901,8 +3884,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 .gform-theme--framework .gfield--input-type-datepicker.gfield--datepicker-custom-icon .ginput_container_date img.ui-datepicker-trigger {
 
 				/* Styles */
-				-webkit-margin-start: calc(var(--gform-theme-control-padding-inline) * -1);
-				        margin-inline-start: calc(var(--gform-theme-control-padding-inline) * -1);
+				margin-inline-start: calc(var(--gform-theme-control-padding-inline) * -1);
 				max-block-size: var(--gform-theme-field-date-custom-icon-max-block-size);
 				max-inline-size: var(--gform-theme-field-date-custom-icon-max-inline-size);
 				transform: translateX(-100%);
@@ -3945,8 +3927,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 .gform-theme--framework .gf_progressbar_wrapper, .gform-theme--framework .gf_page_steps {
 
 		/* Styles */
-		-webkit-margin-after: var(--gform-theme-field-page-progress-margin-block-end);
-		        margin-block-end: var(--gform-theme-field-page-progress-margin-block-end);
+		margin-block-end: var(--gform-theme-field-page-progress-margin-block-end);
 	}
 
 .gform-theme--framework .gf_progressbar_title, .gform-theme--framework .gf_step_number, .gform-theme--framework .gf_step_label {
@@ -3975,8 +3956,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 .gform-theme--framework .gf_progressbar_title {
 
 		/* Styles */
-		-webkit-margin-after: var(--gform-theme-field-page-progress-title-margin-block-end);
-		        margin-block-end: var(--gform-theme-field-page-progress-title-margin-block-end);
+		margin-block-end: var(--gform-theme-field-page-progress-title-margin-block-end);
 	}
 
 .gform-theme--framework .gf_progressbar {
@@ -4243,8 +4223,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 		font-weight: var(--gform-theme-field-password-strength-font-weight);
 		letter-spacing: var(--gform-theme-field-password-strength-letter-spacing);
 		line-height: var(--gform-theme-field-password-strength-line-height);
-		-webkit-margin-before: var(--gform-theme-field-password-strength-margin-block-start);
-		        margin-block-start: var(--gform-theme-field-password-strength-margin-block-start);
+		margin-block-start: var(--gform-theme-field-password-strength-margin-block-start);
 		padding-block: var(--gform-theme-field-password-strength-padding-block);
 		padding-inline: var(--gform-theme-field-password-strength-padding-inline);
 		position: relative;
@@ -4380,8 +4359,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 		--gform-theme-local-inline-size: var(--gform-theme-field-product-quantity-inline-size);
 
 		/* Styles */
-		-webkit-margin-after: var(--gform-theme-field-product-quantity-margin-block-end);
-		        margin-block-end: var(--gform-theme-field-product-quantity-margin-block-end);
+		margin-block-end: var(--gform-theme-field-product-quantity-margin-block-end);
 	}
 
 .gform-theme--framework .gfield--type-product .ginput_container_singleproduct, .gform-theme--framework .gfield--type-product .ginput_container_product_calculation {
@@ -4398,13 +4376,11 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 		}
 
 .gform-theme--framework .gfield--type-repeater .gfield_repeater_cell:not(:first-child) {
-		-webkit-margin-before: var(--gform-theme-field-repeater-row-gap);
-		        margin-block-start: var(--gform-theme-field-repeater-row-gap);
+		margin-block-start: var(--gform-theme-field-repeater-row-gap);
 	}
 
 .gform-theme--framework .gfield--type-repeater .gfield_repeater_item + .gfield_repeater_item {
-		-webkit-margin-before: var(--gform-theme-field-repeater-row-gap);
-		        margin-block-start: var(--gform-theme-field-repeater-row-gap);
+		margin-block-start: var(--gform-theme-field-repeater-row-gap);
 		position: relative;
 	}
 
@@ -4419,30 +4395,24 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 		}
 
 .gform-theme--framework .gfield--type-repeater .gfield_repeater_buttons {
-		-webkit-margin-before: var(--gform-theme-form-footer-margin-block-start);
-		        margin-block-start: var(--gform-theme-form-footer-margin-block-start);
+		margin-block-start: var(--gform-theme-form-footer-margin-block-start);
 	}
 
 .gform-theme--framework .gfield--type-repeater .gfield_repeater_buttons .gform-theme-button.gform-theme-button--secondary.add_repeater_item {
-			-webkit-margin-end: var(--gform-theme-field-repeater-button-inline-gap);
-			        margin-inline-end: var(--gform-theme-field-repeater-button-inline-gap);
+			margin-inline-end: var(--gform-theme-field-repeater-button-inline-gap);
 		}
 
 .gform-theme--framework .gfield--type-repeater .gfield_repeater_wrapper {
-		-webkit-border-start: var(--gform-theme-field-repeater-nested-border-size) var(--gform-theme-field-repeater-nested-border-style) var(--gform-theme-field-repeater-nested-border-color);
-		        border-inline-start: var(--gform-theme-field-repeater-nested-border-size) var(--gform-theme-field-repeater-nested-border-style) var(--gform-theme-field-repeater-nested-border-color);
+		border-inline-start: var(--gform-theme-field-repeater-nested-border-size) var(--gform-theme-field-repeater-nested-border-style) var(--gform-theme-field-repeater-nested-border-color);
 		border-inline-start-style: var(--gform-theme-field-repeater-nested-border-style);
-		-webkit-padding-start: var(--gform-theme-field-repeater-nested-padding-inline-start);
-		        padding-inline-start: var(--gform-theme-field-repeater-nested-padding-inline-start);
+		padding-inline-start: var(--gform-theme-field-repeater-nested-padding-inline-start);
 	}
 
 .gform-theme--framework .gfield--type-section {
 
 		/* Styles */
-		-webkit-border-after: var(--gform-theme-field-section-border-width) var(--gform-theme-field-section-border-style) var(--gform-theme-field-section-border-color);
-		        border-block-end: var(--gform-theme-field-section-border-width) var(--gform-theme-field-section-border-style) var(--gform-theme-field-section-border-color);
-		-webkit-padding-after: var(--gform-theme-field-section-padding-block-end);
-		        padding-block-end: var(--gform-theme-field-section-padding-block-end);
+		border-block-end: var(--gform-theme-field-section-border-width) var(--gform-theme-field-section-border-style) var(--gform-theme-field-section-border-color);
+		padding-block-end: var(--gform-theme-field-section-padding-block-end);
 	}
 
 /* Form: Handles form-level styles */
@@ -4536,8 +4506,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 .gform-theme--framework .gform_validation_errors ol li + li {
 
 				/* Styles */
-				-webkit-margin-before: 4px;
-				        margin-block-start: 4px;
+				margin-block-start: 4px;
 			}
 
 .gform-theme--framework .gform_validation_errors ol a {
@@ -4608,8 +4577,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 .gform-theme--framework .field_description_below .gfield_description:where(:not(.ginput_counter_tinymce):not(.gfield_creditcard_warning_message)) {
 
 			/* Styles */
-			-webkit-margin-before: var(--gform-theme-description-spacing);
-			        margin-block-start: var(--gform-theme-description-spacing);
+			margin-block-start: var(--gform-theme-description-spacing);
 		}
 
 /* Form field control descriptions which remain above only */
@@ -4617,15 +4585,13 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 .gform-theme--framework .field_description_below .gfield_description:where(.gfield_creditcard_warning_message) {
 
 			/* Styles */
-			-webkit-margin-after: var(--gform-theme-description-spacing);
-			        margin-block-end: var(--gform-theme-description-spacing);
+			margin-block-end: var(--gform-theme-description-spacing);
 		}
 
 .gform-theme--framework .field_description_below.gfield--type-choice .gfield_description:where(:not(.gfield_validation_message)) {
 
 				/* Styles */
-				-webkit-margin-before: var(--gform-theme-description-choice-field-spacing);
-				        margin-block-start: var(--gform-theme-description-choice-field-spacing);
+				margin-block-start: var(--gform-theme-description-choice-field-spacing);
 			}
 
 /*
@@ -4637,8 +4603,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 .gform-theme--framework .field_description_above .gfield_description:where([class="gfield_description"], .gfield_creditcard_warning_message) {
 
 			/* Styles */
-			-webkit-margin-after: var(--gform-theme-description-spacing);
-			        margin-block-end: var(--gform-theme-description-spacing);
+			margin-block-end: var(--gform-theme-description-spacing);
 		}
 
 /* Form field control descriptions which remain below only */
@@ -4646,15 +4611,13 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 .gform-theme--framework .field_description_above .gfield_description:where(:not([class="gfield_description"]):not(.ginput_counter_tinymce):not(.gfield_creditcard_warning_message):not(.gfield_consent_description)) {
 
 			/* Styles */
-			-webkit-margin-before: var(--gform-theme-description-spacing);
-			        margin-block-start: var(--gform-theme-description-spacing);
+			margin-block-start: var(--gform-theme-description-spacing);
 		}
 
 .gform-theme--framework .field_description_above.gfield--type-choice .gfield_description:where(:not(.gfield_validation_message)) {
 
 				/* Styles */
-				-webkit-margin-after: var(--gform-theme-description-choice-field-spacing);
-				        margin-block-end: var(--gform-theme-description-choice-field-spacing);
+				margin-block-end: var(--gform-theme-description-choice-field-spacing);
 			}
 
 /*
@@ -4674,8 +4637,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 				/* Styles */
 				margin-block: 0;
 				margin-inline: auto 0;
-				-webkit-padding-before: var(--gform-theme-description-spacing);
-				        padding-block-start: var(--gform-theme-description-spacing)
+				padding-block-start: var(--gform-theme-description-spacing)
 		}
 			}
 
@@ -4691,8 +4653,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 
 					/* Styles */
 					margin-block: 0;
-					-webkit-padding-before: var(--gform-theme-description-choice-field-spacing);
-					        padding-block-start: var(--gform-theme-description-choice-field-spacing)
+					padding-block-start: var(--gform-theme-description-choice-field-spacing)
 			}
 				}
 
@@ -4759,8 +4720,7 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 				--gform-theme-local-margin-inline: 0;
 
 				/* Styles */
-				-webkit-padding-end: var(--gform-theme-label-spacing-primary);
-				        padding-inline-end: var(--gform-theme-label-spacing-primary)
+				padding-inline-end: var(--gform-theme-label-spacing-primary)
 		}
 			}
 

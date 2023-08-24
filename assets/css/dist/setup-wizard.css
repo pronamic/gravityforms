@@ -64,14 +64,12 @@
 	.gform-admin .gform-setup-wizard.gform-setup-wizard--step-5 .gform-video {
 				border-radius: 10px;
 				box-shadow: 0 0 1px rgba(18, 25, 97, 0.24), 0 24px 24px rgba(18, 25, 97, 0.03), 0 2px 2px rgba(18, 25, 97, 0.03), 0 4px 4px rgba(18, 25, 97, 0.03), 0 8px 8px rgba(18, 25, 97, 0.03), 0 16px 16px rgba(18, 25, 97, 0.03);
-				-webkit-margin-after: 40px;
-				        margin-block-end: 40px;
+				margin-block-end: 40px;
 				overflow: hidden;
 			}
 
 	.gform-admin .gform-setup-wizard .gform-setup-wizard__steps {
-			-webkit-margin-before: 102px;
-			        margin-block-start: 102px;
+			margin-block-start: 102px;
 		}
 
 	.gform-admin .gform-setup-wizard .gform-dialog__close.gform-setup-wizard--exit-button.gform-button {
@@ -147,8 +145,7 @@
 			}
 
 	.gform-admin .gform-setup-wizard > .gform-dialog__content .gform-setup-wizard__data-button {
-				-webkit-margin-start: 12px;
-				        margin-inline-start: 12px;
+				margin-inline-start: 12px;
 			}
 
 	.gform-admin .gform-setup-wizard, .gform-admin .gform-setup-wizard * {
@@ -195,16 +192,13 @@
 		}
 
 	.gform-admin .gform-setup-wizard__footer {
-		-webkit-border-before: 1px solid #ecedf8;
-		        border-block-start: 1px solid #ecedf8;
+		border-block-start: 1px solid #ecedf8;
 		inline-size: 100%;
-		-webkit-padding-before: 2.75rem;
-		        padding-block-start: 2.75rem;
+		padding-block-start: 2.75rem;
 	}
 
 	.gform-admin .gform-setup-wizard__footer .gform-setup-wizard__nav-next-alt {
-			-webkit-margin-start: auto;
-			        margin-inline-start: auto;
+			margin-inline-start: auto;
 		}
 
 	.gform-admin .gform-setup-wizard__footer .gform-button .gform-button__icon, .gform-admin .gform-setup-wizard__nav-footer .gform-button .gform-button__icon {
@@ -214,8 +208,7 @@
 	.gform-admin .gform-setup-wizard__nav-footer {
 		align-items: center;
 		justify-content: space-between;
-		-webkit-margin-before: 2.5rem;
-		        margin-block-start: 2.5rem;
+		margin-block-start: 2.5rem;
 	}
 
 	@media (min-width: 768px) {
@@ -228,8 +221,7 @@
 			inset-inline-start: 80px;
 			justify-content: flex-start;
 			margin: 0;
-			-webkit-margin-before: 5rem;
-			        margin-block-start: 5rem;
+			margin-block-start: 5rem;
 			padding: 1.75rem;
 			position: fixed;
 			z-index: 1
@@ -237,8 +229,7 @@
 		}
 
 	.gform-admin .gform-setup-wizard__nav-footer .gform-setup-wizard__dismiss {
-			-webkit-margin-end: 0.75rem;
-			        margin-inline-end: 0.75rem;
+			margin-inline-end: 0.75rem;
 		}
 
 	.gform-admin .gform-setup-wizard__alert {
@@ -254,8 +245,7 @@
 			}
 
 	.gform-admin .gform-setup-wizard__input-group .gform-input-group__wrapper {
-			-webkit-margin-before: 1rem;
-			        margin-block-start: 1rem;
+			margin-block-start: 1rem;
 		}
 
 	@media (min-width: 768px) {
@@ -352,8 +342,7 @@
 		border-radius: 100%;
 		box-shadow: 0 4px 10px rgba(18, 25, 97, 0.0779552);
 		inline-size: 105px;
-		-webkit-margin-after: 10px;
-		        margin-block-end: 10px;
+		margin-block-end: 10px;
 	}
 
 	.gform-admin .gform-setup-wizard__content {
@@ -373,8 +362,7 @@
 
 	.gform-admin .gform-setup-wizard__content {
 			background: #f6f9fc;
-			-webkit-border-end: 1px solid #ebebf2;
-			        border-inline-end: 1px solid #ebebf2;
+			border-inline-end: 1px solid #ebebf2;
 			max-width: 1030px;
 			min-height: 100%
 	}
@@ -452,8 +440,7 @@
 				}
 
 	.gform-admin .gform-setup-wizard__other-container {
-		-webkit-margin-before: 1.25rem;
-		        margin-block-start: 1.25rem;
+		margin-block-start: 1.25rem;
 	}
 
 	@media (min-width: 640px) {
@@ -464,8 +451,7 @@
 		}
 
 	.gform-admin .gform-setup-wizard__form-types .gform-setup-wizard__other-container, .gform-admin .gform-setup-wizard__services-container .gform-setup-wizard__other-container {
-			-webkit-margin-before: 1rem;
-			        margin-block-start: 1rem;
+			margin-block-start: 1rem;
 		}
 
 	.gform-admin .gform-setup-wizard__validate-license-button--valid:disabled {
@@ -782,8 +768,7 @@
 	@media (min-width: 768px) {
 
 	.gform-admin .gform-setup-wizard--step-1 .gform-setup-wizard__content {
-				-webkit-padding-after: 8.75rem;
-				        padding-block-end: 8.75rem
+				padding-block-end: 8.75rem
 		}
 			}
 

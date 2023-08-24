@@ -33,10 +33,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 @font-face {
 	font-family: 'gform-icons-admin';
 	src:
-		url('../../../fonts/gform-icons-admin.woff2?vjyciz') format('woff2'),
-		url('../../../fonts/gform-icons-admin.ttf?vjyciz') format('truetype'),
-		url('../../../fonts/gform-icons-admin.woff?vjyciz') format('woff'),
-		url('../../../fonts/gform-icons-admin.svg?vjyciz#gform-icons-admin') format('svg');
+		url('../../../fonts/gform-icons-admin.woff2?ki990q') format('woff2'),
+		url('../../../fonts/gform-icons-admin.ttf?ki990q') format('truetype'),
+		url('../../../fonts/gform-icons-admin.woff?ki990q') format('woff'),
+		url('../../../fonts/gform-icons-admin.svg?ki990q#gform-icons-admin') format('svg');
 	font-weight: normal;
 	font-style: normal;
 	font-display: block;
@@ -176,6 +176,26 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-icon--chevron:before {
 	content: "\e911";
+}
+
+.gform-icon--checkmark-simple:before {
+	content: "\e99d";
+}
+
+.gform-icon--exclamation-simple:before {
+	content: "\e99e";
+}
+
+.gform-icon--information-simple:before {
+	content: "\e99f";
+}
+
+.gform-icon--question-mark-simple:before {
+	content: "\e9a0";
+}
+
+.gform-icon--x-simple:before {
+	content: "\e9a1";
 }
 
 .gform-icon--expand:before {

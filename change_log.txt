@@ -1,3 +1,7 @@
+### 2.7.13 | 2023-08-23
+- Updated the minimum WordPress version on the System Status page to 6.2.
+- Updated product usage data so it is processed in the background.
+
 ### 2.7.12 | 2023-08-08
 - Fixed a fatal error that occurs when a mapped setup_fee field is hidden by conditional logic.
 - AF: Added the [`$_min_compatible_gravityforms_version`](https://docs.gravityforms.com/gfaddon/#h-the-class-variables) property to the `GFFAddOn` class, enabling add-ons to specify the minimum Gravity Forms version that is compatible with all the add-on features.
@@ -24,6 +28,7 @@
 - Updated the Orbital theme to support max-height/scroll for the consent field.
 - Updated the thumbnail image in the template library for the eCommerce template.
 - Updated the name of the form block to "Form" to make it easier to find in the block inserter.
+
 
 ### 2.7.9 | 2023-06-22
 - Fixed an issue where an empty Number type Quantity field fails validation with a decimals-related error message.
