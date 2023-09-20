@@ -1,3 +1,8 @@
+### 2.7.14 | 2023-09-19
+- Added validation to name, post title, post body, single line text, paragraph text & address fields to prevent empty entries when fields are filled with text encoded with invalid charset for the database table.
+- Fixed an issue where editing an entry with a multifile upload field could result in broken links to files.
+- AF: Fixed the `strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated` notice that can occur with PHP 8.1 when getting a setting value.
+
 ### 2.7.13 | 2023-08-23
 - Updated the minimum WordPress version on the System Status page to 6.2.
 - Updated product usage data so it is processed in the background.

@@ -582,9 +582,11 @@ class GF_Field_FileUpload extends GF_Field {
 					if ( ! isset( $file_info['temp_filename'] ) ) {
 						$existing_file = $this->check_existing_entry( $entry_id, $input_name, $file_info );
 
-						$uploaded_path = GFFormsModel::get_file_upload_path( $form_id, $file_info['uploaded_filename'], false );
-						if ( $existing_file ) {
-							$uploaded_files[ $i ] = $uploaded_path['url'];
+						// We already have the file path in $existing_file, however it's good to check that the file path in the entry meta matches.
+						$uploaded_path = gform_get_meta( $entry_id, self::get_file_upload_path_meta_key_hash( $existing_file ) );
+
+						if ( $uploaded_path ) {
+							$uploaded_files[ $i ] = $uploaded_path['url'] . $uploaded_path['file_name'];
 						}
 						continue;
 					}

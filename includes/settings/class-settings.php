@@ -2548,6 +2548,10 @@ class Settings {
 	 */
 	public function get_value( $name, $default_value = '', $values = false ) {
 
+		if ( empty( $name ) ) {
+			return '';
+		}
+
 		// Get current values.
 		if ( ! $values || ! is_array( $values ) ) {
 			$values = $this->get_current_values();
