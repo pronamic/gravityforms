@@ -118,10 +118,10 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 		$this->cleanup();
 
 		// Save the license key (if set).
-		$license = md5( rgpost( 'licenseKey' ) );
+		$license = rgpost( 'licenseKey' );
 
 		if ( $license ) {
-			\GFFormsModel::update_license_key( $license );
+			\GFFormsModel::update_license_key( md5( $license ) );
 		}
 
 		if ( ! empty( rgpost( self::PARAM_EMAIL ) && ( ! empty( rgpost( self::PARAM_EMAIL_CONSENT ) ) && rgpost( self::PARAM_EMAIL_CONSENT ) != 'false' ) ) ) {

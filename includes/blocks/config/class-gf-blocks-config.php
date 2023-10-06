@@ -2,6 +2,7 @@
 
 namespace Gravity_Forms\Gravity_Forms\Blocks\Config;
 
+use GFSettings;
 use Gravity_Forms\Gravity_Forms\Config\GF_Config;
 use Gravity_Forms\Gravity_Forms\Config\GF_Config_Data_Parser;
 use \GFCommon;
@@ -77,14 +78,17 @@ class GF_Blocks_Config extends GF_Config {
 	public function data() {
 		$attributes = apply_filters( 'gform_form_block_attributes', $this->attributes );
 
+		$orbital_default = GFSettings::is_orbital_default();
+
 		return array(
 			'gravityforms/form' => array(
 				'data' => array(
-					'attributes' => $attributes,
-					'adminURL'   => admin_url( 'admin.php' ),
-					'forms'      => $this->get_forms(),
-					'preview'    => GFCommon::get_base_url() . '/images/gf_block_preview.svg',
-					'styles'   => array(
+					'attributes'     => $attributes,
+					'adminURL'   	 => admin_url( 'admin.php' ),
+					'forms'      	 => $this->get_forms(),
+					'preview'        => GFCommon::get_base_url() . '/images/gf_block_preview.svg',
+					'orbitalDefault' => $orbital_default,
+					'styles'     	 => array(
 						'defaults' => \GFForms::get_service_container()->get( \Gravity_Forms\Gravity_Forms\Form_Display\GF_Form_Display_Service_Provider::BLOCK_STYLES_DEFAULTS ),
 					),
 				),

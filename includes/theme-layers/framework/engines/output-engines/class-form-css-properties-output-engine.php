@@ -82,11 +82,23 @@ class Form_CSS_Properties_Output_Engine extends Output_Engine {
 	public function generate_props_block( $form_id, $form, $custom_selector = false ) {
 		$settings           = $this->get_settings( $form_id );
 		$page_instance      = isset( $form['page_instance'] ) ? $form['page_instance'] : 0;
+
+		// Get the settings from the block, if they exist.
 		$all_block_settings = apply_filters( 'gform_form_block_attribute_values', array() );
 		$block_settings     = isset( $all_block_settings[ $form_id ][ $page_instance ] ) ? $all_block_settings[ $form_id ][ $page_instance ] : array();
-		$properties         = call_user_func_array( $this->properties_cb, array( $form_id, $settings, $block_settings ) );
 
-		$properties  = array_filter( $properties, function ( $property ) {
+		// Get the settings from the shortcode attribute or form properties, if they exist.
+		$form_style = $this->parse_form_style( $form );
+
+		// Merge the settings - block styles get priority.
+		$style_settings = ! empty( $block_settings ) ? array_merge( $form_style, $block_settings ) : $form_style;
+		if ( ! rgar( $style_settings, 'theme' ) || '' == $style_settings['theme'] ) {
+			$style_settings['theme'] = get_option( 'rg_gforms_default_theme', 'orbital' );
+		}
+
+		$properties = call_user_func_array( $this->properties_cb, array( $form_id, $settings, $style_settings, $form ) );
+
+		$properties = array_filter( $properties, function ( $property ) {
 			if ( ! empty( $property ) ) {
 				return true;
 			}
@@ -119,5 +131,6 @@ class Form_CSS_Properties_Output_Engine extends Output_Engine {
 
 		return $props_block;
 	}
+
 
 }

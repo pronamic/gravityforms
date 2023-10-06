@@ -17,6 +17,10 @@ class Block_Styles_Handler {
 		$this->defaults_map = $defaults_map;
 	}
 
+	public function defaults_map( $form ) {
+		return call_user_func( $this->defaults_map, $form );
+	}
+
 	public function handle() {
 		$layer = new Theme_Layer_Builder();
 		$layer->set_name( self::NAME )
@@ -26,8 +30,13 @@ class Block_Styles_Handler {
 		      ->register();
 	}
 
-	public function form_css_properties( $form_id, $settings, $block_settings ) {
-		$applied_settings = wp_parse_args( $block_settings, $this->defaults_map );
+	public function form_css_properties( $form_id, $settings, $block_settings, $form = array() ) {
+
+		if ( $form['styles'] === false ) {
+			return array();
+		}
+
+		$applied_settings = wp_parse_args( $block_settings, $this->defaults_map( $form ) );
 
 		// Bail early if orbital isn't applied.
 		if ( $applied_settings['theme'] !== 'orbital' ) {

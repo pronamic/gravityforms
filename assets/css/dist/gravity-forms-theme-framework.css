@@ -4054,6 +4054,11 @@ html[dir="rtl"] .gform-theme--framework .gfield--input-type-datepicker.gfield--d
 		--gform-theme-local-text-transform: var(--gform-theme-field-page-progress-text-transform);
 	}
 
+.gform-theme--framework .gf_step_hidden {
+
+		display: none;
+	}
+
 .gform-theme--framework .gf_step_number {
 
 		/* Local CSS API */

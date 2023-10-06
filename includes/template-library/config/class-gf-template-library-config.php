@@ -168,6 +168,5 @@ class GF_Template_Library_Config extends GF_Config {
 	private function get_templates() {
 		return $this->templates_store->all();
 	}
-
-
+	
 }

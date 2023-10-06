@@ -474,6 +474,23 @@
 			border-color: #bed8ed;
 			opacity: 0.5;
 		}
+.gform-admin .gform-button--amaranth-red {
+		background: #fee4e2;
+		border-color: #ffc7bb;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+		color: #dd301d;
+	}
+.gform-admin .gform-button--amaranth-red:hover, .gform-admin .gform-button--amaranth-red:active {
+			box-shadow: 0 3px 8px rgba(18, 25, 97, 0.15), 0 1px 1px rgba(18, 25, 97, 0.16), 0 2px 1px rgba(18, 25, 97, 0.04);
+		}
+.gform-admin .gform-button--amaranth-red:focus {
+			border-color: #dd301d;
+			outline: 0.125rem solid #ffc7bb;
+		}
+.gform-admin .gform-button--amaranth-red:disabled {
+			border-color: #ffc7bb;
+			opacity: 0.5;
+		}
 .gform-admin .gform-button--simplified {
 		background: transparent;
 		box-shadow: none;
@@ -1180,6 +1197,15 @@
 .gform-admin .gform-dialog .gform-dialog__close.gform-button--size-xs .gform-button__icon {
 					top: 0;
 				}
+.gform-admin .gform-dialog .gform-dialog__close.gform-button--size-md {
+				height: 2.5rem;
+				inset-inline-end: 20px;
+				top: 20px;
+				width: 2.5rem;
+			}
+.gform-admin .gform-dialog .gform-dialog__close.gform-button--size-md .gform-button__icon {
+					top: 0;
+				}
 .gform-admin .gform-dialog .gform-dialog__close.gform-button--circular.gform-dialog__close--plain {
 			background: none;
 			border: none;
@@ -1188,6 +1214,9 @@
 				color: #fff;
 				font-size: 2rem;
 			}
+.gform-admin .gform-dialog .gform-dialog__close.gform-button--unstyled.gform-button--size-md {
+			justify-content: flex-end;
+		}
 .gform-admin .gform-dialog .gform-dialog__close.gform-button--unstyled .gform-button__icon {
 			color: #5b5e80;
 		}
@@ -2954,6 +2983,9 @@ html[dir="rtl"] .gform-admin .gform-input--radio + label::before {
 		padding-inline: 0.75rem 2rem;
 		width: 100%;
 	}
+.gform-admin .gform-select:hover {
+			color: #242748;
+		}
 .gform-admin .gform-select:focus {
 			border-color: #0f3d6c;
 			box-shadow: 0 0 0 2px #bed8ed;
@@ -4162,7 +4194,7 @@ html[dir="rtl"] .gform-admin .gform-snackbar__message {
 		}
 .gform-admin .gform-status-indicator.gform-status--active {
 			background: #e1f6ed;
-			border-color: rgba(87, 192, 145, 0.24);
+			border-color: #57c091;
 			color: #276a52;
 		}
 .gform-admin .gform-status-indicator.gform-status--active svg {
@@ -4171,12 +4203,21 @@ html[dir="rtl"] .gform-admin .gform-snackbar__message {
 			}
 .gform-admin .gform-status-indicator.gform-status--error {
 			background: #fee4e2;
-			border-color: rgba(221, 48, 29, 0.2);
+			border-color: #dd301d;
 			color: #dd301d;
 		}
 .gform-admin .gform-status-indicator.gform-status--error svg {
 				fill: #dd301d;
 				stroke: rgba(221, 48, 29, 0.2);
+			}
+.gform-admin .gform-status-indicator.gform-status--warning {
+			background: #fff6e3;
+			border-color: #ffbe03;
+			color: #f15a2b;
+		}
+.gform-admin .gform-status-indicator.gform-status--warning svg {
+				fill: #f15a2b;
+				stroke: rgba(247, 207, 92, 0.2);
 			}
 .gform-admin .gform-status-indicator.gform-status--static {
 			pointer-events: none;
@@ -4599,6 +4640,7 @@ html[dir="rtl"] .gform-admin .gform-table {
 		margin: 0;
 		outline: none;
 		position: relative;
+		width: auto;
 	}
 .gform-admin input[type="checkbox"].gform-toggle__toggle::before {
 			background: #d5d7e9;
@@ -4719,6 +4761,52 @@ html[dir="rtl"] .gform-admin .gform-table {
 .gform-admin .gform-toggle__label {
 		cursor: pointer;
 	}
+.gform-admin .gform-toggle--with-icons .gform-toggle__icon-wrapper {
+			position: relative;
+		}
+.gform-admin .gform-toggle--with-icons .gform-toggle__icon {
+			pointer-events: none;
+			position: absolute;
+		}
+.gform-admin .gform-toggle--with-icons .gform-toggle__icon:first-of-type {
+				opacity: 1;
+			}
+.gform-admin .gform-toggle--with-icons .gform-toggle__icon:last-of-type {
+				opacity: 0;
+			}
+.gform-admin .gform-toggle--with-icons .gform-toggle__toggle:checked ~ .gform-toggle__icon:first-of-type {
+					opacity: 0;
+				}
+.gform-admin .gform-toggle--with-icons .gform-toggle__toggle:checked ~ .gform-toggle__icon:last-of-type {
+					opacity: 1;
+				}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon {
+			top: 0.188rem;
+		}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon:first-of-type {
+				left: 0.188rem;
+			}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon:last-of-type {
+				right: 0.188rem;
+			}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon {
+			top: 0.25rem;
+		}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon:first-of-type {
+				left: 0.25rem;
+			}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon:last-of-type {
+				right: 0.25rem;
+			}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon {
+			top: 0.375rem;
+		}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon:first-of-type {
+				left: 0.375rem;
+			}
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon:last-of-type {
+				right: 0.375rem;
+			}
 html[dir="rtl"] .gform-admin .gform-toggle--size-s input[type="checkbox"].gform-toggle__toggle:checked::after {
 			transform: translateX(-1.3125rem);
 		}
@@ -4728,6 +4816,27 @@ html[dir="rtl"] .gform-admin .gform-toggle--size-m input[type="checkbox"].gform-
 html[dir="rtl"] .gform-admin .gform-toggle--size-l input[type="checkbox"].gform-toggle__toggle:checked::after {
 			transform: translateX(-1.6875rem);
 		}
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon:first-of-type {
+				right: 0.125rem;
+			}
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon:last-of-type {
+				left: 0.125rem;
+				right: inherit;
+			}
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon:first-of-type {
+				right: 0.25rem;
+			}
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon:last-of-type {
+				left: 0.25rem;
+				right: inherit;
+			}
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon:first-of-type {
+				right: 0.375rem;
+			}
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon:last-of-type {
+				left: 0.375rem;
+				right: inherit;
+			}
 .gform-admin .gform-tooltip {
 		display: inline-block;
 		position: relative;

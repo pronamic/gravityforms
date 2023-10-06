@@ -201,6 +201,12 @@ class GF_Upgrade {
 		// Turn background updates on by default for all new installations.
 		update_option( 'gform_enable_background_updates', true );
 
+		// Set Orbital as the default theme for all new installations.
+		update_option( 'rg_gforms_default_theme', 'orbital', false );
+
+		// Setting the version of Gravity Forms that was installed initially
+		update_option( 'rg_form_original_version', GFForms::$version, false );
+
 		// Auto-setting and auto-validating license key based on value configured via the GF_LICENSE_KEY constant or the gf_license_key variable
 		// Auto-populating reCAPTCHA keys base on constant
 		$this->maybe_populate_keys();

@@ -73,6 +73,11 @@ class GF_Feed_Processor extends GF_Background_Process {
 		$feed      = $item['feed'];
 		$feed_name = rgars( $feed, 'meta/feed_name' ) ? $feed['meta']['feed_name'] : rgars( $feed, 'meta/feedName' );
 
+		$callable = array( is_string( $addon ) ? $addon : get_class( $addon ), 'get_instance' );
+		if ( is_callable( $callable ) ) {
+			$addon = call_user_func( $callable );
+		}
+
 		if ( ! $addon instanceof GFFeedAddOn ) {
 			GFCommon::log_error( __METHOD__ . "(): attempted feed (#{$feed['id']} - {$feed_name}) for entry #{$item['entry_id']} for {$feed['addon_slug']} but add-on could not be found. Bailing." );
 

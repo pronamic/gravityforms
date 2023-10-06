@@ -65,6 +65,19 @@ abstract class GFFeedAddOn extends GFAddOn {
 	protected $_bypass_feed_delay = false;
 
 	/**
+	 * An array of properties relating to the delayed payment functionality.
+	 *
+	 * Set by passing the array to `$this->add_delayed_payment_support()` in `init()`.
+	 *
+	 * @since 2.7.14 Was a dynamic property in earlier versions.
+	 *
+	 * @var array {
+	 *     @type string $option_label The label to displayed for the add-ons delay checkbox, in the Post Payment Actions section of the payment add-ons feed configuration page.
+	 * }
+	 */
+	public $delayed_payment_integration = array();
+
+	/**
 	 * @var string Version number of the Add-On Framework
 	 */
 	private $_feed_version = '0.14';
@@ -347,7 +360,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 					// Add feed to processing queue.
 					gf_feed_processor()->push_to_queue(
 						array(
-							'addon' => $this,
+							'addon' => get_class( $this ),
 							'feed'  => $feed,
 							'entry_id' => $entry['id'],
 							'form_id'  => $form['id'],

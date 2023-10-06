@@ -126,6 +126,8 @@ class GFExport {
 			$markup_version = 2;
 		}
 
+		GFCache::delete( 'legacy_is_in_use' );
+
 		unset( $forms['version'] );
 
 		$clean_forms = array();

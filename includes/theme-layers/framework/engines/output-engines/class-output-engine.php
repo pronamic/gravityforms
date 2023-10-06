@@ -2,6 +2,8 @@
 
 namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Engines\Output_Engines;
 
+use GFFormDisplay;
+
 /**
  * Output_Engines are responsible for outputting some sort of value, whether CSS blocks,
  * markup, or some other theme-layer-related data.
@@ -81,6 +83,35 @@ abstract class Output_Engine {
 		$block_settings = apply_filters( 'gform_form_block_attribute_values', array() );
 
 		return empty( $block_settings[ $form_id ] ) ? array() : rgar( $block_settings[ $form_id ], $instance, array() );
+	}
+
+	/**
+	 * Parse the settings from the style filter or shortcode attributes.
+	 *
+	 * @since 2.7.15
+	 *
+	 * @param $form
+	 *
+	 * @return array
+	 */
+	public function parse_form_style( $form ) {
+		$style_settings = array(
+			'formId' => $form['id'],
+		);
+
+		if ( rgar( $form, 'theme' ) ) {
+			$style_settings['theme'] = $form['theme'];
+		}
+
+		if ( rgar( $form, 'styles' ) ) {
+			$styles = GFFormDisplay::validate_form_styles( $form['styles'] );
+
+			foreach( $styles as $key => $value ) {
+				$style_settings[ $key ] = $value;
+			}
+		}
+
+		return $style_settings;
 	}
 
 }

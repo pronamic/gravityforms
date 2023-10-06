@@ -73,8 +73,15 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 			$page_instance  = isset( $form['page_instance'] ) ? $form['page_instance'] : - 1;
 			$settings       = $this->get_settings( $form['id'] );
 			$block_settings = $this->get_block_settings( $form['id'], $page_instance );
-			$styles         = call_user_func_array( $self->styles, array( $form, $ajax, $settings, $block_settings ) );
-			$scripts        = call_user_func_array( $self->scripts, array( $form, $ajax, $settings, $block_settings ) );
+
+			// Get the settings from the shortcode attribute or form properties, if they exist.
+			$shortcode_settings = $this->parse_form_style( $form );
+
+			// If we have conflicting block and shortcode settings, block settings take priority.
+			$style_settings = ! empty( $block_settings ) ? $block_settings : $shortcode_settings;
+
+			$styles         = call_user_func_array( $self->styles, array( $form, $ajax, $settings, $style_settings ) );
+			$scripts        = call_user_func_array( $self->scripts, array( $form, $ajax, $settings, $style_settings ) );
 
 			$this->process_form_assets( $styles, $scripts );
 

@@ -9,6 +9,9 @@ use Gravity_Forms\Gravity_Forms\Blocks\GF_Block_Attributes;
 use Gravity_Forms\Gravity_Forms\GF_Service_Container;
 use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
 
+use GFFormDisplay;
+use GFCommon;
+
 /**
  * Class GF_Blocks_Service_Provider
  *
@@ -50,6 +53,9 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 		require_once( plugin_dir_path( __FILE__ ) . '/config/class-gf-blocks-config.php' );
 
 		$container->add( self::FORM_BLOCK_ATTRIBUTES, function () {
+			require_once( GFCommon::get_base_path() . '/form_display.php' );
+			$global_styles = GFFormDisplay::validate_form_styles( apply_filters( 'gform_default_styles', false ) );
+
 			return array(
 				'formId'                       =>
 					array(
@@ -91,32 +97,32 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 				'theme'                        =>
 					array(
 						'type'    => 'string',
-						'default' => 'gravity',
+						'default' => '',
 					),
 				'inputSize'                    =>
 					array(
 						'type'    => 'string',
-						'default' => 'md',
+						'default' => rgar( $global_styles, 'inputSize' ) ? $global_styles['inputSize'] : 'md',
 					),
 				'inputBorderRadius'            =>
 					array(
 						'type'    => 'string',
-						'default' => 3,
+						'default' => rgar( $global_styles, 'inputBorderRadius' ) ? $global_styles['inputBorderRadius'] : 3,
 					),
 				'inputBorderColor'             =>
 					array(
 						'type'    => 'string',
-						'default' => '#686e77',
+						'default' => rgar( $global_styles, 'inputBorderColor' ) ? $global_styles['inputBorderColor'] : '#686e77',
 					),
 				'inputBackgroundColor'         =>
 					array(
 						'type'    => 'string',
-						'default' => '#fff',
+						'default' => rgar( $global_styles, 'inputBackgroundColor' ) ? $global_styles['inputBackgroundColor'] : '#fff',
 					),
 				'inputColor'                   =>
 					array(
 						'type'    => 'string',
-						'default' => '#112337',
+						'default' => rgar( $global_styles, 'inputColor' ) ? $global_styles['inputColor'] : '#112337',
 					),
 				'inputPrimaryColor'            =>
 					array(
@@ -124,37 +130,37 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 						// Setting this to empty allows us to set this to what the appropriate default
 						// should be from within the block. When empty, it defaults to:
 						// buttonPrimaryBackgroundColor
-						'default' => '', // #204ce5
+						'default' => rgar( $global_styles, 'inputPrimaryColor' ) ? $global_styles['inputPrimaryColor'] : '', // #204ce5
 					),
 				'labelFontSize'                =>
 					array(
 						'type'    => 'string',
-						'default' => 14,
+						'default' => rgar( $global_styles, 'labelFontSize' ) ? $global_styles['labelFontSize'] : 14,
 					),
 				'labelColor'                   =>
 					array(
 						'type'    => 'string',
-						'default' => '#112337',
+						'default' => rgar( $global_styles, 'labelColor' ) ? $global_styles['labelColor'] : '#112337',
 					),
 				'descriptionFontSize'          =>
 					array(
 						'type'    => 'string',
-						'default' => 13,
+						'default' => rgar( $global_styles, 'descriptionFontSize' ) ? $global_styles['descriptionFontSize'] : 13,
 					),
 				'descriptionColor'             =>
 					array(
 						'type'    => 'string',
-						'default' => '#585e6a',
+						'default' => rgar( $global_styles, 'descriptionColor' ) ? $global_styles['descriptionColor'] : '#585e6a',
 					),
 				'buttonPrimaryBackgroundColor' =>
 					array(
 						'type'    => 'string',
-						'default' => '#204ce5',
+						'default' => rgar( $global_styles, 'buttonPrimaryBackgroundColor' ) ? $global_styles['buttonPrimaryBackgroundColor'] : '#204ce5',
 					),
 				'buttonPrimaryColor'           =>
 					array(
 						'type'    => 'string',
-						'default' => '#fff',
+						'default' => rgar( $global_styles, 'buttonPrimaryColor' ) ? $global_styles['buttonPrimaryColor'] : '#fff',
 					),
 			);
 		} );

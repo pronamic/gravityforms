@@ -883,6 +883,10 @@ class GF_System_Report {
 				'value'        => $is_v2_enabled ? __( 'Yes', 'gravityforms' ) : __( 'No', 'gravityforms' ),
 				'value_export' => $is_v2_enabled ? 'Yes' : 'No',
 			),
+			array(
+				'label'        => esc_html__( 'Orbital Style Filter', 'gravityforms' ),
+				'value'        => has_filter( 'gform_default_styles' ) ? 'Yes' : 'No',
+			),
 		);
 
 
