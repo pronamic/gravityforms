@@ -1,3 +1,12 @@
+### 2.7.16 | 2023-10-25
+- Updated the API endpoint for telemetry data.
+- Fixed a bug that causes values of checkbox fields to appear twice on the entry list page.
+- Fixed a bug that prevents form block style settings from being applied.
+- Fixed jQuery deprecation notices in the form preview for the following fields: email, product, total, and stripe fields, as well as some conditional logic.
+- Fixed "undefined index" errors that sometimes appear when a form is embedded with a shortcode.  Credit: The GravityKit team.
+- AF: Updated the background processor to include additional logging statements around batch processing.
+- API: Added a new JavaScript action hook [gform_post_set_field_property](https://docs.gravityforms.com/gform_post_set_field_property/) in the form editor to listen for field property changes.
+
 ### 2.7.15 | 2023-10-05
 - Added a new global setting to select the default form theme.  On new sites, "Orbital" will be the default theme.
 - Added a 'theme' parameter to the Gravity Forms shortcode.

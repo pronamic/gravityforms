@@ -32,7 +32,7 @@ class Block_Styles_Handler {
 
 	public function form_css_properties( $form_id, $settings, $block_settings, $form = array() ) {
 
-		if ( $form['styles'] === false ) {
+		if ( rgar( $form, 'styles' ) === false ) {
 			return array();
 		}
 

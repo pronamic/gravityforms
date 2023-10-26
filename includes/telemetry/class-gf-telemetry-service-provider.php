@@ -45,13 +45,21 @@ class GF_Telemetry_Service_Provider extends GF_Service_Provider {
 	}
 
 	/**
-	 * Enqueue telemetry batches to be processed in the background.
+	 * Enqueue batches of telemetry events to be processed in the background.
 	 *
 	 * @since
 	 *
 	 * @return void
 	 */
 	public function enqueue_telemetry_batches() {
+		// Only run once a week.
+		$last_run     = get_option( 'gf_last_telemetry_run', 0 );
+		$current_time = time();
+		if ( $current_time - $last_run < 60 * 60 * 24 * 7 ) {
+			return;
+		}
+		update_option( 'gf_last_telemetry_run', $current_time );
+
 		\GFCommon::log_debug( __METHOD__ . sprintf( '(): Enqueuing telemetry batches' ) );
 		GF_Telemetry_Data::take_snapshot();
 
@@ -62,20 +70,12 @@ class GF_Telemetry_Service_Provider extends GF_Service_Provider {
 		$snapshot = $full_telemetry_data['snapshot'];
 
 		// Enqueue the snapshot first, alone, to be sent to its own endpoint.
-		$processor->push_to_queue(
-			array(
-				'data' => $snapshot,
-			)
-		);
+		$processor->push_to_queue( $snapshot );
 		$processor->save()->dispatch();
 
 		$full_telemetry_data = array_chunk( $full_telemetry_data['events'], self::BATCH_SIZE, true );
 		foreach ( $full_telemetry_data as $batch ) {
-			$processor->push_to_queue(
-				array(
-					'data' => $batch,
-				)
-			);
+			$processor->push_to_queue( $batch );
 			$processor->save()->dispatch();
 		}
 
@@ -85,7 +85,8 @@ class GF_Telemetry_Service_Provider extends GF_Service_Provider {
 			array(
 				'snapshot' => $snapshot,
 				'events'   => array(),
-			)
+			),
+			false
 		);
 	}
 }

@@ -438,9 +438,9 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 
 		if(useAnimation && !isInit){
 			if($target.length > 0){
-				$target.find(':input:hidden:not(.gf-default-disabled)').removeAttr( 'disabled' );
+				$target.find(':input:hidden:not(.gf-default-disabled)').prop( 'disabled', false );
 				if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
-					$target.removeAttr( 'disabled' ).css( 'display', '' );
+					$target.prop( 'disabled', false ).css( 'display', '' );
 					$target.attr( 'data-conditional-logic', 'hidden' );
 					if ( '1' == gf_legacy.is_legacy ) {
 						// for legacy markup, remove screen reader class.
@@ -460,11 +460,11 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if ( display == '' || display == 'none' ){
 				display = '1' === gf_legacy.is_legacy ? 'list-item' : 'block';
 			}
-			$target.find(':input:hidden:not(.gf-default-disabled)').removeAttr( 'disabled' ).attr( 'data-conditional-logic', 'visible' );
+			$target.find(':input:hidden:not(.gf-default-disabled)').prop( 'disabled', false ).attr( 'data-conditional-logic', 'visible' );
 
 			// Handle conditional submit and next buttons.
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
-				$target.removeAttr( 'disabled' ).css( 'display', '' );
+				$target.prop( 'disabled', false ).css( 'display', '' );
 				$target.attr( 'data-conditional-logic', 'visible' );
 				if ( '1' == gf_legacy.is_legacy ) {
 					// for legacy markup, remove screen reader class.
@@ -614,7 +614,7 @@ function gf_reset_to_default(targetId, defaultValue){
 		if(radio_button_name == "gf_other_choice"){
 			val = element.attr("value");
 		}
-		else if( jQuery.isArray( defaultValue ) && ! element.is( 'select[multiple]' ) ) {
+		else if( Array.isArray( defaultValue ) && ! element.is( 'select[multiple]' ) ) {
 			val = defaultValue[target_index];
 		}
 		else if(jQuery.isPlainObject(defaultValue)){

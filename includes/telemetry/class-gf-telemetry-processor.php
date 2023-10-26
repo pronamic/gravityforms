@@ -32,43 +32,29 @@ class GF_Telemetry_Processor extends \GF_Background_Process {
 	 */
 	protected function task( $batch ) {
 
-		if ( ! isset( $batch['data'] ) ) {
-			\GFCommon::log_debug( __METHOD__ . sprintf( '(): Batch data is missing. Aborting sending telemetry data.' ) );
-			return false;
+		if ( ! is_array( $batch ) ) {
+			$batch = array( $batch );
 		}
 
 		$raw_response = null;
-		if ( is_array( $batch['data'] ) ) {
-			\GFCommon::log_debug( __METHOD__ . sprintf( '(): Processing a batch of %d telemetry events.', count( $batch['data'] ) ) );
-			$data = array();
-			foreach ( $batch['data'] as $item ) {
+		\GFCommon::log_debug( __METHOD__ . sprintf( '(): Processing a batch of %d telemetry data.', count( $batch ) ) );
+		$data = array();
+		foreach ( $batch as $item ) {
 
-				if ( ! is_object( $item ) || ! property_exists( $item, 'data' ) ) {
-					continue;
-				}
-
-				$data[] = $item->data;
-			}
-			$raw_response = GF_Telemetry_Data::send_data( $data );
-		} else {
-			\GFCommon::log_debug( __METHOD__ . sprintf( '(): Processing a batch with snapshot data.' ) );
-
-			if ( ! is_object( $batch['data'] ) || ! property_exists( $batch['data'], 'data' ) ) {
-				\GFCommon::log_debug( __METHOD__ . sprintf( '(): Snapshot data is missing. Aborting sending telemetry data.' ) );
-				return false;
+			if ( ! is_object( $item ) || ! property_exists( $item, 'data' ) ) {
+				continue;
 			}
 
-			// snapshot data is sent to a different endpoint.
-			$raw_response = GF_Telemetry_Data::send_data( $batch['data']->data, 'version.php' );
+			// attach type & tag, required by the telemetry API.
+			$item->data['type'] = $item->key === 'snapshot' ? 'snapshot' : 'event';
+			$item->data['tag']  = $item->key;
+			$data[]             = $item->data;
 		}
+		$raw_response = GF_Telemetry_Data::send_data( $data );
 
-		if ( ! is_array( $batch['data'] ) ) {
-			$batch['data'] = array( $batch['data'] );
-		}
-
-		foreach ( $batch['data'] as $item ) {
+		foreach ( $batch as $item ) {
 			if ( ! is_object( $item ) ) {
-				\GFCommon::log_debug( __METHOD__ . sprintf( '(): Snapshot data is missing. Aborting running data_sent method on this entry.' ) );
+				\GFCommon::log_debug( __METHOD__ . sprintf( '(): Telemetry data is missing. Aborting running data_sent method on this entry.' ) );
 				continue;
 			}
 			$classname = get_class( $item );

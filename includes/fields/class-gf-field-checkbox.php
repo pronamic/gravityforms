@@ -393,7 +393,6 @@ class GF_Field_Checkbox extends GF_Field {
 
 			foreach ( $lead_field_keys as $input_id ) {
 				if ( is_numeric( $input_id ) && absint( $input_id ) == $field_id ) {
-					$items[] = GFCommon::selection_display( rgar( $entry, $input_id ), null, $entry['currency'], false );
 					$items[] = $this->get_selected_choice_output( rgar( $entry, $input_id ), rgar( $entry, 'currency' ) );
 				}
 			}

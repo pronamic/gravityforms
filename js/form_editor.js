@@ -3537,10 +3537,25 @@ function SetFeaturedImage() {
 }
 
 function SetFieldProperty(name, value){
-    if(value == undefined)
-        value = "";
+	if (value == undefined)
+		value = "";
 
-    GetSelectedField()[name] = value;
+	var field = GetSelectedField();
+	var previousValue = rgar( field, name );
+
+	field[name] = value;
+
+	/**
+	 * Enables custom actions to be performed when a field property is set.
+	 *
+	 * @since 2.7.16
+	 *
+	 * @param {string}                        name          The name of the property that was set.
+	 * @param {object}                        field         The field object that was updated.
+	 * @param {(string|number|boolean|array)} value         The current value of the specified property.
+	 * @param {(string|number|boolean|array)} previousValue The previous value of the specified property.
+	 */
+	window.gform.doAction( 'gform_post_set_field_property', name, field, value, previousValue );
 }
 
 function SetInputName(value, inputId){
