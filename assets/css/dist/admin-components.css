@@ -4683,6 +4683,18 @@ html[dir="rtl"] .gform-admin .gform-table {
 .gform-admin input[type="checkbox"].gform-toggle__toggle:checked::before {
 			background: #3e7da6;
 		}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle::before {
+				background: #9092b0;
+			}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle.focus-visible::before {
+					outline-color: #9092b0;
+				}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle.focus-visible::before {
+					outline-color: #9092b0;
+				}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:focus-visible::before {
+					outline-color: #9092b0;
+				}
 .gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle.focus-visible:checked::before {
 					outline-color: #0f3d6c;
 				}
@@ -4693,19 +4705,55 @@ html[dir="rtl"] .gform-admin .gform-table {
 					outline-color: #0f3d6c;
 				}
 .gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle.focus-visible:hover:checked::before {
-					outline-color: #242748;
-				}
+						outline-color: #242748;
+					}
 .gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle.focus-visible:hover:checked::before {
-					outline-color: #242748;
-				}
+						outline-color: #242748;
+					}
 .gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:focus-visible:hover:checked::before {
-					outline-color: #242748;
-				}
+						outline-color: #242748;
+					}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle.focus-visible:hover:checked ~ .gform-toggle__icon {
+						color: #242748;
+					}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle.focus-visible:hover:checked ~ .gform-toggle__icon {
+						color: #242748;
+					}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:focus-visible:hover:checked ~ .gform-toggle__icon {
+						color: #242748;
+					}
 .gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:checked::before {
-				background: #0f3d6c;
-			}
+					background: #0f3d6c;
+				}
 .gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:checked:hover::before {
-				background: #242748;
+						background: #242748;
+					}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:checked:hover ~ .gform-toggle__icon {
+						color: #242748;
+					}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:checked ~ .gform-toggle__icon {
+					color: #0f3d6c;
+				}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:disabled {
+				opacity: 1;
+			}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:disabled::before {
+					background: #ecedf8;
+				}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:disabled:checked::before {
+						opacity: 1;
+					}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:disabled:checked:hover::before {
+							background: #ecedf8;
+						}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:disabled:checked:hover ~ .gform-toggle__icon {
+							color: #ecedf8;
+						}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle:disabled ~ .gform-toggle__icon {
+					color: #ecedf8;
+				}
+.gform-admin .gform-toggle--theme-cosmos input[type="checkbox"].gform-toggle__toggle ~ .gform-toggle__icon {
+				color: #9092b0;
 			}
 .gform-admin .gform-toggle--size-s input[type="checkbox"].gform-toggle__toggle {
 		height: 1.25rem;
@@ -4765,8 +4813,12 @@ html[dir="rtl"] .gform-admin .gform-table {
 			position: relative;
 		}
 .gform-admin .gform-toggle--with-icons .gform-toggle__icon {
+			font-size: 16px;
+			inset-block-start: 50%;
 			pointer-events: none;
 			position: absolute;
+			transform: translate(0, -50%);
+			transition: all 0.15s ease;
 		}
 .gform-admin .gform-toggle--with-icons .gform-toggle__icon:first-of-type {
 				opacity: 1;
@@ -4780,32 +4832,23 @@ html[dir="rtl"] .gform-admin .gform-table {
 .gform-admin .gform-toggle--with-icons .gform-toggle__toggle:checked ~ .gform-toggle__icon:last-of-type {
 					opacity: 1;
 				}
-.gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon {
-			top: 0.188rem;
-		}
 .gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon:first-of-type {
-				left: 0.188rem;
+				inset-inline-start: 2px;
 			}
-.gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon:last-of-type {
-				right: 0.188rem;
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__toggle:checked ~ .gform-toggle__icon {
+				transform: translate(calc(2px + 1.3125rem), -50%);
 			}
-.gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon {
-			top: 0.25rem;
-		}
 .gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon:first-of-type {
-				left: 0.25rem;
+				inset-inline-start: 4px;
 			}
-.gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon:last-of-type {
-				right: 0.25rem;
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__toggle:checked ~ .gform-toggle__icon {
+				transform: translate(calc(4px + 1.5rem), -50%);
 			}
-.gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon {
-			top: 0.375rem;
-		}
 .gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon:first-of-type {
-				left: 0.375rem;
+				inset-inline-start: 6px;
 			}
-.gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon:last-of-type {
-				right: 0.375rem;
+.gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__toggle:checked ~ .gform-toggle__icon {
+				transform: translate(calc(6px + 1.6875rem), -50%);
 			}
 html[dir="rtl"] .gform-admin .gform-toggle--size-s input[type="checkbox"].gform-toggle__toggle:checked::after {
 			transform: translateX(-1.3125rem);
@@ -4816,26 +4859,14 @@ html[dir="rtl"] .gform-admin .gform-toggle--size-m input[type="checkbox"].gform-
 html[dir="rtl"] .gform-admin .gform-toggle--size-l input[type="checkbox"].gform-toggle__toggle:checked::after {
 			transform: translateX(-1.6875rem);
 		}
-html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon:first-of-type {
-				right: 0.125rem;
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__toggle:checked ~ .gform-toggle__icon {
+				transform: translate(calc((2px + 1.3125rem) * -1), -50%);
 			}
-html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-s .gform-toggle__icon:last-of-type {
-				left: 0.125rem;
-				right: inherit;
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__toggle:checked ~ .gform-toggle__icon {
+				transform: translate(calc((4px + 1.5rem) * -1), -50%);
 			}
-html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon:first-of-type {
-				right: 0.25rem;
-			}
-html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-m .gform-toggle__icon:last-of-type {
-				left: 0.25rem;
-				right: inherit;
-			}
-html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon:first-of-type {
-				right: 0.375rem;
-			}
-html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__icon:last-of-type {
-				left: 0.375rem;
-				right: inherit;
+html[dir="rtl"] .gform-admin .gform-toggle--with-icons.gform-toggle--size-l .gform-toggle__toggle:checked ~ .gform-toggle__icon {
+				transform: translate(calc((6px + 1.6875rem) * -1), -50%);
 			}
 .gform-admin .gform-tooltip {
 		display: inline-block;

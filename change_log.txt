@@ -1,3 +1,8 @@
+### 2.7.17 | 2023-11-09
+- Added the Salesforce icon to the Gravity Forms icon kit.
+- Fixed an issue that prevents the post category selector from appearing correctly in WordPress 6.4.
+- Fixed an issue where multipage forms with conditional logic display the wrong text on the "next" button.
+
 ### 2.7.16 | 2023-10-25
 - Updated the API endpoint for telemetry data.
 - Fixed a bug that causes values of checkbox fields to appear twice on the entry list page.

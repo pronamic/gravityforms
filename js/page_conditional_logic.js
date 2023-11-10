@@ -78,6 +78,8 @@ var GFPageConditionalLogic = function (args) {
 
         if (self.paginationType === 'percentage') {
             currentPage = self.options.pagination.display_progressbar_on_confirmation === true ? ( currentPage - 1 ) : currentPage;
+        } else {
+            currentPage = parseInt($(self.formWrapper + ' .gf_step_active .gf_step_number').text(), 10);
         }
 
         progress = Math.floor( currentPage / visibleStepNumber * 100 );

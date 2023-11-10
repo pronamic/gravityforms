@@ -1698,7 +1698,7 @@ html[dir="rtl"] .search-button::after {
 }
 
 .panel-block-tabs__body--settings label {
-		margin-bottom: 0.5rem;
+		position: static;
 	}
 
 .panel-block-tabs__body--settings .field-choice-row label {
