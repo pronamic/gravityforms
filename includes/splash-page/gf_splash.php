@@ -1,8 +1,8 @@
 <article class="gform-splash" data-js="gform-splash-page">
 	<header class="gform-splash__header">
 		<img class="gform-logo" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/logos/gravity-logo-white.svg" alt="Gravity Forms"/>
-		<h1><?php esc_html_e( 'Build Forms Quickly Using Gravity Forms 2.7', 'gravityforms' ); ?></h1>
-		<p><?php esc_html_e( 'Never start from scratch again. Gravity Forms comes with several pre-built form templates to help you save even more time. We truly made the most beginner-friendly WordPress forms plugin in the market.', 'gravityforms' ); ?></p>
+		<h1><?php esc_html_e( 'Edit Forms with Ease in Gravity Forms 2.8!', 'gravityforms' ); ?></h1>
+		<p><?php esc_html_e( 'The new Compact View makes it a cinch to edit long forms!', 'gravityforms' ); ?></p>
 		<a class="gform-button gform-button--size-height-xxl gform-button--white gform-button--width-auto gform-button--icon-trailing"  href="<?php echo esc_url( admin_url( 'admin.php?page=gf_new_form' ) ); ?>" title="<?php esc_attr_e( 'Get started with a new form', 'gravityforms' ); ?>">
 			<span class="gform-button__text gform-button__text--inactive gform-typography--size-text-md"><?php esc_html_e( 'Get Started', 'gravityforms' ); ?></span>
 			<span class="gform-common-icon gform-common-icon--arrow-narrow-right gform-button__icon"></span>
@@ -20,117 +20,64 @@
 				200+ <?php esc_html_e( '4.7 Stars', 'gravityforms' ); ?>
 			</a>
 		</div>
-		<img class="gform-splash__header-bottom-image" src="<?php echo $this->img_dir . 'hero-image.png'; ?>" alt="<?php esc_attr_e( 'Screenshot of the new form template library', 'gravityforms' ); ?>">
 	</header>
 
 	<div class="gform-splash__body">
 		<?php
-		$text = __( 'New Form Template Library', 'gravityforms' );
-		echo wp_kses_post( $this->tags->headline( array( 'text' => $text ) ) );
-
-		$text  = '<p>' . __( 'We’re celebrating the release of Gravity Forms 2.7 today! It includes some exciting new features that will make form management easier than ever.', 'gravityforms' ) . '</p>
-			<p>' . __( 'With this update, you can get started building your forms quickly by selecting one of our hand-curated templates from the new Form Template Library.', 'gravityforms' ) . '</p>
-			<p>' . __( 'Whether you’re looking to create a simple contact form, request a quote form, donation form, payment order form, or a subscription form, we have a form template for you.', 'gravityforms' ) . '</p>
-			<p>' . // Translators: 1. opening link tag with link to Gravity Forms template library, 2. closing link tag.
-				 sprintf(
-					 __( 'We hope to bring you many new templates to this growing library, and look forward to any %stemplate suggestions%s you may have to make form creation even easier.', 'gravityforms' ),
-					 '<a href="https://www.gravityforms.com/form-templates/">',
-					 '</a>') .
-				 '</p>
-			<a href="https://docs.gravityforms.com/using-the-gravity-forms-template-library/" target="_blank" class="gform-button gform-button--size-height-xl gform-button--primary-new gform-button--width-auto"  aria-label="' . __( 'Read more about the Form Template Library', 'gravityforms' ) . '"><span class="gform-button__text gform-button__text--inactive gform-typography--size-text-sm">' . __( 'Read More', 'gravityforms' ) . '</span></a>';
+		$text  = '<h3>' . __( 'Form Editor Compact View', 'gravityforms' ) . '</h3>
+			<p>' . __( 'Our new compact view makes it easier than ever to edit your forms! If you have long forms, you no longer have to scroll for ages to find the field you’re looking for. The compact view gives you a bird’s eye view of your form, so you can quickly find the fields you need to edit.', 'gravityforms' ) . ' <a href="https://docs.gravityforms.com/compact-view/" title="' . __( 'Read more about Compact View', 'gravityforms' ) . '" target="_blank">' . __( 'Read More', 'gravityforms' ) . '</a></p>';
 		$image = array(
-			'src' => $this->img_dir . 'template-library.png',
-			'alt' => __( 'Screenshot of a collection of new features in Gravity Forms 2.7', 'gravityforms' ),
+			'src' => $this->img_dir . 'compact-view.png',
+			'alt' => __( 'Screenshot of the compact view in Gravity Forms 2.8', 'gravityforms' ),
 		);
+
 		echo wp_kses_post(
-			$this->tags->text_and_image(
+			$this->tags->equal_columns(
 				array(
-					'text'              => $text,
-					'image'             => $image,
-					'image_placement'   => 'left',
-					'container_classes' => 'gform-splash__section--image-spread-right',
-				)
+					'columns' => array(
+						$this->tags->build_image_html( $image ),
+						$text,
+					),
+					'container_classes' => 'column--vertical-center',
+				),
 			)
 		);
 
-		$text  = '<h3>' . __( 'Faster Setup Wizard', 'gravityforms' ) . '</h3>
-			<p>' . __( 'We want customers to love using Gravity Forms from the very first moment it’s installed. So we’ve redesigned and rebuilt the setup wizard from the ground up to provide a simpler, more streamlined experience.', 'gravityforms' ) . '</p>
-			<p>' . __( 'New customers will appreciate the ease-of-use, while seasoned customers will find their setup times substantially reduced.', 'gravityforms' ) . '</p>
-			<a href="https://docs.gravityforms.com/gravity-forms-setup-wizard/" target="_blank" class="gform-button gform-button--size-height-xl gform-button--primary-new gform-button--width-auto"  aria-label="' . __( 'Read more about the setup wizard', 'gravityforms' ) . '"><span class="gform-button__text gform-button__text--inactive gform-typography--size-text-sm">' . __( 'Read More', 'gravityforms' ) . '</span></a>';
-		$image = array(
-			'src' => $this->img_dir . 'onboarding-wizard.png',
-			'alt' => __( 'Screenshot of the submit button in Gravity Forms 2.6.', 'gravityforms' ),
+		$style_icon = $this->tags->build_image_html(
+			array(
+				'src' => $this->img_dir . 'icon-swatch.png',
+				'alt' => __( 'Icon of color swatches', 'gravityforms' ),
+				'width' => '48px',
+				'height' => '48px',
+				'class' => 'image--width-auto',
+			)
 		);
+		$db_icon = $this->tags->build_image_html(
+			array(
+				'src' => $this->img_dir . 'icon-db.png',
+				'alt' => __( 'Icon of a database', 'gravityforms' ),
+				'width' => '48px',
+				'height' => '48px',
+				'class' => 'image--width-auto',
+			)
+		);
+		$col1text  = $style_icon . '<h4>' . __( 'Orbital Form Styling', 'gravityforms' ) . '</h4>
+			<p>' . __( 'You might have noticed that we recently added a new setting so that you can use the beautiful and customizable Orbital form theme everywhere on your site, including shortcodes! Soon you’ll see Orbital in more places, and you’ll find more ways to customize it.', 'gravityforms' ) . ' <a href="https://docs.gravityforms.com/block-themes-and-style-settings/" title="' . __( 'Read more about styling your forms', 'gravityforms' ) . '" target="_blank">' . __( 'Read More', 'gravityforms' ) . '</a></p>';
+		$col2text = $db_icon . '<h4>' . __( 'Performance Improvements', 'gravityforms' ) . '</h4>
+			<p>' . __( 'We are always striving to improve the performance of Gravity Forms. In this release, you’ll notice smaller CSS files so that you don’t have to sacrifice performance to have good-looking forms.', 'gravityforms' ) . '</p>';
 		echo wp_kses_post(
-			$this->tags->text_and_image(
+			$this->tags->equal_columns(
 				array(
-					'text'              => $text,
-					'image'             => $image,
-					'image_placement'   => 'right',
-					'container_classes' => 'gform-splash__section--image-spread-left gform-splash__section--image-spread-right gform-splash__section--image-spread-down',
-				)
+					'columns' => array(
+						$col1text,
+						$col2text,
+					),
+				),
 			)
 		);
 
-		$text  = '<h3>' . __( 'Better Form Styling Out of the Box', 'gravityforms' ) . '</h3>
-			<p>' . __( 'If you’ve ever had trouble getting your forms to look exactly the way you want, you’ll love the new styling options we’ve added to the block settings. Tweak the color scheme, change the size of inputs, modify button styles, and much more - all from within the WordPress block editor.', 'gravityforms' ) . '</p>
-			<p>' . __( 'Now each of your forms can be tailored to look and feel exactly how you need them to, without the need to write a single line of CSS.', 'gravityforms' ) . '</p>
-			<a href="https://docs.gravityforms.com/block-themes-and-style-settings/" target="_blank" class="gform-button gform-button--size-height-xl gform-button--primary-new gform-button--width-auto"  aria-label="' . __( 'Read more about form styling', 'gravityforms' ) . '"><span class="gform-button__text gform-button__text--inactive gform-typography--size-text-sm">' . __( 'Read More', 'gravityforms' ) . '</span></a>';
-		$image = array(
-			'src' => $this->img_dir . 'block-settings.png',
-			'alt' => __( 'Screenshot of the embed form UI in Gravity Forms 2.6.', 'gravityforms' ),
-		);
-		echo wp_kses_post(
-			$this->tags->text_and_image(
-				array(
-					'text'              => $text,
-					'image'             => $image,
-					'image_placement'   => 'left',
-					'container_classes' => 'gform-splash__section--image-spread-left gform-splash__section--image-spread-right gform-splash__section--image-spread-down',
-				)
-			)
-		);
-
-		$text  = '<h3>' . __( 'Increased Form Spam Protection', 'gravityforms' ) . '</h3>
-			<p>' . __( 'We’ve improved the anti-spam honeypot protection to be much more effective. We added an additional method for detecting spam entries, and let you choose whether you want the entries to go to a dedicated spam folder or be blocked entirely.', 'gravityforms' ) . '</p>
-			<p>' . __( 'Simply enable the honeypot in your form settings and enjoy the benefits of much less form spam.', 'gravityforms' ) . '</p>
-			<a href="https://docs.gravityforms.com/spam-honeypot-enhancements/" target="_blank" class="gform-button gform-button--size-height-xl gform-button--primary-new gform-button--width-auto"  aria-label="' . __( 'Read more about spam protection', 'gravityforms' ) . '"><span class="gform-button__text gform-button__text--inactive gform-typography--size-text-sm">' . __( 'Read More', 'gravityforms' ) . '</span></a>';
-		$image = array(
-			'src' => $this->img_dir . 'spam-protection.png',
-			'alt' => __( 'Screenshot of the choices UI in Gravity Forms 2.6.', 'gravityforms' ),
-		);
-		echo wp_kses_post(
-			$this->tags->text_and_image(
-				array(
-					'text'              => $text,
-					'image'             => $image,
-					'image_placement'   => 'right',
-					'container_classes' => 'gform-splash__section--image-spread-left gform-splash__section--image-spread-right gform-splash__section--image-spread-down',
-				)
-			)
-		);
-
-		$text = __( 'More Developer Features', 'gravityforms' );
-		echo wp_kses_post( $this->tags->headline( array( 'text' => $text ) ) );
-
-		$image = array(
-			'src' => $this->img_dir . 'packages.png',
-			'alt' => __( 'Screenshot of packages code.', 'gravityforms' ),
-		);
-		echo wp_kses_post(
-			$this->tags->full_width_image(
-				array(
-					'image'             => $image,
-					'container_classes' => 'gform-splash__section--image-spread-left gform-splash__section--image-spread-right gform-splash__section--image-spread-down',
-				)
-			)
-		);
-
-		$text = '<h3>' . __( 'Brand New Components', 'gravityforms' ) . '</h3>
-			<p>' . __( 'Gravity Forms 2.7 adds over 100 new components to our collection. It’s been a long journey but we are super proud of where we landed, and think it’s going to position Gravity Forms as a useful tool for a whole new group of developers.', 'gravityforms' ) . '</p>
-			<p>' . __( 'Best of all, we\'re making our components available as a package that add-on developers can use in their own products to provide a consistent user experience across the entire ecosystem.', 'gravityforms' ) . '</p>';
-		echo wp_kses_post( $this->tags->full_width_text( array( 'text' => $text ) ) );
 		?>
+
 
 		<footer class="gform-splash__footer">
 			<h4>

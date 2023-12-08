@@ -93,15 +93,6 @@ function initLayoutEditor( $ ) {
 		};
 	}
 
-	// deprecated. remove in 2.8
-	String.prototype.format = function() {
-		var args = arguments;
-		console.warn( 'String.format will be replaced with String.gformFormat in Gravity Forms version 2.8.' );
-		return this.replace( /{(\d+)}/g, function( match, number ) {
-			return typeof args[ number ] != 'undefined' ? args[ number ] : match;
-		} );
-	};
-
 	var $editorContainer = $( '#form_editor_fields_container' ),
 		$editor = $( '.gform_editor' ),
 		$container = $( '#gform_fields' ),
@@ -230,6 +221,9 @@ function initLayoutEditor( $ ) {
 		if ( ! jQuery( '#field_submit' ).length > 0 ) {
 			StartAddField( 'submit', Math.max( 0, $container.children().index( $elem ) + 1 ) );
 		}
+
+		var nativeEvent = new Event('gform/layout_editor/field_modified');
+		document.dispatchEvent(nativeEvent);
 
 	} );
 
@@ -851,6 +845,15 @@ function initLayoutEditor( $ ) {
 					target: $target
 				} );
 
+				// drop indicator is a different distance from field in compact view.
+				if ( $target.parents( '.gform-compact-view' ).length > 0 ) {
+					var topDistance = 10;
+					var bottomDistance = 6;
+				} else {
+					var topDistance = 30;
+					var bottomDistance = 26;
+				}
+
 				// Where on the child field has the helper been dragged?
 				switch ( where ) {
 					case 'left':
@@ -877,7 +880,7 @@ function initLayoutEditor( $ ) {
 						return false;
 					case 'bottom':
 						$indicator().css( {
-							top: sibPos.top + $target.outerHeight() + 26,
+							top: sibPos.top + $target.outerHeight() + bottomDistance,
 							left: 0,
 							height: '4px',
 							width: '100%',
@@ -887,7 +890,7 @@ function initLayoutEditor( $ ) {
 					case 'top':
 
 						$indicator().css( {
-							top: sibPos.top - 30,
+							top: sibPos.top - topDistance,
 							left: 0,
 							height: '4px',
 							width: '100%'

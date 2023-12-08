@@ -75,14 +75,11 @@ class GF_Field_Calculation extends GF_Field {
 		$quantity_field = '';
 		$disabled_text  = $is_form_editor ? 'disabled="disabled"' : '';
 
-		$qty_input_type = GFFormsModel::is_html5_enabled() ? 'number' : 'text';
-		$qty_min_attr   = GFFormsModel::is_html5_enabled() ? "min='0'" : '';
-
 		$product_quantity_sub_label = $this->get_product_quantity_label( $form_id );
 
 		if ( $is_entry_detail || $is_form_editor  ) {
 			$style          = $this->disableQuantity ? "style='display:none;'" : '';
-			$quantity_field = " <span class='ginput_quantity_label gform-field-label gform-field-label--type-sub-large' {$style}>{$product_quantity_sub_label}</span> <input type='{$qty_input_type}' name='input_{$id}.3' value='{$quantity}' id='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity' size='10' {$qty_min_attr} {$disabled_text} />";
+			$quantity_field = " <span class='ginput_quantity_label gform-field-label gform-field-label--type-sub-large' {$style}>{$product_quantity_sub_label}</span> <input type='number' name='input_{$id}.3' value='{$quantity}' id='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity' size='10' min='0' {$disabled_text} />";
 		} elseif ( ! $this->disableQuantity ) {
 			$tabindex                  = $this->get_tabindex();
 			$describedby_extra_id = array();
@@ -90,7 +87,7 @@ class GF_Field_Calculation extends GF_Field {
 				$describedby_extra_id = array( "ginput_product_price_{$this->formId}_{$this->id}" );
 			}
 			$quantity_aria_describedby = $this->get_aria_describedby( $describedby_extra_id );
-			$quantity_field            .= " <span class='ginput_quantity_label gform-field-label' aria-hidden='true'>" . $product_quantity_sub_label . "</span> <input type='{$qty_input_type}' name='input_{$id}.3' value='{$quantity}' id='input_{$form_id}_{$this->id}_1' class='ginput_quantity' size='10' {$qty_min_attr} {$tabindex} {$disabled_text} {$quantity_aria_describedby} />";
+			$quantity_field            .= " <span class='ginput_quantity_label gform-field-label' aria-hidden='true'>" . $product_quantity_sub_label . "</span> <input type='number' name='input_{$id}.3' value='{$quantity}' id='input_{$form_id}_{$this->id}_1' class='ginput_quantity' size='10' min='0' {$tabindex} {$disabled_text} {$quantity_aria_describedby} />";
 		} else {
 			if ( ! is_numeric( $quantity ) ) {
 				$quantity = 1;

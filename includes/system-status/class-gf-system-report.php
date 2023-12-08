@@ -813,10 +813,17 @@ class GF_System_Report {
 
 		$is_writable = wp_is_writable( $upload_path );
 
-		$disable_css      = get_option( 'rg_gforms_disable_css' );
+		$disable_css      = apply_filters( 'gform_disable_css', get_option( 'rg_gforms_disable_css' ) );
 		$enable_html5     = get_option( 'rg_gforms_enable_html5', false );
 		$no_conflict_mode = get_option( 'gform_enable_noconflict' );
 		$updates          = get_option( 'gform_enable_background_updates' );
+
+		$default_theme = get_option( 'rg_gforms_default_theme');
+		$theme_names   = array(
+			'gravity-theme' => 'Gravity Forms 2.5 Theme',
+			'orbital'       => 'Orbital Theme',
+		);
+		$default_theme_name = rgar( $theme_names, $default_theme );
 
 		$web_api       = GFWebAPI::get_instance();
 		$is_v2_enabled = $web_api->is_v2_enabled( $web_api->get_plugin_settings() );
@@ -855,10 +862,9 @@ class GF_System_Report {
 				'value_export' => ! $disable_css ? 'Yes' : 'No',
 			),
 			array(
-				'label'        => esc_html__( 'Output HTML5', 'gravityforms' ),
-				'label_export' => 'Output HTML5',
-				'value'        => $enable_html5 ? __( 'Yes', 'gravityforms' ) : __( 'No', 'gravityforms' ),
-				'value_export' => $enable_html5 ? 'Yes' : 'No',
+				'label'        => esc_html__( 'Default Theme', 'gravityforms' ),
+				'label_export' => 'Default Theme',
+				'value'        => $default_theme_name,
 			),
 			array(
 				'label'        => esc_html__( 'No-Conflict Mode', 'gravityforms' ),

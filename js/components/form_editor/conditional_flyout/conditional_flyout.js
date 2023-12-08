@@ -759,6 +759,26 @@ GFConditionalLogic.prototype.renderRules = function() {
 }
 
 /**
+ * Update the visibility of the conditional logic icon in compact view.
+ */
+GFConditionalLogic.prototype.updateCompactView = function() {
+	if( this.objectType == 'next_button' ) {
+		return;
+	}
+
+	const icon = document.querySelector( '#gfield_' + this.fieldId + '-conditional-logic-icon' );
+	if ( ! icon ) {
+		return;
+	}
+
+	if ( this.state.enabled ) {
+		icon.style.display = 'block';
+	} else {
+		icon.style.display = 'none';
+	}
+}
+
+/**
  * Gather an object populated with the DOM elements we'll be interacting with.
  *
  * @return {object}
@@ -1011,6 +1031,7 @@ GFConditionalLogic.prototype.updateState = function( stateKey, stateValue ) {
 		this.renderSidebar();
 		this.renderMainControls( true );
 		this.renderRules();
+		this.updateCompactView();
 	}
 };
 

@@ -253,22 +253,21 @@ class GF_Field_Date extends GF_Field {
 		$year_sub_label       = $this->get_input_label( $year_input );
 		$year_sub_label_class = $this->get_input_label_class( $year_input, $sub_label_class );
 
-		$is_html5        = RGFormsModel::is_html5_enabled();
-		$date_input_type = $is_html5 ? 'number' : 'text';
+		$date_input_type = 'number';
 
-		$month_html5_attributes = $is_html5 ? "min='1' max='12' step='1'" : '';
-		$day_html5_attributes   = $is_html5 ? "min='1' max='31' step='1'" : '';
+		$month_html5_attributes = "min='1' max='12' step='1'";
+		$day_html5_attributes   = "min='1' max='31' step='1'";
 
 		$year_min = apply_filters( 'gform_date_min_year', '1920', $form, $this );
 		$year_max = apply_filters( 'gform_date_max_year', date( 'Y' ) + 1, $form, $this );
 
-		$year_min_attribute  = $is_html5 && is_numeric( $year_min ) ? "min='{$year_min}'" : '';
-		$year_max_attribute  = $is_html5 && is_numeric( $year_max ) ? "max='{$year_max}'" : '';
-		$year_step_attribute = $is_html5 ? "step='1'" : '';
+		$year_min_attribute  = is_numeric( $year_min ) ? "min='{$year_min}'" : '';
+		$year_max_attribute  = is_numeric( $year_max ) ? "max='{$year_max}'" : '';
+		$year_step_attribute = "step='1'";
 
-		$month_maxlength = $is_html5 ? '' : "maxlength='2'";
-		$day_maxlength   = $is_html5 ? '' : "maxlength='2'";
-		$year_maxlength  = $is_html5 ? '' : "maxlength='4'";
+		$month_maxlength = "maxlength='2'";
+		$day_maxlength   = "maxlength='2'";
+		$year_maxlength  = "maxlength='4'";
 
 		// A11y improvements for the date picker field.
 		$date_format_sr_text = $this->get_date_format( 'screen_reader_text' );

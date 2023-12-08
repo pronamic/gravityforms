@@ -103,4 +103,5 @@ class GF_Theme_Layers extends \GFAddOn {
 	public function form_settings_fields( $form ) {
 		return array();
 	}
+	
 }

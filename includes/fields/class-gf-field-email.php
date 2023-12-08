@@ -137,7 +137,7 @@ class GF_Field_Email extends GF_Field {
 		$is_sub_label_above       = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
 		$sub_label_class          = $field_sub_label_placement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
 
-		$html_input_type = RGFormsModel::is_html5_enabled() ? 'email' : 'text';
+		$html_input_type = 'email';
 
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';

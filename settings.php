@@ -487,25 +487,6 @@ class GFSettings {
 					),
 				),
 			),
-
-			'css'                 => array(
-				'id'          => 'section_default_css',
-				'title'       => esc_html__( 'Output Default CSS', 'gravityforms' ),
-				'description' => esc_html__( 'Enable this option to output the default form CSS. Disable it if you plan to create your own CSS in a child theme.', 'gravityforms' ),
-				'class'       => 'gform-settings-panel--half',
-				'fields'      => array(
-					array(
-						'name'          => 'disable_css',
-						'type'          => 'toggle',
-						'toggle_label'  => esc_html__( 'Disable CSS', 'gravityforms' ),
-						'save_callback' => function( $field, $value ) {
-							update_option( 'rg_gforms_disable_css', ! (bool) $value );
-
-							return $value;
-						},
-					),
-				),
-			),
 			'currency'            => array(
 				'id'     => 'section_currency',
 				'title'  => esc_html__( 'Default Currency', 'gravityforms' ),
@@ -659,26 +640,6 @@ class GFSettings {
 				),
 			);
 
-        $fields['html5'] = array(
-				'id'            => 'section_enable_html5',
-				'title'         => esc_html__( 'Output HTML5', 'gravityforms' ),
-				'description'   => esc_html__( 'Gravity Forms outputs HTML5 form fields by default. Disable this option if you would like to prevent the plugin from outputting HTML5 form fields.', 'gravityforms' ),
-				'class'         => 'gform-settings-panel--half',
-				'default_value' => true,
-				'fields'        => array(
-					array(
-						'name'          => 'enable_html5',
-						'type'          => 'toggle',
-						'toggle_label'  => esc_html__( 'Output HTML5', 'gravityforms' ),
-						'save_callback' => function( $field, $value ) {
-							update_option( 'rg_gforms_enable_html5', (bool) $value ? 1 : 0 );
-
-							return $value;
-						},
-					),
-				),
-			);
-
         $fields['telemetry'] = array(
 				'id'            => 'section_enable_telemetry_collection',
 				'title'         => esc_html__( 'Data Collection', 'gravityforms' ),
@@ -698,6 +659,41 @@ class GFSettings {
 					),
 				),
 			);
+
+		/**
+		 * Allows forcing the display of the disable CSS setting.
+		 *
+		 * @since 2.8
+		 *
+		 * @param bool $gform_display_disable_css_setting Indicates if the disable CSS setting should be displayed or not.
+		 */
+		$gform_display_disable_css_setting = apply_filters( 'gform_display_disable_css_setting', (bool) get_option( 'rg_gforms_disable_css' ) );
+
+		if ( $gform_display_disable_css_setting ) {
+			$fields['css'] = array(
+				'id'          => 'section_default_css',
+				'title'       => esc_html__( 'Output Default CSS', 'gravityforms' ),
+				'description' => sprintf(
+						esc_html__( 'Enable this option to output the default form CSS. Disable it if you plan to create your own CSS in a child theme. Note: after Gravity Forms 2.8, this setting will no longer appear on the settings page. If you previously had it enabled, you will need to use the %sgform_disable_css%s filter to disable it.', 'gravityforms' ),
+						'<a href="https://docs.gravityforms.com/gform_disable_css/" target="_blank">',
+						'</a>'
+						),
+
+				'class'       => 'gform-settings-panel--half',
+				'fields'      => array(
+					array(
+						'name'          => 'disable_css',
+						'type'          => 'toggle',
+						'toggle_label'  => esc_html__( 'Disable CSS', 'gravityforms' ),
+						'save_callback' => function( $field, $value ) {
+							update_option( 'rg_gforms_disable_css', ! (bool) $value );
+
+							return $value;
+						},
+					),
+				),
+			);
+		}
 
 		// Check if user has hidden license details in the installation wizard.
 		$hide_license_option = get_option( 'rg_gforms_' . GF_Setup_Wizard_Endpoint_Save_Prefs::PARAM_HIDE_LICENSE, false );
@@ -905,7 +901,6 @@ class GFSettings {
 			'default_theme'             => get_option( 'rg_gforms_default_theme', 'gravity-theme' ),
 			'currency'                  => GFCommon::get_currency(),
 			'disable_css'               => ! (bool) get_option( 'rg_gforms_disable_css' ),
-			'enable_html5'              => (bool) get_option( 'rg_gforms_enable_html5', false ),
 			'enable_noconflict'         => (bool) get_option( 'gform_enable_noconflict' ),
 			'enable_akismet'            => (bool) get_option( 'rg_gforms_enable_akismet', true ),
 			'enable_background_updates' => (bool) get_option( 'gform_enable_background_updates' ),

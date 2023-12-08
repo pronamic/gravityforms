@@ -9,6 +9,19 @@ class GF_Field_Price extends GF_Field {
 
 	public $type = 'price';
 
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.8
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--product';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'rules_setting',

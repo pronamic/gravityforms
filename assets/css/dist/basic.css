@@ -1125,6 +1125,9 @@ style sheet for editing. Then, go to the form
 settings page & set the 'output CSS' option
 to no.
 
+NOTE: These styles were duplicated to be used in: "assets/css/src/admin/editor/_ready-classes.pcss"
+and should be kept in sync.
+
 ----------------------------------------------------------------
 */
 
@@ -1674,10 +1677,13 @@ to no.
 			}
 
 /*
-* Left and right label alignment
-*
-* Used in the basic.css front-end stylesheet.
-*/
+ * Left and right label alignment
+ *
+ * Used in the basic.css front-end stylesheet.
+ *
+ * NOTE: These styles were duplicated to be used in: "assets/css/src/admin/editor/_label-position.pcss"
+ * and should be kept in sync.
+ */
 
 .gform_wrapper.gravity-theme .left_label .gfield:not(.gsection):not(.gfield_html):not(fieldset), .gform_wrapper.gravity-theme .right_label .gfield:not(.gsection):not(.gfield_html):not(fieldset) {
 		display: flex;

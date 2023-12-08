@@ -3468,15 +3468,6 @@ if ( ! String.prototype.gformFormat ) {
 	};
 }
 
-// deprecated. remove in 2.8
-String.prototype.format = function() {
-	var args = arguments;
-	console.warn( 'String.format will be replaced with String.gformFormat in Gravity Forms version 2.8.' );
-	return this.replace( /{(\d+)}/g, function( match, number ) {
-		return typeof args[ number ] != 'undefined' ? args[ number ] : match;
-	} );
-};
-
 
 /**
  * Toggle the dropdown submenus in the form editor menu bar.

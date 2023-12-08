@@ -18,6 +18,19 @@ class GF_Field_HiddenProduct extends GF_Field {
 	 */
 	protected $_supports_state_validation = true;
 
+	/**
+	 * Returns the field's form editor icon.
+	 *
+	 * This could be an icon url or a gform-icon class.
+	 *
+	 * @since 2.8
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_icon() {
+		return 'gform-icon--hidden';
+	}
+
 	function get_form_editor_field_settings() {
 		return array(
 			'base_price_setting',
@@ -40,7 +53,7 @@ class GF_Field_HiddenProduct extends GF_Field {
 			$this->validation_message = esc_html__( 'Please enter a valid quantity', 'gravityforms' );
 		}
 	}
-	
+
 	public function get_value_default() {
 		$value = array();
 		if ( is_array( $this->inputs ) ) {

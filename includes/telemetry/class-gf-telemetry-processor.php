@@ -52,6 +52,11 @@ class GF_Telemetry_Processor extends \GF_Background_Process {
 		}
 		$raw_response = GF_Telemetry_Data::send_data( $data );
 
+		if ( is_wp_error( $raw_response ) ) {
+			\GFCommon::log_debug( __METHOD__ . sprintf( '(): Failed sending telemetry data. Code: %s; Message: %s.', $raw_response->get_error_code(), $raw_response->get_error_message() ) );
+			return false;
+		}
+
 		foreach ( $batch as $item ) {
 			if ( ! is_object( $item ) ) {
 				\GFCommon::log_debug( __METHOD__ . sprintf( '(): Telemetry data is missing. Aborting running data_sent method on this entry.' ) );

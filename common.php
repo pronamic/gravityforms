@@ -3826,9 +3826,7 @@ Content-Type: text/html;
 		switch ( $type ) {
 
 			case 'honeypot':
-				$autocomplete = RGFormsModel::is_html5_enabled() ? "autocomplete='new-password'" : '';
-
-				return "<div class='ginput_container'><input name='input_{$id}' id='{$field_id}' type='text' value='' {$autocomplete}/></div>";
+				return "<div class='ginput_container'><input name='input_{$id}' id='{$field_id}' type='text' value='' autocomplete='new-password'/></div>";
 				break;
 
 			case 'adminonly_hidden' :
@@ -3969,10 +3967,10 @@ Content-Type: text/html;
 				<a 
 					aria-label="%s" 
 					href="%s" 
-					class="%s" 
+					class="%s gform-button--icon-leading" 
 					target="%s" 
 					rel="noopener"
-				>%s</a>
+				><i class="gform-button__icon gform-common-icon gform-common-icon--eye"></i>%s</a>
 				',
 			esc_html__( 'Preview this form', 'gravityforms' ),
 			esc_url( $options['url'] ),

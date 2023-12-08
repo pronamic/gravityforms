@@ -456,6 +456,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		$label_tag = $this->get_field_label_tag( $form );
 
+		// Label wrapper is required for correct positioning of the legend in compact view in Safari.
+		$legend_wrapper       = $is_form_editor && 'legend' === $label_tag ? '<span>' : '';
+		$legend_wrapper_close = $is_form_editor && 'legend' === $label_tag ? '</span>' : '';
+
 		$for_attribute = empty( $target_input_id ) || $label_tag === 'legend' ? '' : "for='{$target_input_id}'";
 
 		$admin_hidden_markup = ( $this->visibility == 'hidden' ) ? $this->get_hidden_admin_markup() : '';
@@ -464,9 +468,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		if ( $this->is_description_above( $form ) ) {
 			$clear         = $is_admin ? "<div class='gf_clear'></div>" : '';
-			$field_content = sprintf( "%s%s<$label_tag class='%s' $for_attribute >%s%s</$label_tag>%s{FIELD}%s$clear", $admin_buttons, $admin_hidden_markup, esc_attr( $this->get_field_label_class() ), $field_label, $required_div, $description, $validation_message );
+			$field_content = sprintf( "%s%s<$label_tag class='%s' $for_attribute>$legend_wrapper%s%s$legend_wrapper_close</$label_tag>%s{FIELD}%s$clear", $admin_buttons, $admin_hidden_markup, esc_attr( $this->get_field_label_class() ), $field_label, $required_div, $description, $validation_message );
 		} else {
-			$field_content = sprintf( "%s%s<$label_tag class='%s' $for_attribute >%s%s</$label_tag>{FIELD}%s%s", $admin_buttons, $admin_hidden_markup, esc_attr( $this->get_field_label_class() ), $field_label, $required_div, $description, $validation_message );
+			$field_content = sprintf( "%s%s<$label_tag class='%s' $for_attribute>$legend_wrapper%s%s$legend_wrapper_close</$label_tag>{FIELD}%s%s", $admin_buttons, $admin_hidden_markup, esc_attr( $this->get_field_label_class() ), $field_label, $required_div, $description, $validation_message );
 		}
 
 		return $field_content;
@@ -488,6 +492,19 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		return $container_tag === 'fieldset' ? 'legend' : 'label';
 
+	}
+
+	/**
+	 * Checks if any messages should be displayed in the sidebar for this field, and returns the HTML markup for them.
+	 *
+	 * Messages could be warning messages, that will be displayed in error style, or notification messages, that will be displayed in info style.
+	 *
+	 * @since 2.8.0
+	 *
+	 * @return array[]|array|string An array of arrays that lists all the messages and their types, an array that contains one message and type, or a warning message string that defaults to the warning type.
+	 */
+	public function get_field_sidebar_messages() {
+		return '';
 	}
 
 	/**
@@ -517,11 +534,32 @@ class GF_Field extends stdClass implements ArrayAccess {
 			'data-field-position' => '',
 		) );
 
-		$tabindex_string = (rgar( $atts, 'tabindex' ) ) === '' ?  '' : ' tabindex="' . esc_attr( $atts['tabindex'] ) . '"';
+		$tabindex_string     = ( rgar( $atts, 'tabindex' ) ) === '' ?  '' : ' tabindex="' . esc_attr( $atts['tabindex'] ) . '"';
 		$disable_ajax_reload = $this->disable_ajax_reload();
 		$ajax_reload_id      = $disable_ajax_reload === 'skip' || $disable_ajax_reload === 'true' || $disable_ajax_reload === true ? 'true' : esc_attr( rgar( $atts, 'id' ) );
+		$is_form_editor      = $this->is_form_editor();
+
+		$target_input_id         = esc_attr( rgar( $atts, 'id' ) );
+
+		// Get the field sidebar messages, this could be an array of messages or a warning message string.
+		$field_sidebar_messages  = GFCommon::is_form_editor() ? $this->get_field_sidebar_messages() : '';
+		$sidebar_message_type    = 'warning';
+		$sidebar_message_content = $field_sidebar_messages;
+
+		if ( is_array( $field_sidebar_messages ) ) {
+			$sidebar_message         = is_array( rgar( $field_sidebar_messages, '0' ) ) ? array_shift( $field_sidebar_messages ) : $field_sidebar_messages;
+			$sidebar_message_type    = rgar( $sidebar_message, 'type' );
+			$sidebar_message_content = rgar( $sidebar_message, 'content' );
+		}
+
+		if ( ! empty( $sidebar_message_content ) ) {
+			$atts['class'] .= ' gfield_' . ( $sidebar_message_type === 'error' ? 'warning' : $sidebar_message_type );
+			if ( $sidebar_message_type === 'error' ) {
+				$atts['aria-invalid'] = 'true';
+			}
+		}
 		return sprintf(
-			'<%1$s id="%2$s"  class="%3$s" %4$s%5$s%6$s%7$s%8$s%9$s data-js-reload="%10$s">{FIELD_CONTENT}</%1$s>',
+			'<%1$s id="%2$s" class="%3$s" %4$s%5$s%6$s%7$s%8$s%9$s data-js-reload="%10$s" %11$s>%12$s{FIELD_CONTENT}</%1$s>',
 			$tag,
 			esc_attr( rgar( $atts, 'id' ) ),
 			esc_attr( rgar( $atts, 'class' ) ),
@@ -531,7 +569,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 			rgar( $atts, 'aria-live' ) ? ' aria-live="' . esc_attr( $atts['aria-live'] ) . '"' : '',
 			rgar( $atts, 'data-field-class' ) ? ' data-field-class="' . esc_attr( $atts['data-field-class'] ) . '"' : '',
 			rgar( $atts, 'data-field-position' ) ? ' data-field-position="' . esc_attr( $atts['data-field-position'] ) . '"' : '',
-			$ajax_reload_id
+			$ajax_reload_id,
+			rgar( $atts, 'aria-invalid' ) ? ' aria-invalid="true"' : '',
+			empty( $sidebar_message_content ) ? '' : '<span class="field-' . $sidebar_message_type . '-message-content hidden">' . \GFCommon::maybe_wp_kses( $sidebar_message_content ) . '</span>'
 		);
 
 	}
@@ -1592,7 +1632,19 @@ class GF_Field extends stdClass implements ArrayAccess {
 			$drag_handle = '';
 		}
 
-		$field_icon = '<span class="gfield-field-action gfield-icon">' . GFCommon::get_icon_markup( array( 'icon' => $this->get_form_editor_field_icon() ) ) . '</span>';
+		$field_icon = '<span class="gfield-field-action gfield-icon" title="' . $this->get_form_editor_field_title() . '">' . GFCommon::get_icon_markup( array( 'icon' => $this->get_form_editor_field_icon() ) ) . '</span>';
+
+		$field_id = '<span class="gfield-compact-icon--id">' . sprintf( esc_html__( 'ID: %s', 'gravityforms' ), $this->id ) . '</span>';
+
+		$conditional_display = rgars( $this, 'conditionalLogic/enabled' ) && $this->conditionalLogic['enabled'] ? 'block' : 'none';
+		$conditional         = "<span class='gfield-compact-icon--conditional' id='gfield_{$this->id}-conditional-logic-icon' title='" . esc_attr( 'Conditional Logic', 'gravityforms' ) . "' style='display: {$conditional_display}' aria-label=" . esc_html( 'Conditional Logic', 'gravityforms' ) . ">" . GFCommon::get_icon_markup( array( 'icon' => 'gform-icon--conditional-logic' ) ) . "<span class='screen-reader-text'>" . esc_attr( 'This field has conditional logic enabled.', 'gravityforms' ) . "</span></span>";
+
+		$field_sidebar_messages    = $this->get_field_sidebar_messages();
+		$sidebar_message           = is_array( rgar( $field_sidebar_messages, '0' ) ) ? array_shift( $field_sidebar_messages ) : $field_sidebar_messages;
+		$compact_view_warning_icon = '';
+		if ( ! empty( $sidebar_message ) ) {
+			$compact_view_warning_icon = rgar( $sidebar_message, 'type' ) === 'warning' || ! is_array( $sidebar_message ) ? '<span class="gform-icon gform-icon--exclamation-simple gform-icon--preset-active gform-icon-preset--status-error gform-compact-view-warning-icon" ></span>' : '';
+		}
 
 		$admin_buttons = "
 			<div class='gfield-admin-icons'>
@@ -1600,7 +1652,12 @@ class GF_Field extends stdClass implements ArrayAccess {
 				{$duplicate_field_link}
 				{$edit_field_link}
 				{$delete_field_link}
+				{$compact_view_warning_icon}
 				{$field_icon}
+			</div>
+			<div class='gfield-compact-icons'>
+				{$field_id}
+				{$conditional}
 			</div>";
 
 		return $admin_buttons;

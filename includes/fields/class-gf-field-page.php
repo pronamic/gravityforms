@@ -48,7 +48,7 @@ class GF_Field_Page extends GF_Field {
 
 	public function get_field_content( $value, $force_frontend_label, $form ) {
 		$admin_buttons = $this->get_admin_buttons();
-		$field_content = "{$admin_buttons} <label class='gfield_label'>&nbsp;</label><div class='gf-pagebreak-inline gf-pagebreak'>" . esc_html__( 'PAGE BREAK', 'gravityforms' ) . '</div>';
+		$field_content = "{$admin_buttons} <label class='gfield_label'>&nbsp;</label><div class='gf-pagebreak-inline gf-pagebreak'>" . esc_html__( 'Page Break', 'gravityforms' ) . '</div>';
 		return $field_content;
 	}
 

@@ -1,5 +1,20 @@
+### 2.8.0 | 2023-12-07
+- Added a compact view to the form editor.
+- Added the default theme to the system report.
+- Added performance improvements by only enqueueing necessary styles on the front end.
+- Added support for field sidebar messages.
+- Added the `gform_display_disable_css_setting` filter to allow the display of the Output Default CSS setting.
+- Updated the telemetry background processor to log when it fails to send data.
+- Updated the field accordions in the form editor to all be open by default.
+- Updated the minimum WordPress version on the System Status page to 6.3.
+- Removed deprecated function `string.format()`.
+- Removed several unused images.
+- Removed the "Output Default CSS" setting from the settings page and replaced it with the [`gform_disable_css`](https://docs.gravityforms.com/gform_disable_css/) filter.
+- Removed the HTML5 setting from the settings page.
+- API: Removed the deprecated form Theme Framework global CSS API color system properties.
+- API: Updated and refactored the form Theme Framework CSS API to reduce stylesheet size for better performance.
+
 ### 2.7.17 | 2023-11-09
-- Added the Salesforce icon to the Gravity Forms icon kit.
 - Fixed an issue that prevents the post category selector from appearing correctly in WordPress 6.4.
 - Fixed an issue where multipage forms with conditional logic display the wrong text on the "next" button.
 
@@ -27,8 +42,8 @@
 ### 2.7.14 | 2023-09-19
 - Added validation to name, post title, post body, single line text, paragraph text & address fields to prevent empty entries when fields are filled with text encoded with invalid charset for the database table.
 - Fixed an issue where editing an entry with a multifile upload field could result in broken links to files.
-
 - AF: Fixed the `strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated` notice that can occur with PHP 8.1 when getting a setting value.
+
 ### 2.7.13 | 2023-08-23
 - Updated the minimum WordPress version on the System Status page to 6.2.
 - Updated product usage data so it is processed in the background.

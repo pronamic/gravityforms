@@ -245,15 +245,14 @@ class GF_Field_Number extends GF_Field {
 			$value = GFCommon::format_number( $value, $this->numberFormat, rgar( $entry, 'currency' ) );
 		}
 
-		$is_html5        = RGFormsModel::is_html5_enabled();
-		$html_input_type = $is_html5 && ! $this->has_calculation() && ( $this->numberFormat != 'currency' && $this->numberFormat != 'decimal_comma' ) ? 'number' : 'text'; // chrome does not allow number fields to have commas, calculations and currency values display numbers with commas
-		$step_attr       = $is_html5 ? "step='any'" : '';
+		$html_input_type = ! $this->has_calculation() && ( $this->numberFormat != 'currency' && $this->numberFormat != 'decimal_comma' ) ? 'number' : 'text'; // chrome does not allow number fields to have commas, calculations and currency values display numbers with commas
+		$step_attr       = "step='any'";
 
 		$min = $this->rangeMin;
 		$max = $this->rangeMax;
 
-		$min_attr = $is_html5 && is_numeric( $min ) ? "min='{$min}'" : '';
-		$max_attr = $is_html5 && is_numeric( $max ) ? "max='{$max}'" : '';
+		$min_attr = is_numeric( $min ) ? "min='{$min}'" : '';
+		$max_attr = is_numeric( $max ) ? "max='{$max}'" : '';
 
 		$include_thousands_sep = apply_filters( 'gform_include_thousands_sep_pre_format_number', $html_input_type == 'text', $this );
 		$value                 = GFCommon::format_number( $value, $this->numberFormat, rgar( $entry, 'currency' ), $include_thousands_sep );

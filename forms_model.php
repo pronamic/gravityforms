@@ -6796,8 +6796,12 @@ class GFFormsModel {
 		return null;
 	}
 
+	/**
+	 * @deprecated 2.8 HTML5 setting was removed, and HTML5 is now always enabled.
+	 * @return true
+	 */
 	public static function is_html5_enabled() {
-		return get_option( 'rg_gforms_enable_html5', false );
+		return true;
 	}
 
 	/**

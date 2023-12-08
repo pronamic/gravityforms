@@ -471,7 +471,7 @@ button .button-text {
 }
 
 #indicator {
-	background-color: #3e7da6;
+	background-color: #0f3d6c;
 	border-radius: 3px;
 	height: 0.25rem;
 	position: absolute;
@@ -489,17 +489,9 @@ button .button-text {
 	position: relative;
 }
 
-.gform_editor .right_label fieldset.gfield, .gform_editor .left_label fieldset.gfield {
-				padding-top: 1rem;
-			}
-
-.gform_editor .right_label fieldset.gfield .gfield-admin-icons, .gform_editor .left_label fieldset.gfield .gfield-admin-icons {
-					top: calc((3rem + 2px) * -1);
-				}
-
-.gform_editor .right_label legend.gfield_label, .gform_editor .left_label legend.gfield_label {
-				top: 0;
-			}
+.gform_editor .field_description_above .gfield_description {
+			margin-top: 0;
+		}
 
 .gform_editor .gfield_description {
 		margin-top: 1rem;
@@ -551,20 +543,8 @@ div.wrap.gf_browser_chrome .gform_editor .gfield_radio li input {
 	position: relative;
 }
 
-#gform_fields.left_label, #gform_fields.right_label {
-	grid-column-gap: 3.125rem;
-}
-
 .gform_fields .gfield, .gform_wrapper.gravity-theme .gform_fields .gfield {
 	margin: 0 0 2.5rem 0;
-}
-
-.gform_fields.left_label fieldset.gfield, .gform_fields.right_label fieldset.gfield {
-	margin-left: 1em;
-}
-
-.gform_wrapper.gravity-theme .left_label .gfield_label + .ginput_container, .gform_wrapper.gravity-theme .right_label .gfield_label + .ginput_container {
-	width: 70%;
 }
 
 .gform_editor .gpage::before {
@@ -577,7 +557,6 @@ div.wrap.gf_browser_chrome .gform_editor .gfield_radio li input {
 
 html[dir="rtl"] #no-fields {
 		text-align: center !important;
-
 	}
 
 html[dir="rtl"] #no-fields p {
@@ -624,7 +603,7 @@ html[dir="rtl"] .gfield::before {
 	right: -0.3125rem;
 }
 
-.gfield.spacer::before {
+.gfield.spacer::before, #field_submit::before {
 	display: none;
 }
 
@@ -638,15 +617,6 @@ html[dir="rtl"] .gfield::before {
 
 .gfield.gform_hidden:hover::before, .gfield.gform_hidden.field_selected:not(.placeholder):not(.ui-draggable-dragging)::before, .gfield.gfield_html:hover::before, .gfield.gfield_html.field_selected:not(.placeholder):not(.ui-draggable-dragging)::before {
 	bottom: 1rem;
-}
-
-fieldset.gfield::before, fieldset.gfield.field_selected:not(.placeholder):not(.ui-draggable-dragging)::before {
-	bottom: 1.08rem;
-	top: -0.86rem;
-}
-
-fieldset.gfield + fieldset.gfield::before, fieldset.gfield + fieldset.gfield.field_selected:not(.placeholder):not(.ui-draggable-dragging)::before {
-	top: -1rem;
 }
 
 .gfield textarea {
@@ -666,7 +636,7 @@ fieldset.gfield + fieldset.gfield::before, fieldset.gfield + fieldset.gfield.fie
 	border: 0;
 }
 
-.gfield.ui-draggable-dragging label, .gfield.ui-draggable-dragging legend, .gfield.ui-draggable-dragging .ginput_container, .gfield.ui-draggable-dragging .gfield_description, .gfield.ui-draggable-dragging::before, .gfield.ui-draggable-dragging .ui-resizable-handle.ui-resizable-e, .gfield.ui-draggable-dragging input, .gfield.ui-draggable-dragging .hour_minute_colon {
+.gfield.ui-draggable-dragging label, .gfield.ui-draggable-dragging legend, .gfield.ui-draggable-dragging .ginput_container, .gfield.ui-draggable-dragging .gfield_description, .gfield.ui-draggable-dragging::before, .gfield.ui-draggable-dragging .ui-resizable-handle.ui-resizable-e, .gfield.ui-draggable-dragging input, .gfield.ui-draggable-dragging .hour_minute_colon, .gfield.ui-draggable-dragging .gsection_title, .gfield.ui-draggable-dragging .gsection_description, .gfield.ui-draggable-dragging .gf-html-container {
 		opacity: 0 !important;
 	}
 
@@ -699,10 +669,6 @@ fieldset.gfield + fieldset.gfield::before, fieldset.gfield + fieldset.gfield.fie
 	top: 1.1rem;
 	transition: all ease-in-out 200ms;
 	width: 0.25rem;
-}
-
-fieldset.gfield .ui-resizable-e, fieldset.gfield .ui-resizable-w {
-	top: -1rem;
 }
 
 .gpage .ui-resizable-handle, .gsection .ui-resizable-handle {
@@ -743,6 +709,19 @@ html[dir="rtl"] .gfield .ui-resizable-e {
 	top: -1rem;
 	width: 1rem;
 }
+
+.gfield-admin-wrapper {
+	width: 100%;
+}
+
+.gform-compact-view .gfield-admin-wrapper, .left_label .gfield-admin-wrapper, .right_label .gfield-admin-wrapper {
+		display: flex;
+		inline-size: 100%;
+	}
+
+.form_editor_fields_container:where(:not(.gform-compact-view)) .left_label .gfield-admin-wrapper, .form_editor_fields_container:where(:not(.gform-compact-view)) .right_label .gfield-admin-wrapper {
+		flex-wrap: wrap;
+	}
 
 .gfield-admin-icons {
 	background: #fff;
@@ -872,8 +851,16 @@ html[dir="rtl"] .gfield .ui-resizable-e {
 		z-index: 10;
 	}
 
+.gfield-compact-icons {
+	display: none;
+}
+
+.gform-compact-view-warning-icon.gform-icon-preset--status-error {
+	display: none;
+}
+
 #gform_fields.top_label fieldset.gfield {
-	padding: 1rem 1rem 1rem 1rem;
+	padding: 1rem;
 }
 
 body:not(:-moz-handler-blocked) #gform_fields fieldset.gfield {
@@ -886,9 +873,7 @@ body:not(:-moz-handler-blocked) #gform_fields fieldset.gfield {
 	}
 
 .gform_wrapper fieldset.gfield legend {
-		left: -0.13rem;
 		position: relative;
-		top: 0.9rem;
 	}
 
 /* Safari positions the admin icons differently */
@@ -903,10 +888,6 @@ _::-webkit-full-page-media, _:future, :root #gform_fields fieldset.gfield .gfiel
 
 .gf_browser_gecko #gform_fields fieldset.gfield .gfield-admin-icons {
 	top: calc((5rem + 2px) * -1);
-}
-
-#gform_fields.left_label fieldset .gfield-admin-icons {
-	left: 0;
 }
 
 .ui-draggable-dragging .gfield-admin-icons, .gfield[focus-within] .gfield-admin-icons, .gfield:hover .gfield-admin-icons, .gfield.field_selected:not(.placeholder) .gfield-admin-icons {
@@ -953,6 +934,14 @@ _::-webkit-full-page-media, _:future, :root #gform_fields fieldset.gfield .gfiel
 .ui-draggable-dragging .gfield-admin-icons .gfield-icon {
 		opacity: 1;
 	}
+
+.ui-draggable-dragging .gfield-admin-icons .gform-compact-view-overflow-menu {
+		opacity: 0;
+	}
+
+.ui-draggable-dragging .gform-compact-view-overflow-menu {
+	opacity: 0;
+}
 
 html[dir="rtl"] .gfield-admin-icons {
 	left: auto;
@@ -1049,6 +1038,30 @@ html[dir="rtl"] #sidebar_field_label::after {
 .admin-hidden-markup .gform-icon--hidden {
 	margin-right: 0.25rem;
 }
+
+#form_editor_fields_container:where(:not(.gform-compact-view)) .gform_editor .right_label fieldset.gfield, #form_editor_fields_container:where(:not(.gform-compact-view)) .gform_editor .left_label fieldset.gfield {
+				padding: 1rem;
+			}
+
+#form_editor_fields_container:where(:not(.gform-compact-view)) .gform_editor .right_label fieldset.gfield .gfield-admin-icons, #form_editor_fields_container:where(:not(.gform-compact-view)) .gform_editor .left_label fieldset.gfield .gfield-admin-icons {
+					top: calc((3rem + 2px) * -1);
+				}
+
+#form_editor_fields_container:where(:not(.gform-compact-view)) .gform_editor .right_label legend.gfield_label, #form_editor_fields_container:where(:not(.gform-compact-view)) .gform_editor .left_label legend.gfield_label {
+				top: 0;
+			}
+
+#form_editor_fields_container:where(:not(.gform-compact-view)) #gform_fields.left_label, #form_editor_fields_container:where(:not(.gform-compact-view)) #gform_fields.right_label {
+			grid-column-gap: 3.125rem;
+		}
+
+#form_editor_fields_container:where(:not(.gform-compact-view)) #gform_fields.left_label fieldset .gfield-admin-icons {
+			left: 0;
+		}
+
+#form_editor_fields_container:where(:not(.gform-compact-view)) .gform_wrapper.gravity-theme .left_label .gfield_label + .ginput_container, #form_editor_fields_container:where(:not(.gform-compact-view)) .gform_wrapper.gravity-theme .right_label .gfield_label + .ginput_container {
+		width: 70%;
+	}
 
 /*
 * Styles for the editor for forms using legacy markup.
@@ -1257,6 +1270,37 @@ html[dir="rtl"] .gform-admin .choices-ui__options-list > li {
 		}
 
 /*
+* Editor flyout styles for the form editor.
+*
+* Used in editor.css.
+*/
+
+.gform-admin-screen #adminmenuback {
+	z-index: 9990;
+}
+
+.gform-dialog.gform-dialog--editor-button {
+	max-width: 400px;
+}
+
+.gform-dialog.gform-dialog--editor-button .gform-dialog__close .gform-button__icon {
+			font-family: "gform-icons-common" !important;
+		}
+
+.gform-dialog.gform-dialog--editor-button .gform-dialog__close .gform-button__icon::before {
+				content: "\e907";
+			}
+
+.gform-dialog.gform-dialog--editor-button .gform-toggle--with-icons .gform-toggle__label {
+			font-weight: 500;
+		}
+
+.gform-dialog.gform-dialog--editor-button .gform-dialog__content-toggle-text {
+		margin-block-end: 1rem;
+		margin-inline-start: 3.15rem;
+	}
+
+/*
 * Form editor toolbar.
 *
 * Used in editor.css.
@@ -1265,7 +1309,7 @@ html[dir="rtl"] .gform-admin .choices-ui__options-list > li {
 body.toplevel_page_gf_edit_forms .gform-form-toolbar {
 		margin: 0;
 		max-width: 100%;
-		padding: 0 0.5rem 0 0;
+		padding: 0 0.9375rem 0 0;
 		position: fixed;
 		width: calc(100% - 160px);
 	}
@@ -1602,7 +1646,7 @@ html[dir="rtl"] .editor-sidebar {
 		}
 
 .sidebar .sidebar__nav li.sidebar__nav__item.ui-state-default.ui-state-active a::after {
-		background: #3e7da6;
+		background: #0f3d6c;
 		border-radius: 0;
 		content: " ";
 		display: block;
@@ -1869,6 +1913,11 @@ html[dir="rtl"] .field-choice-handle {
 		justify-content: center;
 		width: 68px;
 	}
+
+#sidebar_field_message_container {
+	margin-block-end: 0.5rem;
+	padding-inline: 1.25rem;
+}
 
 /*
 * Miscellaneous styles for the form editor.
@@ -2356,6 +2405,437 @@ html[dir="rtl"] .right ul#gf_merge_tag_list {
 }
 
 /* dont use this anymore, use inline media queries */
+
+.gforms_edit_form .gform-compact-view .gfield-admin-wrapper {
+		container-name: fieldContainer; /* stylelint-disable-line */
+		container-type: inline-size; /* stylelint-disable-line */
+	}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer), .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater {
+		border: 1px solid #d5d7e9;
+		border-radius: 3px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+		display: flex;
+		margin-block-end: 0;
+		padding-block: 0.563rem 0.5rem;
+		padding-inline: 0 1rem;
+	}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .ginput_container, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .ginput_container {
+			display: none !important;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) label.gfield_label, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) legend.gfield_label > span, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gsection_title, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gf-pagebreak, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) p, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater label.gfield_label, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater legend.gfield_label > span, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gsection_title, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gf-pagebreak, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater p {
+			background-color: #f6f9fc;
+			block-size: 25px;
+			border: 1px solid #d5d7e9;
+			border-radius: 3px;
+			font-size: 0.688rem;
+			font-weight: 600;
+			line-height: 1.563rem;
+			margin-block-end: 0;
+			overflow: hidden;
+			padding-block: 0;
+			padding-inline: 0.625rem;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) label.gfield_label:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) legend.gfield_label > span:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gsection_title:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gf-pagebreak:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) p:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater label.gfield_label:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater legend.gfield_label > span:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gsection_title:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gf-pagebreak:empty, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater p:empty {
+				border: none;
+				padding: 0;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) p, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater p {
+			margin-block-start: 0;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) legend.gfield_label, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater legend.gfield_label {
+			display: contents;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons {
+			block-size: 1.5rem;
+			border: none;
+			box-shadow: none;
+			opacity: 1;
+			position: static;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-icon, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-icon {
+				color: #242748;
+				font-size: 1.3125rem;
+				opacity: 1;
+				position: static;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-field-action, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-field-action {
+				background: none;
+				block-size: 1.5rem;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-field-action .gfield-field-action__description, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-field-action .gfield-field-action__description {
+					inset-block-start: -2rem;
+				}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-edit, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-duplicate, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-delete, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-edit, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-duplicate, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-delete {
+				border: none;
+				display: none;
+				opacity: 0;
+				transition: all ease-in-out 200ms;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gform-compact-view-warning-icon.gform-icon-preset--status-error, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gform-compact-view-warning-icon.gform-icon-preset--status-error {
+				display: none;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer):hover, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater:hover {
+			box-shadow: 0 1px 2px 0 rgba(18, 25, 97, 0.06), 0 1px 3px 0 rgba(18, 25, 97, 0.1);
+		}
+
+/* this extends the hover area so the drag handle is grabbable */
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer):hover::after, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater:hover::after {
+				content: "";
+				display: block;
+				inset-block-end: 0;
+				inset-block-start: 0;
+				inset-inline-end: -1rem;
+				position: absolute;
+				width: 1rem;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-compact-icons, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-compact-icons, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .admin-hidden-markup {
+			display: flex;
+			gap: 0.625rem;
+			order: 1;
+			padding-block: 0;
+			padding-inline: 0.875rem 0.6rem;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-compact-icons > *, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup > *, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-compact-icons > *, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .admin-hidden-markup > * {
+				background-color: #f6f9fc;
+				block-size: 25px;
+				border: 1px solid #d5d7e9;
+				border-radius: 3px;
+				display: inline-block;
+				font-size: 11px;
+				font-weight: 600;
+				line-height: 1.563rem;
+				padding-block: 0;
+				padding-inline: 0.625rem;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-compact-icons .gfield-compact-icon--id, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup .gfield-compact-icon--id, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-compact-icons .gfield-compact-icon--id, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .admin-hidden-markup .gfield-compact-icon--id {
+				display: none;
+				margin-inline-end: 0.25rem;
+				white-space: nowrap;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-compact-icons .gfield-compact-icon--conditional, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup .gfield-compact-icon--conditional, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-compact-icons .gfield-compact-icon--conditional, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .admin-hidden-markup .gfield-compact-icon--conditional {
+				display: none;
+				font-size: 20px;
+				margin-inline-end: 0.875rem;
+				padding-block-start: 1.5px;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer)::before, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater::before {
+			inset-block-end: 0;
+			inset-block-start: 0;
+			inset-inline-start: -0.625rem;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .ui-resizable-e, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .ui-resizable-e {
+			inset-block-end: 0;
+			inset-block-start: 0;
+			inset-inline-end: -0.625rem;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) h2.gsection_title, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) h3.gsection_title, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater h2.gsection_title, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater h3.gsection_title {
+			font-family: var(--gform-admin-font-family);
+			inline-size: auto;
+			padding-inline-end: 0.625rem !important;
+			padding-inline-start: 0.625rem !important;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .admin-hidden-markup {
+
+			margin-inline-start: -0.875rem;
+			order: 1;
+			padding-inline: 0;
+			position: static;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup .gform-icon--hidden, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .admin-hidden-markup .gform-icon--hidden {
+				display: inline-block;
+				font-size: 1rem;
+				margin-inline-end: 12px;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gsection_description, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .ginput_amount, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gf-html-container, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield_description, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield_password_strength, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .copy_values_option_container, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .copy_values_option_container[style], .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup span, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gsection_description, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .ginput_amount, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gf-html-container, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield_description, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield_password_strength, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .copy_values_option_container, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .copy_values_option_container[style], .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .admin-hidden-markup span {
+			display: none !important;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer).gfield--type-page label, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater.gfield--type-page label {
+				display: none;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer).gfield--type-page .gf-pagebreak, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater.gfield--type-page .gf-pagebreak {
+				color: #242748;
+				text-transform: none;
+				width: auto;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer).gfield--type-page .gf-pagebreak::before, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer).gfield--type-page .gf-pagebreak::after, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater.gfield--type-page .gf-pagebreak::before, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater.gfield--type-page .gf-pagebreak::after {
+					background: none;
+					color: #5b5e80;
+					content: " - - ";
+					display: inline;
+					height: auto;
+				}
+
+@container fieldContainer (max-width: 250px) {
+
+			.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-compact-icons, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-compact-icons, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .admin-hidden-markup {
+				display: none;
+			}
+
+		}
+
+@container fieldContainer (max-width: 160px) {
+
+			.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-icon, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-icon {
+				display: none;
+			}
+
+		}
+
+@container fieldContainer (max-width: 100px) {
+
+				.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-delete, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-duplicate, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-delete, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-duplicate {
+					display: none !important;
+				}
+
+			:is(.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer),.gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater)::after {
+				display: none !important;
+			}
+
+		}
+
+@container fieldContainer (max-width: 80px) {
+
+			.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield_label, .gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) legend.gfield_label span, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield_label, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater legend.gfield_label span {
+				display: none;
+			}
+
+			.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-admin-icons .gfield-icon, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gfield-admin-icons .gfield-icon {
+				padding-inline-start: 0.4rem;
+				width: auto;
+			}
+
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gform-icon.gform-icon--ellipsis.gform-button__icon, .gforms_edit_form .gform-compact-view #gform_fields .gfield--type-repeater .gform-icon.gform-icon--ellipsis.gform-button__icon {
+			transform: rotate(90deg);
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.trigger-reflow {
+		display: none;
+	}
+
+.gforms_edit_form .gform-compact-view .gfield-admin-icons .gfield-field-action .dashicons {
+		line-height: normal;
+		line-height: initial;
+	}
+
+.gforms_edit_form .gform-compact-view.gform-compact-view--show-id #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-compact-icons .gfield-compact-icon--id {
+			display: inline-block;
+		}
+
+.gforms_edit_form .gform-compact-view.gform-compact-view--show-id #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup {
+			margin-inline-start: 0;
+		}
+
+.gforms_edit_form .gform-compact-view.gform-compact-view--show-id #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .gfield-compact-icon--conditional {
+			margin-inline-end: 0.25rem;
+		}
+
+@container fieldContainer (max-width: 340px) {
+
+			.gforms_edit_form .gform-compact-view.gform-compact-view--show-id #gform_fields .gfield:where(:not(#field_submit):not(.ui-draggable-dragging)):not(.spacer) .admin-hidden-markup {
+				display: none;
+			}
+
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.ui-draggable-dragging .admin-hidden-markup {
+			display: none;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.ui-draggable-dragging .gfield-admin-icons {
+			inset-block-start: 0;
+			position: absolute;
+			transition: none;
+		}
+
+.gforms_edit_form .gform-compact-view #field_submit.field_selected:not(.placeholder) .gfield-admin-icons, .gforms_edit_form .gform-compact-view #field_submit[focus-within] .gfield-admin-icons {
+			display: none;
+		}
+
+.gforms_edit_form .gform-compact-view #field_submit.field_selected:not(.placeholder) .gfield-admin-icons, .gforms_edit_form .gform-compact-view #field_submit:focus-within .gfield-admin-icons {
+			display: none;
+		}
+
+.gforms_edit_form .gform-compact-view #field_submit .ui-resizable-e {
+			inset-block-end: 0;
+			inset-block-start: 0.25rem;
+			inset-inline-end: -0.65rem;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields {
+		grid-auto-rows: minmax(0, 2.813rem);
+	}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) {
+			border: 1px solid #ffc7bb;
+
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .gfield-admin-icons .gfield-icon, .gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .gfield-admin-icons .gform-icon--drag-indicator, .gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .gfield-admin-icons .gfield-field-action {
+					color: #c02b0a;
+				}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .gfield-admin-icons .gfield-icon {
+					border: unset;
+					margin-inline-end: 1.25rem;
+					margin-inline-start: 0.5rem;
+					width: 0;
+				}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .gfield-admin-icons .gform-icon--exclamation-simple {
+					border-inline-start-color: #ffc7bb;
+					border-inline-start-style: solid;
+					height: unset;
+					width: 3rem;
+				}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .gfield-admin-icons .gform-compact-view-warning-icon.gform-icon-preset--status-error {
+					display: flex;
+				}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) label.gform-field-label, .gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) legend.gform-field-label > span, .gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .gfield-compact-icon--id, .gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .gfield-compact-icon--conditional, .gforms_edit_form .gform-compact-view #gform_fields .gfield.gfield_warning:not(.ui-draggable-dragging):not(.spacer) .admin-hidden-markup .gform-icon--hidden {
+				background-color: #fff9f9;
+				border: 1px solid #ffc7bb;
+				color: #c02b0a;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields fieldset.gfield:where(:not(#field_submit)) {
+			padding-block-end: 0.5rem;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields fieldset.gfield:where(:not(#field_submit)) legend {
+				float: left;
+				inset-block-start: 0;
+				inset-inline-start: 1px;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields fieldset.gfield:where(:not(#field_submit)) .gfield-admin-icons {
+				margin-block-end: 0;
+				margin-block-start: 1px;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .gfield#field_submit:hover .gfield-admin-icons {
+					display: none;
+				}
+
+.gforms_edit_form .gform-compact-view #gform_fields .dropzone__loader {
+			padding: 0;
+		}
+
+.gforms_edit_form .gform-compact-view #gform_fields .dropzone__loader .dropzone__loader-label {
+				display: none;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .dropzone__loader .dropzone__loader-content {
+				block-size: 2.188rem;
+			}
+
+.gforms_edit_form .gform-compact-view #gform_fields .captcha_message {
+			display: none;
+		}
+
+.gforms_edit_form .gform_wrapper.gform_editor .gform-dropdown .gform-button.gform-button--size-height-s {
+			padding: 0.375rem 0.3rem 0.375rem 0.2rem;
+		}
+
+.gforms_edit_form .gform_wrapper.gform_editor .gform-dropdown--action .gform-dropdown__trigger-icon {
+			margin-inline-end: 8px;
+		}
+
+.gform-compact-view #gform_pagination, .gform-compact-view #gform_last_page_settings {
+	position: relative;
+	text-align: center;
+}
+
+.gform-compact-view #gform_pagination .gf-pagebreak, .gform-compact-view #gform_last_page_settings .gf-pagebreak {
+		background-color: #f6f9fc;
+		block-size: 25px;
+		border: 1px solid #d5d7e9;
+		border-radius: 3px;
+		box-shadow: 10px 1px 0 0 #fff, -10px 1px 0 0 #fff;
+		color: #242748;
+		display: inline-block;
+		font-size: 0.688rem;
+		font-weight: 600;
+		letter-spacing: normal;
+		line-height: 1.563rem;
+		margin: 0 auto 0.75rem auto;
+		padding-block: 0;
+		padding-inline: 0.625rem;
+		position: relative;
+		text-transform: none;
+		z-index: 1;
+	}
+
+.gform-compact-view #gform_pagination .gf-pagebreak::before, .gform-compact-view #gform_pagination .gf-pagebreak::after, .gform-compact-view #gform_last_page_settings .gf-pagebreak::before, .gform-compact-view #gform_last_page_settings .gf-pagebreak::after {
+			display: none;
+		}
+
+.gform-compact-view #gform_pagination .gf-pagebreak::after, .gform-compact-view #gform_last_page_settings .gf-pagebreak::after {
+			display: none;
+		}
+
+.gform-compact-view #gform_pagination::before, .gform-compact-view #gform_last_page_settings::before {
+		background: repeating-linear-gradient(to left, #c3c5db 0, #c3c5db 9px, transparent 9px, transparent 13px);
+		content: "";
+		display: block;
+		flex-grow: 1;
+		height: 2px;
+		inset-block-start: 0.75rem;
+		position: absolute;
+		width: 100%;
+	}
+
+.gform-compact-view #field_submit {
+	margin: 0;
+	padding: 0;
+}
+
+.gform-compact-view #field_submit input[type="image"] {
+		max-height: 38px;
+	}
+
+.rtl .gform-compact-view #gform_fields.left_label fieldset.gfield, .rtl .gform-compact-view #gform_fields.right_label fieldset.gfield {
+		padding-block-start: 0.625rem;
+	}
+
+.rtl .gform-compact-view .gfield-admin-icons .gfield-field-action.gfield-icon {
+		border-left: none;
+	}
+
+html[dir="rtl"] body.wp-admin .gform-compact-view #gform_fields.top_label .gfield_label {
+	margin-block-start: 0;
+}
 
 /* Utils */
 

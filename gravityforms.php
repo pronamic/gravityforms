@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.7.17
+Version: 2.8.0
 Requires at least: 4.0
 Requires PHP: 5.6
 Author: Gravity Forms
@@ -121,7 +121,7 @@ define( 'GF_SUPPORTED_WP_VERSION', version_compare( get_bloginfo( 'version' ), G
  *
  * @var string GF_MIN_WP_VERSION_SUPPORT_TERMS The version number
  */
-define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '6.2' );
+define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '6.3' );
 
 /**
  * The filesystem path of the directory that contains the plugin, includes trailing slash.
@@ -245,7 +245,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.7.17';
+	public static $version = '2.8.0';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -304,6 +304,7 @@ class GFForms {
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Updates\GF_Auto_Updates_Service_Provider() );
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\License\GF_License_Service_Provider() );
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Config\GF_Config_Service_Provider() );
+        $container->add_provider( new \Gravity_Forms\Gravity_Forms\Editor_Button\GF_Editor_Service_Provider() );
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Embed_Form\GF_Embed_Service_Provider() );
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Merge_Tags\GF_Merge_Tags_Service_Provider() );
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Duplicate_Submissions\GF_Duplicate_Submissions_Service_Provider() );
@@ -338,6 +339,7 @@ class GFForms {
 		require_once GF_PLUGIN_DIR_PATH . 'includes/duplicate-submissions/class-gf-duplicate-submissions-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/util/class-gf-util-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/config/class-gf-config-service-provider.php';
+        require_once GF_PLUGIN_DIR_PATH . 'includes/editor-button/class-gf-editor-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/embed-form/class-gf-embed-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/form-editor/class-gf-form-editor-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/splash-page/class-gf-splash-page-service-provider.php';
@@ -2128,7 +2130,7 @@ class GFForms {
 
 			parse_str( rgpost( 'gform_field_values' ), $field_values );
 
-			$result = GFFormDisplay::get_form( $form_id, $display_title, $display_description, false, $field_values, true, $tabindex, $theme, $styles );
+			$result = GFFormDisplay::get_form( $form_id, $display_title, $display_description, false, $field_values, true, $tabindex, $theme, $styles, array() );
 		} else {
 			// The form ID in the footer inputs has been tampered with; handling it like a honeypot failure and returning the default confirmation instead.
 			$default_confirmation = GFFormsModel::get_default_confirmation();
@@ -6746,7 +6748,7 @@ class RGForms extends GFForms {
  *
  * Should be used to insert a Gravity Form from code.
  *
- * @since 2.7.15 Added $form_theme and $style_settings parameters
+ * @since 2.7.15 Added $form_theme and $style_settings parameters.
  *
  * @param string $id The form ID
  * @param bool $display_title If the form title should be displayed in the form. Defaults to true.

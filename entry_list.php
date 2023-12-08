@@ -2016,15 +2016,6 @@ final class GF_Entry_List_Table extends WP_List_Table {
 				};
 			}
 
-			// deprecated. remove in 2.8
-			String.prototype.format = function() {
-				var args = arguments;
-				console.warn( 'String.format will be replaced with String.gformFormat in Gravity Forms version 2.8.' );
-				return this.replace( /{(\d+)}/g, function( match, number ) {
-					return typeof args[ number ] != 'undefined' ? args[ number ] : match;
-				} );
-			};
-
 			// end Select All
 
 			jQuery(document).ready(function () {

@@ -75,8 +75,7 @@ class GF_Block_Form extends GF_Block {
 	// # SCRIPT / STYLES -----------------------------------------------------------------------------------------------
 	public function register_block_assets() {
 		parent::register_block_assets();
-
-		if ( function_exists( 'wp_enqueue_block_style' ) ) {
+		if ( function_exists( 'wp_enqueue_block_style' ) && is_admin() ) {
 			wp_enqueue_block_style( $this->type, array( 'handle' => 'gravity_forms_theme_reset' ) );
 			wp_enqueue_block_style( $this->type, array( 'handle' => 'gravity_forms_theme_foundation' ) );
 			wp_enqueue_block_style( $this->type, array( 'handle' => 'gravity_forms_theme_framework' ) );
@@ -133,8 +132,17 @@ class GF_Block_Form extends GF_Block {
 		// Prepare styling dependencies.
 		$deps = array( 'wp-edit-blocks' );
 
+		/**
+		 * Allows users to disable all CSS files from being loaded on the Front End.
+		 *
+		 * @since 2.8
+		 *
+		 * @param boolean Whether to disable css.
+		 */
+		$disable_css = apply_filters( 'gform_disable_css', get_option( 'rg_gforms_disable_css' ) );
+
 		// Add Gravity Forms styling if CSS is enabled.
-		if ( '1' !== get_option( 'rg_gforms_disable_css', false ) ) {
+		if ( ! $disable_css ) {
 			$deps = array_merge( $deps, array( 'gform_basic', 'gforms_formsmain_css', 'gforms_ready_class_css', 'gforms_browsers_css', 'gform_theme' ) );
 
 			/**

@@ -137,7 +137,7 @@ class GF_Splash_Page_Template_Tags {
 
 		$columns_html = '<div class="columns">';
 		foreach ( $args['columns'] as $column ) {
-			$columns_html .= "<div class='column'>{$column}</div>";
+			$columns_html .= "<div class='column'><div class='column-contents'>{$column}</div></div>";
 		}
 		$columns_html .= '</div>';
 

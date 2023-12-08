@@ -43,115 +43,115 @@ The core layout engine for forms on the frontend. Control grid gaps and global p
 
 	/**
 	@cssprop
-	Name: --gform-theme-form-row-gap
-	Description: Row gap for the form grid.
-	Default: --gform-theme-spacer-10
-	*/
-	--gform-theme-form-row-gap: 40px;
-
-	/**
-	@cssprop
-	Name: --gform-theme-form-col-gap
+	Name: --gf-form-gap-x
 	Description: Column gap for the form grid.
 	Default: --gform-theme-spacer-4
 	*/
-	--gform-theme-form-col-gap: 16px;
+	--gf-form-gap-x: 16px;
+
+	/**
+	@cssprop
+	Name: --gf-form-gap-y
+	Description: Row gap for the form grid.
+	Default: --gform-theme-spacer-10
+	*/
+	--gf-form-gap-y: 40px;
+
+	/**
+	@cssprop
+	Name: --gf-field-gap-x
+	Default: --gform-theme-spacer-3
+	Description: Column gap for a field.
+	*/
+	--gf-field-gap-x: 12px;
 
 	/**
 	@cssprop
 	Description: Row gap for a field on the grid.
 	Default: --gform-theme-spacer-3
-	Name: --gform-theme-field-row-gap
+	Name: --gf-field-gap-y
 	*/
-	--gform-theme-field-row-gap: 12px;
+	--gf-field-gap-y: 12px;
 
 	/**
 	@cssprop
-	Name: --gform-theme-field-col-gap
-	Default: --gform-theme-spacer-3
-	Description: Column gap for a field.
-	*/
-	--gform-theme-field-col-gap: 12px;
-
-	/**
-	@cssprop
-	Name: --gform-theme-label-horizontal-layout-width
+	Name: --gf-label-width
 	Description: Width of the label in a horizontal layout.
 	Default: 30%
 	 */
-	--gform-theme-label-horizontal-layout-width: 30%;
+	--gf-label-width: 30%;
 
 	/**
 	@cssprop
-	Name: --gform-theme-label-required-gap
+	Name: --gf-label-req-gap
 	Description: Gap between the label and the required indicator.
 	Default: 6px
 	 */
-	--gform-theme-label-required-gap: 6px;
+	--gf-label-req-gap: 6px;
 
 	/**
 	@cssprop
-	Name: --gform-theme-form-footer-margin-block-start
+	Name: --gf-form-footer-margin-y-start
 	Description: Margin top for the form footer.
 	Default: --gform-theme-spacer-6
 	 */
-	--gform-theme-form-footer-margin-block-start: 24px;
+	--gf-form-footer-margin-y-start: 24px;
 
 	/**
 	@cssprop
-	Name: --gform-theme-form-footer-gap
+	Name: --gf-form-footer-gap
 	Description: Gap between the form footer and the form.
 	Default: --gform-theme-spacer-2
 	 */
-	--gform-theme-form-footer-gap: 8px;
+	--gf-form-footer-gap: 8px;
 
 	/**
 	@cssprop
-	Name: --gform-theme-field-date-inline-size
+	Name: --gf-field-date-width
 	Description: Width of the date field in an inline layout.
 	Default: 168px
 	 */
-	--gform-theme-field-date-inline-size: 168px;
+	--gf-field-date-width: 168px;
 
 	/**
 	@cssprop
-	Name: --gform-theme-field-time-inline-size
+	Name: --gf-field-time-width
 	Description: Width of the time field in an inline layout.
 	Default: 110px
 	 */
-	--gform-theme-field-time-inline-size: 110px;
+	--gf-field-time-width: 110px;
 
 	/**
 	@cssprop
-	Name: --gform-theme-field-list-buttons-gap
+	Name: --gf-field-list-btns-gap
 	Description: Gap between the buttons in a list field.
 	Default: --gform-theme-spacer-2
 	 */
-	--gform-theme-field-list-buttons-gap: 8px;
+	--gf-field-list-btns-gap: 8px;
 
 	/**
 	@cssprop
-	Name: --gform-theme-field-list-buttons-inline-size
+	Name: --gf-field-list-btns-width
 	Description: Width of the buttons in a list field in an inline layout.
-	Default: calc(32px + var(--gform-theme-field-list-buttons-gap) + var(--gform-theme-field-col-gap))
+	Default: calc(32px + var(--gf-field-list-btns-gap) + var(--gf-field-gap-x))
 	 */
-	--gform-theme-field-list-buttons-inline-size: calc(32px + var(--gform-theme-field-list-buttons-gap) + var(--gform-theme-field-col-gap));
+	--gf-field-list-btns-width: calc(32px + var(--gf-field-list-btns-gap) + var(--gf-field-gap-x));
 
 	/**
 	@cssprop
-	Name: --gform-theme-field-page-steps-row-gap
+	Name: --gf-field-pg-steps-gap-y
 	Description: Row gap for the page steps.
 	Default: --gform-theme-spacer-2
 	 */
-	--gform-theme-field-page-steps-row-gap: 8px;
+	--gf-field-pg-steps-gap-y: 8px;
 
 	/**
 	@cssprop
-	Name: --gform-theme-field-page-steps-col-gap
+	Name: --gf-field-pg-steps-gap-x
 	Description: Column gap for the page steps.
 	Default: --gform-theme-spacer-6
 	 */
-	--gform-theme-field-page-steps-col-gap: 24px;
+	--gf-field-pg-steps-gap-x: 24px;
 }
 
 /* Base: Handles base-level global styles for forms */
@@ -310,15 +310,15 @@ A reset for text inputs.
 					}
 
 					.gform-theme--foundation .left_label .gfield:where(:not(.gfield--type-html):not(.gfield--type-section)) > div:where(:not(.ui-resizable-handle):not(.gfield-admin-icons):not(.gform-grid-row)), .gform-theme--foundation .left_label .gfield > .ginput_container:where(:not(.ui-resizable-handle):not(.gfield-admin-icons):not(.gform-grid-row)), .gform-theme--foundation .right_label .gfield:where(:not(.gfield--type-html):not(.gfield--type-section)) > div:where(:not(.ui-resizable-handle):not(.gfield-admin-icons):not(.gform-grid-row)), .gform-theme--foundation .right_label .gfield > .ginput_container:where(:not(.ui-resizable-handle):not(.gfield-admin-icons):not(.gform-grid-row)) {
-						inline-size: calc(100% - var(--gform-theme-label-horizontal-layout-width));
+						inline-size: calc(100% - var(--gf-label-width));
 					}
 
 					.gform-theme--foundation .left_label .gfield:where(:not(.gfield--type-html):not(.gfield--type-section)) > div:where(.gform-grid-row), .gform-theme--foundation .left_label .gfield > .ginput_container:where(.gform-grid-row), .gform-theme--foundation .right_label .gfield:where(:not(.gfield--type-html):not(.gfield--type-section)) > div:where(.gform-grid-row), .gform-theme--foundation .right_label .gfield > .ginput_container:where(.gform-grid-row) {
-						inline-size: calc((100% - var(--gform-theme-label-horizontal-layout-width)) + var(--gform-theme-field-col-gap));
+						inline-size: calc((100% - var(--gf-label-width)) + var(--gf-field-gap-x));
 					}
 
 			.gform-theme--foundation .left_label .gfield_html_formatted, .gform-theme--foundation .right_label .gfield_html_formatted {
-				margin-inline-start: var(--gform-theme-label-horizontal-layout-width);
+				margin-inline-start: var(--gf-label-width);
 			}
 	}
 
@@ -372,11 +372,11 @@ A reset for text inputs.
 	}
 
 .gform-theme--foundation .gfield input.small, .gform-theme--foundation .gfield select.small, .gform-theme--foundation .gfield .ginput_password.small {
-			inline-size: calc(25% - var(--gform-theme-form-col-gap) * 3 / 4);
+			inline-size: calc(25% - var(--gf-form-gap-x) * 3 / 4);
 		}
 
 .gform-theme--foundation .gfield input.medium, .gform-theme--foundation .gfield select.medium, .gform-theme--foundation .gfield .ginput_password.medium {
-			inline-size: calc(50% - var(--gform-theme-form-col-gap) / 2);
+			inline-size: calc(50% - var(--gf-form-gap-x) / 2);
 		}
 
 .gform-theme--foundation .gfield input.large, .gform-theme--foundation .gfield select.large, .gform-theme--foundation .gfield .ginput_password.large {
@@ -388,12 +388,15 @@ A reset for text inputs.
  */
 
 .gform-theme--foundation .gform_fields {
-		display: grid;
 		grid-column-gap: 0;
-		grid-row-gap: var(--gform-theme-form-row-gap);
+		-moz-column-gap: 0;
+		     column-gap: 0;
+		display: grid;
 		grid-template-columns: repeat(12, 1fr);
 		grid-template-rows: repeat(auto-fill, auto);
 		inline-size: 100%;
+		grid-row-gap: var(--gf-form-gap-y);
+		row-gap: var(--gf-form-gap-y);
 	}
 
 .gform-theme--foundation .gfield {
@@ -404,8 +407,8 @@ A reset for text inputs.
 .gform-theme--foundation .gform_footer, .gform-theme--foundation .gform_page_footer {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--gform-theme-form-footer-gap);
-		margin-block-start: var(--gform-theme-form-footer-margin-block-start);
+		gap: var(--gf-form-footer-gap);
+		margin-block-start: var(--gf-form-footer-margin-y-start);
 	}
 
 .gform-theme--foundation .gform_footer input[type="submit"][id*="gform_submit_button_"].button.gform-button--width-full, .gform-theme--foundation #field_submit input[type="submit"][id*="gform_submit_button_"].button.gform-button--width-full {
@@ -463,7 +466,8 @@ A reset for text inputs.
 @media (min-width: 640px) {
 
 		.gform-theme--foundation .gform_fields {
-			grid-column-gap: var(--gform-theme-form-col-gap);
+			-moz-column-gap: var(--gf-form-gap-x);
+			     column-gap: var(--gf-form-gap-x);
 		}
 
 		.gform-theme--foundation .gfield--width-full {
@@ -515,7 +519,7 @@ A reset for text inputs.
 		}
 
 			.gform-theme--foundation .gform_footer.left_label, .gform-theme--foundation .gform_footer.right_label {
-				padding-inline-start: var(--gform-theme-label-horizontal-layout-width);
+				padding-inline-start: var(--gf-label-width);
 			}
 	}
 
@@ -531,8 +535,8 @@ A reset for text inputs.
 .gform-theme--foundation .gform-grid-row {
 		display: flex;
 		flex-flow: row wrap;
-		margin-inline: calc(var(--gform-theme-field-col-gap) * -1 / 2);
-		row-gap: var(--gform-theme-field-row-gap);
+		margin-inline: calc(var(--gf-field-gap-x) * -1 / 2);
+		row-gap: var(--gf-field-gap-y);
 	}
 
 /*
@@ -542,11 +546,11 @@ A reset for text inputs.
 .gform-theme--foundation .gform-grid-col {
 		flex: none;
 		inline-size: 100%;
-		padding-inline: calc(var(--gform-theme-field-col-gap) / 2);
+		padding-inline: calc(var(--gf-field-gap-x) / 2);
 	}
 
 .gform-theme--foundation .gform-grid-col.gform-grid-row {
-			inline-size: calc(100% + var(--gform-theme-field-col-gap));
+			inline-size: calc(100% + var(--gf-field-gap-x));
 		}
 
 @media (min-width: 640px) {
@@ -567,7 +571,7 @@ A reset for text inputs.
 		align-items: baseline;
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--gform-theme-label-required-gap);
+		gap: var(--gf-label-req-gap);
 	}
 
 /* All other label handling */
@@ -583,8 +587,8 @@ A reset for text inputs.
 .gform-theme--foundation .left_label .gform-field-label:where(:not([class*="gform-field-label--type-"]):not(.gfield_header_item):not(.ginput_quantity_label)), .gform-theme--foundation .right_label .gform-field-label:where(:not([class*="gform-field-label--type-"]):not(.gfield_header_item):not(.ginput_quantity_label)) {
 				flex-direction: column;
 				float: left;
-				gap: calc(var(--gform-theme-label-required-gap) / 3);
-				inline-size: var(--gform-theme-label-horizontal-layout-width)
+				gap: calc(var(--gf-label-req-gap) / 3);
+				inline-size: var(--gf-label-width)
 
 				/* RTL styles */
 		}
@@ -1408,7 +1412,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 	}
 
 .gform-theme--foundation .ginput_complex .ginput_container_date {
-		inline-size: var(--gform-theme-field-date-inline-size);
+		inline-size: var(--gf-field-date-width);
 	}
 
 .gform-theme--foundation .ginput_complex .ginput_container_date label {
@@ -1436,7 +1440,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 	}
 
 .gform-theme--foundation .gfield_list_group {
-		margin-block-end: var(--gform-theme-field-row-gap);
+		margin-block-end: var(--gf-field-gap-y);
 	}
 
 .gform-theme--foundation .gfield_list_group:last-child {
@@ -1456,7 +1460,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 .gform-theme--foundation .gfield_header_item--icons, .gform-theme--foundation .gfield_list_icons {
 		align-items: center;
 		display: flex;
-		gap: var(--gform-theme-field-list-buttons-gap);
+		gap: var(--gf-field-list-btns-gap);
 	}
 
 .gform-theme--foundation .add_list_item, .gform-theme--foundation .delete_list_item {
@@ -1491,7 +1495,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 		.gform-theme--foundation .gfield_header_item--icons, .gform-theme--foundation .gfield_list_icons {
 			flex: none;
 			flex-wrap: wrap;
-			inline-size: var(--gform-theme-field-list-buttons-inline-size);
+			inline-size: var(--gf-field-list-btns-width);
 			justify-content: center;
 		}
 	}
@@ -1499,7 +1503,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 .gform-theme--foundation .gf_page_steps {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--gform-theme-field-page-steps-row-gap) var(--gform-theme-field-page-steps-col-gap);
+		gap: var(--gf-field-pg-steps-gap-y) var(--gf-field-pg-steps-gap-x);
 	}
 
 .gform-theme--foundation .gf_step_active {
@@ -1541,7 +1545,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 	}
 
 .gform-theme--foundation .ginput_complex .ginput_container_time {
-			inline-size: var(--gform-theme-field-time-inline-size);
+			inline-size: var(--gf-field-time-width);
 		}
 
 .gform-theme--foundation .hour_minute_colon {
@@ -1629,7 +1633,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 
 				.gform-theme--foundation .gfield.gf_list_inline .gfield_checkbox .gchoice, .gform-theme--foundation .gfield.gf_list_inline .gfield_radio .gchoice {
 					display: inline-grid;
-					padding-block-end: var(--gform-theme-field-choice-spacing);
+					padding-block-end: 12px;
 					padding-inline-end: 1rem;
 				}
 
@@ -1650,7 +1654,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 
 				.gform-theme--foundation .gf_list_2col_vertical .ginput_container .gfield_checkbox .gchoice, .gform-theme--foundation .gf_list_2col_vertical .ginput_container .gfield_radio .gchoice {
 					display: grid;
-					margin-block-end: var(--gform-theme-field-choice-spacing);
+					margin-block-end: 12px;
 				}
 
 			.gform-theme--foundation .gf_list_3col_vertical .gfield_checkbox, .gform-theme--foundation .gf_list_3col_vertical .gfield_radio {

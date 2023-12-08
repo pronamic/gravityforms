@@ -226,7 +226,7 @@ class GF_Field_CreditCard extends GF_Field {
 		$expiration_month = '';
 		$expiration_year  = '';
 		$security_code    = '';
-		$autocomplete     = RGFormsModel::is_html5_enabled() ? "autocomplete='off'" : '';
+		$autocomplete     = "autocomplete='off'";
 
 		if ( is_array( $value ) ) {
 			$card_number     = esc_attr( rgget( $this->id . '.1', $value ) );
@@ -300,7 +300,7 @@ class GF_Field_CreditCard extends GF_Field {
 		//card number fields
 		$tabindex                = $this->get_tabindex();
 		$card_number_field_input = GFFormsModel::get_input( $this, $this->id . '.1' );
-		$html5_output            = ! is_admin() && GFFormsModel::is_html5_enabled() ? "pattern='[0-9]*' title='" . esc_attr__( 'Only digits are allowed', 'gravityforms' ) . "'" : '';
+		$validation_helper       = ! is_admin() ? "pattern='[0-9]*' title='" . esc_attr__( 'Only digits are allowed', 'gravityforms' ) . "'" : '';
 		$card_number_label       = rgar( $card_number_field_input, 'customLabel' ) != '' ? $card_number_field_input['customLabel'] : esc_html__( 'Card Number', 'gravityforms' );
 		$card_number_label       = gf_apply_filters( array( 'gform_card_number', $form_id ), $card_number_label, $form_id );
 
@@ -309,12 +309,12 @@ class GF_Field_CreditCard extends GF_Field {
 			$card_field = "<span class='ginput_full{$class_suffix} gform-grid-col' id='{$field_id}_1_container' >
                                     {$card_icons}
                                     <label for='{$field_id}_1' id='{$field_id}_1_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$card_number_label}</label>
-                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$html5_output} {$card_number_placeholder} {$number_aria_attributes}/>
+                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$validation_helper} {$card_number_placeholder} {$number_aria_attributes}/>
                                  </span>";
 		} else {
 			$card_field = "<span class='ginput_full{$class_suffix} gform-grid-col' id='{$field_id}_1_container' >
                                     {$card_icons}
-                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$html5_output} {$card_number_placeholder} {$number_aria_attributes}/>
+                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$validation_helper} {$card_number_placeholder} {$number_aria_attributes}/>
                                     <label for='{$field_id}_1' id='{$field_id}_1_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$card_number_label}</label>
                                  </span>";
 		}
@@ -394,18 +394,18 @@ class GF_Field_CreditCard extends GF_Field {
 		$security_code_field_input = GFFormsModel::get_input( $this, $this->id . '.3' );
 		$security_code_label       = rgar( $security_code_field_input, 'customLabel' ) != '' ? $security_code_field_input['customLabel'] : esc_html__( 'Security Code', 'gravityforms' );
 		$security_code_label       = gf_apply_filters( array( 'gform_card_security_code', $form_id ), $security_code_label, $form_id );
-		$html5_output              = GFFormsModel::is_html5_enabled() ? "pattern='[0-9]*' title='" . esc_attr__( 'Only digits are allowed', 'gravityforms' ) . "'" : '';
+		$validation_helper         = "pattern='[0-9]*' title='" . esc_attr__( 'Only digits are allowed', 'gravityforms' ) . "'";
 		$security_code_placeholder = $this->get_input_placeholder_attribute( $security_code_field_input );
 		if ( $is_sub_label_above ) {
 			$security_field = "<span class='ginput_cardinfo_right{$class_suffix} gform-grid-col' id='{$field_id}_2_cardinfo_right'>
                                                 <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>$security_code_label</label>
-                                                <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$html5_output} {$security_code_placeholder} {$security_aria_attributes}/>
+                                                <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$validation_helper} {$security_code_placeholder} {$security_aria_attributes}/>
                                                 <span class='ginput_card_security_code_icon'>&nbsp;</span>
                                              </span>
                                         </span>";
 		} else {
 			$security_field = "<span class='ginput_cardinfo_right{$class_suffix} gform-grid-col' id='{$field_id}_2_cardinfo_right'>
-                                                <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$html5_output} {$security_code_placeholder} {$security_aria_attributes}/>
+                                                <input type='text' name='input_{$id}.3' id='{$field_id}_3' {$tabindex} {$disabled_text} class='ginput_card_security_code' value='{$security_code}' {$autocomplete} {$validation_helper} {$security_code_placeholder} {$security_aria_attributes}/>
                                                 <span class='ginput_card_security_code_icon'>&nbsp;</span>
                                                 <label for='{$field_id}_3' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>$security_code_label</label>
                                              </span>

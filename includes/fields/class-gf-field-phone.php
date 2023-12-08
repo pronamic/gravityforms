@@ -144,7 +144,6 @@ class GF_Field_Phone extends GF_Field {
 	 * @uses    GF_Field::is_form_editor()
 	 * @uses    GF_Field_Phone::$failed_validation
 	 * @uses    GF_Field_Phone::get_phone_format()
-	 * @uses    GFFormsModel::is_html5_enabled()
 	 * @uses    GF_Field::get_field_placeholder_attribute()
 	 * @uses    GF_Field_Phone::$isRequired
 	 * @uses    GF_Field::get_tabindex()
@@ -182,7 +181,7 @@ class GF_Field_Phone extends GF_Field {
 			}
 		}
 
-		$html_input_type        = RGFormsModel::is_html5_enabled() ? 'tel' : 'text';
+		$html_input_type        = 'tel';
 		$placeholder_attribute  = $this->get_field_placeholder_attribute();
 		$required_attribute     = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute      = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';

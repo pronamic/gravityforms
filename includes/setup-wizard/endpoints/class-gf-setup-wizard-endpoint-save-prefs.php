@@ -215,7 +215,6 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 		update_option( 'gform_enable_toolbar_menu', true );
 		update_option( 'rg_gforms_enable_akismet', true );
 		update_option( 'gform_enable_noconflict', false );
-		update_option( 'rg_gforms_enable_html5', 1 );
 	}
 
 	/**

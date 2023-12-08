@@ -80,6 +80,22 @@ class GF_Field_CAPTCHA extends GF_Field {
 	}
 
 	/**
+	 * Returns the warning message to be displayed in the form editor sidebar.
+	 *
+	 * @since 2.8
+	 *
+	 * @return string
+	 */
+	public function get_field_sidebar_messages() {
+		if ( $this->captchaType === 'math' || $this->captchaType === 'simple_captcha' || ( ! empty( $this->get_site_key() ) && ! empty( $this->get_secret_key() ) ) ) {
+			return '';
+		}
+
+		// Translators: 1. Opening <a> tag with link to the Forms > Settings > reCAPTCHA page. 2. closing <a> tag.
+		return sprintf( __( 'To use reCAPTCHA v2 you must configure the site and secret keys on the %1$sreCAPTCHA Settings%2$s page.', 'gravityforms' ), "<a href='?page=gf_settings&subview=recaptcha' target='_blank'>", '</a>' );
+	}
+
+	/**
 	 * Validate the reCAPTCHA field.
 	 *
 	 * This method always gets called on the last page of a form, as well as on the page where the field is assigned.
@@ -349,7 +365,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 					//for admin, show a thumbnail depending on chosen theme
 					if ( empty( $this->site_key ) || empty( $this->secret_key ) ) {
 
-						return "<div class='captcha_message'>" . __( 'To use the reCAPTCHA field you must do the following:', 'gravityforms' ) . "</div><div class='captcha_message'>1 - <a href='https://www.google.com/recaptcha/admin' target='_blank'>" . sprintf( __( 'Sign up%s for an API key pair for your site.', 'gravityforms' ), '</a>' ) . "</div><div class='captcha_message'>2 - " . sprintf( __( 'Enter your reCAPTCHA site and secret keys in the %sreCAPTCHA Settings%s.', 'gravityforms' ), "<a href='?page=gf_settings&subview=recaptcha' target='_blank'>", '</a>' ) . '</div>';
+						return "<div class='ginput_container'><div class='captcha_message'>" . __( 'To use the reCAPTCHA field you must do the following:', 'gravityforms' ) . "</div><div class='captcha_message'>1 - <a href='https://www.google.com/recaptcha/admin' target='_blank'>" . sprintf( __( 'Sign up%s for an API key pair for your site.', 'gravityforms' ), '</a>' ) . "</div><div class='captcha_message'>2 - " . sprintf( __( 'Enter your reCAPTCHA site and secret keys in the %sreCAPTCHA Settings%s.', 'gravityforms' ), "<a href='?page=gf_settings&subview=recaptcha' target='_blank'>", '</a>' ) . '</div></div>';
 					}
 
 					$type_suffix = $type == 'invisible' ? 'invisible_' : '';

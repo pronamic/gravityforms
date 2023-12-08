@@ -240,7 +240,6 @@ class GF_Field_Time extends GF_Field {
 	 * @uses    GFFormsModel::get_input()
 	 * @uses    GF_Field::get_input_placeholder_attribute()
 	 * @uses    GF_Field::get_tabindex()
-	 * @uses    GFFormsModel::is_html5_enabled()
 	 *
 	 * @param array      $form  The Form Object.
 	 * @param string     $value The field default value. Defaults to empty string.
@@ -291,12 +290,11 @@ class GF_Field_Time extends GF_Field {
 		$minute_tabindex = $this->get_tabindex();
 		$ampm_tabindex   = $this->get_tabindex();
 
-		$is_html5   = RGFormsModel::is_html5_enabled();
-		$input_type = $is_html5 ? 'number' : 'text';
+		$input_type = 'number';
 
 		$max_hour = $this->timeFormat == '24' ? 24 : 12;
-		$hour_html5_attributes   = $is_html5 ? "min='0' max='{$max_hour}' step='1'" : '';
-		$minute_html5_attributes = $is_html5 ? "min='0' max='59' step='1'" : '';
+		$hour_html5_attributes   = "min='0' max='{$max_hour}' step='1'";
+		$minute_html5_attributes = "min='0' max='59' step='1'";
 
 		$clear_multi_div_open = GFCommon::is_legacy_markup_enabled( $form ) ? '<div class="clear-multi">' : '';
 		$clear_multi_div_close = GFCommon::is_legacy_markup_enabled( $form ) ? '</div>' : '';
