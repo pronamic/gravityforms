@@ -98,6 +98,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		background-color: #f15a2b;
 	}
 
+.gform-admin .gform-util-gform-admin-background-color-orange-soda {
+		background-color: #ff4f00;
+	}
+
 .gform-admin .gform-util-gform-admin-background-color-green {
 		background-color: #22a753;
 	}
@@ -334,6 +338,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		box-shadow: 0 0.25rem 0.25rem rgba(18, 25, 97, 0.0405344);
 	}
 
+.gform-admin .gform-util-gform-admin-box-shadow-input-error-focus {
+		box-shadow: 0 0 0 2px #fee4e2, 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+	}
+
 .gform-admin .gform-util-gform-admin-box-shadow-outline-light {
 		box-shadow: 0 2px 2px rgba(58, 58, 87, 0.0596411);
 	}
@@ -436,6 +444,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 
 .gform-admin .gform-util-gform-admin-color-orange {
 		color: #f15a2b;
+	}
+
+.gform-admin .gform-util-gform-admin-color-orange-soda {
+		color: #ff4f00;
 	}
 
 .gform-admin .gform-util-gform-admin-color-green {

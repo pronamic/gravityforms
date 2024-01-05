@@ -1,3 +1,17 @@
+### 2.8.1 | 2024-01-04
+- Added support for conditional logic rules based on Survey fields for confirmations, notifications, and feeds.
+- Fixed various warnings and notices in PHP 8.1 and 8.2.
+- Fixed an issue where address inputs are sometimes vertically mis-aligned in the Gravity Forms 2.5 theme.
+- Fixed display issues with the merge tag dropdown in Firefox.
+- Fixed the display of tooltips in the form editor in Safari.
+- Fixed an issue that prevents conditional logic from working on the submit button on multi-page forms if the last page is also hidden with conditional logic.
+- Fixed an issue that prevents the conditional logic UI from displaying on duplicates of the default confirmation.
+- Fixed an issue where it is difficult to access the field admin icons with the mouse in the form editor.
+- Fixed an issue where users without the `gravityforms_edit_entries` capability can mark entries as read/unread.
+- Fixed conditional logic on the product option field.
+- Updated the format of telemetry data.
+- AF: Added feed processing when entries are marked as "not spam".
+
 ### 2.8.0 | 2023-12-07
 - Added a compact view to the form editor.
 - Added the default theme to the system report.

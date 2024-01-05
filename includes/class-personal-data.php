@@ -517,7 +517,7 @@ class GF_Personal_Data {
 
 		// Exporting and Erasing
 		$form['personalData']['exportingAndErasing']['enabled']             = (bool) rgars( $values, 'exportingAndErasing/enabled' );
-		$form['personalData']['exportingAndErasing']['identificationField'] = absint( rgars( $values, 'exportingAndErasing/identificationField' ) );
+		$form['personalData']['exportingAndErasing']['identificationField'] = sanitize_key( rgars( $values, 'exportingAndErasing/identificationField' ) );
 
 		// Exporting and Erasing: Columns
 		foreach ( self::get_columns() as $column => $label ) {

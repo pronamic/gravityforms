@@ -1606,6 +1606,7 @@ class GFFormsModel {
 				 * @since 2.3.3.9
 				 */
 				do_action( "gform_post_update_entry_property", $lead_id, $property_name, $property_value, $previous_value );
+				gf_feed_processor()->save()->dispatch();
 			}
 		}
 

@@ -26,7 +26,9 @@ class Text extends Base {
 	 */
 	public $input_type = 'text';
 
+	protected $step;
 
+	protected $append;
 
 
 

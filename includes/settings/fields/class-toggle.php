@@ -26,6 +26,8 @@ class Toggle extends Base {
 	 */
 	public $toggle_label;
 
+	protected $disabled;
+
 
 
 

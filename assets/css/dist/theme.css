@@ -11,7 +11,7 @@ Theme dependencies:
 - Gravity Forms Basic Theme: basic.css
 
 Gravity Forms is a Rocketgenius project
-copyright 2008-2022 Rocketgenius Inc.
+copyright 2008-2024 Rocketgenius Inc.
 https://www.rocketgenius.com
 this may not be re-distributed without the
 express written permission of the author.
@@ -287,8 +287,12 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		}
 
 		/* Make sure all fields but the last one have a bottom margin so there's space between them */
-		.gform_wrapper.gravity-theme .ginput_full:not(:last-of-type), .gform_wrapper.gravity-theme .ginput_container_address span:not(.ginput_full):not(:last-of-type):not(:nth-last-of-type(2)) {
+		.gform_wrapper.gravity-theme .ginput_full:not(:last-of-type), .gform_wrapper.gravity-theme .ginput_container_address span {
 			margin-bottom: 8px;
+		}
+
+		.gform_wrapper.gravity-theme .ginput_container_address {
+			margin-bottom: -8px;
 		}
 
 			html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_complex:not(.ginput_container_address) span:not([style*="display:none"]):not(.ginput_full), html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_complex:not(.ginput_container_address) fieldset:not([style*="display:none"]):not(.ginput_full) {

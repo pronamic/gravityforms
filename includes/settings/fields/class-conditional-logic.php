@@ -25,6 +25,9 @@ class Conditional_Logic extends Base {
 
 	public $object_type;
 
+	protected $checkbox_label;
+	protected $instructions;
+
 	/**
 	 * Initialize Conditional Logic field.
 	 *

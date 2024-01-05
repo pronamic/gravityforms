@@ -6,7 +6,7 @@ Gravity Forms Administration Styles
 http: //www.gravityforms.com
 
 Gravity Forms is a Rocketgenius project
-copyright 2008-2021 Rocketgenius Inc.
+copyright 2008-2024 Rocketgenius Inc.
 http: //www.rocketgenius.com
 this may not be re-distributed without the
 express written permission of the author.
@@ -5390,9 +5390,22 @@ div.gforms_code pre {
 	height: 18px;
 }
 
-.gform-admin-screen .inline {
+.gform-admin-screen .inline, .gform-admin-screen .editor-sidebar li.next_button_setting.field_setting input:where([type="checkbox"], [type="radio"]) + label.inline[\:has\(\%3E\%20.gf_tooltip\)], .gform-admin-screen .editor-sidebar li.previous_button_setting.field_setting input:where([type="checkbox"], [type="radio"]) + label.inline[\:has\(\%3E\%20.gf_tooltip\)] {
 	display: -moz-inline-stack !important;
 	display: inline-block !important;
+}
+
+.gform-admin-screen .inline, .gform-admin-screen .editor-sidebar li.next_button_setting.field_setting input:where([type="checkbox"], [type="radio"]) + label.inline:has(> .gf_tooltip), .gform-admin-screen .editor-sidebar li.previous_button_setting.field_setting input:where([type="checkbox"], [type="radio"]) + label.inline:has(> .gf_tooltip) {
+	display: -moz-inline-stack !important;
+	display: inline-block !important;
+}
+
+.gform-admin-screen .editor-sidebar input:where([type="checkbox"], [type="radio"]) + label.inline[\:has\(\%3E\%20.gf_tooltip\)] {
+	display: inline !important;
+}
+
+.gform-admin-screen .editor-sidebar input:where([type="checkbox"], [type="radio"]) + label.inline:has(> .gf_tooltip) {
+	display: inline !important;
 }
 
 label.float_label {

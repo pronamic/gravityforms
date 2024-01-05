@@ -6,7 +6,7 @@ Gravity Forms Form Editor Styles
 http: //www.gravityforms.com
 
 Gravity Forms is a Rocketgenius project
-copyright 2008-2021 Rocketgenius Inc.
+copyright 2008-2024 Rocketgenius Inc.
 http: //www.rocketgenius.com
 this may not be re-distributed without the
 express written permission of the author.
@@ -659,7 +659,7 @@ html[dir="rtl"] .gfield::before {
 }
 
 .gfield .ui-resizable-e, .gfield .ui-resizable-w {
-	background-color: #3e7da6;
+	background-color: #0f3d6c;
 	border-radius: 5px;
 	bottom: 1.063rem;
 	cursor: ew-resize;
@@ -869,7 +869,7 @@ body:not(:-moz-handler-blocked) #gform_fields fieldset.gfield {
 
 .gform_wrapper fieldset.gfield .gfield-admin-icons {
 		margin-bottom: 1rem;
-		top: calc((5rem + 2px) * -1);
+		top: calc((3.15rem) * -1);
 	}
 
 .gform_wrapper fieldset.gfield legend {
@@ -881,13 +881,13 @@ body:not(:-moz-handler-blocked) #gform_fields fieldset.gfield {
 /* stylelint-disable-next-line */
 
 _::-webkit-full-page-media, _:future, :root #gform_fields fieldset.gfield .gfield-admin-icons {
-	top: calc((5rem + 2px) * -1);
+	top: calc((3.15rem) * -1);
 }
 
 /* Firefox also has same issue, rule requires new declaration */
 
 .gf_browser_gecko #gform_fields fieldset.gfield .gfield-admin-icons {
-	top: calc((5rem + 2px) * -1);
+	top: calc((3.15rem) * -1);
 }
 
 .ui-draggable-dragging .gfield-admin-icons, .gfield[focus-within] .gfield-admin-icons, .gfield:hover .gfield-admin-icons, .gfield.field_selected:not(.placeholder) .gfield-admin-icons {
@@ -1247,6 +1247,7 @@ unless explicitly defined */
 .gform-admin .choices-ui__options-list > li {
 		display: inline-block;
 		margin: 0 0.5rem 0.5rem 0;
+		vertical-align: top;
 	}
 
 .gform-admin .choices-ui__options-list > li label {

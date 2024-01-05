@@ -418,6 +418,9 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		}
 
 		$payment_feed = $this->current_feed;
+		if ( empty( $payment_feed ) ) {
+			$payment_feed = $this->get_single_submission_feed( $entry, $form );
+		}
 
 		return (bool) rgars( $payment_feed, 'meta/delay_' . $slug );
 	}
@@ -607,15 +610,15 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			return $validation_result;
 		}
 
+		$gf_payment_gateway       = $this->get_slug();
+		$this->is_payment_gateway = true;
+
 		if ( GFCommon::is_spam_entry( $entry, $form ) ) {
 			$this->log_debug( __METHOD__ . '() Aborting. Submission flagged as spam.' );
 
 			return $validation_result;
 		}
 
-		$gf_payment_gateway = $this->get_slug();
-
-		$this->is_payment_gateway      = true;
 		$this->current_feed            = $this->_single_submission_feed = $feed;
 		$this->current_submission_data = $submission_data;
 
@@ -919,6 +922,10 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		// Saving which gateway was used to process this entry.
 		gform_update_meta( $entry['id'], 'payment_gateway', $this->_slug );
 
+		if ( empty( $this->current_feed ) || empty( $this->current_submission_data ) ) {
+			return $entry;
+		}
+
 		$feed = $this->current_feed;
 
 		if ( ! empty( $this->authorization ) ) {
@@ -1212,6 +1219,11 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			return true;
 		}
 
+		global $gf_payment_gateway;
+		if ( is_array( $gf_payment_gateway ) && $this->get_slug() === rgar( $gf_payment_gateway, $entry_id ) ) {
+			return true;
+		}
+
 		$gateway = gform_get_meta( $entry_id, 'payment_gateway' );
 
 		return $gateway == $this->_slug;
@@ -1361,7 +1373,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$trial_amount = 0;
 		foreach ( $products['products'] as $field_id => $product ) {
 
-			$quantity      = $product['quantity'] ? $product['quantity'] : 1;
+			$quantity      = isset( $product['quantity'] ) ? (int) $product['quantity'] : 1;
 			$product_price = GFCommon::to_number( $product['price'], $entry['currency'] );
 
 			$options = array();

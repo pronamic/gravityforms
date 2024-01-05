@@ -45,6 +45,17 @@ class Select extends Base {
 	public $enhanced_ui = false;
 
 	/**
+	 * Field content after select.
+	 *
+	 * @since 2.5
+	 *
+	 * @var string
+	 */
+	public $after_select;
+
+	public $disabled;
+
+	/**
 	 * Register scripts to enqueue when displaying field.
 	 *
 	 * @since 2.5

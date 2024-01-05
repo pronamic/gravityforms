@@ -32,6 +32,8 @@ class Field_Select extends Select {
 	 */
 	public $args = array();
 
+	protected $fields_callback;
+
 	/**
 	 * Initialize Field Select field.
 	 *

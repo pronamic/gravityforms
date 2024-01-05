@@ -37,6 +37,13 @@ class Checkbox extends Base {
 	 */
 	public $data_format = 'bool';
 
+	public $onclick;
+	protected $no_choices;
+	protected $horizontal;
+	protected $enabledLabel;
+	protected $onkeypress;
+
+
 
 
 	// # RENDER METHODS ------------------------------------------------------------------------------------------------

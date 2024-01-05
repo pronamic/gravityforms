@@ -164,7 +164,7 @@ class GF_Field_List extends GF_Field {
 
 		$list = '';
 
-		$list .= "<div class='ginput_container ginput_container_list ginput_list ${class_has_columns}'>" .
+		$list .= "<div class='ginput_container ginput_container_list ginput_list {$class_has_columns}'>" .
 			"<div class='gfield_list gfield_list_container'>";
 
 		if ( $has_columns ) {
@@ -398,7 +398,7 @@ class GF_Field_List extends GF_Field {
 					$val = $colnum == 1 ? $item : '';
 				}
 
-				$list .= "<td class='gfield_list_cell gfield_list_{$this->id}_cell{$colnum}' {$data_label}>" . $this->get_list_input( $has_columns, $column, $val, $form_id, null ) . '</td>';
+				$list .= "<td class='gfield_list_cell gfield_list_{$this->id}_cell{$colnum}' {$data_label}>" . $this->get_list_input( $has_columns, $column, $val, $form_id, $rownum ) . '</td>';
 				$colnum ++;
 			}
 

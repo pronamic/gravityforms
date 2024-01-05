@@ -712,7 +712,11 @@ class GF_System_Report {
 			case 'version_check':
 
 				// Is the provided value a valid version?
-				$valid_version = version_compare( $item['value'], $item['minimum_version'], $item['version_compare'] );
+				if ( ! rgar( $item, 'minimum_version' ) ) {
+					return $item['value'];
+				} else {
+					$valid_version = version_compare( $item['value'], $item['minimum_version'], $item['version_compare'] );
+				}
 
 				// Display value based on valid version check.
 				if ( $valid_version ) {

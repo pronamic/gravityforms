@@ -1453,6 +1453,10 @@ class Settings {
 			return false;
 		}
 
+		if ( ! rgars( $section['fields'], '0/type' ) ) {
+			return false;
+		}
+
 		if ( 'card' !== $section['fields'][0]['type'] ) {
 			return false;
 		}

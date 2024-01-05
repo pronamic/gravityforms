@@ -7,7 +7,7 @@ The base styles required for form functionality.
 https://www.gravityforms.com
 
 Gravity Forms is a Rocketgenius project
-copyright 2008-2022 Rocketgenius Inc.
+copyright 2008-2024 Rocketgenius Inc.
 https://www.rocketgenius.com
 this may not be re-distributed without the
 express written permission of the author.
@@ -1110,7 +1110,7 @@ http://www.gravityforms.com
 updated: August 02, 2017 12:10 PM (GMT-05:00) US Eastern Time
 
 Gravity Forms is a Rocketgenius project
-copyright 2008-2017 Rocketgenius Inc.
+copyright 2008-2024 Rocketgenius Inc.
 http: //www.rocketgenius.com
 this may not be redistributed without the
 express written permission of the author.
@@ -1878,11 +1878,6 @@ html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_complex:not(.ginput_contain
 	html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_complex:not(.ginput_container_address) span:not([style*="display:none"]):not(.ginput_full) ~ span:not(.ginput_full) {
 		padding-left: 0;
 		padding-right: 16px;
-	}
-
-	html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_container_address.has_street2:not(.has_street) span:not(.ginput_full):nth-of-type(2n), html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_container_address.has_street:not(.has_street2) span:not(.ginput_full):nth-of-type(2n), html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_container_address:not(.has_street):not(.has_street2) span:not(.ginput_full):nth-of-type(2n+1), html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_container_address.has_street.has_street2 span:not(.ginput_full):nth-of-type(2n+1) {
-		padding-left: 16px;
-		padding-right: 0;
 	}
 
 	html[dir="rtl"] .gform_wrapper.gravity-theme .gform_show_password {

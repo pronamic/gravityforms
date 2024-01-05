@@ -36,6 +36,15 @@ class Radio extends Base {
 	public $image_select = false;
 
 	/**
+	 * Whether the inputs should be horizontal.
+	 *
+	 * @since 2.5
+	 *
+	 * @var bool
+	 */
+	public $horizontal;
+
+	/**
 	 * Initialize field.
 	 *
 	 * @since 2.5

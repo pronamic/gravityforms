@@ -68,6 +68,12 @@ class Generic_Map extends Base {
 		'allow_custom' => true,
 	);
 
+	protected $excluded_field_types;
+	protected $required_field_types;
+	protected $merge_tags;
+	protected $field_map;
+
+
 	/**
 	 * Initialize Generic Map field.
 	 *

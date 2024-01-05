@@ -119,6 +119,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		add_filter( 'gform_entry_post_save', array( $this, 'maybe_process_feed' ), 10, 2 );
 		add_action( 'gform_after_delete_form', array( $this, 'delete_feeds' ) );
+		add_action( 'gform_update_status', array( $this, 'process_feed_when_unspammed' ), 10, 3 );
 
 		// Register GFFrontendFeeds.
 		if ( $this->_supports_frontend_feeds && ! has_action( 'gform_register_init_scripts', array( __class__, 'register_frontend_feeds_init_script' ) ) ) {
@@ -1159,6 +1160,97 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		}
 
+	}
+
+	/* Process feeds when an entry is marked as "not spam"
+	 *
+	 * @since  2.8.1
+	 * @access public
+	 *
+	 * @param int $entry_id The ID of the entry being processed.
+	 * @param string $status The status of the entry being processed.
+	 * @param string $prev_status The previous status of the entry being processed.
+	 */
+	public function process_feed_when_unspammed( $entry_id, $status, $prev_status ) {
+
+		// if this is a payment feed, do not process it.
+		if ( $this instanceof GFPaymentAddOn ) {
+			return;
+		}
+
+		$is_unspammed = $prev_status == 'spam' && $status == 'active';
+		if ( ! $is_unspammed ) {
+			return;
+		}
+
+		$this->log_debug( sprintf( __METHOD__ . '(): Entry has been unspammed (ID: %d). Triggering feed processor.', $entry_id ) );
+
+		$entry = GFAPI::get_entry( $entry_id );
+		$form  = GFAPI::get_form( $entry['form_id'] );
+
+		$this->set_payment_gateway( $entry, $form );
+		$this->maybe_process_feed( $entry, $form );
+
+	}
+
+	/**
+	 * Sets $gf_payment_gateway global for the current entry.
+	 *
+	 * @since 2.8.1
+	 *
+	 * @param array $entry The entry being processed.
+	 * @param array $form  The form that created the entry.
+	 *
+	 * @return void
+	 */
+	private function set_payment_gateway( $entry, $form ) {
+		if ( ! class_exists( 'GFPaymentAddOn' ) ) {
+			return;
+		}
+
+		global $gf_payment_gateway;
+		$entry_id = rgar( $entry, 'id' );
+
+		if ( ! empty( $gf_payment_gateway[ $entry_id ] ) ) {
+			$this->log_debug( __METHOD__ . '(): Already set to ' . $gf_payment_gateway[ $entry_id ] );
+
+			return;
+		}
+
+		$gateway = gform_get_meta( $entry_id, 'payment_gateway' );
+		if ( ! empty( $gateway ) ) {
+			$this->log_debug( __METHOD__ . '(): Setting using payment_gateway entry meta to ' . $gateway );
+			$gf_payment_gateway[ $entry_id ] = $gateway;
+
+			return;
+		}
+
+		$this->log_debug( __METHOD__ . '(): Evaluating payment add-ons.' );
+		$addons = GFAddOn::get_registered_addons( true );
+
+		foreach ( $addons as $addon ) {
+			if ( ! $addon instanceof GFPaymentAddOn ) {
+				continue;
+			}
+
+			$feed = $addon->get_single_submission_feed( $entry, $form );
+			if ( empty( $feed ) ) {
+				continue;
+			}
+
+			$submission_data = $addon->get_submission_data( $feed, $form, $entry );
+			if ( empty( $submission_data ) || ! $addon->is_valid_payment_amount( $submission_data, $feed, $form, $entry ) ) {
+				continue;
+			}
+
+			$slug = $addon->get_slug();
+			$this->log_debug( __METHOD__ . '(): Setting to ' . $slug );
+			$gf_payment_gateway[ $entry_id ] = $slug;
+
+			return;
+		}
+
+		$this->log_debug( __METHOD__ . '(): Submission was not processed by a payment add-on.' );
 	}
 
 	//---------- Form Settings Pages --------------------------

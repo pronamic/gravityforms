@@ -108,8 +108,7 @@ function GetConditionalObject(objectType){
 }
 
 function CreateConditionalLogic(objectType, obj){
-
-    if(!obj.conditionalLogic)
+    if(!obj.conditionalLogic || obj.conditionalLogic.length == 0)
         obj.conditionalLogic = new ConditionalLogic();
 
     var hideSelected = obj.conditionalLogic.actionType == "hide" ? "selected='selected'" :"";
@@ -156,9 +155,9 @@ function CreateConditionalLogic(objectType, obj){
     for(i=0; i < obj.conditionalLogic.rules.length; i++){
         rule = obj.conditionalLogic.rules[i];
         str += "<div width='100%' class='gf_conditional_logic_rules_container'>";
-        str += GetRuleFields(objectType, i, rule.fieldId);
-        str += GetRuleOperators(objectType, i, rule.fieldId, rule.operator);
-        str += GetRuleValues(objectType, i, rule.fieldId, rule.value);
+        str += GetRuleFields(objectType, i, obj.conditionalLogic.rules[i].fieldId);
+        str += GetRuleOperators(objectType, i, obj.conditionalLogic.rules[i].fieldId, rule.operator);
+        str += GetRuleValues(objectType, i, obj.conditionalLogic.rules[i].fieldId, rule.value);
         str += "<button " +
             "type='button' " +
             "class='add_field_choice gform-st-icon gform-st-icon--circle-plus' " +
@@ -198,8 +197,13 @@ function GetRuleOperators( objectType, i, fieldId, selectedOperator ) {
     operators = gform.applyFilters( 'gform_conditional_logic_operators', operators, objectType, fieldId );
 
     jQuery.each(operators,function(operator, stringKey){
+        var operatorText = gf_vars[stringKey];
+        if ( undefined === operatorText ) {
+            // If the operator text has been filtered, it may not be in the gf_vars array.
+            operatorText = stringKey;
+        }
         selected = selectedOperator == operator ? "selected='selected'" : "";
-        str += "<option value='" + operator + "' " + selected + ">" + gf_vars[stringKey] + "</option>"
+        str += "<option value='" + operator + "' " + selected + ">" + operatorText + "</option>"
     });
     str +="</select>";
     return str;
@@ -220,7 +224,6 @@ function GetOperatorsForMeta(supportedOperators, key){
 }
 
 function GetRuleFields( objectType, ruleIndex, selectedFieldId ) {
-
     var str = "<select id='" + objectType + "_rule_field_" + ruleIndex + "' class='gfield_rule_select' onchange='jQuery(\"#" + objectType + "_rule_operator_" + ruleIndex + "\").replaceWith(GetRuleOperators(\"" + objectType + "\", " + ruleIndex + ", jQuery(this).val()));jQuery(\"#" + objectType + "_rule_value_" + ruleIndex + "\").replaceWith(GetRuleValues(\"" + objectType + "\", " + ruleIndex + ", jQuery(this).val())); SetRule(\"" + objectType + "\", " + ruleIndex + "); '>";
     var options = [];
 

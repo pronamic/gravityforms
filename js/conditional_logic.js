@@ -144,7 +144,7 @@ function gf_is_match( formId, rule ) {
 		$inputs;
 
 	if( isInputSpecific ) {
-		$inputs = $( '#input_{0}_{1}_{2}'.gformFormat( formId, fieldId, inputIndex ) );
+		$inputs = $( '#input_{0}_{1}_{2}, #choice_{0}_{1}_{2}'.gformFormat( formId, fieldId, inputIndex ) );
 	} else {
 		$inputs = $( 'input[id="input_{0}_{1}"], input[id^="input_{0}_{1}_"], input[id^="choice_{0}_{1}_"], select#input_{0}_{1}, textarea#input_{0}_{1}'.gformFormat( formId, fieldId ) );
 	}
@@ -429,7 +429,6 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 	}
 
 	if(action == "show"){
-
 		// reset tabindex for selects
 		$target.find( 'select' ).each( function() {
 			var $select = jQuery( this );
@@ -440,12 +439,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if($target.length > 0){
 				$target.find(':input:hidden:not(.gf-default-disabled)').prop( 'disabled', false );
 				if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
-					$target.prop( 'disabled', false ).css( 'display', '' );
-					$target.attr( 'data-conditional-logic', 'hidden' );
-					if ( '1' == gf_legacy.is_legacy ) {
-						// for legacy markup, remove screen reader class.
-						$target.removeClass( 'screen-reader-text' );
-					}
+					gf_show_button( $target );
 				}
 				$target.slideDown(callback);
 			} else if(callback){
@@ -464,12 +458,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 
 			// Handle conditional submit and next buttons.
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
-				$target.prop( 'disabled', false ).css( 'display', '' );
-				$target.attr( 'data-conditional-logic', 'visible' );
-				if ( '1' == gf_legacy.is_legacy ) {
-					// for legacy markup, remove screen reader class.
-					$target.removeClass( 'screen-reader-text' );
-				}
+				gf_show_button( $target );
 			} else {
 				$target.css( 'display', display );
 				if( display == 'none' ) {
@@ -509,11 +498,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 
 		if(useAnimation && !isInit){
 			if( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
-				$target.attr( 'disabled', 'disabled' ).hide();
-				if ( '1' === gf_legacy.is_legacy ) {
-					// for legacy markup, let screen readers read the button.
-					$target.addClass( 'screen-reader-text' );
-				}
+				gf_hide_button( $target );
 			} else if ( $target.length > 0 && $target.is( ":visible" ) ) {
 				$target.slideUp( callback );
 			} else if ( callback ) {
@@ -523,12 +508,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 
 			// Handle conditional submit and next buttons.
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
-				$target.attr( 'disabled', 'disabled' ).hide();
-				$target.attr( 'data-conditional-logic', 'hidden' );
-				if ( '1' === gf_legacy.is_legacy ) {
-					// for legacy markup, let screen readers read the button.
-					$target.addClass( 'screen-reader-text' );
-				}
+				gf_hide_button( $target );
 			} else {
 				$target.css( 'display', 'none' );
 				$target.attr( 'data-conditional-logic', 'hidden' );
@@ -540,6 +520,38 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 		}
 	}
 
+}
+
+function gf_show_button( $target ) {
+	$target.prop( 'disabled', false ).css( 'display', '' );
+	$target.attr( 'data-conditional-logic', 'visible' );
+	if ( '1' == gf_legacy.is_legacy ) {
+		// for legacy markup, remove screen reader class.
+		$target.removeClass( 'screen-reader-text' );
+	}
+
+	// Sometimes the next button is pretending to be a submit button, so it needs conditional logic too.
+	var fauxSubmitButton = jQuery( 'input.gform_next_button[type="button"][value="Submit"]' );
+	if ( fauxSubmitButton ) {
+		fauxSubmitButton.prop( 'disabled', false ).css( 'display', '' );
+		fauxSubmitButton.attr( 'data-conditional-logic', 'visible' );
+	}
+}
+
+function gf_hide_button( $target ) {
+	$target.attr( 'disabled', 'disabled' ).hide();
+	$target.attr( 'data-conditional-logic', 'hidden' );
+	if ( '1' === gf_legacy.is_legacy ) {
+		// for legacy markup, let screen readers read the button.
+		$target.addClass( 'screen-reader-text' );
+	}
+
+	// Sometimes the next button is pretending to be a submit button, so it needs conditional logic too.
+	var fauxSubmitButton = jQuery( 'input.gform_next_button[type="button"][value="Submit"]' );
+	if ( fauxSubmitButton ) {
+		fauxSubmitButton.attr( 'disabled', 'disabled' ).hide();
+		fauxSubmitButton.attr( 'data-conditional-logic', 'hidden' );
+	}
 }
 
 function gf_reset_to_default(targetId, defaultValue){
