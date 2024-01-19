@@ -910,6 +910,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 			case "total" :
 				field.label = <?php echo json_encode( esc_html__( 'Total', 'gravityforms' ) ); ?>;
 				field.inputs = null;
+				field.validateTotal = true;
 
 				break;
 

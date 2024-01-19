@@ -234,6 +234,9 @@ function initLayoutEditor( $ ) {
 			jQuery('input[name="submit_location"][value="inline"]').prop( 'disabled', false );
 			jQuery( '.submit_location_setting' ).prev( '.gform-alert--notice' ).remove();
 		}
+
+		var nativeEvent = new Event('gform/layout_editor/gform_field_deleted');
+		document.dispatchEvent(nativeEvent);
 	} );
 
 	// Handle resizing the group after the deleted field has been fully removed from the DOM.

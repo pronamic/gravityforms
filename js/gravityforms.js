@@ -1746,6 +1746,7 @@ function gformAddRepeaterItem( addButton, max ) {
 		.not( ':checkbox, :radio' ).val( '' );
 	$clone.find( ':checkbox, :radio' ).prop( 'checked', false );
 	$clone.find('.validation_message').remove();
+	$clone.find('.gform-datepicker.initialized').removeClass('initialized');
 
 	$clone = gform.applyFilters( 'gform_repeater_item_pre_add', $clone, $item );
 

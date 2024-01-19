@@ -322,9 +322,7 @@ class GFFormDetail {
 						require_once( GFCommon::get_base_path() . '/form_display.php' );
 						foreach ( $form['fields'] as $field ) {
 							echo GFFormDisplay::get_field( $field, '', true, $form );
-							if ( $field->layoutSpacerGridColumnSpan && ! GFCommon::is_legacy_markup_enabled( $form ) ) {
-								printf( '<div class="spacer gfield" style="grid-column: span %d;" data-groupId="%s"></div>', $field->layoutSpacerGridColumnSpan, $field->layoutGroupId );
-							}
+							echo GFFormDisplay::get_row_spacer( $field, $form );
 						}
 					}
 					?>
@@ -1979,7 +1977,7 @@ class GFFormDetail {
 									</label>
 								</div>
 
-								<div id="calculation_options" style="display:none;margin-top:10px;">
+								<div id="calculation_options" style="display:none;margin-top:10px;position:relative;">
 
 									<label for="field_calculation_formula">
 										<?php esc_html_e( 'Formula', 'gravityforms' ); ?>
@@ -1994,7 +1992,7 @@ class GFFormDetail {
 											<?php } ?>
 										</div>
 									</div>
-									<textarea id="field_calculation_formula" fieldheight-2"></textarea>
+									<textarea id="field_calculation_formula" class="merge-tag-support mt-position-right mt-prepopulate merge-tag-calculation" fieldheight-2"></textarea>
 									<br/>
 									<a class="gf_calculation_trigger" href="javascript:void(0)" onclick="var field = GetSelectedField(); alert(IsValidFormula(field.calculationFormula) ? '<?php echo esc_js( __( 'The formula appears to be valid.', 'gravityforms' ) ); ?>' : '<?php echo esc_js( __( 'There appears to be a problem with the formula.', 'gravityforms' ) ); ?>');" onkeypress="var field = GetSelectedField(); alert(IsValidFormula(field.calculationFormula) ? '<?php echo esc_js( __( 'The formula appears to be valid.', 'gravityforms' ) ); ?>' : '<?php echo esc_js( __( 'There appears to be a problem with the formula.', 'gravityforms' ) ); ?>');"><?php esc_html_e( 'Validate Formula', 'gravityforms' ); ?></a>
 

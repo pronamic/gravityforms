@@ -1,3 +1,10 @@
+### 2.8.2 | 2024-01-18
+- Added security enhancements.
+- Fixed an issue where the datepicker does not work in the repeater field.
+- Fixed an issue that sometimes causes extra spacers to be added to forms.
+- Fixed an issue where conditional logic rules based on anything but the first choice of a radio or checkbox field do not work in forms created in Gravity Forms 2.8.1.  Users will need to delete and re-create the conditional logic rules to fix the issue.
+- AF: Fixed an issue where the readonly attribute is not added to settings fields.
+
 ### 2.8.1 | 2024-01-04
 - Added support for conditional logic rules based on Survey fields for confirmations, notifications, and feeds.
 - Fixed various warnings and notices in PHP 8.1 and 8.2.
@@ -11,6 +18,7 @@
 - Fixed conditional logic on the product option field.
 - Updated the format of telemetry data.
 - AF: Added feed processing when entries are marked as "not spam".
+- Updated merge tag dropdown on number field to allow live preview before saving form.
 
 ### 2.8.0 | 2023-12-07
 - Added a compact view to the form editor.

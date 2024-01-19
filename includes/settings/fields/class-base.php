@@ -258,7 +258,7 @@ class Base implements ArrayAccess {
 	 *
 	 * @var string
 	 */
-	protected $readonly;
+	public $readonly;
 
 	/**
 	 * Field error message.

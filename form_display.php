@@ -1276,9 +1276,7 @@ class GFFormDisplay {
 
 					$form_string .= self::get_field( $field, $field_value, false, $form, $field_values );
 
-					if ( $field->layoutSpacerGridColumnSpan && ! GFCommon::is_legacy_markup_enabled( $form ) ) {
-						$form_string .= sprintf( '<div class="spacer gfield" style="grid-column: span %d;"></div>', $field->layoutSpacerGridColumnSpan );
-					}
+					$form_string .= self::get_row_spacer( $field, $form );
 
 				}
 			}
@@ -5226,6 +5224,36 @@ class GFFormDisplay {
 		}
 
 		return $form_styles;
+	}
+
+	/**
+	 * Get the spacer to add to the end of the row, if needed
+	 *
+	 * @since 2.8.2
+	 *
+	 * @param array $form The current form object.
+	 * @param array $field The current field object.
+	 *
+	 * @return string
+	 */
+	public static function get_row_spacer( $field, $form ) {
+		$spacer = '';
+
+		if ( $field->layoutSpacerGridColumnSpan && ! GFCommon::is_legacy_markup_enabled( $form ) ) {
+			// check if this row needs a spacer
+			$span = intval( $field->layoutGridColumnSpan );
+			foreach ( $form['fields'] as $field2 ) {
+				if ( $field2->layoutGroupId == $field->layoutGroupId ) {
+					$span += intval( $field2->layoutGridColumnSpan );
+				}
+			}
+
+			if ( $span < 12 ) {
+				$spacer = sprintf( '<div data-fieldId="%s" class="spacer gfield" style="grid-column: span %d;" data-groupId="%s"></div>', $field->id, $field->layoutSpacerGridColumnSpan, $field->layoutGroupId );
+			}
+		}
+
+		return $spacer;
 	}
 
 }

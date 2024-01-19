@@ -129,6 +129,67 @@ class GF_Field_Total extends GF_Field {
 		return GFCommon::format_variable_value( $value, $url_encode, $esc_html, $format );
 	}
 
+	/**
+	 * Validates the field value.
+	 *
+	 * @since 2.8.2
+	 *
+	 * @param string $value The submitted value.
+	 * @param array  $form  The form currently being validated.
+	 *
+	 * @return void
+	 */
+	public function validate( $value, $form ) {
+		if ( ! $this->validateTotal ) {
+			return;
+		}
+
+		// API requests, such as the one used by Convo Forms, are not currently supported.
+		if ( GFFormDisplay::get_submission_context() !== 'form-submit' ) {
+			return;
+		}
+
+		$entry = GFFormsModel::get_current_lead( $form );
+		if ( empty( $entry ) ) {
+			return;
+		}
+
+		$currency_code  = rgar( $entry, 'currency' );
+		$currency       = new RGCurrency( $currency_code );
+		$expected_value = GFCommon::get_order_total( $form, $entry );
+		$clean_value    = GFCommon::to_number( $value, $currency_code );
+
+		if ( $currency->is_zero_decimal() ) {
+			$expected_value_int = (int) $expected_value;
+			$clean_value_int    = (int) $clean_value;
+		} else {
+			$expected_value_int = (int) round( $expected_value * 100 );
+			$clean_value_int    = (int) round( $clean_value * 100 );
+		}
+
+		if ( $expected_value_int === $clean_value_int ) {
+			return;
+		}
+
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Amount mismatch (%s - #%d). Submitted: %s. Clean (int): %s. Expected (int): %s.', $this->label, $this->id, var_export( $value, true ), var_export( $clean_value_int, true ), var_export( $expected_value_int, true ) ) );
+
+		$this->failed_validation  = true;
+		$this->validation_message = sprintf( esc_html__( 'Submitted value (%s) does not match expected value (%s).', 'gravityforms' ), $clean_value ? GFCommon::to_money( $clean_value, $currency_code ) : esc_html( $value ), GFCommon::to_money( $expected_value, $currency_code ) );
+	}
+
+	/**
+	 * Sanitizes the field properties.
+	 *
+	 * @since 2.8.2
+	 *
+	 * @return void
+	 */
+	public function sanitize_settings() {
+		parent::sanitize_settings();
+		if ( isset( $this->validateTotal ) ) {
+			$this->validateTotal = (bool) $this->validateTotal;
+		}
+	}
 
 }
 
