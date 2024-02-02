@@ -16,6 +16,7 @@ class GF_Telemetry_Snapshot_Data extends GF_Telemetry_Data {
 	public $key = 'snapshot';
 
 	public function __construct() {
+		parent::__construct();
 		/**
 		 * Array of callback functions returning an array of data to be included in the telemetry snapshot.
 		 *
@@ -23,6 +24,8 @@ class GF_Telemetry_Snapshot_Data extends GF_Telemetry_Data {
 		 */
 		$callbacks = array(
 			array( $this, 'get_site_basic_info' ),
+			array( $this, 'get_gf_settings' ),
+			array( $this, 'get_legacy_forms' ),
 		);
 
 		// Merges the default callbacks with any additional callbacks added via the gform_telemetry_snapshot_data filter. Default callbacks are added last so they can't be overridden.
@@ -101,6 +104,7 @@ class GF_Telemetry_Snapshot_Data extends GF_Telemetry_Data {
 		$meta_counts    = GFFormsModel::get_entry_meta_counts();
 		$im             = is_multisite();
 		$lang           = get_locale();
+		$db             = GFCommon::get_dbms_type();
 
 		$post = array(
 			'key'                 => GFCommon::get_key(),
@@ -122,6 +126,7 @@ class GF_Telemetry_Snapshot_Data extends GF_Telemetry_Data {
 			'entry_details_count' => $meta_counts['details'],
 			'entry_notes_count'   => $meta_counts['notes'],
 			'lang'                => $lang,
+			'db'                  => $db,
 		);
 
 		$installation_telemetry = array(
@@ -144,6 +149,59 @@ class GF_Telemetry_Snapshot_Data extends GF_Telemetry_Data {
 		}
 
 		return $post;
+	}
+
+	/**
+	 * Collect the data from the Gravity Forms settings page
+	 *
+	 * @since 2.8.3
+	 *
+	 * @return array
+	 */
+	public function get_gf_settings() {
+		if ( ! $this->data_collection ) {
+			return array();
+		}
+
+		$gform_settings = array();
+
+		$settings_keys = array(
+			'gform_enable_logging',
+			'rg_gforms_default_theme',
+			'gform_enable_toolbar_menu',
+			'gform_enable_noconflict',
+		);
+
+		foreach ( $settings_keys as $key ) {
+			$gform_settings[ $key ] = get_option( $key );
+		}
+
+		return $gform_settings;
+	}
+
+	/**
+	 * Count the number of forms with legacy mode enabled.
+	 *
+	 * @since 2.8.3
+	 *
+	 * @return array
+	 */
+	public function get_legacy_forms() {
+		if ( ! $this->data_collection ) {
+			return array();
+		}
+
+		$legacy_forms = 0;
+
+		$forms = GFFormsModel::get_forms();
+		foreach ( $forms as $form ) {
+			// if form has legacy mode enabled, add it to the total
+			if ( GFCommon::is_legacy_markup_enabled( $form->id ) ) {
+				$legacy_forms++;
+			}
+		}
+
+		return array( 'legacy_forms' => $legacy_forms );
 	}
 
 	/**

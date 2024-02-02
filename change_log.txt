@@ -1,3 +1,9 @@
+### 2.8.3 | 2024-02-01
+- Added telemetry data points.
+- Fixed an issue where the honeypot was not working on forms using the Stripe Field with additional payment methods enabled.
+- Fixed an issue where under certain conditions, an error saying "undefined index 'page_instance'" is shown when rendering a form.
+- AF: Updated the Settings API so that form meta saved in a settings field save callback will not be lost.
+
 ### 2.8.2 | 2024-01-18
 - Added security enhancements.
 - Fixed an issue where the datepicker does not work in the repeater field.

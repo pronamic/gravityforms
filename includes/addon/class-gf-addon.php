@@ -1242,14 +1242,14 @@ abstract class GFAddOn {
 	public function output_third_party_styles( $markup, $form ) {
 		$settings           = $this->get_current_settings();
 		$all_block_settings = apply_filters( 'gform_form_block_attribute_values', array() );
-		$block_settings     = isset( $all_block_settings[ $form['id'] ][ $form['page_instance'] ] ) ? $all_block_settings[ $form['id'] ][ $form['page_instance'] ] : array();
+		$page_instance      = isset( $form['page_instance'] ) ? $form['page_instance'] : 0;
+		$block_settings     = isset( $all_block_settings[ $form['id'] ][ $page_instance ] ) ? $all_block_settings[ $form['id'] ][ $page_instance ] : array();
 		$properties         = call_user_func_array( array( $this, 'theme_layer_third_party_styles' ), array( $form['id'], $settings, $block_settings ) );
 
 		if ( empty( $properties ) ) {
 			return $markup;
 		}
 
-		$page_instance   = isset( $form['page_instance'] ) ? $form['page_instance'] : 0;
 		$base_identifier = sprintf( 'gform.extensions.styles.%s', $this->get_slug() );
 		$form_identifier = sprintf( 'gform.extensions.styles.%s[%s]', $this->get_slug(), $form['id'] );
 		$full_identifier = sprintf( 'gform.extensions.styles.%s[%s][%s]', $this->get_slug(), $form['id'], $page_instance );
@@ -4331,6 +4331,13 @@ abstract class GFAddOn {
 	 * @return true|false True on success or false on error
 	 */
 	public function save_form_settings( $form, $settings ) {
+		$existing_meta     = GFFormsModel::get_form_meta( $form['id'] );
+		$existing_settings = rgar( $existing_meta, $this->_slug );
+
+		if ( is_array( $existing_settings ) ) {
+			$settings = array_merge( $existing_settings, $settings );
+		}
+
 		$form[ $this->_slug ] = $settings;
 		$result               = GFFormsModel::update_form_meta( $form['id'], $form );
 

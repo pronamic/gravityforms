@@ -25,9 +25,29 @@ abstract class GF_Telemetry_Data {
 	public $key = '';
 
 	/**
+	 * @var bool $data_collection Whether data collection is allowed.
+	 */
+	public $data_collection = '';
+
+	/**
 	 * @var string
 	 */
 	const TELEMETRY_ENDPOINT = 'https://in.gravity.io/';
+
+	public function __construct() {
+		$this->data_collection = $this->is_data_collection_allowed();
+	}
+
+	/**
+	 * Determine if the user has allowed data collection.
+	 *
+	 * @since 2.8.3
+	 *
+	 * @return false|mixed|null
+	 */
+	public function is_data_collection_allowed() {
+		return get_option( 'rg_gforms_dataCollection', false );
+	}
 
 	/**
 	 * Get the current telemetry data.
