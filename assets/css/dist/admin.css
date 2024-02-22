@@ -5408,6 +5408,10 @@ div.gforms_code pre {
 	display: inline !important;
 }
 
+.gform-admin-screen .editor-sidebar li.email_confirm_setting.field_setting input[type="checkbox"] + label.inline, .gform-admin-screen .editor-sidebar li.post_category_initial_item_setting.field_setting input[type="checkbox"] + label.inline {
+	display: inline !important;
+}
+
 label.float_label {
 	float: left;
 	padding: 2px 0 0;

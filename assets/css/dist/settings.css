@@ -75,6 +75,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		text-align: left;
 	}
 
+.rtl .gform-settings__content table.gform_system_report td, .rtl .gform-settings__content table.gform_system_report th, .rtl .gform-settings__content table.plugins td, .rtl .gform-settings__content table.plugins th {
+			direction: ltr !important;
+		}
+
 .gform-settings__content table.gform_system_report td.plugin-title, .gform-settings__content table.plugins td.plugin-title {
 		vertical-align: top;
 		white-space: normal;

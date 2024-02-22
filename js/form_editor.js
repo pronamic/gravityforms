@@ -2090,9 +2090,11 @@ function DeleteField( element ) {
 
 	// Get field ID from element.
 	var fieldId = jQuery( element )[0].id.split( '_' )[2];
+	var field = GetFieldById( fieldId );
+	var confirmDeleteMessage = field.displayOnly ? gf_vars.confirmationDeleteDisplayField : gf_vars.confirmationDeleteField;
 
 	// Confirm that user is aware about entry data being deleted.
-	if ( ! HasConditionalLogicDependency( fieldId ) && ! confirm( gf_vars.confirmationDeleteField ) ) {
+	if ( ! HasConditionalLogicDependency( fieldId ) && ! confirm( confirmDeleteMessage ) ) {
 		return;
 	}
 

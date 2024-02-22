@@ -438,11 +438,13 @@ class GF_Field_Consent extends GF_Field {
 				$return  = $this->checked_indicator_markup;
 				$return .= ' ' . wp_kses_post( $text );
 
-				// checking revisions.
-				$description = $this->get_field_description_from_revision( $revision_id );
+				if ( $media === 'screen' ) {
+					// checking revisions.
+					$description = $this->get_field_description_from_revision( $revision_id );
 
-				if ( ! empty( $description ) ) {
-					$return .= '<br /><div class="gfield_consent_description">' . nl2br( $description ) . '</div>';
+					if ( ! empty( $description ) ) {
+						$return .= '<br /><div class="gfield_consent_description">' . nl2br( $description ) . '</div>';
+					}
 				}
 			}
 		}

@@ -1,3 +1,13 @@
+### 2.8.4 | 2024-02-21
+- Fixed an issue that causes fields like the signature field to not render correctly in hidden interfaces such as tabs or modals.
+- Fixed an issue where the merge tag dropdown in the product field shows the incorrect options.
+- Fixed an issue which causes the incorrect confirmation to display when deleting a "display only" field.
+- Fixed an issue that displays the Consent field description value in the {all_fields} merge tag.
+- Fixed the display of the name field tooltip in the form editor in Safari.
+- Fixed an issue where the post selector dropdown is not displaying for form confirmations using the Page confirmation type.
+- Updated the log files section of the system report to list older files that have been rotated out.
+- Updated File Upload field to display correct values on the form review page.
+
 ### 2.8.3 | 2024-02-01
 - Added telemetry data points.
 - Fixed an issue where the honeypot was not working on forms using the Stripe Field with additional payment methods enabled.

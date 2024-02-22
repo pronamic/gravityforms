@@ -3437,6 +3437,17 @@ class GFFormsModel {
 
 			case 'fileupload' :
 				if ( $field->multipleFiles ) {
+					if ( empty( $value ) ) {
+						$temp_files = rgars( GFFormsModel::$uploaded_files, $form['id'] . '/' . $input_name );
+						if ( ! empty( $temp_files ) ) {
+							$value = array();
+							foreach ( $temp_files as $temp_file ) {
+								$file_path = self::get_file_upload_path( $form['id'], $temp_file['uploaded_filename'] );
+								$value[]   = $file_path['url'];
+							}
+						}
+					}
+
 					if ( ! empty( $value ) ) {
 						$value = json_encode( $value );
 					}
