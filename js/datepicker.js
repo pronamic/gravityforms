@@ -103,33 +103,31 @@
 				inst.dpDiv[0].classList.remove( 'gform-theme--foundation' );
 				inst.dpDiv[0].classList.remove( 'gform-theme--orbital' );
 
+				// Add classes based on the form theme
 				if ( isThemeDatepicker ) {
 					inst.dpDiv[ 0 ].classList.add( 'gform-theme-datepicker' );
 					$( inst.dpDiv[ 0 ] ).attr( 'data-parent-form', formId + '_' + formPageInstance );
 				}
 
 				if ( formTheme === undefined || formTheme === 'gravity-theme' ) {
-
 					$( inst.dpDiv[0] ).addClass( 'gravity-theme' );
-
 				} else if ( formTheme === 'legacy' ) {
 					$( inst.dpDiv[0] ).addClass( 'gform-legacy-datepicker' );
-				}
-				else {
-
+				} else {
 					$( inst.dpDiv[0] ).addClass( 'gform-theme--' + formTheme );
-
 					if ( formTheme === 'orbital' ) {
 						$( inst.dpDiv[0] ).addClass( 'gform-theme--framework' );
 						$( inst.dpDiv[0] ).addClass( 'gform-theme--foundation' );
 					}
 				}
 
+				// If the form is in preview mode and the site is RTL, adjust the datepicker position.
 				if ( isRTL && isPreview ) {
 					var $inputContainer = $( input ).closest( '.gfield' );
 					var rightOffset = $( document ).outerWidth() - ( $inputContainer.offset().left + $inputContainer.outerWidth() );
 					inst.dpDiv[ 0 ].style.right = rightOffset + 'px';
 				}
+
 				return ! this.suppressDatePicker;
 			},
 		};
@@ -203,7 +201,7 @@
 
 	$( document ).ready( initDatepickers );
 
-	// Make all and single init functions public for add ons.
+	// Make all and single init functions public for add-ons.
 	// Naming is done in the 2.4 backwards compatible way.
 	window.gformInitDatepicker = initDatepickers;
 	window.gformInitSingleDatepicker = initSingleDatepicker;

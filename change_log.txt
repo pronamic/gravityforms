@@ -1,3 +1,12 @@
+### 2.8.5 | 2024-03-06
+- Added security enhancements.
+- Fixed the `gform_required_legend` filter to that the `$form` parameter is passed correctly.
+- Fixed an issue that causes the Entry menu item to appear disabled when on an Entry screen.
+- Fixed an issue where importing a form with Next buttons causes an error.
+- Fixed an issue which causes empty column headers in entry exports for the address field latitude and longitude inputs added by the Geolocation Add-On.
+- Fixed an issue that prevents replacement of the field merge tag when the input ID includes alphanumeric characters like {Address (Latitude):1.geolocation_latitude}.
+- Updated the datepicker to fit on small screens.
+
 ### 2.8.4 | 2024-02-21
 - Fixed an issue that causes fields like the signature field to not render correctly in hidden interfaces such as tabs or modals.
 - Fixed an issue where the merge tag dropdown in the product field shows the incorrect options.

@@ -1193,10 +1193,10 @@ class GFFormDisplay {
 			}
 
 			$page_instance = isset( $form['page_instance'] ) ? "data-form-index='{$form['page_instance']}'" : null;
-			$form_theme    = "data-form-theme='" . GFFormDisplay::get_form_theme_slug( $form ) . "'";
+			$form_theme    = GFFormDisplay::get_form_theme_slug( $form );
 
 			$form_string .= "
-                <div class='{$wrapper_css_class}{$custom_wrapper_css_class}' {$form_theme} {$page_instance} id='gform_wrapper_$form_id' " . $style . '>';
+                <div class='{$wrapper_css_class}{$custom_wrapper_css_class}' data-form-theme='{$form_theme}' {$page_instance} id='gform_wrapper_$form_id' " . $style . '>';
 
 			/**
 			 * Allows markup to be added directly after the opening form wrapper.
@@ -1249,12 +1249,13 @@ class GFFormDisplay {
 					 * @since 2.5
 					 *
 					 * @param string $message The required indicator legend.
-					 * @param array  $form    The current Form object.
+					 * @param array  $form    The current Form.
 					 */
 					$required_legend = gf_apply_filters(
 						array( 'gform_required_legend', $form['id'] ),
 						/* Translators: the text or symbol that indicates a field is required */
-						sprintf( esc_html__( '"%s" indicates required fields', 'gravityforms' ), GFFormsModel::get_required_indicator( $form_id ) )
+						sprintf( esc_html__( '"%s" indicates required fields', 'gravityforms' ), GFFormsModel::get_required_indicator( $form_id ) ),
+						$form
 					);
 					$form_string .= "
 							<p class='gform_required_legend'>{$required_legend}</p>";

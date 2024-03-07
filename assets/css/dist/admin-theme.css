@@ -1418,6 +1418,7 @@ html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_container_date[style*="disp
 	font-size: 0.8125rem;
 	font-weight: var(--gform-theme-font-weight-medium);
 	margin-top: 0.3125rem;
+	max-width: 400px;
 	padding: 1.125rem 0.9375rem;
 	width: auto;
 }
@@ -1462,7 +1463,8 @@ html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_container_date[style*="disp
 			position: absolute;
 			speak: never;
 			text-decoration: none;
-			top: -0.125rem;
+			top: 50%;
+			transform: translateY(-50%);
 			transition: color 300ms ease-in-out, background-color 300ms ease-in-out, border-color 300ms ease-in-out;
 			width: 1.875rem;
 		}
@@ -1525,6 +1527,11 @@ html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_container_date[style*="disp
 				-moz-text-align-last: right;
 				     text-align-last: right;
 			}
+
+.gravity-theme.ui-datepicker .ui-datepicker-calendar {
+		table-layout: fixed;
+		width: 100%;
+	}
 
 .gravity-theme.ui-datepicker .ui-datepicker-calendar span, .gravity-theme.ui-datepicker .ui-datepicker-calendar a {
 			font-weight: var(--gform-theme-font-weight-normal);
@@ -1602,6 +1609,41 @@ html[dir="rtl"] .gform_wrapper.gravity-theme .ginput_container_date[style*="disp
 				text-decoration: none;
 				width: 2.5rem;
 			}
+
+@media (max-width: 640px) {
+
+	.gravity-theme.ui-datepicker {
+		max-width: 235px;
+	}
+
+		.gravity-theme.ui-datepicker .ui-datepicker-header {
+			margin-bottom: 10px;
+		}
+
+		.gravity-theme.ui-datepicker td, .gravity-theme.ui-datepicker th {
+			padding: 3px;
+		}
+
+				.gravity-theme.ui-datepicker .ui-datepicker-calendar th span {
+					height: 20px;
+					width: 20px;
+				}
+
+			.gravity-theme.ui-datepicker .ui-datepicker-calendar td {
+				height: 30px;
+				width: 30px;
+			}
+
+			.gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-default {
+				height: 20px;
+				width: 20px;
+			}
+
+				.gravity-theme.ui-datepicker .ui-datepicker-calendar .ui-state-disabled .ui-state-default {
+					height: 20px;
+					width: 20px;
+				}
+}
 
 html[dir="rtl"] #ui-datepicker-div.gform-theme-datepicker[style] {
 		right: auto !important;

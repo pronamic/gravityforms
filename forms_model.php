@@ -6751,15 +6751,15 @@ class GFFormsModel {
 			return null;
 		}
 
-		if ( is_numeric( $field_id ) ) {
-			// Removing floating part of field (i.e 1.3 -> 1) to return field by input id.
+		if ( is_numeric( $field_id ) || preg_match( '/^\d+\.\w+$/', $field_id ) ) {
+			// Removing the input-specific segment from the field ID (i.e 1.3 or 1.something -> 1).
 			$field_id = intval( $field_id );
 		}
 
 		global $_fields;
 		$key = $form['id'] . '_' . $field_id;
 		$return = null;
-		if (isset( $_fields[ $key ] ) ) {
+		if ( isset( $_fields[ $key ] ) ) {
 			return $_fields[ $key ];
 		}
 

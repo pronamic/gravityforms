@@ -968,11 +968,14 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 .gform-theme--framework, .gform-theme--api {
 	--gf-ctrl-date-picker-bg-color: var(--gf-ctrl-bg-color);
 	--gf-ctrl-date-picker-shadow: 0 0 1px rgba(18, 25, 97, 0.24), 0 24px 24px rgba(18, 25, 97, 0.03), 0 2px 2px rgba(18, 25, 97, 0.03), 0 4px 4px rgba(18, 25, 97, 0.03), 0 8px 8px rgba(18, 25, 97, 0.03), 0 16px 16px rgba(18, 25, 97, 0.03);
-	--gf-ctrl-date-picker-padding-y: 16px;
-	--gf-ctrl-date-picker-padding-x: 16px;
+	--gf-ctrl-date-picker-padding-y: 16px 12px;
+	--gf-ctrl-date-picker-padding-y-viewport-sm: 16px;
+	--gf-ctrl-date-picker-padding-x: 12px;
+	--gf-ctrl-date-picker-padding-x-viewport-sm: 16px;
 	--gf-ctrl-date-picker-margin-y-start: 12px;
 	--gf-ctrl-date-picker-radius: var(--gf-ctrl-radius-max-md);
-	--gf-ctrl-date-picker-width: 300px;
+	--gf-ctrl-date-picker-width: 250px;
+	--gf-ctrl-date-picker-width-viewport-sm: 300px;
 
 	--gf-ctrl-date-picker-header-icons-width: 20px;
 	--gf-ctrl-date-picker-header-icons-color: var(--gf-ctrl-icon-color);
@@ -980,9 +983,14 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gf-ctrl-date-picker-header-icons-font-size: 20px;
 
 	--gf-ctrl-date-picker-title-color: var(--gf-color-secondary-contrast);
-	--gf-ctrl-date-picker-title-font-size: 14px;
+	--gf-ctrl-date-picker-title-font-size: 12px;
+	--gf-ctrl-date-picker-title-font-size-viewport-sm: 14px;
 	--gf-ctrl-date-picker-title-font-weight: 500;
+	--gf-ctrl-date-picker-title-gap: 4px;
+	--gf-ctrl-date-picker-title-gap-viewport-sm: 8px;
 	--gf-ctrl-date-picker-title-line-height: 1.5;
+	--gf-ctrl-date-picker-title-margin-x: 4px;
+	--gf-ctrl-date-picker-title-margin-x-viewport-sm: 8px;
 
 	--gf-ctrl-date-picker-dropdown-bg-image: var(--gf-icon-ctrl-select);
 	--gf-ctrl-date-picker-dropdown-bg-position: var(--gf-ctrl-select-icon-position);
@@ -999,10 +1007,12 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gf-ctrl-date-picker-head-cell-font-size: 12px;
 	--gf-ctrl-date-picker-head-cell-font-weight: 600;
 	--gf-ctrl-date-picker-head-cell-line-height: 1.33;
-	--gf-ctrl-date-picker-head-cell-vertical-align: middle;
 
 	--gf-ctrl-date-picker-cell-padding: 1px;
-	--gf-ctrl-date-picker-cell-height: 40px;
+	--gf-ctrl-date-picker-cell-padding-y: 6px;
+	--gf-ctrl-date-picker-cell-padding-y-viewport-sm: var(--gf-ctrl-date-picker-cell-padding);
+	--gf-ctrl-date-picker-cell-height: 29px;
+	--gf-ctrl-date-picker-cell-height-viewport-sm: 40px;
 	--gf-ctrl-date-picker-cell-font-size: 14px;
 	--gf-ctrl-date-picker-cell-font-weight: 400;
 	--gf-ctrl-date-picker-cell-line-height: 1.43;
@@ -1017,6 +1027,8 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	--gf-ctrl-date-picker-cell-content-color-disabled: #cfd3d9;
 	--gf-ctrl-date-picker-cell-content-color-hover: var(--gf-ctrl-date-picker-cell-content-color);
 	--gf-ctrl-date-picker-cell-content-color-selected: var(--gf-color-in-ctrl-primary-contrast);
+	--gf-ctrl-date-picker-cell-content-width: 27px;
+	--gf-ctrl-date-picker-cell-content-width-viewport-sm: 100%;
 }
 
 /* Gravity Forms Theme Framework | Global CSS API: Control - Description */
@@ -3243,6 +3255,15 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 	padding-inline: var(--gf-ctrl-date-picker-padding-x);
 }
 
+@media (min-width: 640px) {
+
+.gform-theme--framework.ui-datepicker {
+		inline-size: var(--gf-ctrl-date-picker-width-viewport-sm);
+		padding-block: var(--gf-ctrl-date-picker-padding-y-viewport-sm);
+		padding-inline: var(--gf-ctrl-date-picker-padding-x-viewport-sm)
+}
+	}
+
 .gform-theme--framework.ui-datepicker .ui-datepicker-header {
 		align-items: stretch;
 		display: flex;
@@ -3314,13 +3335,27 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 		flex: auto;
 		font-size: var(--gf-ctrl-date-picker-title-font-size);
 		font-weight: var(--gf-ctrl-date-picker-title-font-weight);
-		gap: 8px;
+		gap: var(--gf-ctrl-date-picker-title-gap);
 		line-height: var(--gf-ctrl-date-picker-title-line-height);
 		margin-block: 0;
-		margin-inline: 8px;
+		margin-inline: var(--gf-ctrl-date-picker-title-margin-x);
 	}
 
+@media (min-width: 640px) {
+
+.gform-theme--framework.ui-datepicker .ui-datepicker-title {
+			font-size: var(--gf-ctrl-date-picker-title-font-size-viewport-sm);
+			gap: var(--gf-ctrl-date-picker-title-gap-viewport-sm);
+			margin-inline: var(--gf-ctrl-date-picker-title-margin-x-viewport-sm)
+	}
+		}
+
 .gform-theme--framework.ui-datepicker select.ui-datepicker-month, .gform-theme--framework.ui-datepicker select.ui-datepicker-year {
+
+		/* Local CSS API Overrides */
+		--gf-local-height: var(--gf-ctrl-size-sm);
+		--gf-local-line-height: var(--gf-ctrl-size-sm);
+
 		background-image: var(--gf-icon-ctrl-select);
 		background-position: var(--gf-ctrl-select-icon-position);
 		background-repeat: no-repeat;
@@ -3339,40 +3374,39 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 	}
 
 .gform-theme--framework.ui-datepicker table th, .gform-theme--framework.ui-datepicker table td {
-
-			/* Local CSS API Overrides */
-			--gf-local-color: var(--gf-ctrl-date-picker-cell-content-color);
-
-			/* Styles */
-			block-size: 40px;
-			color: var(--gf-local-color);
-			font-size: var(--gf-local-font-size);
-			font-weight: var(--gf-local-font-weight);
-			line-height: var(--gf-local-line-height);
+			block-size: var(--gf-ctrl-date-picker-cell-height);
+			color: var(--gf-ctrl-date-picker-cell-content-color);
 			padding-block: var(--gf-ctrl-date-picker-cell-padding);
 			padding-inline: var(--gf-ctrl-date-picker-cell-padding);
 		}
 
+@media (min-width: 640px) {
+
+.gform-theme--framework.ui-datepicker table th, .gform-theme--framework.ui-datepicker table td {
+				block-size: var(--gf-ctrl-date-picker-cell-height-viewport-sm)
+		}
+			}
+
 .gform-theme--framework.ui-datepicker table th {
-
-			/* Local CSS API Overrides */
-			--gf-local-height: var(--gf-ctrl-date-picker-cell-height);
-			--gf-local-font-size: var(--gf-ctrl-date-picker-head-cell-font-size);
-			--gf-local-font-weight: var(--gf-ctrl-date-picker-head-cell-font-weight);
-			--gf-local-line-height: var(--gf-ctrl-date-picker-head-cell-line-height);
-
-			/* Styles */
+			font-size: var(--gf-ctrl-date-picker-head-cell-font-size);
+			font-weight: var(--gf-ctrl-date-picker-head-cell-font-weight);
+			line-height: var(--gf-ctrl-date-picker-head-cell-line-height);
 			vertical-align: middle;
 		}
 
 .gform-theme--framework.ui-datepicker table td {
-
-			/* Local CSS API Overrides */
-			--gf-local-height: var(--gf-ctrl-date-picker-cell-height);
-			--gf-local-font-size: var(--gf-ctrl-date-picker-cell-font-size);
-			--gf-local-font-weight: var(--gf-ctrl-date-picker-cell-font-weight);
-			--gf-local-line-height: var(--gf-ctrl-date-picker-cell-line-height);
+			font-size: var(--gf-ctrl-date-picker-cell-font-size);
+			font-weight: var(--gf-ctrl-date-picker-cell-font-weight);
+			line-height: var(--gf-ctrl-date-picker-cell-line-height);
+			padding-block: var(--gf-ctrl-date-picker-cell-padding-y);
 		}
+
+@media (min-width: 640px) {
+
+.gform-theme--framework.ui-datepicker table td {
+				padding-block: var(--gf-ctrl-date-picker-cell-padding-y-viewport-sm)
+		}
+			}
 
 .gform-theme--framework.ui-datepicker table td:not(.ui-state-disabled) {
 				cursor: pointer;
@@ -3380,7 +3414,7 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 
 .gform-theme--framework.ui-datepicker table td span, .gform-theme--framework.ui-datepicker table td a {
 
-				/* Local CSS API Overrides */
+				/* Local CSS API */
 				--gf-local-bg-color: transparent;
 				--gf-local-border: 0;
 				--gf-local-color: var(--gf-ctrl-date-picker-cell-content-color);
@@ -3393,10 +3427,17 @@ html[dir="rtl"] .gform-theme--framework, html[dir="rtl"] .gform-theme--api {
 				border-radius: var(--gf-ctrl-date-picker-cell-content-radius);
 				color: var(--gf-local-color);
 				display: flex;
-				inline-size: 100%;
+				inline-size: var(--gf-ctrl-date-picker-cell-content-width);
 				justify-content: center;
 				text-decoration: none;
 			}
+
+@media (min-width: 640px) {
+
+.gform-theme--framework.ui-datepicker table td span, .gform-theme--framework.ui-datepicker table td a {
+					inline-size: var(--gf-ctrl-date-picker-cell-content-width-viewport-sm)
+			}
+				}
 
 .gform-theme--framework.ui-datepicker table td:not(.ui-state-disabled):not(.ui-datepicker-current-day) a:hover {
 

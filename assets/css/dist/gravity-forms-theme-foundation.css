@@ -778,7 +778,8 @@ A reset for text inputs.
 
 .gform-theme--foundation.ui-datepicker td span, .gform-theme--foundation.ui-datepicker td a {
 			display: block;
-			padding: 0.2em;
+			margin: auto;
+			padding: 0.25em 0.2em;
 			text-align: center;
 			text-decoration: none;
 		}

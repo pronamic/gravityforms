@@ -2846,10 +2846,6 @@ html[dir="rtl"] .gform-field__toggle input[type="checkbox"]:checked + .gform-fie
 		border-bottom-color: #3e7da6;
 	}
 
-.gform-form-toolbar__menu a.gf_toolbar_active {
-		cursor: default;
-	}
-
 .gform-form-toolbar__menu > li {
 		display: inline-block;
 		margin: 0;
@@ -2959,6 +2955,7 @@ html[dir="rtl"] .gform-field__toggle input[type="checkbox"]:checked + .gform-fie
 	flex: auto;
 	font-family: inter, -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
 	justify-content: flex-end;
+	padding-inline-start: 0.65rem;
 	text-align: right;
 }
 

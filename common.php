@@ -382,7 +382,22 @@ class GFCommon {
 		}
 
 		return false;
+	}
 
+	/**
+	 * Strips HTML tags using wp_strip_all_tags from a string that may contain unicode.
+	 *
+     * @since 2.8.5
+     *
+	 * @param string $string JSON string.
+	 *
+	 * @return string
+	 */
+	public static function strip_all_tags_from_json_string( $string ) {
+		$decoded_json   = json_decode( $string, true );
+		$reencoded_json = json_encode( $decoded_json );
+
+		return wp_strip_all_tags( $reencoded_json );
 	}
 
 	//Returns the url of the plugin's root folder
@@ -1098,7 +1113,7 @@ class GFCommon {
 
 		if ( false !== strpos( $text, 'merge_tag' ) ) {
 			// Replacing conditional merge tag variables: [gravityforms action="conditional" merge_tag="{Other Services:4}" ....
-			preg_match_all( '/merge_tag\s*=\s*["|\']({[^{]*?:(\d+(\.\d+)?)(:(.*?))?})["|\']/mi', $text, $matches, PREG_SET_ORDER );
+			preg_match_all( '/merge_tag\s*=\s*["|\']({[^{]*?:(\d+(\.\w+)?)(:(.*?))?})["|\']/mi', $text, $matches, PREG_SET_ORDER );
 			if ( is_array( $matches ) ) {
 				foreach ( $matches as $match ) {
 					$input_id = $match[2];
@@ -1129,7 +1144,7 @@ class GFCommon {
 		}
 
 		// Replacing field variables: {FIELD_LABEL:FIELD_ID} {My Field:2}.
-		preg_match_all( '/{[^{]*?:(\d+(\.\d+)?)(:(.*?))?}/mi', $text, $matches, PREG_SET_ORDER );
+		preg_match_all( '/{[^{]*?:(\d+(\.\w+)?)(:(.*?))?}/mi', $text, $matches, PREG_SET_ORDER );
 		if ( is_array( $matches ) ) {
 			foreach ( $matches as $match ) {
 				$input_id = $match[1];

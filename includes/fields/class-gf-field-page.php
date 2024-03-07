@@ -55,7 +55,9 @@ class GF_Field_Page extends GF_Field {
 	public function sanitize_settings() {
 		parent::sanitize_settings();
 		if ( $this->nextButton ) {
-			$this->nextButton['imageUrl'] = wp_strip_all_tags( $this->nextButton['imageUrl'] );
+			if ( isset( $this->nextButton['imageUrl'] ) )  {
+				$this->nextButton['imageUrl'] = wp_strip_all_tags( $this->nextButton['imageUrl'] );
+			}
 			$allowed_tags      = wp_kses_allowed_html( 'post' );
 			$this->nextButton['text'] = wp_kses( $this->nextButton['text'], $allowed_tags );
 			$this->nextButton['type'] = wp_strip_all_tags( $this->nextButton['type'] );
