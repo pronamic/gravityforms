@@ -766,54 +766,66 @@ class GF_Field_FileUpload extends GF_Field {
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
-		$output = '';
-		if ( ! empty( $value ) ) {
-			$output_arr     = array();
-			$file_paths     = $this->multipleFiles ? json_decode( $value ) : array( $value );
-			$force_download = in_array( 'download', $this->get_modifiers() );
-
-			if ( is_array( $file_paths ) ) {
-				foreach ( $file_paths as $file_path ) {
-					$basename = wp_basename( $file_path );
-					$file_path = $this->get_download_url( $file_path, $force_download );
-
-					/**
-					 * Allow for override of SSL replacement
-					 *
-					 * By default Gravity Forms will attempt to determine if the schema of the URL should be overwritten for SSL.
-					 * This is not ideal for all situations, particularly domain mapping. Setting $field_ssl to false will prevent
-					 * the override.
-					 *
-					 * @since 2.1.1.23
-					 *
-					 * @param bool                $field_ssl True to allow override if needed or false if not.
-					 * @param string              $file_path The file path of the download file.
-					 * @param GF_Field_FileUpload $field     The field object for further context.
-					 */
-					$field_ssl = apply_filters( 'gform_secure_file_download_is_https', true, $file_path, $this );
-
-					if ( GFCommon::is_ssl() && strpos( $file_path, 'http:' ) !== false && $field_ssl === true ) {
-						$file_path = str_replace( 'http:', 'https:', $file_path );
-					}
-
-					/**
-					 * Allows for the filtering of the file path before output.
-					 *
-					 * @since 2.1.1.23
-					 *
-					 * @param string              $file_path The file path of the download file.
-					 * @param GF_Field_FileUpload $field     The field object for further context.
-					 */
-					$file_path    = str_replace( ' ', '%20', apply_filters( 'gform_fileupload_entry_value_file_path', $file_path, $this ) );
-					$output_arr[] = $format == 'text' ? $file_path : sprintf( "<li><a href='%s' target='_blank' aria-label='%s'>%s</a></li>", esc_attr( $file_path ), esc_attr__( 'Click to view', 'gravityforms' ), $basename );
-
-				}
-				$output = join( PHP_EOL, $output_arr );
-			}
+		if ( empty( $value ) ) {
+			return '';
 		}
-		$output = empty( $output ) || $format == 'text' ? $output : sprintf( '<ul>%s</ul>', $output );
 
-		return $output;
+		$output     = '';
+		$output_arr = array();
+
+		$files = json_decode( $value, true );
+		if ( ! is_array( $files ) ) {
+			$files = array( $value );
+		}
+
+		$force_download = in_array( 'download', $this->get_modifiers() );
+
+		if ( is_array( $files ) ) {
+			foreach ( $files as $file_path ) {
+				if ( is_array( $file_path ) ) {
+					$basename  = rgar( $file_path, 'uploaded_name' );
+					$file_path = rgar( $file_path, 'tmp_url' );
+				} else {
+					$basename = wp_basename( $file_path );
+				}
+
+				$file_path = $this->get_download_url( $file_path, $force_download );
+
+				/**
+				 * Allow for override of SSL replacement
+				 *
+				 * By default Gravity Forms will attempt to determine if the schema of the URL should be overwritten for SSL.
+				 * This is not ideal for all situations, particularly domain mapping. Setting $field_ssl to false will prevent
+				 * the override.
+				 *
+				 * @since 2.1.1.23
+				 *
+				 * @param bool                $field_ssl True to allow override if needed or false if not.
+				 * @param string              $file_path The file path of the download file.
+				 * @param GF_Field_FileUpload $field     The field object for further context.
+				 */
+				$field_ssl = apply_filters( 'gform_secure_file_download_is_https', true, $file_path, $this );
+
+				if ( GFCommon::is_ssl() && strpos( $file_path, 'http:' ) !== false && $field_ssl === true ) {
+					$file_path = str_replace( 'http:', 'https:', $file_path );
+				}
+
+				/**
+				 * Allows for the filtering of the file path before output.
+				 *
+				 * @since 2.1.1.23
+				 *
+				 * @param string              $file_path The file path of the download file.
+				 * @param GF_Field_FileUpload $field     The field object for further context.
+				 */
+				$file_path    = str_replace( ' ', '%20', apply_filters( 'gform_fileupload_entry_value_file_path', $file_path, $this ) );
+				$output_arr[] = $format == 'text' ? $file_path : sprintf( "<li><a href='%s' target='_blank' aria-label='%s'>%s</a></li>", esc_attr( $file_path ), esc_attr__( 'Click to view', 'gravityforms' ), $basename );
+
+			}
+			$output = join( PHP_EOL, $output_arr );
+		}
+
+		return empty( $output ) || $format == 'text' ? $output : sprintf( '<ul>%s</ul>', $output );
 	}
 
 	/**
@@ -840,24 +852,28 @@ class GF_Field_FileUpload extends GF_Field {
 	 */
 	public function get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br ) {
 
+		if ( empty( $raw_value ) ) {
+			return '';
+		}
+
 		$force_download = in_array( 'download', $this->get_modifiers() );
 
-		if ( $this->multipleFiles ) {
-
-			$files = empty( $raw_value ) ? array() : json_decode( $raw_value, true );
-			foreach ( $files as &$file ) {
-				$file = $this->get_download_url( $file, $force_download );
-				$file = str_replace( ' ', '%20', $file );
-				if ( $esc_html ) {
-					$value = esc_html( $value );
-				}
-			}
-			$value = $format == 'html' ? join( '<br />', $files ) : join( ', ', $files );
-
-		} else {
-			$value = $this->get_download_url( $raw_value, $force_download );
-			$value = str_replace( ' ', '%20', $value );
+		$files = json_decode( $raw_value, true );
+		if ( ! is_array( $files ) ) {
+			$files = array( $raw_value );
 		}
+
+		foreach ( $files as &$file ) {
+			if ( is_array( $file ) ) {
+				$file = rgar( $file, 'tmp_url' );
+			}
+			$file = str_replace( ' ', '%20', $this->get_download_url( $file, $force_download ) );
+			if ( $esc_html ) {
+				$file = esc_html( $file );
+			}
+		}
+
+		$value = $format == 'html' ? join( '<br />', $files ) : join( ', ', $files );
 
 		if ( $url_encode ) {
 			$value = urlencode( $value );

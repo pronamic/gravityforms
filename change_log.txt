@@ -1,3 +1,13 @@
+### 2.8.6 | 2024-03-21
+- Added *[gform_custom_merge_tags](https://docs.gravityforms.com/gform_custom_merge_tags/)* JavaScript filter to allow the inclusion of custom merge tags.
+- Added `gform_merge_tags_supported_input_types` JavaScript filter to allow the inclusion of specific input types for merge tags.
+- Added the `gform_pre_post_render` filter to GFFormDisplay::post_render_script() to abort the rendering process.
+- Fixed a bug that prevents the error icon from displaying in the validation summary in the Gravity Forms 2.5 Theme.
+- Fixed the padding of field validation messages in the Gravity Forms 2.5 Theme.
+- Fixed a bug that prevented notification CC and BCC fields from correctly handling comma-separated merge tags.
+- API: Updated the file upload field value in the draft entry from GFFormsModel::create_lead() to contain a JSON encoded array of file details instead of the incorrect file URL.
+- API: Updated the border color of disabled inputs in the Settings API.
+
 ### 2.8.5 | 2024-03-06
 - Added security enhancements.
 - Fixed the `gform_required_legend` filter to that the `$form` parameter is passed correctly.

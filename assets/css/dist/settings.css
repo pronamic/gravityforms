@@ -760,7 +760,6 @@ html[dir="rtl"] .gform-settings-field--with-merge-tag .gform-settings-field__hea
 
 .gform-settings-panel__content input[type="email"][disabled], .gform-settings-panel__content input[type="email"][readonly], .gform-settings-panel__content input[type="number"][disabled], .gform-settings-panel__content input[type="number"][readonly], .gform-settings-panel__content input[type="password"][disabled], .gform-settings-panel__content input[type="password"][readonly], .gform-settings-panel__content input[type="text"][disabled], .gform-settings-panel__content input[type="text"][readonly], .gform-settings-panel__content input[type="search"][disabled], .gform-settings-panel__content input[type="search"][readonly], .gform-settings-panel__content input[type="url"][disabled], .gform-settings-panel__content input[type="url"][readonly], .gform-settings-panel__content input[type="tel"][disabled], .gform-settings-panel__content input[type="tel"][readonly], .gform-settings-panel__content select[disabled], .gform-settings-panel__content select[readonly], .gform-settings-panel__content textarea[disabled], .gform-settings-panel__content textarea[readonly] {
 			background: #f4f5fb;
-			border: 1px solid transparent;
 			cursor: not-allowed;
 			outline: none;
 			pointer-events: none;
