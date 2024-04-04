@@ -1,3 +1,11 @@
+### 2.8.7 | 2024-04-03
+- Fixed a bug where total calculation and post conditional logic events sometimes aren't called when using the `gform_abort_conditional_logic_do_action` filter.
+- Fixed a fatal error that sometimes occurs when deleting entries.
+- Fixed a bug that causes the plugins page to display "Auto-updates disabled" for Gravity Forms when auto-updates are turned on with the `auto_update_plugin` filter.
+- Fixed a bug that prevents the `gform_pre_validation` filter from running when an individual field is validated, such as in a conversational form.
+- Updated JavaScript and CSS from the assets directory to always load minified versions.
+- Updated the minimum WordPress version (for support) on the System Status page to 6.4.
+
 ### 2.8.6 | 2024-03-21
 - Added *[gform_custom_merge_tags](https://docs.gravityforms.com/gform_custom_merge_tags/)* JavaScript filter to allow the inclusion of custom merge tags.
 - Added `gform_merge_tags_supported_input_types` JavaScript filter to allow the inclusion of specific input types for merge tags.

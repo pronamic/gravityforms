@@ -1801,6 +1801,7 @@ class GFAPI {
 	 * Validates the submitted value of the specified field.
 	 *
 	 * @since 2.7
+	 * @since 2.8.7 Added the gform_pre_validation filter.
 	 *
 	 * @param int   $form_id      The ID of the form this submission belongs to.
 	 * @param int   $field_id     The ID of the field to be validated.
@@ -1813,6 +1814,22 @@ class GFAPI {
 		if ( is_wp_error( $form ) ) {
 			return $form;
 		}
+
+		$gform_pre_validation_args = array( 'gform_pre_validation', $form_id );
+		if ( gf_has_filter( $gform_pre_validation_args ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Executing functions hooked to gform_pre_validation.' );
+			/**
+			 * Allows the form to be modified before the submission is validated.
+			 *
+			 * @since 1.7
+			 * @since 1.9 Added the form specific version.
+			 *
+			 * @param array $form The form for the submission to be validated.
+			 */
+			$form = gf_apply_filters( $gform_pre_validation_args, $form );
+			GFCommon::log_debug( __METHOD__ . '(): Completed gform_pre_validation.' );
+		}
+
 
 		$field = self::get_field( $form, $field_id );
 		if ( ! $field ) {

@@ -75,7 +75,7 @@ class GF_Setup_Wizard_Service_Provider extends GF_Service_Provider {
 	}
 
 	private function register_wizard_app( GF_Service_Container $container ) {
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$dev_min = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
 
 		$args = array(
 			'app_name'     => 'setup_wizard',
@@ -85,9 +85,9 @@ class GF_Setup_Wizard_Service_Provider extends GF_Service_Provider {
 			'enqueue'      => array( $this, 'should_enqueue_setup_wizard' ),
 			'css'          => array(
 				'handle' => 'setup_wizard_styles',
-				'src'    => \GFCommon::get_base_url() . "/assets/css/dist/setup-wizard{$min}.css",
+				'src'    => \GFCommon::get_base_url() . "/assets/css/dist/setup-wizard{$dev_min}.css",
 				'deps'   => array( 'gform_admin_components' ),
-				'ver'    => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? filemtime( \GFCommon::get_base_path() . "/assets/css/dist/setup-wizard{$min}.css" ) : \GFForms::$version,
+				'ver'    => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? filemtime( \GFCommon::get_base_path() . "/assets/css/dist/setup-wizard{$dev_min}.css" ) : \GFForms::$version,
 			),
 			'root_element' => 'setup-wizard',
 		);

@@ -217,13 +217,14 @@ class Generic_Map extends Base {
 	 */
 	public function scripts() {
 
-		$min  = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$dev_min = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
 
 		return array(
 			array(
 				'handle'  => 'gform_settings_field_map',
-				'src'     => GFCommon::get_base_url() . "/assets/js/dist/field-map{$min}.js",
-				'version' => $min ? GFForms::$version : filemtime( GFCommon::get_base_path() . '/assets/js/dist/field-map.js' ),
+				'src'     => GFCommon::get_base_url() . "/assets/js/dist/field-map{$dev_min}.js",
+				'version' => defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? filemtime( GFCommon::get_base_path() . "/assets/js/dist/field-map{$dev_min}.js" ) : GFForms::$version,
 				'deps'    => array( 'wp-element', 'wp-i18n' ),
 			),
 		);

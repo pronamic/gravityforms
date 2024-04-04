@@ -94,7 +94,7 @@ class GF_Template_Library_Service_Provider extends GF_Service_Provider {
 	}
 
 	private function register_template_library_app() {
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$dev_min = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
 
 		$args = array(
 			'app_name'     => 'template_library',
@@ -104,9 +104,9 @@ class GF_Template_Library_Service_Provider extends GF_Service_Provider {
 			'enqueue'      => array( $this, 'should_enqueue_library' ),
 			'css'          => array(
 				'handle' => 'template_library_styles',
-				'src'    => \GFCommon::get_base_url() . "/assets/css/dist/template-library{$min}.css",
+				'src'    => \GFCommon::get_base_url() . "/assets/css/dist/template-library{$dev_min}.css",
 				'deps'   => array( 'gform_admin_components' ),
-				'ver'    => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? filemtime( \GFCommon::get_base_path() . "/assets/css/dist/template-library{$min}.css" ) : \GFForms::$version,
+				'ver'    => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? filemtime( \GFCommon::get_base_path() . "/assets/css/dist/template-library{$dev_min}.css" ) : \GFForms::$version,
 			),
 			'root_element' => 'gf-template-library',
 		);

@@ -5463,7 +5463,7 @@ class GFFormsModel {
 				}
 			} else {
 				// Deleting details for this field
-				if ( is_array( $field->get_entry_inputs() ) ) {
+				if ( is_a( $field, 'GF_Field' ) && is_array( $field->get_entry_inputs() ) ) {
 					$_input_id = ( false === strpos( $input_id, '.' ) ) ? sprintf( '%d.%%', $input_id ) : $input_id;
 					$sql = $wpdb->prepare( "DELETE FROM $entry_meta_table_name WHERE entry_id=%d AND meta_key LIKE %s ", $entry_id, $_input_id );
 				} else {

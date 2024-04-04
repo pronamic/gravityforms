@@ -159,14 +159,14 @@ class GF_Block_Form extends GF_Block {
 			}
 		}
 
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$dev_min = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
 
 		return array(
 			array(
 				'handle'  => $this->style_handle,
-				'src'     => GFCommon::get_base_url() . "/assets/css/dist/blocks{$min}.css",
+				'src'     => GFCommon::get_base_url() . "/assets/css/dist/blocks{$dev_min}.css",
 				'deps'    => $deps,
-				'version' => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? filemtime( GFCommon::get_base_path() . "/assets/css/dist/blocks{$min}.css" ) : GFForms::$version,
+				'version' => defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? filemtime( GFCommon::get_base_path() . "/assets/css/dist/blocks{$dev_min}.css" ) : GFForms::$version,
 			),
 		);
 

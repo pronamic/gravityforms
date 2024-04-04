@@ -21,10 +21,10 @@ class GFHelp {
 			return;
 		}
 
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$dev_min = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
 
 		?>
-        <link rel="stylesheet" href="<?php echo GFCommon::get_base_url(); ?>/assets/css/dist/admin<?php echo $min; ?>.css" />
+        <link rel="stylesheet" href="<?php echo GFCommon::get_base_url(); ?>/assets/css/dist/admin<?php echo $dev_min; ?>.css" />
 		<div class="wrap gforms_help <?php echo GFCommon::get_browser_class() ?>">
 
             <h2><?php esc_html_e( 'How can we help you?', 'gravityforms' ); ?></h2>

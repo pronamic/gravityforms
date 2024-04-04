@@ -103,7 +103,7 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 	public function register_theme_styles() {
 		$base_url = GFCommon::get_base_url();
 		$version  = GFForms::$version;
-		$min      = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$dev_min  = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
 
 		/**
 		 * Allows users to disable all CSS files from being loaded on the Front End.
@@ -115,18 +115,18 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 		$disable_css = apply_filters( 'gform_disable_css', get_option( 'rg_gforms_disable_css' ) );
 
 		if ( ! $disable_css ) {
-			wp_register_style( 'gravity_forms_theme_reset', "{$base_url}/assets/css/dist/gravity-forms-theme-reset{$min}.css", array(), $version );
-			wp_register_style( 'gravity_forms_theme_foundation', "{$base_url}/assets/css/dist/gravity-forms-theme-foundation{$min}.css", array(), $version );
+			wp_register_style( 'gravity_forms_theme_reset', "{$base_url}/assets/css/dist/gravity-forms-theme-reset{$dev_min}.css", array(), $version );
+			wp_register_style( 'gravity_forms_theme_foundation', "{$base_url}/assets/css/dist/gravity-forms-theme-foundation{$dev_min}.css", array(), $version );
 			wp_register_style(
 				'gravity_forms_theme_framework',
-				"{$base_url}/assets/css/dist/gravity-forms-theme-framework{$min}.css",
+				"{$base_url}/assets/css/dist/gravity-forms-theme-framework{$dev_min}.css",
 				array(
 					'gravity_forms_theme_reset',
 					'gravity_forms_theme_foundation',
 				),
 				$version
 			);
-			wp_register_style( 'gravity_forms_orbital_theme', "{$base_url}/assets/css/dist/gravity-forms-orbital-theme{$min}.css", array( 'gravity_forms_theme_framework' ), $version );
+			wp_register_style( 'gravity_forms_orbital_theme', "{$base_url}/assets/css/dist/gravity-forms-orbital-theme{$dev_min}.css", array( 'gravity_forms_theme_framework' ), $version );
 		}
 	}
 
