@@ -136,7 +136,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		parent::init_ajax();
 
-		add_action( "wp_ajax_gf_feed_is_active_{$this->_slug}", array( $this, 'ajax_toggle_is_active' ) );
+		add_action( "wp_ajax_gf_feed_is_active_{$this->get_slug()}", array( $this, 'ajax_toggle_is_active' ) );
 		add_action( 'wp_ajax_gf_save_feed_order', array( $this, 'ajax_save_feed_order' ) );
 
 	}
@@ -278,7 +278,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 	public function uninstall() {
 		global $wpdb;
-		$sql = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}gf_addon_feed WHERE addon_slug=%s", $this->_slug );
+		$sql = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}gf_addon_feed WHERE addon_slug=%s", $this->get_slug() );
 		$wpdb->query( $sql );
 
 	}
@@ -297,12 +297,12 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function maybe_process_feed( $entry, $form ) {
 
 		if ( 'spam' === $entry['status'] ) {
-			$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Entry #{$entry['id']} is marked as spam; not processing feeds for {$this->_slug}." );
+			$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Entry #{$entry['id']} is marked as spam; not processing feeds for {$this->get_slug()}." );
 
 			return $entry;
 		}
 
-		$this->log_debug( __METHOD__ . "(): Checking for feeds to process for entry #{$entry['id']} for {$this->_slug}." );
+		$this->log_debug( __METHOD__ . "(): Checking for feeds to process for entry #{$entry['id']} for {$this->get_slug()}." );
 
 		$feeds = false;
 
@@ -356,7 +356,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 				if ( $this->is_asynchronous( $feed, $entry, $form ) ) {
 
 					// Log that feed processing is being delayed.
-					$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Adding feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']} for {$this->_slug} to the processing queue." );
+					$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Adding feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']} for {$this->get_slug()} to the processing queue." );
 
 					// Add feed to processing queue.
 					gf_feed_processor()->push_to_queue(
@@ -372,7 +372,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 				} else {
 
 					// All requirements are met; process feed.
-					$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Starting to process feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']} for {$this->_slug}" );
+					$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Starting to process feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']} for {$this->get_slug()}" );
 					$returned_entry = $this->process_feed( $feed, $entry, $form );
 
 					// If returned value from the process feed call is an array containing an id, set the entry to its value.
@@ -391,11 +391,11 @@ abstract class GFFeedAddOn extends GFAddOn {
 					 * @since 2.0
 					 */
 					do_action( 'gform_post_process_feed', $feed, $entry, $form, $this );
-					do_action( "gform_{$this->_slug}_post_process_feed", $feed, $entry, $form, $this );
+					do_action( "gform_{$this->get_slug()}_post_process_feed", $feed, $entry, $form, $this );
 
 					// Log that Add-On has been fulfilled.
-					$this->log_debug( 'GFFeedAddOn::maybe_process_feed(): Marking entry #' . $entry['id'] . ' as fulfilled for ' . $this->_slug );
-					gform_update_meta( $entry['id'], "{$this->_slug}_is_fulfilled", true );
+					$this->log_debug( 'GFFeedAddOn::maybe_process_feed(): Marking entry #' . $entry['id'] . ' as fulfilled for ' . $this->get_slug() );
+					gform_update_meta( $entry['id'], "{$this->get_slug()}_is_fulfilled", true );
 
 					// Adding this feed to the list of processed feeds
 					$processed_feeds[] = $feed['id'];
@@ -404,7 +404,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			} else {
 
 				// Log that feed processing is being delayed.
-				$this->log_debug( 'GFFeedAddOn::maybe_process_feed(): Feed processing is delayed, not processing feed for entry #' . $entry['id'] . ' for ' . $this->_slug );
+				$this->log_debug( 'GFFeedAddOn::maybe_process_feed(): Feed processing is delayed, not processing feed for entry #' . $entry['id'] . ' for ' . $this->get_slug() );
 
 				// Delay feed.
 				$this->delay_feed( $feed, $entry, $form );
@@ -424,7 +424,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			}
 
 			// Add this Add-On's processed feeds to the entry meta.
-			$meta[ $this->_slug ] = $processed_feeds;
+			$meta[ $this->get_slug() ] = $processed_feeds;
 
 			// Update the entry meta.
 			gform_update_meta( $entry['id'], 'processed_feeds', $meta );
@@ -476,7 +476,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	 * @return bool|null
 	 */
 	public function is_delayed( $payment_feed ) {
-		$delay = rgar( $payment_feed['meta'], 'delay_' . $this->_slug );
+		$delay = rgar( $payment_feed['meta'], 'delay_' . $this->get_slug() );
 
 		return $delay;
 	}
@@ -559,7 +559,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	 */
 	public function create_feed_nonce() {
 
-		$action = 'gform_' . $this->_slug . '_process_feed';
+		$action = 'gform_' . $this->get_slug() . '_process_feed';
 		$i      = wp_nonce_tick();
 
 		return substr( wp_hash( $i . $action, 'nonce' ), - 12, 10 );
@@ -577,7 +577,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	 */
 	public function verify_feed_nonce( $nonce ) {
 
-		$action = 'gform_' . $this->_slug . '_process_feed';
+		$action = 'gform_' . $this->get_slug() . '_process_feed';
 		$i      = wp_nonce_tick();
 
 		// Nonce generated 0-12 hours ago.
@@ -641,7 +641,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$sql = $wpdb->prepare(
 			"SELECT * FROM {$wpdb->prefix}gf_addon_feed
-                               WHERE addon_slug=%s {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->_slug
+                               WHERE addon_slug=%s {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->get_slug()
 		);
 
 		$results = $wpdb->get_results( $sql, ARRAY_A );
@@ -668,7 +668,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$sql = $wpdb->prepare(
 			"SELECT * FROM {$wpdb->prefix}gf_addon_feed
-                               WHERE addon_slug=%s AND is_active=1 {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->_slug
+                               WHERE addon_slug=%s AND is_active=1 {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->get_slug()
 		);
 
 		$results = $wpdb->get_results( $sql, ARRAY_A );
@@ -742,7 +742,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			return false;
 		}
 
-		return rgar( $processed_feeds, $this->_slug );
+		return rgar( $processed_feeds, $this->get_slug() );
 	}
 
 	public function has_feed( $form_id, $meets_conditional_logic = null ) {
@@ -842,8 +842,8 @@ abstract class GFFeedAddOn extends GFAddOn {
 		 */
 		$feeds = apply_filters( 'gform_addon_pre_process_feeds', $feeds, $entry, $form );
 		$feeds = apply_filters( "gform_addon_pre_process_feeds_{$form['id']}", $feeds, $entry, $form );
-		$feeds = apply_filters( "gform_{$this->_slug}_pre_process_feeds", $feeds, $entry, $form );
-		$feeds = apply_filters( "gform_{$this->_slug}_pre_process_feeds_{$form['id']}", $feeds, $entry, $form );
+		$feeds = apply_filters( "gform_{$this->get_slug()}_pre_process_feeds", $feeds, $entry, $form );
+		$feeds = apply_filters( "gform_{$this->get_slug()}_pre_process_feeds_{$form['id']}", $feeds, $entry, $form );
 
 		return $feeds;
 	}
@@ -868,7 +868,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$counter_to_use = 0;
 
 		// Get Add-On feeds.
-		$feeds_to_filter = $this->get_feeds_by_slug( $this->_slug );
+		$feeds_to_filter = $this->get_feeds_by_slug( $this->get_slug() );
 
 		// If feeds were found, loop through and increase counter.
 		if ( $feeds_to_filter ) {
@@ -951,7 +951,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		}
 
 		$meta = json_encode( $meta );
-		$wpdb->insert( "{$wpdb->prefix}gf_addon_feed", array( 'addon_slug' => $this->_slug, 'form_id' => $form_id, 'is_active' => $is_active, 'meta' => $meta ), array( '%s', '%d', '%d', '%s' ) );
+		$wpdb->insert( "{$wpdb->prefix}gf_addon_feed", array( 'addon_slug' => $this->get_slug(), 'form_id' => $form_id, 'is_active' => $is_active, 'meta' => $meta ), array( '%s', '%d', '%d', '%s' ) );
 
 		return $wpdb->insert_id;
 	}
@@ -980,7 +980,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$sql = $wpdb->prepare(
 			"SELECT id FROM {$wpdb->prefix}gf_addon_feed
-                               WHERE addon_slug=%s {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->_slug
+                               WHERE addon_slug=%s {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->get_slug()
 		);
 
 		$feed_ids = $wpdb->get_col( $sql );
@@ -1288,7 +1288,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$feed_order = rgpost( 'feed_order' ) ? rgpost( 'feed_order' ) : array();
 		$feed_order = array_map( 'absint', $feed_order );
 
-		if ( $addon == $this->_slug ) {
+		if ( $addon == $this->get_slug() ) {
 			$this->save_feed_order( $feed_order );
 		}
 	}
@@ -1524,7 +1524,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 					<!--Needed to save state after bulk operations-->
 					<input type="hidden" value="gf_edit_forms" name="page">
 					<input type="hidden" value="settings" name="view">
-					<input type="hidden" value="<?php echo esc_attr( $this->_slug ); ?>" name="subview">
+					<input type="hidden" value="<?php echo esc_attr( $this->get_slug() ); ?>" name="subview">
 					<input type="hidden" value="<?php echo esc_attr( rgar( $form, 'id' ) ); ?>" name="id">
 					<input id="single_action" type="hidden" value="" name="single_action">
 					<input id="single_action_argument" type="hidden" value="" name="single_action_argument">
@@ -1542,7 +1542,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 					// Prepare feed ordering options.
 					$feed_order_options = array(
-						'addon'  => $this->_slug,
+						'addon'  => $this->get_slug(),
 						'formId' => rgar( $form, 'id' ),
 						'nonce'  => wp_create_nonce( 'gform_feed_order' ),
 					);
@@ -1569,7 +1569,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$no_item_callback      = array( $this, 'feed_list_no_item_message' );
 		$message_callback      = array( $this, 'feed_list_message' );
 
-		return new GFAddOnFeedsTable( $feeds, $this->_slug, $columns, $bulk_actions, $action_links, $column_value_callback, $no_item_callback, $message_callback, $this );
+		return new GFAddOnFeedsTable( $feeds, $this->get_slug(), $columns, $bulk_actions, $action_links, $column_value_callback, $no_item_callback, $message_callback, $this );
 	}
 
 	public function feed_list_title() {
@@ -1582,7 +1582,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			return $feed_id;
 		}
 
-		check_admin_referer( $this->_slug . '_save_settings', '_' . $this->_slug . '_save_settings_nonce' );
+		check_admin_referer( $this->get_slug() . '_save_settings', '_' . $this->get_slug() . '_save_settings_nonce' );
 
 		if ( ! $this->current_user_can_any( $this->_capabilities_form_settings ) ) {
 			GFCommon::add_error_message( esc_html__( "You don't have sufficient permissions to update the form settings.", 'gravityforms' ) );
@@ -1691,7 +1691,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		 * @return array
 		 */
 		$feed_settings_fields = apply_filters( 'gform_addon_feed_settings_fields', $this->feed_settings_fields(), $this );
-		$feed_settings_fields = apply_filters( "gform_{$this->_slug}_feed_settings_fields", $feed_settings_fields, $this );
+		$feed_settings_fields = apply_filters( "gform_{$this->get_slug()}_feed_settings_fields", $feed_settings_fields, $this );
 
 		$this->_feed_settings_fields = $this->add_default_feed_settings_fields_props( $feed_settings_fields );
 
@@ -1860,7 +1860,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function update_form_settings( $form, $new_form_settings ) {
 		$feed_id = rgar( $new_form_settings, 'id' );
 		foreach ( $new_form_settings as $key => $value ) {
-			$form[ $this->_slug ]['feeds'][ $feed_id ][ $key ] = $value;
+			$form[ $this->get_slug() ]['feeds'][ $feed_id ][ $key ] = $value;
 		}
 
 		return $form;
@@ -1869,7 +1869,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function get_default_feed_id( $form_id ) {
 		global $wpdb;
 
-		$sql = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}gf_addon_feed WHERE addon_slug=%s AND form_id = %d LIMIT 0,1", $this->_slug, $form_id );
+		$sql = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}gf_addon_feed WHERE addon_slug=%s AND form_id = %d LIMIT 0,1", $this->get_slug(), $form_id );
 
 		$feed_id = $wpdb->get_var( $sql );
 		if ( ! $feed_id ) {
@@ -2047,7 +2047,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			$addon_label = rgar( $this->delayed_payment_integration, 'option_label' );
 			$choice      = array(
 				'label' => $addon_label ? $addon_label : sprintf( esc_html__( 'Process %s feed only when payment is received.', 'gravityforms' ), $this->get_short_title() ),
-				'name'  => 'delay_' . $this->_slug,
+				'name'  => 'delay_' . $this->get_slug(),
 			);
 
 			$field_name = 'post_payment_actions';
@@ -2112,7 +2112,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function action_trigger_payment_delayed_feeds( $transaction_id, $payment_feed, $entry, $form = null ) {
 		$this->log_debug( __METHOD__ . '(): Checking fulfillment for transaction ' . $transaction_id . ' for ' . $payment_feed['addon_slug'] );
 
-		$is_fulfilled = gform_get_meta( $entry['id'], "{$this->_slug}_is_fulfilled" );
+		$is_fulfilled = gform_get_meta( $entry['id'], "{$this->get_slug()}_is_fulfilled" );
 		if ( $is_fulfilled || ! $this->is_delayed( $payment_feed ) ) {
 			$this->log_debug( __METHOD__ . '(): Entry ' . $entry['id'] . ' is already fulfilled or feeds are not delayed. No action necessary.' );
 
@@ -2154,7 +2154,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$this->add_note( $entry['id'], $note_error_message, 'error' );
 
 		/* Get Add-On slug */
-		$slug = str_replace( 'gravityforms', '', $this->_slug );
+		$slug = str_replace( 'gravityforms', '', $this->get_slug() );
 
 		/**
 		 * Process any error actions.
@@ -2259,7 +2259,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	}
 
 	public function is_delayed_payment( $entry, $form, $is_delayed ) {
-		if ( $this->_slug == 'gravityformspaypal' ) {
+		if ( $this->get_slug() == 'gravityformspaypal' ) {
 			return false;
 		}
 
@@ -2270,7 +2270,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$has_payment = self::get_paypal_payment_amount( $form, $entry, $paypal_feed ) > 0;
 
-		return rgar( $paypal_feed['meta'], "delay_{$this->_slug}" ) && $has_payment && ! $is_delayed;
+		return rgar( $paypal_feed['meta'], "delay_{$this->get_slug()}" ) && $has_payment && ! $is_delayed;
 	}
 
 	public static function get_paypal_payment_amount( $form, $entry, $paypal_config ) {
@@ -2380,15 +2380,15 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 			$_feed = array(
 				'feedId'           => $feed['id'],
-				'addonSlug'        => $this->_slug,
+				'addonSlug'        => $this->get_slug(),
 				'conditionalLogic' => rgars( $feed, 'meta/feed_condition_conditional_logic' ) === '0' ? false : rgars( $feed, 'meta/feed_condition_conditional_logic_object/conditionalLogic', false ),
 				'isSingleFeed'     => $this->_single_feed_submission,
 			);
 
 			$_feed = apply_filters( 'gform_addon_frontend_feed',                           $_feed, $form, $feed );
 			$_feed = apply_filters( "gform_addon_frontend_feed_{$form['id']}",             $_feed, $form, $feed );
-			$_feed = apply_filters( "gform_{$this->_slug}_frontend_feed",                  $_feed, $form, $feed );
-			$_feed = apply_filters( "gform_{$this->_slug}_frontend_feed_{$form['id']}",    $_feed, $form, $feed );
+			$_feed = apply_filters( "gform_{$this->get_slug()}_frontend_feed",                  $_feed, $form, $feed );
+			$_feed = apply_filters( "gform_{$this->get_slug()}_frontend_feed_{$form['id']}",    $_feed, $form, $feed );
 
 			$frontend_feeds[] = $_feed;
 
@@ -2507,7 +2507,7 @@ class GFAddOnFeedsTable extends WP_List_Table {
 					<?php echo $message ?>
 				</td>
 			</tr>
-		<?php
+			<?php
 		} else {
 			parent::display_rows_or_placeholder();
 		}
@@ -2574,9 +2574,15 @@ class GFAddOnFeedsTable extends WP_List_Table {
 			$text  = esc_html__( 'Inactive', 'gravityforms' );
 		}
 		?>
-		<button type="button" class="gform-status-indicator <?php echo esc_attr( $class ); ?>" onclick="gaddon.toggleFeedActive( this, '<?php echo esc_js( $this->_slug ); ?>', '<?php echo esc_js( $item['id'] ); ?>' );" onkeypress="gaddon.toggleFeedActive( this, '<?php echo esc_js( $this->_slug ); ?>', '<?php echo esc_js( $item['id'] ); ?>' );">
-			<svg role="presentation" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="2" r="1" stroke-width="2"/></svg>
-			<span class="gform-status-indicator-status"><?php echo esc_html( $text ); ?></span>
+		<button
+			type="button"
+			class="gform-status-indicator gform-status-indicator--size-sm gform-status-indicator--theme-cosmos <?php echo esc_attr( $class ); ?>"
+			onclick="gaddon.toggleFeedActive( this, '<?php echo esc_js( $this->_slug ); ?>', '<?php echo esc_js( $item['id'] ); ?>' );"
+			onkeypress="gaddon.toggleFeedActive( this, '<?php echo esc_js( $this->_slug ); ?>', '<?php echo esc_js( $item['id'] ); ?>' );"
+		>
+			<span class="gform-status-indicator-status gform-typography--weight-medium gform-typography--size-text-xs">
+				<?php echo esc_html( $text ); ?>
+			</span>
 		</button>
 		<?php
 

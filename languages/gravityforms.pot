@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.8.7\n"
+"Project-Id-Version: Gravity Forms 2.8.8\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-03T18:30:15+00:00\n"
+"POT-Creation-Date: 2024-04-23T15:22:40+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: gravityforms\n"
@@ -551,7 +551,7 @@ msgstr ""
 #: common.php:5399
 #: includes/class-confirmation.php:235
 #: includes/class-confirmation.php:285
-#: includes/class-confirmation.php:1184
+#: includes/class-confirmation.php:1190
 #: includes/embed-form/config/class-gf-embed-config.php:179
 #: includes/fields/class-gf-field-page.php:12
 #: js.php:82
@@ -1079,7 +1079,7 @@ msgstr ""
 #: entry_detail.php:436
 #: entry_list.php:1447
 #: entry_list.php:1486
-#: form_list.php:876
+#: form_list.php:882
 msgid "You don't have adequate permission to delete entries."
 msgstr ""
 
@@ -1120,11 +1120,11 @@ msgstr ""
 #: form_detail.php:1664
 #: includes/addon/class-gf-feed-addon.php:1743
 #: includes/addon/class-gf-feed-addon.php:1790
-#: includes/class-confirmation.php:1093
+#: includes/class-confirmation.php:1099
 #: includes/editor-button/config/class-gf-editor-config.php:56
 #: includes/fields/class-gf-field.php:1591
 #: includes/settings/config/class-gf-settings-config-i18n.php:51
-#: notification.php:1528
+#: notification.php:1536
 #: assets/js/src/legacy/admin/settings/field-map/mapping.js:354
 msgid "Delete"
 msgstr ""
@@ -1250,7 +1250,7 @@ msgstr ""
 #: entry_list.php:1207
 #: entry_list.php:1344
 #: form_list.php:514
-#: form_list.php:666
+#: form_list.php:672
 msgid "Restore"
 msgstr ""
 
@@ -1266,9 +1266,9 @@ msgstr ""
 #: gravityforms.php:5337
 #: gravityforms.php:5615
 #: includes/addon/class-gf-feed-addon.php:1788
-#: includes/class-confirmation.php:1091
+#: includes/class-confirmation.php:1097
 #: includes/webapi/includes/class-gf-api-keys-table.php:68
-#: notification.php:1526
+#: notification.php:1534
 msgid "Edit"
 msgstr ""
 
@@ -1386,7 +1386,7 @@ msgstr ""
 #: entry_list.php:502
 #: entry_list.php:1285
 #: entry_list.php:1371
-#: form_list.php:701
+#: form_list.php:707
 msgid "Trash"
 msgstr ""
 
@@ -2177,7 +2177,7 @@ msgstr ""
 
 #: form_detail.php:606
 #: includes/class-confirmation.php:231
-#: includes/class-confirmation.php:1181
+#: includes/class-confirmation.php:1187
 #: includes/template-library/templates/templates.php:1593
 #: includes/template-library/templates/templates.php:5972
 #: includes/template-library/templates/templates.php:11212
@@ -2411,7 +2411,7 @@ msgstr ""
 
 #: form_detail.php:899
 #: includes/class-confirmation.php:874
-#: settings.php:1015
+#: settings.php:1017
 msgid "Type"
 msgstr ""
 
@@ -4465,7 +4465,7 @@ msgstr ""
 #: form_list.php:166
 #: form_list.php:170
 #: includes/addon/class-gf-feed-addon.php:1790
-#: notification.php:1528
+#: notification.php:1536
 msgid "'Cancel' to stop, 'OK' to delete."
 msgstr ""
 
@@ -4493,9 +4493,9 @@ msgstr ""
 
 #: form_list.php:185
 #: includes/addon/class-gf-feed-addon.php:1348
-#: includes/addon/class-gf-feed-addon.php:2603
-#: includes/class-confirmation.php:1210
-#: notification.php:1633
+#: includes/addon/class-gf-feed-addon.php:2609
+#: includes/class-confirmation.php:1216
+#: notification.php:1641
 msgid "Add New"
 msgstr ""
 
@@ -4557,7 +4557,7 @@ msgid "Trash"
 msgstr ""
 
 #: form_list.php:515
-#: form_list.php:674
+#: form_list.php:680
 msgid "Delete permanently"
 msgstr ""
 
@@ -4600,116 +4600,116 @@ msgstr ""
 msgid "Conversion"
 msgstr ""
 
-#: form_list.php:692
+#: form_list.php:698
 #: includes/addon/class-gf-feed-addon.php:1789
-#: includes/class-confirmation.php:1092
+#: includes/class-confirmation.php:1098
 #: includes/editor-button/config/class-gf-editor-config.php:55
 #: includes/fields/class-gf-field.php:1570
-#: notification.php:1527
+#: notification.php:1535
 msgid "Duplicate"
 msgstr ""
 
-#: form_list.php:702
+#: form_list.php:708
 msgid "Move this form to the trash"
 msgstr ""
 
-#: form_list.php:727
+#: form_list.php:733
 msgid "No forms were found for your search query. %sView all forms%s."
 msgstr ""
 
-#: form_list.php:732
+#: form_list.php:738
 msgid "There are no forms in the trash."
 msgstr ""
 
-#: form_list.php:734
+#: form_list.php:740
 msgid "You don't have any forms. Let's go %screate one%s!"
 msgstr ""
 
-#: form_list.php:758
-#: form_list.php:807
+#: form_list.php:764
+#: form_list.php:813
 msgid "Form moved to the trash."
 msgstr ""
 
-#: form_list.php:761
-#: form_list.php:810
+#: form_list.php:767
+#: form_list.php:816
 msgid "You don't have adequate permission to trash forms."
 msgstr ""
 
-#: form_list.php:768
+#: form_list.php:774
 msgid "Form restored."
 msgstr ""
 
-#: form_list.php:771
+#: form_list.php:777
 msgid "You don't have adequate permission to restore forms."
 msgstr ""
 
-#: form_list.php:778
+#: form_list.php:784
 msgid "Form deleted."
 msgstr ""
 
-#: form_list.php:781
+#: form_list.php:787
 msgid "You don't have adequate permission to delete forms."
 msgstr ""
 
-#: form_list.php:788
-#: form_list.php:819
+#: form_list.php:794
+#: form_list.php:825
 msgid "Form duplicated."
 msgstr ""
 
-#: form_list.php:791
-#: form_list.php:822
+#: form_list.php:797
+#: form_list.php:828
 msgid "You don't have adequate permission to duplicate forms."
 msgstr ""
 
-#: form_list.php:841
+#: form_list.php:847
 msgid "%s form moved to the trash."
 msgid_plural "%s forms moved to the trash."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:843
+#: form_list.php:849
 msgid "You don't have adequate permissions to trash forms."
 msgstr ""
 
-#: form_list.php:849
+#: form_list.php:855
 msgid "%s form restored."
 msgid_plural "%s forms restored."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:851
+#: form_list.php:857
 msgid "You don't have adequate permissions to restore forms."
 msgstr ""
 
-#: form_list.php:857
+#: form_list.php:863
 msgid "%s form deleted."
 msgid_plural "%s forms deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:859
+#: form_list.php:865
 msgid "You don't have adequate permissions to delete forms."
 msgstr ""
 
-#: form_list.php:867
+#: form_list.php:873
 msgid "Views for %s form have been reset."
 msgid_plural "Views for %s forms have been reset."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:874
+#: form_list.php:880
 msgid "Entries for %s form have been deleted."
 msgid_plural "Entries for %s forms have been deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:884
+#: form_list.php:890
 msgid "%s form has been marked as active."
 msgid_plural "%s forms have been marked as active."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:890
+#: form_list.php:896
 msgid "%s form has been marked as inactive."
 msgid_plural "%s forms have been marked as inactive."
 msgstr[0] ""
@@ -5045,7 +5045,7 @@ msgstr ""
 #: includes/class-gf-osdxp.php:27
 #: includes/fields/class-gf-field.php:1615
 #: includes/system-status/class-gf-update.php:75
-#: settings.php:1256
+#: settings.php:1258
 msgid "Settings"
 msgstr ""
 
@@ -5486,7 +5486,7 @@ msgstr ""
 #: includes/addon/class-gf-addon.php:1651
 #: includes/addon/class-gf-addon.php:4974
 #: includes/addon/class-gf-addon.php:5329
-#: settings.php:1294
+#: settings.php:1296
 msgid "Uninstall"
 msgstr ""
 
@@ -5806,7 +5806,7 @@ msgid "Select which actions should only occur after payment has been received."
 msgstr ""
 
 #: includes/addon/class-gf-feed-addon.php:2462
-#: settings.php:1022
+#: settings.php:1024
 msgid "Checkbox"
 msgstr ""
 
@@ -6691,7 +6691,7 @@ msgid "Confirmation Type"
 msgstr ""
 
 #: includes/class-confirmation.php:239
-#: includes/class-confirmation.php:1187
+#: includes/class-confirmation.php:1193
 msgid "Redirect"
 msgstr ""
 
@@ -6754,15 +6754,15 @@ msgstr ""
 msgid "Save &amp; Continue Email Input"
 msgstr ""
 
-#: includes/class-confirmation.php:1093
+#: includes/class-confirmation.php:1099
 msgid "WARNING: You are about to delete this confirmation."
 msgstr ""
 
-#: includes/class-confirmation.php:1093
+#: includes/class-confirmation.php:1099
 msgid "\\'Cancel\\' to stop, \\'OK\\' to delete."
 msgstr ""
 
-#: includes/class-confirmation.php:1150
+#: includes/class-confirmation.php:1156
 msgid "<em>This page does not exist.</em>"
 msgstr ""
 
@@ -9813,7 +9813,7 @@ msgid "Save Settings"
 msgstr ""
 
 #: includes/settings/class-settings.php:991
-#: settings.php:1088
+#: settings.php:1090
 msgid "Settings updated."
 msgstr ""
 
@@ -10409,7 +10409,7 @@ msgstr ""
 
 #: includes/system-status/class-gf-system-report.php:400
 #: notification.php:977
-#: notification.php:1578
+#: notification.php:1586
 msgid "WordPress"
 msgstr ""
 
@@ -13427,15 +13427,15 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: notification.php:1528
+#: notification.php:1536
 msgid "WARNING: You are about to delete this notification."
 msgstr ""
 
-#: notification.php:1583
+#: notification.php:1591
 msgid "Undefined Service"
 msgstr ""
 
-#: notification.php:1614
+#: notification.php:1622
 msgid "This form doesn't have any notifications. Let's go %screate one%s."
 msgstr ""
 
@@ -13660,65 +13660,65 @@ msgid "License Status"
 msgstr ""
 
 #: settings.php:761
-#: settings.php:783
+#: settings.php:785
 msgid "Purchase Date"
 msgstr ""
 
 #: settings.php:762
-#: settings.php:786
+#: settings.php:788
 msgid "License Activations"
 msgstr ""
 
-#: settings.php:916
+#: settings.php:918
 msgid "Settings: General"
 msgstr ""
 
-#: settings.php:983
+#: settings.php:985
 msgid "reCAPTCHA Settings"
 msgstr ""
 
-#: settings.php:986
+#: settings.php:988
 msgid "Gravity Forms integrates with reCAPTCHA, a free CAPTCHA service that uses an advanced risk analysis engine and adaptive challenges to keep automated software from engaging in abusive activities on your site. "
 msgstr ""
 
-#: settings.php:987
+#: settings.php:989
 msgid "Please note, only v2 keys are supported and checkbox keys are not compatible with invisible reCAPTCHA."
 msgstr ""
 
-#: settings.php:988
+#: settings.php:990
 msgid "These settings are required only if you decide to use the reCAPTCHA field."
 msgstr ""
 
-#: settings.php:989
+#: settings.php:991
 msgid "Get your reCAPTCHA Keys."
 msgstr ""
 
-#: settings.php:995
+#: settings.php:997
 msgid "Site Key"
 msgstr ""
 
-#: settings.php:1005
+#: settings.php:1007
 msgid "Secret Key"
 msgstr ""
 
-#: settings.php:1026
+#: settings.php:1028
 msgid "Invisible"
 msgstr ""
 
-#: settings.php:1033
+#: settings.php:1035
 msgid "Validate Keys"
 msgstr ""
 
-#: settings.php:1068
-#: settings.php:1089
+#: settings.php:1070
+#: settings.php:1091
 msgid "reCAPTCHA keys are invalid."
 msgstr ""
 
-#: settings.php:1139
+#: settings.php:1141
 msgid "Please complete the reCAPTCHA widget to validate your reCAPTCHA keys:"
 msgstr ""
 
-#: settings.php:1257
+#: settings.php:1259
 msgid "reCAPTCHA"
 msgstr ""
 

@@ -1,3 +1,12 @@
+### 2.8.8 | 2024-04-23
+- Added security enhancements.
+- Fixed a fatal error in WordPress 6.5 when using a 3rd-party add-on without a defined slug.
+- Fixed a PHP notice that is thrown when calling GFForms::get_form() with just the form ID parameter.
+- Fixed an issue where the submit button was blocked by the reCAPTCHA field in IOS devices when using certain themes.
+- Fixed an issue where the `gform_progressbar_start_at_zero` filter is not working with forms that have page conditional logic.
+- Fixed a PHP notice that can be displayed when instantiating the GF_Locking class in certain contexts.
+- Updated status indicator component to use improved markup and styles.
+
 ### 2.8.7 | 2024-04-03
 - Fixed a bug where total calculation and post conditional logic events sometimes aren't called when using the `gform_abort_conditional_logic_do_action` filter.
 - Fixed a fatal error that sometimes occurs when deleting entries.

@@ -815,7 +815,7 @@ class GFFormDisplay {
 		} else {
 			$instance       = rgar( $form, 'page_instance', 0 );
 			$all_blocks     = apply_filters( 'gform_form_block_attribute_values', array() );
-			$block_settings = empty( $all_blocks[ $form['id'] ] ) ? array() : $all_blocks[ $form['id'] ][ $instance ];
+			$block_settings = rgars( $all_blocks, rgar( $form, 'id', 0 ) . '/' . $instance, array() );
 
 			// If a theme is selected for this block or shortcode, return that.
 			if ( isset( $block_settings['theme'] ) ) {
@@ -4411,7 +4411,7 @@ class GFFormDisplay {
 		$progress_bar_title_close = GFCommon::is_legacy_markup_enabled( $form ) ? '</h3>' : '</p>';
 
 		$progress_bar .= "
-        <div id='gf_progressbar_wrapper_{$form_id}' class='gf_progressbar_wrapper'>
+        <div id='gf_progressbar_wrapper_{$form_id}' class='gf_progressbar_wrapper' data-start-at-zero='{$start_at_zero}'>
         	{$progress_bar_title_open}";
 		$progress_bar .= ! $progress_complete ? esc_html__( 'Step', 'gravityforms' ) . " <span class='gf_step_current_page'>{$current_page}</span> " . esc_html__( 'of', 'gravityforms' ) . " <span class='gf_step_page_count'>{$page_count}</span>{$page_name}" : "{$page_name}";
 		$progress_bar .= "

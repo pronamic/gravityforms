@@ -23,6 +23,8 @@ var GFPageConditionalLogic = function (args) {
             self.originalProgress = parseInt($(self.formWrapper + ' .gf_progressbar_percentage span').text(), 10);
         }
 
+		self.startAtZero = $(self.formWrapper + ' .gf_progressbar_wrapper').data('startAtZero');
+
         self.evaluatePages();
 
         self.bindEvents();
@@ -77,9 +79,12 @@ var GFPageConditionalLogic = function (args) {
         }
 
         if (self.paginationType === 'percentage') {
-            currentPage = self.options.pagination.display_progressbar_on_confirmation === true ? ( currentPage - 1 ) : currentPage;
+            currentPage = self.options.pagination.display_progressbar_on_confirmation === true || self.startAtZero ? ( currentPage - 1 ) : currentPage;
         } else {
             currentPage = parseInt($(self.formWrapper + ' .gf_step_active .gf_step_number').text(), 10);
+			if(self.startAtZero) {
+				currentPage -= 1;
+			}
         }
 
         progress = Math.floor( currentPage / visibleStepNumber * 100 );

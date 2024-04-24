@@ -6692,7 +6692,7 @@ Content-Type: text/html;
 		$current_locale = version_compare( get_bloginfo( 'version', 'display' ), '5.0', '>=' ) ? determine_locale() : self::legacy_determine_locale();
 		$locale         = apply_filters( 'plugin_locale', $current_locale, $domain );
 
-		if ( $locale != 'en_US' && ! is_textdomain_loaded( $domain ) ) {
+		if ( ! empty( $domain ) && $locale != 'en_US' && ! is_textdomain_loaded( $domain ) ) {
 			if ( empty( $basename ) ) {
 				$basename = plugin_basename( self::get_base_path() );
 			}

@@ -477,7 +477,7 @@ abstract class GFLocking {
 
 		$locked = $user_id && $user;
 
-		$edit_url = $this->_edit_url;
+		$edit_url = $this->_edit_url === null ? '' : $this->_edit_url;
 
 		$hidden = $locked ? '' : ' hidden';
 		if ( $locked ) {

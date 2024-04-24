@@ -83,7 +83,7 @@ class GF_Theme_Layers extends \GFAddOn {
 				'icon'  => $layer->icon(),
 				'query' => array(
 					'theme_layer' => $layer->name(),
-					'subview'     => $this->_slug,
+					'subview'     => $this->get_slug(),
 				),
 			);
 		}

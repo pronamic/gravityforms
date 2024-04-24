@@ -82,7 +82,7 @@ if ( class_exists( 'GFForms' ) ) {
 			global $_gaddon_posted_settings;
 
 			if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
-				add_action( 'gravityforms_results_cron_' . $this->_slug, array( $this, 'results_cron' ), 10, 3 );
+				add_action( 'gravityforms_results_cron_' . $this->get_slug(), array( $this, 'results_cron' ), 10, 3 );
 
 				return;
 			}
@@ -216,7 +216,7 @@ if ( class_exists( 'GFForms' ) ) {
 		public function init_admin() {
 			parent::init_admin();
 
-			if( GFForms::get_page() == 'settings' && rgget( 'subview' ) == $this->_slug ) {
+			if( GFForms::get_page() == 'settings' && rgget( 'subview' ) == $this->get_slug() ) {
 				require_once( plugin_dir_path( __FILE__ ) . 'includes/class-gf-api-keys-table.php' );
 			}
 
@@ -1897,7 +1897,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 			$key = is_multisite() ? $blog_id . '-' : '';
 
-			$key .= sprintf( '%s-cache-%s-', $this->_slug, $form_id );
+			$key .= sprintf( '%s-cache-%s-', $this->get_slug(), $form_id );
 
 			// The option_name column in the options table has a max length of 64 chars.
 			// Truncate the key if it's too long for column and allow space for the 'tmp' prefix
@@ -2057,7 +2057,7 @@ if ( class_exists( 'GFForms' ) ) {
 				if ( ! class_exists( 'GFResults' ) ) {
 					require_once( GFCommon::get_base_path() . '/includes/addon/class-gf-results.php' );
 				}
-				$gf_results = new GFResults( $this->_slug, array() );
+				$gf_results = new GFResults( $this->get_slug(), array() );
 				$results    = $gf_results->get_results_data( $form, $fields, $search_criteria, $state );
 				if ( 'complete' == $results['status'] ) {
 					if ( isset( $results['progress'] ) ) {
@@ -2142,7 +2142,7 @@ if ( class_exists( 'GFForms' ) ) {
 					if ( ! class_exists( 'GFResults' ) ) {
 						require_once( GFCommon::get_base_path() . '/includes/addon/class-gf-results.php' );
 					}
-					$gf_results         = new GFResults( $this->_slug, array() );
+					$gf_results         = new GFResults( $this->get_slug(), array() );
 					$max_execution_time = 5;
 					$results            = $gf_results->get_results_data( $form, $fields, $search_criteria, $state, $max_execution_time );
 					if ( 'complete' == rgar( $data, 'status' ) ) {
@@ -2214,7 +2214,7 @@ if ( class_exists( 'GFForms' ) ) {
 		}
 
 		public function get_results_cron_hook() {
-			return 'gravityforms_results_cron_' . $this->_slug;
+			return 'gravityforms_results_cron_' . $this->get_slug();
 		}
 
 		public function results_data_add_labels( $form, $fields ) {

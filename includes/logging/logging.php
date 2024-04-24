@@ -999,7 +999,7 @@ class GFLogging extends GFAddOn {
 				}
 
 				// Save new settings.
-				update_blog_option( $blog_id, 'gravityformsaddon_' . $this->_slug . '_settings', $new_settings );
+				update_blog_option( $blog_id, 'gravityformsaddon_' . $this->get_slug() . '_settings', $new_settings );
 
 				// Delete old settings.
 				delete_blog_option( $blog_id, 'gf_logging_settings' );
@@ -1077,7 +1077,7 @@ class GFLogging extends GFAddOn {
 
 	public function delete_settings() {
 		delete_option( 'gform_enable_logging' );
-		delete_option( 'gravityformsaddon_' . $this->_slug . '_settings' );
+		delete_option( 'gravityformsaddon_' . $this->get_slug() . '_settings' );
 	}
 
 	/**

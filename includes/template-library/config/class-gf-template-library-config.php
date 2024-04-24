@@ -110,8 +110,11 @@ class GF_Template_Library_Config extends GF_Config {
 						'heading'                    => __( 'Explore Form Templates', 'gravityforms' ),
 						'subheading'                 => __( 'Quickly create an amazing form by using a pre-made template, or start from scratch to tailor your form to your specific needs.', 'gravityforms' ),
 						'upgradeTag'                 => __( 'Upgrade', 'gravityforms' ),
-						/* translators: %1$s is anchor opening tag, %2$s is anchor closing tag */
-						'upgradeAlert'               => sprintf( __( 'This template uses Add-ons not included in your current license plan. %1$sUpgrade%2$s'), '<a href="' . $license_info->get_upgrade_link() . '" target="_blank" rel="noopener noreferrer">', '</a>' ),
+						'upgradeAlert'               => array(
+							/* translators: %1$s is anchor opening tag, %2$s is anchor closing tag */
+							'value' => sprintf( __( 'This template uses Add-ons not included in your current license plan. %1$sUpgrade%2$s'), '<a href="' . $license_info->get_upgrade_link() . '" target="_blank" rel="noopener noreferrer">', '</a>' ),
+							'default' => 'This template uses Add-ons not included in your current license plan. Upgrade.',
+						),
 					),
 					'data'      => array(
 						'thumbnail_url' => \GFCommon::get_image_url( 'template-library/' ),

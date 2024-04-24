@@ -775,8 +775,10 @@ class GFSettings {
 								$status_class = $license_info->display_as_valid() ? 'active' : 'error';
 								$status_label = $license_info->get_display_status();
 							?>
-							<span class="gform-status-indicator gform-status--<?php echo esc_html( $status_class ); ?> gform-status--static gform-status--no-icon">
-								<span class="gform-status-indicator-status"><?php echo esc_html( $status_label ); ?></span>
+							<span class="gform-status-indicator gform-status-indicator--size-sm gform-status-indicator--theme-cosmos gform-status--no-hover gform-status--static gform-status--no-icon gform-status--<?php echo esc_html( $status_class ); ?>">
+								<span class="gform-status-indicator-status gform-typography--weight-medium gform-typography--size-text-xs">
+									<?php echo esc_html( $status_label ); ?>
+								</span>
 							</span>
 						</p>
 					</td>

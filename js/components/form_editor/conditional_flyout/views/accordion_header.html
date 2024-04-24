@@ -3,9 +3,10 @@
 		{{ title }}
 	</div>
 	<div class="conditional_logic_accordion__status_indicator">
-		<span class="gform-status-indicator {{ active_class }}">
-			<svg viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><circle cx="3" cy="2" r="1" stroke-width="2"></circle></svg>
-			<span class="gform-status-indicator-status">{{ active_text }}</span>
+		<span class="gform-status-indicator gform-status-indicator--size-sm gform-status-indicator--theme-cosmos gform-status--no-hover {{ active_class }}">
+			<span class="gform-status-indicator-status gform-typography--weight-medium gform-typography--size-text-xs">
+				{{ active_text }}
+			</span>
 		</span>
 	</div>
 	<div class="conditional_logic_accordion__toggle {{ toggle_class }}">
