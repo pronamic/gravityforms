@@ -2669,7 +2669,7 @@ class GFFormDisplay {
 		if ( ! isset( $_gf_state ) ) {
 			$state = json_decode( base64_decode( $_POST[ "state_{$form_id}" ] ), true );
 
-			if ( ! $state || sizeof( $state ) != 2 ) {
+			if ( ! $state || ! is_array( $state ) || sizeof( $state ) != 2 ) {
 				return true;
 			}
 
@@ -4257,16 +4257,21 @@ class GFFormDisplay {
 		$sublabel_class        = "field_sublabel_{$sublabel_setting}";
 
 		$has_description_class    = ! empty( $field->description ) ? 'gfield--has-description' : 'gfield--no-description';
-		$form_description_setting = rgar( $form, 'descriptionPlacement', 'below' );
+		$form_description_setting = rgempty( 'descriptionPlacement', $form ) ? 'below' : $form['descriptionPlacement'];
 		$description_setting      = ! isset( $field->descriptionPlacement ) || empty( $field->descriptionPlacement ) ? $form_description_setting : $field->descriptionPlacement;
+		$description_setting      = $description_setting == 'above' && ( $field->labelPlacement == 'top_label' || $field->labelPlacement == 'hidden_label' || ( empty( $field->labelPlacement ) && $form[ 'labelPlacement' ] == 'top_label' ) ) ? 'above' : 'below';
 		$description_class        = "field_description_{$description_setting}";
 
+		$form_validation_setting = rgempty( 'validationPlacement', $form ) ? 'below' : $form['validationPlacement'];
+		$validation_setting      = ! isset( $field->validationPlacement ) || empty( $field->validationPlacement ) ? $form_validation_setting : $field->validationPlacement;
+		$validation_class        = "field_validation_{$validation_setting}";
+
 		$field_setting_label_placement = $field->labelPlacement;
-		$label_placement              = empty( $field_setting_label_placement ) ? '' : $field_setting_label_placement;
+		$label_placement               = empty( $field_setting_label_placement ) ? '' : $field_setting_label_placement;
 
 		$span_class = $field->get_css_grid_class( $form );
 
-		$css_class = "gfield gfield--type-{$field->type} $choice_input_type_class $field_input_type_class $field_specific_class $selectable_class $span_class $error_class $section_class $admin_only_class $custom_class $hidden_class $html_block_class $html_formatted_class $html_no_follows_desc_class $option_class $quantity_class $product_class $total_class $donation_class $shipping_class $page_class $required_class $hidden_product_class $creditcard_warning_class $submit_width_class $calculation_class $sublabel_class $has_description_class $description_class $label_placement $visibility_class $admin_hidden_class";
+		$css_class = "gfield gfield--type-{$field->type} $choice_input_type_class $field_input_type_class $field_specific_class $selectable_class $span_class $error_class $section_class $admin_only_class $custom_class $hidden_class $html_block_class $html_formatted_class $html_no_follows_desc_class $option_class $quantity_class $product_class $total_class $donation_class $shipping_class $page_class $required_class $hidden_product_class $creditcard_warning_class $submit_width_class $calculation_class $sublabel_class $has_description_class $description_class $label_placement $validation_class $visibility_class $admin_hidden_class";
 		$css_class = preg_replace( '/\s+/', ' ', $css_class ); // removing extra spaces
 
 		/*

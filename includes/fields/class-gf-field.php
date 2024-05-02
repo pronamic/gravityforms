@@ -466,12 +466,24 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		$description = $this->get_description( $this->description, 'gfield_description' );
 
-		if ( $this->is_description_above( $form ) ) {
-			$clear         = $is_admin ? "<div class='gf_clear'></div>" : '';
-			$field_content = sprintf( "%s%s<$label_tag class='%s' $for_attribute>$legend_wrapper%s%s$legend_wrapper_close</$label_tag>%s{FIELD}%s$clear", $admin_buttons, $admin_hidden_markup, esc_attr( $this->get_field_label_class() ), $field_label, $required_div, $description, $validation_message );
-		} else {
-			$field_content = sprintf( "%s%s<$label_tag class='%s' $for_attribute>$legend_wrapper%s%s$legend_wrapper_close</$label_tag>{FIELD}%s%s", $admin_buttons, $admin_hidden_markup, esc_attr( $this->get_field_label_class() ), $field_label, $required_div, $description, $validation_message );
+		$clear = '';
+
+		if( $this->is_description_above( $form ) || $this->is_validation_above( $form ) ) {
+			$clear = $is_admin ? "<div class='gf_clear'></div>" : '';
 		}
+
+		$field_content = sprintf(
+			"%s%s<$label_tag class='%s' $for_attribute>$legend_wrapper%s%s$legend_wrapper_close</$label_tag>%s%s{FIELD}%s%s$clear",
+			$admin_buttons,
+			$admin_hidden_markup,
+			esc_attr( $this->get_field_label_class() ),
+			$field_label,
+			$required_div,
+			$this->is_description_above( $form ) ? $description : '',
+			$this->is_validation_above( $form ) ? $validation_message : '',
+			$this->is_description_above( $form ) ? '' : $description,
+			$this->is_validation_above( $form ) ? '' : $validation_message
+		);
 
 		return $field_content;
 	}
@@ -1448,6 +1460,24 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		return $is_description_above;
 	}
+
+	/**
+	 * Determines if the field validation message should be positioned above or below the input.
+	 *
+	 * @since 2.8.8
+	 *
+	 * @param array $form The Form Object currently being processed.
+	 *
+	 * @return bool
+	 */
+	public function is_validation_above( $form ) {
+		$form_validation_placement = rgar( $form, 'validationPlacement' );
+
+		$is_validation_above = $form_validation_placement == 'above';
+
+		return $is_validation_above;
+	}
+
 
 
 	public function is_administrative() {

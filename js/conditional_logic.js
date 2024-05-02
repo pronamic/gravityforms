@@ -624,7 +624,7 @@ function gf_reset_to_default(targetId, defaultValue){
 
 		//get name of previous input field to see if it is the radio button which goes with the "Other" text box
 		//otherwise field is populated with input field name
-		var radio_button_name = element.prev("input").attr("value");
+		var radio_button_name = element.prevAll("input").first().attr("value");
 		if(radio_button_name == "gf_other_choice"){
 			val = element.attr("value");
 		}

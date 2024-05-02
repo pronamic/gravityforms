@@ -1,3 +1,10 @@
+### 2.8.9 | 2024-04-30
+- Added a new form setting to put field validation messages above inputs.
+- Added the [`gform_bypass_template_library`](https://docs.gravityforms.com/gform_bypass_template_library) filter to bypass the template library and create a blank form.
+- Fixed an issue where an invalid value in a hidden state field causes a fatal error on submission.
+- Fixed an issue where the wrong value populates into the "other" choice input if a Radio field with conditional logic has "other" choice enabled and a default value set.
+- Updated the backwards compatibility of the file upload field if no files are selected.
+
 ### 2.8.8 | 2024-04-23
 - Added security enhancements.
 - Fixed a fatal error in WordPress 6.5 when using a 3rd-party add-on without a defined slug.

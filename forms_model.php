@@ -3470,6 +3470,9 @@ class GFFormsModel {
 
 				if ( ! empty( $value ) ) {
 					$value = json_encode( $value ); // Encode the array of temp URLs as JSON string
+				} else {
+					// If no files were uploaded, set the value to an empty string for backwards compatibility
+					$value = '';
 				}
 
 				break;
@@ -7758,8 +7761,13 @@ class GFFormsModel {
 		if ( isset( $form['labelPlacement'] ) ) {
 			$form['labelPlacement'] = GFCommon::whitelist( $form['labelPlacement'], array( 'top_label', 'left_label', 'right_label' ) );
 		}
+
 		if ( isset( $form['descriptionPlacement'] ) ) {
 			$form['descriptionPlacement'] = GFCommon::whitelist( $form['descriptionPlacement'], array( 'below', 'above' ) );
+		}
+
+		if ( isset( $form['validationPlacement'] ) ) {
+			$form['validationPlacement'] = GFCommon::whitelist( $form['validationPlacement'], array( 'below', 'above' ) );
 		}
 
 		if ( isset( $form['subLabelPlacement'] ) ) {

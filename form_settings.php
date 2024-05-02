@@ -208,6 +208,23 @@ class GFFormSettings {
 						),
 					),
 					array(
+						'name'          => 'validationPlacement',
+						'type'          => 'select',
+						'label'         => esc_html__( 'Validation Message Placement', 'gravityforms' ),
+						'default_value' => 'below',
+						'tooltip'       => gform_tooltip( 'form_validation_placement', '', true ),
+						'choices'       => array(
+							array(
+								'label' => __( 'Below inputs', 'gravityforms' ),
+								'value' => 'below',
+							),
+							array(
+								'label' => __( 'Above inputs', 'gravityforms' ),
+								'value' => 'above',
+							),
+						),
+					),
+					array(
 						'name'    => 'subLabelPlacement',
 						'type'    => 'select',
 						'label'   => esc_html__( 'Sub-Label Placement', 'gravityforms' ),
@@ -712,6 +729,7 @@ class GFFormSettings {
 					// Form Layout
 					$form['labelPlacement']          = GFCommon::whitelist( rgar( $values, 'labelPlacement' ), array( 'top_label', 'left_label', 'right_label' ) );
 					$form['descriptionPlacement']    = GFCommon::whitelist( rgar( $values, 'descriptionPlacement' ), array( 'below', 'above' ) );
+					$form['validationPlacement']     = GFCommon::whitelist( rgar( $values, 'validationPlacement' ), array( 'below', 'above' ) );
 					$form['subLabelPlacement']       = GFCommon::whitelist( rgar( $values, 'subLabelPlacement' ), array( 'below', 'above' ) );
 					$form['validationSummary']       = rgar( $values, 'validationSummary', false );
 					$form['requiredIndicator']       = GFCommon::whitelist( rgar( $values, 'requiredIndicator' ), array( 'text', 'asterisk', 'custom' ) );

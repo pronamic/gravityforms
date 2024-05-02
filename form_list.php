@@ -320,6 +320,7 @@ class GFFormList {
 					description: jQuery('#new_form_description').val(),
 					labelPlacement:'top_label',
 					descriptionPlacement:'below',
+					validationPlacement:'below',
 					button: {
 						type: 'text',
 						text: <?php echo json_encode( esc_html__( 'Submit', 'gravityforms' ) ); ?>,

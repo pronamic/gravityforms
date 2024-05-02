@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.8.8\n"
+"Project-Id-Version: Gravity Forms 2.8.9\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-23T15:22:40+00:00\n"
+"POT-Creation-Date: 2024-04-30T16:01:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: gravityforms\n"
@@ -89,7 +89,7 @@ msgstr ""
 #: entry_detail.php:1308
 #: entry_list.php:875
 #: export.php:1120
-#: forms_model.php:6552
+#: forms_model.php:6555
 #: select_columns.php:196
 msgid "Entry Id"
 msgstr ""
@@ -108,7 +108,7 @@ msgstr ""
 #: gravityforms.php:4648
 #: includes/addon/class-gf-addon.php:3028
 #: includes/settings/fields/class-generic-map.php:587
-#: includes/template-library/config/class-gf-template-library-config.php:89
+#: includes/template-library/config/class-gf-template-library-config.php:90
 #: js.php:1507
 #: tooltips.php:24
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:300
@@ -162,7 +162,7 @@ msgid "Pricing form fields"
 msgstr ""
 
 #: common.php:856
-#: common.php:4678
+#: common.php:4679
 #: form_detail.php:1600
 #: form_detail.php:1601
 #: includes/fields/class-gf-field-radio.php:372
@@ -207,7 +207,7 @@ msgstr ""
 #: form_detail.php:916
 #: form_detail.php:1611
 #: form_display.php:3771
-#: includes/fields/class-gf-field.php:2600
+#: includes/fields/class-gf-field.php:2630
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:409
 msgid "Medium"
 msgstr ""
@@ -227,7 +227,7 @@ msgstr ""
 #: common.php:961
 #: form_detail.php:917
 #: form_detail.php:1611
-#: includes/fields/class-gf-field.php:2601
+#: includes/fields/class-gf-field.php:2631
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:410
 msgid "Large"
 msgstr ""
@@ -265,83 +265,83 @@ msgid "Allowable form fields"
 msgstr ""
 
 #. translators: %s: relative time from now, used for generic date comparisons. "1 day ago", or "20 seconds ago"
-#: common.php:1445
-#: common.php:3271
+#: common.php:1446
+#: common.php:3272
 msgid "%s ago"
 msgstr ""
 
-#: common.php:2257
+#: common.php:2258
 msgid "Cannot send email because the TO address is invalid."
 msgstr ""
 
-#: common.php:2264
+#: common.php:2265
 msgid "Cannot send email because there is no SUBJECT and no MESSAGE."
 msgstr ""
 
-#: common.php:2271
+#: common.php:2272
 msgid "Cannot send email because the FROM address is invalid."
 msgstr ""
 
-#: common.php:3119
+#: common.php:3120
 msgid "Gravity Forms requires WordPress %s or greater. You must upgrade WordPress in order to use Gravity Forms"
 msgstr ""
 
-#: common.php:3284
+#: common.php:3285
 msgid "%1$s at %2$s"
 msgstr ""
 
 #. Translators: link to the "Edit Post" page for this post.
-#: common.php:3815
+#: common.php:3816
 msgid "You can <a href=\"%s\">edit this post</a> from the post page."
 msgstr ""
 
-#: common.php:3838
+#: common.php:3839
 msgid "Pricing fields are not editable"
 msgstr ""
 
-#: common.php:3939
-#: common.php:3997
+#: common.php:3940
+#: common.php:3998
 msgid "Preview this form"
 msgstr ""
 
-#: common.php:3946
+#: common.php:3947
 #: gravityforms.php:5653
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:618
 msgid "Preview"
 msgstr ""
 
-#: common.php:4104
+#: common.php:4105
 msgid "There was an problem while verifying your file."
 msgstr ""
 
-#: common.php:4109
+#: common.php:4110
 msgid "Sorry, this file extension is not permitted for security reasons."
 msgstr ""
 
-#: common.php:4112
+#: common.php:4113
 msgid "Sorry, this file type is not permitted for security reasons."
 msgstr ""
 
-#: common.php:4482
+#: common.php:4483
 msgid "Akismet Spam Filter"
 msgstr ""
 
-#: common.php:5346
+#: common.php:5347
 msgid "New row added."
 msgstr ""
 
-#: common.php:5347
+#: common.php:5348
 msgid "Row removed"
 msgstr ""
 
-#: common.php:5348
+#: common.php:5349
 msgid "The form has been saved.  The content contains the link to return and complete the form."
 msgstr ""
 
-#: common.php:5362
-#: common.php:6093
+#: common.php:5363
+#: common.php:6094
 #: form_list.php:150
-#: form_list.php:606
+#: form_list.php:607
 #: includes/addon/class-gf-feed-addon.php:2571
 #: includes/class-confirmation.php:156
 #: includes/class-confirmation.php:1064
@@ -354,9 +354,9 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: common.php:5363
+#: common.php:5364
 #: form_list.php:146
-#: form_list.php:609
+#: form_list.php:610
 #: includes/addon/class-gf-feed-addon.php:2574
 #: includes/class-confirmation.php:152
 #: includes/class-confirmation.php:1067
@@ -368,15 +368,15 @@ msgstr ""
 msgid "Inactive"
 msgstr ""
 
-#: common.php:5364
-#: common.php:5417
+#: common.php:5365
+#: common.php:5418
 #: form_detail.php:1662
 #: includes/form-editor/save-form/config/class-gf-form-editor-form-save-config.php:44
 #: select_columns.php:276
 msgid "Save"
 msgstr ""
 
-#: common.php:5365
+#: common.php:5366
 #: entry_detail.php:1402
 #: gravityforms.php:4656
 #: includes/webapi/webapi.php:446
@@ -385,7 +385,7 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: common.php:5366
+#: common.php:5367
 #: form_display.php:336
 #: form_display.php:1372
 #: form_display.php:4169
@@ -411,19 +411,19 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: common.php:5367
+#: common.php:5368
 msgid "Select a format"
 msgstr ""
 
-#: common.php:5368
+#: common.php:5369
 msgid "Column"
 msgstr ""
 
-#: common.php:5369
+#: common.php:5370
 msgid "5 of %d items shown. Edit field to view all"
 msgstr ""
 
-#: common.php:5370
+#: common.php:5371
 #: export.php:435
 #: export.php:558
 #: includes/fields/class-gf-field-checkbox.php:170
@@ -431,28 +431,28 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
-#: common.php:5371
+#: common.php:5372
 msgid "Enter a value"
 msgstr ""
 
-#: common.php:5372
+#: common.php:5373
 msgid "Untitled Form"
 msgstr ""
 
-#: common.php:5373
+#: common.php:5374
 #: includes/template-library/templates/templates.php:363
 msgid "We would love to hear from you! Please fill out this form and we will get in touch with you shortly."
 msgstr ""
 
-#: common.php:5374
-#: common.php:5425
-#: forms_model.php:6956
+#: common.php:5375
+#: common.php:5426
+#: forms_model.php:6959
 msgid "Thanks for contacting us! We will get in touch with you shortly."
 msgstr ""
 
-#: common.php:5375
+#: common.php:5376
 #: form_display.php:1723
-#: form_list.php:325
+#: form_list.php:326
 #: gravityforms.php:3196
 #: includes/fields/class-gf-field-submit.php:158
 #: includes/settings/fields/class-button.php:50
@@ -469,51 +469,51 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: common.php:5376
+#: common.php:5377
 msgid "The submit button for this form"
 msgstr ""
 
-#: common.php:5377
+#: common.php:5378
 #: includes/settings/fields/class-notification-routing.php:350
 msgid "Loading..."
 msgstr ""
 
-#: common.php:5378
+#: common.php:5379
 msgid "this field if"
 msgstr ""
 
-#: common.php:5379
+#: common.php:5380
 msgid "this section if"
 msgstr ""
 
-#: common.php:5380
+#: common.php:5381
 msgid "this page if"
 msgstr ""
 
-#: common.php:5381
+#: common.php:5382
 msgid "this form button if"
 msgstr ""
 
-#: common.php:5382
+#: common.php:5383
 #: js.php:277
 msgid "Show"
 msgstr ""
 
-#: common.php:5383
+#: common.php:5384
 msgid "Hide"
 msgstr ""
 
-#: common.php:5384
+#: common.php:5385
 #: includes/logging/logging.php:365
 #: includes/settings/fields/class-checkbox-and-select.php:50
 msgid "Enable"
 msgstr ""
 
-#: common.php:5385
+#: common.php:5386
 msgid "Disable"
 msgstr ""
 
-#: common.php:5386
+#: common.php:5387
 #: includes/addon/class-gf-payment-addon.php:2603
 #: includes/addon/class-gf-payment-addon.php:2648
 #: includes/webapi/webapi.php:559
@@ -521,34 +521,34 @@ msgstr ""
 msgid "Enabled"
 msgstr ""
 
-#: common.php:5387
+#: common.php:5388
 #: includes/wizard/steps/class-gf-installation-wizard-step-background-updates.php:110
 msgid "Disabled"
 msgstr ""
 
-#: common.php:5388
+#: common.php:5389
 msgid "Configure"
 msgstr ""
 
-#: common.php:5389
+#: common.php:5390
 #: export.php:685
 #: includes/addon/class-gf-payment-addon.php:2541
 #: includes/addon/class-gf-payment-addon.php:2543
-#: tooltips.php:103
-#: tooltips.php:120
-#: tooltips.php:143
+#: tooltips.php:104
+#: tooltips.php:121
+#: tooltips.php:144
 msgid "Conditional Logic"
 msgstr ""
 
-#: common.php:5390
+#: common.php:5391
 msgid "Conditional logic allows you to change what the user sees depending on the fields they select."
 msgstr ""
 
-#: common.php:5395
+#: common.php:5396
 msgid "Adding conditional logic to the form submit button could cause usability problems for some users and negatively impact the accessibility of your form. Learn more about button conditional logic in our %1$sdocumentation%2$s."
 msgstr ""
 
-#: common.php:5399
+#: common.php:5400
 #: includes/class-confirmation.php:235
 #: includes/class-confirmation.php:285
 #: includes/class-confirmation.php:1190
@@ -558,330 +558,330 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
-#: common.php:5400
+#: common.php:5401
 #: form_detail.php:774
 msgid "Next Button"
 msgstr ""
 
-#: common.php:5401
-msgid "Submit Button"
-msgstr ""
-
 #: common.php:5402
-msgctxt "Conditional Logic"
-msgid "All"
+msgid "Submit Button"
 msgstr ""
 
 #: common.php:5403
 msgctxt "Conditional Logic"
-msgid "Any"
+msgid "All"
 msgstr ""
 
 #: common.php:5404
-msgid "of the following match:"
+msgctxt "Conditional Logic"
+msgid "Any"
 msgstr ""
 
 #: common.php:5405
+msgid "of the following match:"
+msgstr ""
+
+#: common.php:5406
 #: includes/addon/class-gf-addon.php:4067
 #: includes/settings/fields/class-notification-routing.php:76
 #: includes/settings/fields/class-notification-routing.php:227
 msgid "is"
 msgstr ""
 
-#: common.php:5406
+#: common.php:5407
 #: includes/addon/class-gf-addon.php:4071
 #: includes/settings/fields/class-notification-routing.php:77
 #: includes/settings/fields/class-notification-routing.php:228
 msgid "is not"
 msgstr ""
 
-#: common.php:5407
+#: common.php:5408
 #: includes/addon/class-gf-addon.php:4075
 #: includes/settings/fields/class-notification-routing.php:78
 #: includes/settings/fields/class-notification-routing.php:229
 msgid "greater than"
 msgstr ""
 
-#: common.php:5408
+#: common.php:5409
 #: includes/addon/class-gf-addon.php:4079
 #: includes/settings/fields/class-notification-routing.php:79
 #: includes/settings/fields/class-notification-routing.php:230
 msgid "less than"
 msgstr ""
 
-#: common.php:5409
+#: common.php:5410
 #: includes/addon/class-gf-addon.php:4083
 #: includes/settings/fields/class-notification-routing.php:80
 #: includes/settings/fields/class-notification-routing.php:231
 msgid "contains"
 msgstr ""
 
-#: common.php:5410
+#: common.php:5411
 #: includes/addon/class-gf-addon.php:4087
 #: includes/settings/fields/class-notification-routing.php:81
 #: includes/settings/fields/class-notification-routing.php:232
 msgid "starts with"
 msgstr ""
 
-#: common.php:5411
+#: common.php:5412
 #: includes/addon/class-gf-addon.php:4091
 #: includes/settings/fields/class-notification-routing.php:82
 #: includes/settings/fields/class-notification-routing.php:233
 msgid "ends with"
 msgstr ""
 
-#: common.php:5412
+#: common.php:5413
 msgid "Empty (no choices selected)"
 msgstr ""
 
-#: common.php:5414
+#: common.php:5415
 msgid "This form has legacy markup enabled and doesn’t support field resizing within the editor. Please disable legacy markup in the form settings to enable live resizing."
 msgstr ""
 
-#: common.php:5415
+#: common.php:5416
 msgid "Use this confirmation if"
 msgstr ""
 
-#: common.php:5416
+#: common.php:5417
 msgid "Send this notification if"
 msgstr ""
 
-#: common.php:5418
+#: common.php:5419
 msgid "Saving..."
 msgstr ""
 
-#: common.php:5419
+#: common.php:5420
 msgid "Are you sure you wish to cancel these changes?"
 msgstr ""
 
-#: common.php:5420
+#: common.php:5421
 msgid "There was an issue saving this confirmation."
 msgstr ""
 
-#: common.php:5421
+#: common.php:5422
 msgid "Are you sure you wish to delete this confirmation?"
 msgstr ""
 
-#: common.php:5422
-#: form_settings.php:1203
+#: common.php:5423
+#: form_settings.php:1221
 msgid "There was an issue deleting this confirmation."
 msgstr ""
 
-#: common.php:5423
+#: common.php:5424
 msgid "There are unsaved changes to the current confirmation. Would you like to discard these changes?"
 msgstr ""
 
-#: common.php:5424
+#: common.php:5425
 msgid "Untitled Confirmation"
 msgstr ""
 
-#: common.php:5426
+#: common.php:5427
 msgid "Please select a page."
 msgstr ""
 
-#: common.php:5427
+#: common.php:5428
 msgid "Please enter a URL."
 msgstr ""
 
-#: common.php:5428
+#: common.php:5429
 msgid "Please enter a confirmation name."
 msgstr ""
 
-#: common.php:5429
+#: common.php:5430
 msgid "Warning! Deleting this field will also delete all entry data associated with it. 'Cancel' to stop. 'OK' to delete."
 msgstr ""
 
-#: common.php:5430
+#: common.php:5431
 msgid "Warning! You're about to delete this field. 'Cancel' to stop. 'OK' to delete."
 msgstr ""
 
-#: common.php:5432
+#: common.php:5433
 msgid "Warning! This form contains conditional logic dependent upon this field. Deleting this field will deactivate those conditional logic rules and also delete all entry data associated with the field. 'OK' to delete, 'Cancel' to abort."
 msgstr ""
 
-#: common.php:5433
+#: common.php:5434
 msgid "This form contains conditional logic dependent upon this choice. Are you sure you want to delete this choice? 'OK' to delete, 'Cancel' to abort."
 msgstr ""
 
-#: common.php:5434
+#: common.php:5435
 msgid "This form contains conditional logic dependent upon this choice. Are you sure you want to modify this choice? 'OK' to delete, 'Cancel' to abort."
 msgstr ""
 
-#: common.php:5435
+#: common.php:5436
 msgid "This form contains conditional logic dependent upon this field. Are you sure you want to mark this field as Admin Only? 'OK' to confirm, 'Cancel' to abort."
 msgstr ""
 
-#: common.php:5437
+#: common.php:5438
 #: includes/merge-tags/config/class-gf-merge-tags-config-i18n.php:27
 msgid "Insert Merge Tags"
 msgstr ""
 
-#: common.php:5446
+#: common.php:5447
 msgid "Add a condition"
 msgstr ""
 
-#: common.php:5447
+#: common.php:5448
 msgid "Remove a condition"
 msgstr ""
 
-#: common.php:5448
+#: common.php:5449
 msgid "{0} of the following match:"
 msgstr ""
 
-#: common.php:5450
+#: common.php:5451
 msgid "Custom Choices"
 msgstr ""
 
-#: common.php:5451
+#: common.php:5452
 msgid "Predefined Choices"
 msgstr ""
 
 #. translators: {field_title} and {field_type} should not be translated , they are variables
-#: common.php:5454
+#: common.php:5455
 msgid "{field_label} - {field_type}, jump to this field's settings"
 msgstr ""
 
-#: common.php:5466
+#: common.php:5467
 msgid "ID: "
 msgstr ""
 
 #. Translators: This string is a list of name prefixes/honorifics.  If the language you are translating into doesn't have equivalents, just provide a list with as many or few prefixes as your language has.
-#: common.php:5473
+#: common.php:5474
 msgid "Mr., Mrs., Miss, Ms., Mx., Dr., Prof., Rev."
 msgstr ""
 
-#: common.php:5500
+#: common.php:5501
 #: js.php:66
 msgid "To use conditional logic, please create a field that supports conditional logic."
 msgstr ""
 
-#: common.php:5503
+#: common.php:5504
 msgid "add another rule"
 msgstr ""
 
-#: common.php:5504
+#: common.php:5505
 msgid "remove this rule"
 msgstr ""
 
-#: common.php:5915
+#: common.php:5916
 msgid "Any form field"
 msgstr ""
 
-#: common.php:6022
+#: common.php:6023
 #: includes/addon/class-gf-addon.php:3024
 #: includes/settings/fields/class-generic-map.php:571
 msgid "Entry ID"
 msgstr ""
 
-#: common.php:6026
+#: common.php:6027
 #: export.php:1121
-#: forms_model.php:6558
+#: forms_model.php:6561
 #: includes/addon/class-gf-addon.php:3025
 #: includes/settings/fields/class-generic-map.php:575
 #: select_columns.php:197
 msgid "Entry Date"
 msgstr ""
 
-#: common.php:6028
-#: common.php:6061
+#: common.php:6029
+#: common.php:6062
 #: includes/fields/class-gf-field-date.php:894
 #: includes/fields/class-gf-field-date.php:1088
 msgid "yyyy-mm-dd"
 msgstr ""
 
-#: common.php:6032
+#: common.php:6033
 msgid "Starred"
 msgstr ""
 
-#: common.php:6046
+#: common.php:6047
 #: includes/class-personal-data.php:684
-#: tooltips.php:165
+#: tooltips.php:166
 msgid "IP Address"
 msgstr ""
 
-#: common.php:6050
+#: common.php:6051
 msgid "Source URL"
 msgstr ""
 
-#: common.php:6054
+#: common.php:6055
 #: export.php:1127
-#: forms_model.php:6564
+#: forms_model.php:6567
 #: select_columns.php:200
 msgid "Payment Status"
 msgstr ""
 
-#: common.php:6059
+#: common.php:6060
 #: export.php:1126
-#: forms_model.php:6570
+#: forms_model.php:6573
 #: select_columns.php:203
 msgid "Payment Date"
 msgstr ""
 
-#: common.php:6065
+#: common.php:6066
 #: export.php:1125
-#: forms_model.php:6573
+#: forms_model.php:6576
 #: includes/addon/class-gf-payment-addon.php:2497
 #: includes/addon/class-gf-payment-addon.php:2502
 #: select_columns.php:202
 msgid "Payment Amount"
 msgstr ""
 
-#: common.php:6069
+#: common.php:6070
 msgid "Transaction ID"
 msgstr ""
 
-#: common.php:6073
+#: common.php:6074
 #: entry_detail.php:1324
-#: forms_model.php:6576
+#: forms_model.php:6579
 #: includes/webapi/includes/class-gf-api-keys-table.php:28
 #: includes/webapi/webapi.php:401
 #: select_columns.php:204
 msgid "User"
 msgstr ""
 
-#: common.php:6089
+#: common.php:6090
 msgid "Authorized"
 msgstr ""
 
-#: common.php:6090
+#: common.php:6091
 msgid "Paid"
 msgstr ""
 
-#: common.php:6091
+#: common.php:6092
 msgid "Processing"
 msgstr ""
 
-#: common.php:6092
+#: common.php:6093
 msgid "Failed"
 msgstr ""
 
-#: common.php:6094
+#: common.php:6095
 #: includes/config/items/class-gf-config-multifile.php:36
 msgid "Cancelled"
 msgstr ""
 
-#: common.php:6095
+#: common.php:6096
 #: includes/locking/class-gf-locking.php:206
 msgid "Pending"
 msgstr ""
 
-#: common.php:6096
+#: common.php:6097
 msgid "Refunded"
 msgstr ""
 
-#: common.php:6097
+#: common.php:6098
 msgid "Voided"
 msgstr ""
 
-#: common.php:6964
+#: common.php:6965
 msgid "Visible"
 msgstr ""
 
-#: common.php:6966
+#: common.php:6967
 msgid "Default option. The field is visible when viewing the form."
 msgstr ""
 
-#: common.php:6969
+#: common.php:6970
 #: form_detail.php:671
 #: form_detail.php:753
 #: form_detail.php:860
@@ -892,24 +892,24 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#: common.php:6971
+#: common.php:6972
 msgid "The field is hidden when viewing the form. Useful when you require the functionality of this field but do not want the user to be able to see this field."
 msgstr ""
 
-#: common.php:6974
+#: common.php:6975
 msgid "Administrative"
 msgstr ""
 
-#: common.php:6976
+#: common.php:6977
 msgid "The field is only visible when administering submitted entries. The field is not visible or functional when viewing the form."
 msgstr ""
 
-#: common.php:7007
+#: common.php:7008
 #: form_detail.php:2518
 msgid "Visibility"
 msgstr ""
 
-#: common.php:7007
+#: common.php:7008
 msgid "Select the visibility for this field."
 msgstr ""
 
@@ -1025,7 +1025,7 @@ msgid "Entry"
 msgstr ""
 
 #: entry_detail.php:52
-#: form_settings.php:1107
+#: form_settings.php:1125
 #: notification.php:111
 #: notification.php:231
 #: notification.php:849
@@ -1079,7 +1079,7 @@ msgstr ""
 #: entry_detail.php:436
 #: entry_list.php:1447
 #: entry_list.php:1486
-#: form_list.php:882
+#: form_list.php:883
 msgid "You don't have adequate permission to delete entries."
 msgstr ""
 
@@ -1122,7 +1122,7 @@ msgstr ""
 #: includes/addon/class-gf-feed-addon.php:1790
 #: includes/class-confirmation.php:1099
 #: includes/editor-button/config/class-gf-editor-config.php:56
-#: includes/fields/class-gf-field.php:1591
+#: includes/fields/class-gf-field.php:1621
 #: includes/settings/config/class-gf-settings-config-i18n.php:51
 #: notification.php:1536
 #: assets/js/src/legacy/admin/settings/field-map/mapping.js:354
@@ -1161,7 +1161,7 @@ msgid "show empty fields"
 msgstr ""
 
 #: entry_detail.php:1152
-#: form_list.php:533
+#: form_list.php:534
 msgid "Status"
 msgstr ""
 
@@ -1175,7 +1175,7 @@ msgstr ""
 
 #: entry_detail.php:1185
 #: export.php:1124
-#: forms_model.php:6567
+#: forms_model.php:6570
 #: select_columns.php:201
 msgid "Transaction Id"
 msgstr ""
@@ -1211,7 +1211,7 @@ msgstr ""
 
 #: entry_detail.php:1318
 #: export.php:1130
-#: forms_model.php:6555
+#: forms_model.php:6558
 #: includes/addon/class-gf-addon.php:3026
 #: includes/settings/fields/class-generic-map.php:579
 #: select_columns.php:198
@@ -1249,8 +1249,8 @@ msgstr ""
 #: entry_detail.php:1375
 #: entry_list.php:1207
 #: entry_list.php:1344
-#: form_list.php:514
-#: form_list.php:672
+#: form_list.php:515
+#: form_list.php:673
 msgid "Restore"
 msgstr ""
 
@@ -1280,7 +1280,7 @@ msgstr ""
 #: includes/embed-form/config/class-gf-embed-config-i18n.php:54
 #: includes/form-editor/save-form/config/class-gf-form-editor-form-save-config.php:42
 #: includes/locking/class-gf-locking.php:201
-#: includes/template-library/config/class-gf-template-library-config.php:104
+#: includes/template-library/config/class-gf-template-library-config.php:105
 #: select_columns.php:277
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:132
 msgid "Cancel"
@@ -1386,7 +1386,7 @@ msgstr ""
 #: entry_list.php:502
 #: entry_list.php:1285
 #: entry_list.php:1371
-#: form_list.php:707
+#: form_list.php:708
 msgid "Trash"
 msgstr ""
 
@@ -1674,7 +1674,7 @@ msgid "Select the Gravity Forms export files you would like to import. Please ma
 msgstr ""
 
 #: export.php:369
-#: tooltips.php:146
+#: tooltips.php:147
 msgid "Select Files"
 msgstr ""
 
@@ -1772,7 +1772,7 @@ msgid "Date Updated"
 msgstr ""
 
 #: export.php:1123
-#: forms_model.php:6561
+#: forms_model.php:6564
 #: includes/addon/class-gf-addon.php:3027
 #: includes/settings/fields/class-generic-map.php:583
 #: select_columns.php:199
@@ -1809,7 +1809,7 @@ msgstr ""
 #: forms_model.php:1830
 #: forms_model.php:1863
 #: forms_model.php:1899
-#: forms_model.php:8201
+#: forms_model.php:8209
 #: includes/api.php:131
 #: includes/api.php:158
 #: includes/api.php:180
@@ -1867,68 +1867,68 @@ msgstr ""
 msgid "Error while saving total field values: %s"
 msgstr ""
 
-#: forms_model.php:6663
-#: forms_model.php:6671
-#: forms_model.php:6676
-#: form_settings.php:259
+#: forms_model.php:6666
+#: forms_model.php:6674
+#: forms_model.php:6679
+#: form_settings.php:276
 msgid "(Required)"
 msgstr ""
 
-#: forms_model.php:6889
-#: forms_model.php:6953
+#: forms_model.php:6892
+#: forms_model.php:6956
 msgid "Default Confirmation"
 msgstr ""
 
-#: forms_model.php:6918
+#: forms_model.php:6921
 msgid "Save and Continue Confirmation"
 msgstr ""
 
-#: forms_model.php:6923
+#: forms_model.php:6926
 msgid "Link to continue editing later"
 msgstr ""
 
-#: forms_model.php:6924
+#: forms_model.php:6927
 msgid "Please use the following link to return and complete this form from any computer."
 msgstr ""
 
-#: forms_model.php:6925
+#: forms_model.php:6928
 msgid "Note: This link will expire after 30 days."
 msgstr ""
 
-#: forms_model.php:6926
+#: forms_model.php:6929
 msgid "Enter your email address if you would like to receive the link via email."
 msgstr ""
 
-#: forms_model.php:6937
+#: forms_model.php:6940
 msgid "Save and Continue Email Sent Confirmation"
 msgstr ""
 
-#: forms_model.php:6942
+#: forms_model.php:6945
 msgid "Success!"
 msgstr ""
 
-#: forms_model.php:6943
+#: forms_model.php:6946
 msgid "The link was sent to the following email address:"
 msgstr ""
 
-#: forms_model.php:8193
+#: forms_model.php:8201
 msgid "Updating the id property is not supported"
 msgstr ""
 
-#: forms_model.php:8197
+#: forms_model.php:8205
 msgid "%s is not a valid feed property"
 msgstr ""
 
-#: forms_model.php:8210
+#: forms_model.php:8218
 msgid "Feed meta should be an associative array or JSON"
 msgstr ""
 
-#: forms_model.php:8219
+#: forms_model.php:8227
 #: includes/api.php:2117
 msgid "There was an error while updating feed id %s"
 msgstr ""
 
-#: forms_model.php:8223
+#: forms_model.php:8231
 #: includes/api.php:2078
 msgid "Feed id %s not found"
 msgstr ""
@@ -2039,7 +2039,7 @@ msgid "Add Fields"
 msgstr ""
 
 #: form_detail.php:398
-#: tooltips.php:164
+#: tooltips.php:165
 msgid "Field Settings"
 msgstr ""
 
@@ -2060,7 +2060,7 @@ msgid "No field selected"
 msgstr ""
 
 #: form_detail.php:484
-#: tooltips.php:112
+#: tooltips.php:113
 msgid "Progress Indicator"
 msgstr ""
 
@@ -2078,7 +2078,7 @@ msgid "None"
 msgstr ""
 
 #: form_detail.php:499
-#: tooltips.php:113
+#: tooltips.php:114
 msgid "Progress Bar Style"
 msgstr ""
 
@@ -2125,7 +2125,7 @@ msgid "Background Color"
 msgstr ""
 
 #: form_detail.php:529
-#: tooltips.php:114
+#: tooltips.php:115
 msgid "Page Names"
 msgstr ""
 
@@ -2166,8 +2166,8 @@ msgid "Image Path:"
 msgstr ""
 
 #: form_detail.php:594
-#: tooltips.php:41
 #: tooltips.php:42
+#: tooltips.php:43
 msgid "Field Label"
 msgstr ""
 
@@ -2313,7 +2313,7 @@ msgstr ""
 
 #: form_detail.php:762
 #: includes/class-confirmation.php:875
-#: tooltips.php:132
+#: tooltips.php:133
 msgid "Content"
 msgstr ""
 
@@ -2328,7 +2328,7 @@ msgstr ""
 
 #: form_detail.php:852
 #: form_detail.php:2712
-#: tooltips.php:137
+#: tooltips.php:138
 msgid "Standard Fields"
 msgstr ""
 
@@ -2351,7 +2351,7 @@ msgstr ""
 
 #: form_detail.php:862
 #: form_detail.php:2730
-#: tooltips.php:138
+#: tooltips.php:139
 msgid "Advanced Fields"
 msgstr ""
 
@@ -2431,7 +2431,7 @@ msgstr ""
 
 #: form_detail.php:915
 #: form_detail.php:1611
-#: includes/fields/class-gf-field.php:2599
+#: includes/fields/class-gf-field.php:2629
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:408
 msgid "Small"
 msgstr ""
@@ -2469,7 +2469,7 @@ msgid "Inline"
 msgstr ""
 
 #: form_detail.php:975
-#: tooltips.php:47
+#: tooltips.php:48
 msgid "Custom Field Name"
 msgstr ""
 
@@ -2486,7 +2486,7 @@ msgid "Select an existing custom field"
 msgstr ""
 
 #: form_detail.php:1007
-#: tooltips.php:122
+#: tooltips.php:123
 msgid "Post Status"
 msgstr ""
 
@@ -2511,14 +2511,14 @@ msgid "Use logged in user as author"
 msgstr ""
 
 #: form_detail.php:1050
-#: tooltips.php:124
+#: tooltips.php:125
 msgid "Post Format"
 msgstr ""
 
 #: form_detail.php:1078
 #: js.php:628
-#: tooltips.php:121
-#: tooltips.php:127
+#: tooltips.php:122
+#: tooltips.php:128
 msgid "Post Category"
 msgstr ""
 
@@ -2567,7 +2567,7 @@ msgid "Alternative Text"
 msgstr ""
 
 #: form_detail.php:1206
-#: form_list.php:534
+#: form_list.php:535
 #: gravityforms.php:2568
 #: includes/fields/class-gf-field-post-image.php:153
 #: includes/fields/class-gf-field-post-image.php:155
@@ -2591,17 +2591,17 @@ msgid "Featured Image"
 msgstr ""
 
 #: form_detail.php:1222
-#: tooltips.php:130
+#: tooltips.php:131
 msgid "Set as Featured Image"
 msgstr ""
 
 #: form_detail.php:1234
-#: tooltips.php:52
+#: tooltips.php:53
 msgid "Address Type"
 msgstr ""
 
 #: form_detail.php:1249
-#: tooltips.php:87
+#: tooltips.php:88
 msgid "Address Fields"
 msgstr ""
 
@@ -2624,7 +2624,7 @@ msgid "Default %s"
 msgstr ""
 
 #: form_detail.php:1284
-#: tooltips.php:55
+#: tooltips.php:56
 msgid "Default Country"
 msgstr ""
 
@@ -2637,12 +2637,12 @@ msgid "Extended"
 msgstr ""
 
 #: form_detail.php:1317
-#: tooltips.php:85
+#: tooltips.php:86
 msgid "Name Fields"
 msgstr ""
 
 #: form_detail.php:1329
-#: tooltips.php:51
+#: tooltips.php:52
 msgid "Date Input Type"
 msgstr ""
 
@@ -2692,7 +2692,8 @@ msgstr ""
 #: form_detail.php:2155
 #: form_detail.php:2166
 #: form_settings.php:201
-#: form_settings.php:217
+#: form_settings.php:218
+#: form_settings.php:234
 msgid "Below inputs"
 msgstr ""
 
@@ -2702,7 +2703,8 @@ msgstr ""
 #: form_detail.php:2155
 #: form_detail.php:2167
 #: form_settings.php:205
-#: form_settings.php:221
+#: form_settings.php:222
+#: form_settings.php:238
 msgid "Above inputs"
 msgstr ""
 
@@ -2710,7 +2712,7 @@ msgstr ""
 #: form_detail.php:2076
 #: form_detail.php:2087
 #: js.php:218
-#: tooltips.php:90
+#: tooltips.php:91
 msgid "Placeholder"
 msgstr ""
 
@@ -2731,17 +2733,17 @@ msgid "Multiple Files"
 msgstr ""
 
 #: form_detail.php:1426
-#: tooltips.php:67
+#: tooltips.php:68
 msgid "Enable Multi-File Upload"
 msgstr ""
 
 #: form_detail.php:1435
-#: tooltips.php:68
+#: tooltips.php:69
 msgid "Maximum Number of Files"
 msgstr ""
 
 #: form_detail.php:1449
-#: tooltips.php:69
+#: tooltips.php:70
 msgid "Maximum File Size"
 msgstr ""
 
@@ -2758,12 +2760,12 @@ msgid "Enable multiple columns"
 msgstr ""
 
 #: form_detail.php:1481
-#: tooltips.php:50
+#: tooltips.php:51
 msgid "Maximum Rows"
 msgstr ""
 
 #: form_detail.php:1493
-#: tooltips.php:65
+#: tooltips.php:66
 msgid "Time Format"
 msgstr ""
 
@@ -3564,19 +3566,19 @@ msgid "Strong"
 msgstr ""
 
 #: form_detail.php:1777
-#: tooltips.php:62
+#: tooltips.php:63
 msgid "Number Format"
 msgstr ""
 
 #: form_detail.php:1783
 #: includes/system-status/class-gf-system-report.php:880
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:20
-#: tooltips.php:154
+#: tooltips.php:155
 msgid "Currency"
 msgstr ""
 
 #: form_detail.php:1792
-#: tooltips.php:80
+#: tooltips.php:81
 msgid "Sub-Labels"
 msgstr ""
 
@@ -3585,7 +3587,7 @@ msgid "Supported Credit Cards"
 msgstr ""
 
 #: form_detail.php:1833
-#: tooltips.php:136
+#: tooltips.php:137
 msgid "Input Mask"
 msgstr ""
 
@@ -3671,7 +3673,7 @@ msgid "Select a Mask"
 msgstr ""
 
 #: form_detail.php:1931
-#: tooltips.php:49
+#: tooltips.php:50
 msgid "Maximum Characters"
 msgstr ""
 
@@ -3688,12 +3690,12 @@ msgid "Max"
 msgstr ""
 
 #: form_detail.php:1972
-#: tooltips.php:76
+#: tooltips.php:77
 msgid "Enable Calculation"
 msgstr ""
 
 #: form_detail.php:1980
-#: tooltips.php:77
+#: tooltips.php:78
 msgid "Formula"
 msgstr ""
 
@@ -3710,7 +3712,7 @@ msgid "Validate Formula"
 msgstr ""
 
 #: form_detail.php:1997
-#: tooltips.php:78
+#: tooltips.php:79
 msgid "Rounding"
 msgstr ""
 
@@ -3724,18 +3726,18 @@ msgstr ""
 
 #: form_detail.php:2027
 #: includes/settings/class-settings.php:901
-#: includes/template-library/config/class-gf-template-library-config.php:91
+#: includes/template-library/config/class-gf-template-library-config.php:92
 msgid "Required"
 msgstr ""
 
 #: form_detail.php:2036
-#: tooltips.php:73
+#: tooltips.php:74
 msgid "No Duplicates"
 msgstr ""
 
 #: form_detail.php:2057
-#: form_settings.php:273
-#: tooltips.php:99
+#: form_settings.php:290
+#: tooltips.php:100
 msgid "CSS Class Name"
 msgstr ""
 
@@ -3745,7 +3747,7 @@ msgid "Placeholder text is not supported when using the Rich Text Editor."
 msgstr ""
 
 #: form_detail.php:2099
-#: tooltips.php:91
+#: tooltips.php:92
 msgid "Placeholders"
 msgstr ""
 
@@ -3775,7 +3777,7 @@ msgstr ""
 #: form_detail.php:2138
 #: form_settings.php:187
 #: tooltips.php:27
-#: tooltips.php:82
+#: tooltips.php:83
 msgid "Description Placement"
 msgstr ""
 
@@ -3785,9 +3787,9 @@ msgid "Use Form Setting (%s)"
 msgstr ""
 
 #: form_detail.php:2159
-#: form_settings.php:213
-#: tooltips.php:28
-#: tooltips.php:83
+#: form_settings.php:230
+#: tooltips.php:29
+#: tooltips.php:84
 msgid "Sub-Label Placement"
 msgstr ""
 
@@ -3828,7 +3830,7 @@ msgid "Enable enhanced user interface"
 msgstr ""
 
 #: form_detail.php:2251
-#: tooltips.php:84
+#: tooltips.php:85
 msgid "Field Size"
 msgstr ""
 
@@ -3839,7 +3841,7 @@ msgstr ""
 #: form_detail.php:2300
 #: form_detail.php:2310
 #: js.php:194
-#: tooltips.php:88
+#: tooltips.php:89
 msgid "Default Value"
 msgstr ""
 
@@ -3852,7 +3854,7 @@ msgid "Enable Autocomplete"
 msgstr ""
 
 #: form_detail.php:2346
-#: tooltips.php:89
+#: tooltips.php:90
 msgid "Default Values"
 msgstr ""
 
@@ -3865,12 +3867,12 @@ msgid "To activate this option, please add a field to be used as the source."
 msgstr ""
 
 #: form_detail.php:2373
-#: tooltips.php:93
+#: tooltips.php:94
 msgid "Option Label"
 msgstr ""
 
 #: form_detail.php:2378
-#: tooltips.php:94
+#: tooltips.php:95
 msgid "Source Field"
 msgstr ""
 
@@ -4163,12 +4165,12 @@ msgid "Zulu"
 msgstr ""
 
 #: form_detail.php:2485
-#: tooltips.php:33
+#: tooltips.php:34
 msgid "Add Icon URL"
 msgstr ""
 
 #: form_detail.php:2495
-#: tooltips.php:34
+#: tooltips.php:35
 msgid "Delete Icon URL"
 msgstr ""
 
@@ -4177,7 +4179,7 @@ msgid "Enable Password Input"
 msgstr ""
 
 #: form_detail.php:2512
-#: tooltips.php:63
+#: tooltips.php:64
 msgid "Force SSL"
 msgstr ""
 
@@ -4206,12 +4208,12 @@ msgid "Enable Next Button Conditional Logic"
 msgstr ""
 
 #: form_detail.php:2747
-#: tooltips.php:139
+#: tooltips.php:140
 msgid "Post Fields"
 msgstr ""
 
 #: form_detail.php:2760
-#: tooltips.php:140
+#: tooltips.php:141
 msgid "Pricing Fields"
 msgstr ""
 
@@ -4237,13 +4239,13 @@ msgid "This form has legacy markup enabled, which may prevent some new features 
 msgstr ""
 
 #: form_detail.php:3299
-#: form_settings.php:666
+#: form_settings.php:683
 msgid "Learn more about form legacy markup"
 msgstr ""
 
 #: form_detail.php:3301
 #: form_detail.php:3378
-#: form_settings.php:668
+#: form_settings.php:685
 msgid "Learn More"
 msgstr ""
 
@@ -4336,7 +4338,7 @@ msgid "No results matched"
 msgstr ""
 
 #: form_display.php:3754
-#: form_display.php:4416
+#: form_display.php:4421
 msgid "of"
 msgstr ""
 
@@ -4387,60 +4389,61 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: form_display.php:4416
+#: form_display.php:4421
 msgid "Step"
 msgstr ""
 
-#: form_display.php:4523
+#: form_display.php:4528
 msgid "Sorry. This form is no longer accepting new submissions."
 msgstr ""
 
-#: form_display.php:4544
+#: form_display.php:4549
 msgid "This form is not yet available."
 msgstr ""
 
-#: form_display.php:4550
+#: form_display.php:4555
 msgid "Sorry. This form is no longer available."
 msgstr ""
 
-#: form_display.php:4708
+#: form_display.php:4713
 msgid "Send Link"
 msgstr ""
 
-#: form_display.php:4709
+#: form_display.php:4714
 #: notification.php:293
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: form_display.php:4710
+#: form_display.php:4715
 msgid "Email Address"
 msgstr ""
 
-#: form_display.php:5074
+#: form_display.php:5079
 msgid "Oops! We could not locate your form."
 msgstr ""
 
-#: form_display.php:5105
+#: form_display.php:5110
 msgid "Your form was not submitted. Please try again in a few minutes."
 msgstr ""
 
-#: form_display.php:5107
+#: form_display.php:5112
 msgid "There was a problem with your submission."
 msgstr ""
 
-#: form_display.php:5107
+#: form_display.php:5112
 msgid "Please review the fields below."
 msgstr ""
 
 #: form_list.php:53
 #: form_settings.php:154
-#: includes/template-library/config/class-gf-template-library-config.php:88
+#: includes/template-library/config/class-gf-template-library-config.php:89
 #: tooltips.php:25
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:306
 msgid "Form Description"
 msgstr ""
 
 #: form_list.php:64
+#: includes/template-library/config/class-gf-template-library-config.php:128
 msgid "Create Form"
 msgstr ""
 
@@ -4505,18 +4508,18 @@ msgstr ""
 
 #: form_list.php:215
 #: form_list.php:235
-#: includes/template-library/config/class-gf-template-library-config.php:99
+#: includes/template-library/config/class-gf-template-library-config.php:100
 msgid "There was an issue creating your form."
 msgstr ""
 
 #: form_list.php:227
-#: form_settings.php:1397
+#: form_settings.php:1415
 msgid "Please enter a form title."
 msgstr ""
 
 #: form_list.php:239
-#: form_settings.php:1401
-#: includes/template-library/config/class-gf-template-library-config.php:98
+#: form_settings.php:1419
+#: includes/template-library/config/class-gf-template-library-config.php:99
 msgid "Please enter a unique form title."
 msgstr ""
 
@@ -4532,191 +4535,191 @@ msgstr ""
 msgid "Creating Form..."
 msgstr ""
 
-#: form_list.php:350
+#: form_list.php:351
 msgid "Saved! Redirecting..."
-msgstr ""
-
-#: form_list.php:435
-msgctxt "Form List"
-msgid "All"
 msgstr ""
 
 #: form_list.php:436
 msgctxt "Form List"
-msgid "Active"
+msgid "All"
 msgstr ""
 
 #: form_list.php:437
 msgctxt "Form List"
-msgid "Inactive"
+msgid "Active"
 msgstr ""
 
 #: form_list.php:438
 msgctxt "Form List"
+msgid "Inactive"
+msgstr ""
+
+#: form_list.php:439
+msgctxt "Form List"
 msgid "Trash"
 msgstr ""
 
-#: form_list.php:515
-#: form_list.php:680
+#: form_list.php:516
+#: form_list.php:681
 msgid "Delete permanently"
 msgstr ""
 
-#: form_list.php:519
+#: form_list.php:520
 msgid "Mark as Active"
 msgstr ""
 
-#: form_list.php:520
+#: form_list.php:521
 msgid "Mark as Inactive"
 msgstr ""
 
-#: form_list.php:521
+#: form_list.php:522
 msgid "Reset Views"
 msgstr ""
 
-#: form_list.php:522
+#: form_list.php:523
 msgid "Permanently Delete Entries"
 msgstr ""
 
-#: form_list.php:523
+#: form_list.php:524
 msgid "Move to trash"
 msgstr ""
 
-#: form_list.php:535
+#: form_list.php:536
 msgid "ID"
 msgstr ""
 
-#: form_list.php:536
+#: form_list.php:537
 #: gravityforms.php:1795
 #: gravityforms.php:5367
 #: gravityforms.php:5626
 msgid "Entries"
 msgstr ""
 
-#: form_list.php:537
+#: form_list.php:538
 msgid "Views"
 msgstr ""
 
-#: form_list.php:538
+#: form_list.php:539
 msgid "Conversion"
 msgstr ""
 
-#: form_list.php:698
+#: form_list.php:699
 #: includes/addon/class-gf-feed-addon.php:1789
 #: includes/class-confirmation.php:1098
 #: includes/editor-button/config/class-gf-editor-config.php:55
-#: includes/fields/class-gf-field.php:1570
+#: includes/fields/class-gf-field.php:1600
 #: notification.php:1535
 msgid "Duplicate"
 msgstr ""
 
-#: form_list.php:708
+#: form_list.php:709
 msgid "Move this form to the trash"
 msgstr ""
 
-#: form_list.php:733
+#: form_list.php:734
 msgid "No forms were found for your search query. %sView all forms%s."
 msgstr ""
 
-#: form_list.php:738
+#: form_list.php:739
 msgid "There are no forms in the trash."
 msgstr ""
 
-#: form_list.php:740
+#: form_list.php:741
 msgid "You don't have any forms. Let's go %screate one%s!"
 msgstr ""
 
-#: form_list.php:764
-#: form_list.php:813
+#: form_list.php:765
+#: form_list.php:814
 msgid "Form moved to the trash."
 msgstr ""
 
-#: form_list.php:767
-#: form_list.php:816
+#: form_list.php:768
+#: form_list.php:817
 msgid "You don't have adequate permission to trash forms."
 msgstr ""
 
-#: form_list.php:774
+#: form_list.php:775
 msgid "Form restored."
 msgstr ""
 
-#: form_list.php:777
+#: form_list.php:778
 msgid "You don't have adequate permission to restore forms."
 msgstr ""
 
-#: form_list.php:784
+#: form_list.php:785
 msgid "Form deleted."
 msgstr ""
 
-#: form_list.php:787
+#: form_list.php:788
 msgid "You don't have adequate permission to delete forms."
 msgstr ""
 
-#: form_list.php:794
-#: form_list.php:825
+#: form_list.php:795
+#: form_list.php:826
 msgid "Form duplicated."
 msgstr ""
 
-#: form_list.php:797
-#: form_list.php:828
+#: form_list.php:798
+#: form_list.php:829
 msgid "You don't have adequate permission to duplicate forms."
 msgstr ""
 
-#: form_list.php:847
+#: form_list.php:848
 msgid "%s form moved to the trash."
 msgid_plural "%s forms moved to the trash."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:849
+#: form_list.php:850
 msgid "You don't have adequate permissions to trash forms."
 msgstr ""
 
-#: form_list.php:855
+#: form_list.php:856
 msgid "%s form restored."
 msgid_plural "%s forms restored."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:857
+#: form_list.php:858
 msgid "You don't have adequate permissions to restore forms."
 msgstr ""
 
-#: form_list.php:863
+#: form_list.php:864
 msgid "%s form deleted."
 msgid_plural "%s forms deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:865
+#: form_list.php:866
 msgid "You don't have adequate permissions to delete forms."
 msgstr ""
 
-#: form_list.php:873
+#: form_list.php:874
 msgid "Views for %s form have been reset."
 msgid_plural "Views for %s forms have been reset."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:880
+#: form_list.php:881
 msgid "Entries for %s form have been deleted."
 msgid_plural "Entries for %s forms have been deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:890
+#: form_list.php:891
 msgid "%s form has been marked as active."
 msgid_plural "%s forms have been marked as active."
 msgstr[0] ""
 msgstr[1] ""
 
-#: form_list.php:896
+#: form_list.php:897
 msgid "%s form has been marked as inactive."
 msgid_plural "%s forms have been marked as inactive."
 msgstr[0] ""
 msgstr[1] ""
 
 #: form_settings.php:44
-#: form_settings.php:1100
+#: form_settings.php:1118
 #: includes/class-confirmation.php:96
 #: includes/class-confirmation.php:210
 msgid "Confirmations"
@@ -4738,174 +4741,179 @@ msgstr ""
 msgid "Label Placement"
 msgstr ""
 
-#: form_settings.php:229
-#: tooltips.php:168
-msgid "Validation Summary"
-msgstr ""
-
-#: form_settings.php:235
-msgid "Required Field Indicator"
-msgstr ""
-
-#: form_settings.php:242
-msgid "Text: (Required)"
+#: form_settings.php:213
+#: tooltips.php:28
+msgid "Validation Message Placement"
 msgstr ""
 
 #: form_settings.php:246
+#: tooltips.php:169
+msgid "Validation Summary"
+msgstr ""
+
+#: form_settings.php:252
+msgid "Required Field Indicator"
+msgstr ""
+
+#: form_settings.php:259
+msgid "Text: (Required)"
+msgstr ""
+
+#: form_settings.php:263
 msgid "Asterisk: *"
 msgstr ""
 
-#: form_settings.php:250
+#: form_settings.php:267
 msgid "Custom:"
 msgstr ""
 
-#: form_settings.php:258
+#: form_settings.php:275
 msgid "Custom Required Indicator"
 msgstr ""
 
-#: form_settings.php:279
+#: form_settings.php:296
 msgid "Form Button"
 msgstr ""
 
-#: form_settings.php:284
+#: form_settings.php:301
 msgid "Form button settings are now located in the form editor! To edit the button settings, go to the form editor and click on the submit button."
 msgstr ""
 
-#: form_settings.php:289
+#: form_settings.php:306
 msgid "Save and Continue"
 msgstr ""
 
-#: form_settings.php:294
+#: form_settings.php:311
 msgid "Enable Save and Continue"
 msgstr ""
 
-#: form_settings.php:299
+#: form_settings.php:316
 msgid "Link Text"
 msgstr ""
 
-#: form_settings.php:300
+#: form_settings.php:317
 msgid "Save & Continue"
 msgstr ""
 
-#: form_settings.php:318
+#: form_settings.php:335
 msgid "Restrictions"
 msgstr ""
 
-#: form_settings.php:323
+#: form_settings.php:340
 msgid "Limit number of entries"
 msgstr ""
 
-#: form_settings.php:328
+#: form_settings.php:345
 msgid "Enable entry limit"
 msgstr ""
 
-#: form_settings.php:335
+#: form_settings.php:352
 msgid "Number of Entries"
 msgstr ""
 
-#: form_settings.php:353
+#: form_settings.php:370
 msgid "total entries"
 msgstr ""
 
-#: form_settings.php:357
+#: form_settings.php:374
 msgid "per day"
 msgstr ""
 
-#: form_settings.php:361
+#: form_settings.php:378
 msgid "per week"
 msgstr ""
 
-#: form_settings.php:365
+#: form_settings.php:382
 msgid "per month"
 msgstr ""
 
-#: form_settings.php:369
+#: form_settings.php:386
 msgid "per year"
 msgstr ""
 
-#: form_settings.php:379
+#: form_settings.php:396
 msgid "Entry Limit Reached Message"
 msgstr ""
 
-#: form_settings.php:395
-#: form_settings.php:400
+#: form_settings.php:412
+#: form_settings.php:417
 #: tooltips.php:20
 msgid "Schedule Form"
 msgstr ""
 
-#: form_settings.php:407
+#: form_settings.php:424
 msgid "Schedule Start Date/Time"
 msgstr ""
 
-#: form_settings.php:420
+#: form_settings.php:437
 msgid "Schedule Form End Date/Time"
 msgstr ""
 
-#: form_settings.php:433
+#: form_settings.php:450
 msgid "Form Pending Message"
 msgstr ""
 
-#: form_settings.php:447
+#: form_settings.php:464
 msgid "Form Expired Message"
 msgstr ""
 
-#: form_settings.php:464
-#: form_settings.php:469
-#: tooltips.php:109
+#: form_settings.php:481
+#: form_settings.php:486
+#: tooltips.php:110
 msgid "Require user to be logged in"
 msgstr ""
 
-#: form_settings.php:476
-#: tooltips.php:110
+#: form_settings.php:493
+#: tooltips.php:111
 msgid "Require Login Message"
 msgstr ""
 
-#: form_settings.php:493
+#: form_settings.php:510
 msgid "Form Options"
 msgstr ""
 
-#: form_settings.php:498
+#: form_settings.php:515
 msgid "Anti-spam honeypot"
 msgstr ""
 
-#: form_settings.php:506
+#: form_settings.php:523
 msgid "If the honeypot flags a submission as spam:"
 msgstr ""
 
-#: form_settings.php:517
+#: form_settings.php:534
 msgid "Do not create an entry"
 msgstr ""
 
-#: form_settings.php:521
+#: form_settings.php:538
 msgid "Create an entry and mark it as spam"
 msgstr ""
 
-#: form_settings.php:529
+#: form_settings.php:546
 msgid "Animated transitions"
 msgstr ""
 
-#: form_settings.php:540
+#: form_settings.php:557
 msgid "Enable legacy markup"
 msgstr ""
 
-#: form_settings.php:563
+#: form_settings.php:580
 #: includes/class-confirmation.php:385
 #: notification.php:546
 msgid "Legacy Settings"
 msgstr ""
 
-#: form_settings.php:661
+#: form_settings.php:678
 msgid "Legacy markup is incompatible with many new features, including the Orbital Theme."
 msgstr ""
 
-#: form_settings.php:947
-#: form_settings.php:1114
+#: form_settings.php:965
+#: form_settings.php:1132
 #: includes/class-personal-data.php:176
 #: includes/class-personal-data.php:578
 msgid "Personal Data"
 msgstr ""
 
-#: form_settings.php:1093
+#: form_settings.php:1111
 #: includes/addon/class-gf-addon.php:1648
 #: includes/class-gf-osdxp.php:245
 #: includes/class-gf-osdxp.php:246
@@ -4914,15 +4922,15 @@ msgstr ""
 msgid "Form Settings"
 msgstr ""
 
-#: form_settings.php:1201
+#: form_settings.php:1219
 msgid "Confirmation deleted."
 msgstr ""
 
-#: form_settings.php:1304
+#: form_settings.php:1322
 msgid "Save and Continue Email"
 msgstr ""
 
-#: form_settings.php:1309
+#: form_settings.php:1327
 msgid "Thank you for saving {form_title}. Please use the unique link below to return to the form from any computer. <br /><br /> {save_link} <br /><br /> Remember that the link will expire after 30 days so please return via the provided link to complete your form submission."
 msgstr ""
 
@@ -5023,6 +5031,7 @@ msgstr ""
 
 #: gravityforms.php:1790
 #: gravityforms.php:5679
+#: includes/template-library/config/class-gf-template-library-config.php:132
 msgid "New Form"
 msgstr ""
 
@@ -5043,7 +5052,7 @@ msgstr ""
 #: includes/addon/class-gf-addon.php:4962
 #: includes/addon/class-gf-addon.php:5395
 #: includes/class-gf-osdxp.php:27
-#: includes/fields/class-gf-field.php:1615
+#: includes/fields/class-gf-field.php:1645
 #: includes/system-status/class-gf-update.php:75
 #: settings.php:1258
 msgid "Settings"
@@ -5602,7 +5611,7 @@ msgstr ""
 #: includes/fields/class-gf-field-repeater.php:598
 #: includes/fields/class-gf-field-singleproduct.php:57
 #: includes/fields/class-gf-field-website.php:68
-#: includes/fields/class-gf-field.php:813
+#: includes/fields/class-gf-field.php:825
 #: includes/settings/fields/class-base.php:784
 msgid "This field is required."
 msgstr ""
@@ -6889,7 +6898,7 @@ msgid "Prevent the storage of IP addresses during form submission"
 msgstr ""
 
 #: includes/class-personal-data.php:91
-#: tooltips.php:166
+#: tooltips.php:167
 msgid "Retention Policy"
 msgstr ""
 
@@ -9321,7 +9330,7 @@ msgstr ""
 
 #: includes/fields/class-gf-field-quantity.php:29
 #: includes/fields/class-gf-field-singleproduct.php:133
-#: includes/fields/class-gf-field.php:2724
+#: includes/fields/class-gf-field.php:2754
 #: includes/template-library/templates/templates.php:2355
 #: includes/template-library/templates/templates.php:2416
 #: includes/template-library/templates/templates.php:3310
@@ -9446,27 +9455,27 @@ msgid "Please enter a valid Website URL (e.g. https://gravityforms.com)."
 msgstr ""
 
 #. Translators: comma-separated list of the labels of missing fields.
-#: includes/fields/class-gf-field.php:869
+#: includes/fields/class-gf-field.php:881
 msgid "Please complete the following fields: %s."
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1554
+#: includes/fields/class-gf-field.php:1584
 msgid "duplicate this field"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1581
+#: includes/fields/class-gf-field.php:1611
 msgid "delete this field"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1605
+#: includes/fields/class-gf-field.php:1635
 msgid "jump to this field's settings"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1628
+#: includes/fields/class-gf-field.php:1658
 msgid "Move"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1637
+#: includes/fields/class-gf-field.php:1667
 msgid "ID: %s"
 msgstr ""
 
@@ -9504,7 +9513,7 @@ msgstr ""
 
 #: includes/form-editor/save-form/config/class-gf-form-editor-form-save-config.php:43
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:52
-#: includes/template-library/config/class-gf-template-library-config.php:93
+#: includes/template-library/config/class-gf-template-library-config.php:94
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:133
 #: assets/js/src/admin/block-editor/copy-paste-styles.js:128
 msgid "Close"
@@ -9560,7 +9569,7 @@ msgid "Manage"
 msgstr ""
 
 #: includes/license/class-gf-license-api-response.php:229
-#: includes/template-library/config/class-gf-template-library-config.php:112
+#: includes/template-library/config/class-gf-template-library-config.php:113
 msgid "Upgrade"
 msgstr ""
 
@@ -10673,7 +10682,7 @@ msgid "File uploads, entry exports, and logging will not function properly."
 msgstr ""
 
 #: includes/system-status/class-gf-system-report.php:863
-#: tooltips.php:148
+#: tooltips.php:149
 msgid "Output CSS"
 msgstr ""
 
@@ -10683,7 +10692,7 @@ msgstr ""
 
 #: includes/system-status/class-gf-system-report.php:874
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:44
-#: tooltips.php:150
+#: tooltips.php:151
 msgid "No-Conflict Mode"
 msgstr ""
 
@@ -10856,66 +10865,70 @@ msgstr ""
 msgid "You can update to the latest version automatically or download the update and install it manually."
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:90
+#: includes/template-library/config/class-gf-template-library-config.php:91
 msgid "Enter the form title"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:92
+#: includes/template-library/config/class-gf-template-library-config.php:93
 msgid "Use Template"
 msgstr ""
 
 #. translators: title of template
-#: includes/template-library/config/class-gf-template-library-config.php:95
+#: includes/template-library/config/class-gf-template-library-config.php:96
 msgid "Use Template %s"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:96
+#: includes/template-library/config/class-gf-template-library-config.php:97
 msgid "Creating Form"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:97
+#: includes/template-library/config/class-gf-template-library-config.php:98
 msgid "Please enter a valid form title."
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:100
+#: includes/template-library/config/class-gf-template-library-config.php:101
 msgid "Import failed."
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:101
+#: includes/template-library/config/class-gf-template-library-config.php:102
 msgid "Close."
 msgstr ""
 
 #. translators: title of template
-#: includes/template-library/config/class-gf-template-library-config.php:103
+#: includes/template-library/config/class-gf-template-library-config.php:104
 msgid "Preview %s"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:105
+#: includes/template-library/config/class-gf-template-library-config.php:106
 msgid "Blank Form"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:106
+#: includes/template-library/config/class-gf-template-library-config.php:107
 msgid "Create Blank Form"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:107
+#: includes/template-library/config/class-gf-template-library-config.php:108
 msgid "New Blank Form"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:108
+#: includes/template-library/config/class-gf-template-library-config.php:109
 msgid "A new blank form"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:109
+#: includes/template-library/config/class-gf-template-library-config.php:110
 msgid "A form description goes here"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:110
+#: includes/template-library/config/class-gf-template-library-config.php:111
 msgid "Explore Form Templates"
 msgstr ""
 
-#: includes/template-library/config/class-gf-template-library-config.php:111
+#: includes/template-library/config/class-gf-template-library-config.php:112
 msgid "Quickly create an amazing form by using a pre-made template, or start from scratch to tailor your form to your specific needs."
+msgstr ""
+
+#: includes/template-library/config/class-gf-template-library-config.php:133
+msgid "A new form"
 msgstr ""
 
 #: includes/template-library/templates/templates.php:5
@@ -12938,13 +12951,13 @@ msgstr ""
 
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:68
 #: settings.php:624
-#: tooltips.php:155
+#: tooltips.php:156
 msgid "Akismet Integration"
 msgstr ""
 
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:74
 #: settings.php:625
-#: tooltips.php:155
+#: tooltips.php:156
 msgid "Protect your form entries from spam using Akismet."
 msgstr ""
 
@@ -13005,7 +13018,7 @@ msgid "Autocomplete Attribute:"
 msgstr ""
 
 #: js.php:244
-#: tooltips.php:96
+#: tooltips.php:97
 msgid "Autocomplete Attribute"
 msgstr ""
 
@@ -13731,7 +13744,7 @@ msgid "Enter the email address you would like the notification email sent to."
 msgstr ""
 
 #: tooltips.php:10
-#: tooltips.php:36
+#: tooltips.php:37
 msgid "Disable Auto-Formatting"
 msgstr ""
 
@@ -13848,844 +13861,848 @@ msgid "Select the default description placement.  Descriptions can be placed abo
 msgstr ""
 
 #: tooltips.php:28
-msgid "Select the default sub-label placement.  Sub-labels can be placed above the field inputs or below the field inputs. This setting can be overridden in the appearance settings for each field."
+msgid "Select the default validation message placement.  Validation messages can be placed above the field inputs or below the field inputs."
 msgstr ""
 
 #: tooltips.php:29
+msgid "Select the default sub-label placement.  Sub-labels can be placed above the field inputs or below the field inputs. This setting can be overridden in the appearance settings for each field."
+msgstr ""
+
+#: tooltips.php:30
 msgid "Required Indicator"
 msgstr ""
 
-#: tooltips.php:30
+#: tooltips.php:31
 msgid "Form Button Text"
 msgstr ""
 
-#: tooltips.php:30
+#: tooltips.php:31
 msgid "Enter the text you would like to appear on the form submit button."
 msgstr ""
 
-#: tooltips.php:31
+#: tooltips.php:32
 msgid "Form Button Image"
 msgstr ""
 
-#: tooltips.php:31
+#: tooltips.php:32
 msgid "Enter the path to an image you would like to use as the form submit button."
 msgstr ""
 
-#: tooltips.php:32
+#: tooltips.php:33
 msgid "Form CSS Class Name"
 msgstr ""
 
-#: tooltips.php:32
+#: tooltips.php:33
 msgid "Enter the CSS class name you would like to use in order to override the default styles for this form."
 msgstr ""
 
-#: tooltips.php:33
+#: tooltips.php:34
 msgid "Enter the URL of a custom image to replace the default 'add item' icon. A maximum size of 16px by 16px is recommended"
 msgstr ""
 
-#: tooltips.php:34
+#: tooltips.php:35
 msgid "Enter the URL of a custom image to replace the default 'delete item' icon. A maximum size of 16px by 16px is recommended"
 msgstr ""
 
-#: tooltips.php:35
+#: tooltips.php:36
 msgid "Confirmation Message Text"
 msgstr ""
 
-#: tooltips.php:35
+#: tooltips.php:36
 msgid "Enter the text you would like the user to see on the confirmation page of this form."
 msgstr ""
 
-#: tooltips.php:36
+#: tooltips.php:37
 msgid "When enabled, auto-formatting will insert paragraph breaks automatically. Disable auto-formatting when using HTML to create the confirmation content."
 msgstr ""
 
-#: tooltips.php:37
+#: tooltips.php:38
 msgid "Redirect Form to Page"
 msgstr ""
 
-#: tooltips.php:37
+#: tooltips.php:38
 msgid "Select the page you would like the user to be redirected to after they have submitted the form."
 msgstr ""
 
-#: tooltips.php:38
+#: tooltips.php:39
 msgid "Redirect Form to URL"
 msgstr ""
 
-#: tooltips.php:38
+#: tooltips.php:39
 msgid "Enter the URL of the webpage you would like the user to be redirected to after they have submitted the form."
 msgstr ""
 
 #. Translators: %s: Link to article about query strings.
-#: tooltips.php:40
+#: tooltips.php:41
 msgid "Pass Data Via Query String"
 msgstr ""
 
 #. Translators: %s: Link to article about query strings.
-#: tooltips.php:40
+#: tooltips.php:41
 msgid "To pass field data to the confirmation page, build a Query String using the 'Insert Merge Tag' drop down. %s..more info on querystrings &raquo;%s"
 msgstr ""
 
-#: tooltips.php:41
+#: tooltips.php:42
 msgid "Enter the label of the form field.  This is the field title the user will see when filling out the form."
 msgstr ""
 
-#: tooltips.php:42
+#: tooltips.php:43
 msgid "Enter the label for this HTML block. It will help you identify your HTML blocks in the form editor, but it will not be displayed on the form."
 msgstr ""
 
-#: tooltips.php:43
+#: tooltips.php:44
 msgid "Disable Default Margins"
 msgstr ""
 
-#: tooltips.php:43
+#: tooltips.php:44
 msgid "When enabled, margins are added to properly align the HTML content with other form fields."
 msgstr ""
 
-#: tooltips.php:44
+#: tooltips.php:45
 msgid "reCAPTCHA Theme"
 msgstr ""
 
-#: tooltips.php:44
+#: tooltips.php:45
 msgid "Select the visual theme for the reCAPTCHA field from the available options to better match your site design."
 msgstr ""
 
-#: tooltips.php:45
+#: tooltips.php:46
 msgid "CAPTCHA Type"
 msgstr ""
 
-#: tooltips.php:45
+#: tooltips.php:46
 msgid "Select the type of CAPTCHA you would like to use."
 msgstr ""
 
-#: tooltips.php:46
+#: tooltips.php:47
 msgid "CAPTCHA Badge Position"
 msgstr ""
 
-#: tooltips.php:46
+#: tooltips.php:47
 msgid "Select the position of the badge containing the links to Google's privacy policy and terms."
 msgstr ""
 
-#: tooltips.php:47
+#: tooltips.php:48
 msgid "Select the custom field name from available existing custom fields, or enter a new custom field name."
 msgstr ""
 
-#: tooltips.php:48
+#: tooltips.php:49
 msgid "Field type"
 msgstr ""
 
-#: tooltips.php:48
+#: tooltips.php:49
 msgid "Select the type of field from the available form fields."
 msgstr ""
 
-#: tooltips.php:49
+#: tooltips.php:50
 msgid "Enter the maximum number of characters that this field is allowed to have."
 msgstr ""
 
-#: tooltips.php:50
+#: tooltips.php:51
 msgid "Enter the maximum number of rows that users are allowed to add."
 msgstr ""
 
-#: tooltips.php:51
+#: tooltips.php:52
 msgid "Select the type of inputs you would like to use for the date field. Date Picker will let users select a date from a calendar. Date Field will let users free type the date."
 msgstr ""
 
-#: tooltips.php:52
+#: tooltips.php:53
 msgid "Select the type of address you would like to use."
 msgstr ""
 
-#: tooltips.php:53
+#: tooltips.php:54
 msgid "Default State"
 msgstr ""
 
-#: tooltips.php:53
+#: tooltips.php:54
 msgid "Select the state you would like to be selected by default when the form gets displayed."
 msgstr ""
 
-#: tooltips.php:54
+#: tooltips.php:55
 msgid "Default Province"
 msgstr ""
 
-#: tooltips.php:54
+#: tooltips.php:55
 msgid "Select the province you would like to be selected by default when the form gets displayed."
 msgstr ""
 
-#: tooltips.php:55
+#: tooltips.php:56
 msgid "Select the country you would like to be selected by default when the form gets displayed."
 msgstr ""
 
-#: tooltips.php:56
+#: tooltips.php:57
 msgid "Hide Country"
 msgstr ""
 
-#: tooltips.php:56
+#: tooltips.php:57
 msgid "For addresses that only apply to one country, you can choose to not display the country drop down. Entries will still be recorded with the selected country."
 msgstr ""
 
-#: tooltips.php:57
+#: tooltips.php:58
 msgid "Hide Address Line 2"
 msgstr ""
 
-#: tooltips.php:57
+#: tooltips.php:58
 msgid "Check this box to prevent the extra address input (Address Line 2) from being displayed in the form."
 msgstr ""
 
-#: tooltips.php:58
+#: tooltips.php:59
 msgid "Hide State Field"
 msgstr ""
 
-#: tooltips.php:58
+#: tooltips.php:59
 msgid "Check this box to prevent the State field from being displayed in the form."
 msgstr ""
 
-#: tooltips.php:59
+#: tooltips.php:60
 msgid "Hide Province Field"
 msgstr ""
 
-#: tooltips.php:59
+#: tooltips.php:60
 msgid "Check this box to prevent Province field from being displayed in the form."
 msgstr ""
 
-#: tooltips.php:60
+#: tooltips.php:61
 msgid "Hide State/Province/Region"
 msgstr ""
 
-#: tooltips.php:60
+#: tooltips.php:61
 msgid "Check this box to prevent the State/Province/Region from being displayed in the form."
 msgstr ""
 
-#: tooltips.php:61
+#: tooltips.php:62
 msgid "Field Name Format"
 msgstr ""
 
-#: tooltips.php:61
+#: tooltips.php:62
 msgid "Select the format you would like to use for the Name field.  There are 3 options, Normal which includes First and Last Name, Extended which adds Prefix and Suffix, or Simple which is a single input field."
 msgstr ""
 
-#: tooltips.php:62
+#: tooltips.php:63
 msgid "Select the format of numbers that are allowed in this field. You have the option to use a comma or a dot as the decimal separator."
 msgstr ""
 
-#: tooltips.php:63
+#: tooltips.php:64
 msgid "Check this box to prevent this field from being displayed in a non-secure page (i.e. not https://). It will redirect the page to the same URL, but starting with https:// instead. This option requires a properly configured SSL certificate."
 msgstr ""
 
-#: tooltips.php:64
+#: tooltips.php:65
 msgid "Field Date Format"
 msgstr ""
 
-#: tooltips.php:64
+#: tooltips.php:65
 msgid "Select the format you would like to use for the date input."
 msgstr ""
 
-#: tooltips.php:65
+#: tooltips.php:66
 msgid "Select the format you would like to use for the time field.  Available options are 12 hour (i.e. 8:30 pm) and 24 hour (i.e. 20:30)."
 msgstr ""
 
-#: tooltips.php:66
+#: tooltips.php:67
 msgid "Allowed File Extensions"
 msgstr ""
 
-#: tooltips.php:66
+#: tooltips.php:67
 msgid "Enter the allowed file extensions for file uploads.  This will limit the type of files a user may upload."
 msgstr ""
 
-#: tooltips.php:67
+#: tooltips.php:68
 msgid "Select this option to enable multiple files to be uploaded for this field."
 msgstr ""
 
-#: tooltips.php:68
+#: tooltips.php:69
 msgid "Specify the maximum number of files that can be uploaded using this field. Leave blank for unlimited. Note that the actual number of files permitted may be limited by this server's specifications and configuration."
 msgstr ""
 
-#: tooltips.php:69
+#: tooltips.php:70
 msgid "Specify the maximum file size in megabytes allowed for each of the files."
 msgstr ""
 
-#: tooltips.php:70
+#: tooltips.php:71
 msgid "Phone Number Format"
 msgstr ""
 
-#: tooltips.php:70
+#: tooltips.php:71
 msgid "Select the format you would like to use for the phone input.  Available options are domestic US/CANADA style phone number and international long format phone number."
 msgstr ""
 
-#: tooltips.php:71
+#: tooltips.php:72
 msgid "Field Description"
 msgstr ""
 
-#: tooltips.php:71
+#: tooltips.php:72
 msgid "Enter the description for the form field.  This will be displayed to the user and provide some direction on how the field should be filled out or selected."
 msgstr ""
 
-#: tooltips.php:72
+#: tooltips.php:73
 msgid "Required Field"
 msgstr ""
 
-#: tooltips.php:72
+#: tooltips.php:73
 msgid "Select this option to make the form field required.  A required field will prevent the form from being submitted if it is not filled out or selected."
 msgstr ""
 
-#: tooltips.php:73
+#: tooltips.php:74
 msgid "Select this option to limit user input to unique values only.  This will require that a value entered in a field does not currently exist in the entry database for that field."
 msgstr ""
 
-#: tooltips.php:74
+#: tooltips.php:75
 msgid "Hide Field Label"
 msgstr ""
 
-#: tooltips.php:74
+#: tooltips.php:75
 msgid "Select this option to hide the field label in the form."
 msgstr ""
 
-#: tooltips.php:75
+#: tooltips.php:76
 msgid "Number Range"
 msgstr ""
 
-#: tooltips.php:75
+#: tooltips.php:76
 msgid "Enter the minimum and maximum values for this form field.  This will require that the value entered by the user must fall within this range."
 msgstr ""
 
-#: tooltips.php:76
+#: tooltips.php:77
 msgid "Enabling calculations will allow the value of this field to be dynamically calculated based on a mathematical formula."
 msgstr ""
 
-#: tooltips.php:77
+#: tooltips.php:78
 msgid "Specify a mathematical formula. The result of this formula will be dynamically populated as the value for this field."
 msgstr ""
 
-#: tooltips.php:78
+#: tooltips.php:79
 msgid "Specify how many decimal places the number should be rounded to."
 msgstr ""
 
-#: tooltips.php:79
+#: tooltips.php:80
 msgid "Admin Label"
 msgstr ""
 
-#: tooltips.php:79
+#: tooltips.php:80
 msgid "Enter the admin label of the form field.  Entering a value in this field will override the Field Label when displayed in the Gravity Forms administration tool."
 msgstr ""
 
-#: tooltips.php:80
+#: tooltips.php:81
 msgid "Enter values in this setting to override the Sub-Label for each field."
 msgstr ""
 
-#: tooltips.php:81
+#: tooltips.php:82
 msgid "Label Visibility"
 msgstr ""
 
-#: tooltips.php:81
+#: tooltips.php:82
 msgid "Select the label visibility for this field.  Labels can either inherit the form setting or be hidden."
 msgstr ""
 
-#: tooltips.php:82
+#: tooltips.php:83
 msgid "Select the description placement.  Descriptions can be placed above the field inputs or below the field inputs."
 msgstr ""
 
-#: tooltips.php:83
+#: tooltips.php:84
 msgid "Select the sub-label placement.  Sub-labels can be placed above the field inputs or below the field inputs."
 msgstr ""
 
-#: tooltips.php:84
+#: tooltips.php:85
 msgid "Select a form field size from the available options. This will set the width of the field. Please note: if using a paragraph field, the size applies only to the height of the field."
 msgstr ""
 
-#: tooltips.php:85
+#: tooltips.php:86
 msgid "Select the fields you'd like to use in this Name field and customize the Sub-Labels by entering new ones."
 msgstr ""
 
-#: tooltips.php:86
+#: tooltips.php:87
 msgid "Name Prefix Choices"
 msgstr ""
 
-#: tooltips.php:86
+#: tooltips.php:87
 msgid "Add Choices to this field. You can mark a choice as selected by default by using the radio buttons on the left."
 msgstr ""
 
-#: tooltips.php:87
+#: tooltips.php:88
 msgid "Select the fields you'd like to use in this Address Field and customize the Sub-Labels by entering new ones."
 msgstr ""
 
-#: tooltips.php:88
 #: tooltips.php:89
+#: tooltips.php:90
 msgid "If you would like to pre-populate the value of a field, enter it here."
 msgstr ""
 
-#: tooltips.php:90
+#: tooltips.php:91
 msgid "The Placeholder will not be submitted along with the form. Use the Placeholder to give a hint at the expected value or format."
 msgstr ""
 
-#: tooltips.php:91
+#: tooltips.php:92
 msgid "Placeholders will not be submitted along with the form. Use Placeholders to give a hint at the expected value or format."
 msgstr ""
 
-#: tooltips.php:92
+#: tooltips.php:93
 msgid "Use Values Submitted in a Different Field"
 msgstr ""
 
-#: tooltips.php:92
+#: tooltips.php:93
 msgid "Activate this option to allow users to skip this field and submit the values entered in the associated field. For example, this is useful for shipping and billing address fields."
 msgstr ""
 
-#: tooltips.php:93
+#: tooltips.php:94
 msgid "Enter the label to be displayed next to the check box. For example, &quot;same as shipping address&quot;."
 msgstr ""
 
-#: tooltips.php:94
+#: tooltips.php:95
 msgid "Select the field to be used as the source for the values for this field."
 msgstr ""
 
-#: tooltips.php:95
+#: tooltips.php:96
 msgid "Activated by Default"
 msgstr ""
 
-#: tooltips.php:95
+#: tooltips.php:96
 msgid "Select this setting to display the option as activated by default when the form first loads."
 msgstr ""
 
-#: tooltips.php:96
+#: tooltips.php:97
 msgid "Select this setting to let browsers help a user fill in a field with autocomplete.  You can enter a single autocomplete attribute or multiple attributes separated with a space.  Learn more about autocomplete in the %s accessibility documentation %s."
 msgstr ""
 
-#: tooltips.php:97
+#: tooltips.php:98
 msgid "Validation Message"
 msgstr ""
 
-#: tooltips.php:97
+#: tooltips.php:98
 msgid "If you would like to override the default error validation for a field, enter it here.  This message will be displayed if there is an error with this field when the user submits the form."
 msgstr ""
 
-#: tooltips.php:98
+#: tooltips.php:99
 msgid "reCAPTCHA Language"
 msgstr ""
 
-#: tooltips.php:98
+#: tooltips.php:99
 msgid "Select the language you would like to use for the reCAPTCHA display from the available options."
 msgstr ""
 
-#: tooltips.php:99
+#: tooltips.php:100
 msgid "Enter the CSS class name you would like to use in order to override the default styles for this field."
 msgstr ""
 
-#: tooltips.php:101
+#: tooltips.php:102
 msgid "Field Choices"
 msgstr ""
 
-#: tooltips.php:101
+#: tooltips.php:102
 msgid "Define the choices for this field. If the field type supports it you will also be able to select the default choice(s) using a radio or checkbox located to the left of the choice."
 msgstr ""
 
-#: tooltips.php:102
+#: tooltips.php:103
 msgid "Enable Choice Values"
 msgstr ""
 
-#: tooltips.php:102
+#: tooltips.php:103
 msgid "Check this option to specify a value for each choice. Choice values are not displayed to the user viewing the form, but are accessible to administrators when viewing the entry."
 msgstr ""
 
-#: tooltips.php:103
+#: tooltips.php:104
 msgid "Create rules to dynamically display or hide this field based on values from another field."
 msgstr ""
 
 #. Translators: %s: Link to Chosen jQuery framework.
-#: tooltips.php:105
+#: tooltips.php:106
 msgid "Enable Enhanced UI"
 msgstr ""
 
 #. Translators: %s: Link to Chosen jQuery framework.
-#: tooltips.php:105
+#: tooltips.php:106
 msgid "By selecting this option, the %s jQuery script will be applied to this field, enabling search capabilities to Drop Down fields and a more user-friendly interface for Multi Select fields."
 msgstr ""
 
-#: tooltips.php:106
+#: tooltips.php:107
 msgid "Checkbox Text"
 msgstr ""
 
-#: tooltips.php:106
+#: tooltips.php:107
 msgid "Text of the consent checkbox."
 msgstr ""
 
-#: tooltips.php:107
+#: tooltips.php:108
 msgid "\"Select All\" Choice"
 msgstr ""
 
-#: tooltips.php:107
+#: tooltips.php:108
 msgid "Check this option to add a \"Select All\" checkbox before the checkbox choices to allow users to check all the checkboxes with one click."
 msgstr ""
 
-#: tooltips.php:108
+#: tooltips.php:109
 msgid "\"Other\" Choice"
 msgstr ""
 
-#: tooltips.php:108
+#: tooltips.php:109
 msgid "Check this option to add a text input as the final choice of your radio button field. This allows the user to specify a value that is not a predefined choice."
 msgstr ""
 
-#: tooltips.php:109
+#: tooltips.php:110
 msgid "Check this option to require a user to be logged in to view this form."
 msgstr ""
 
-#: tooltips.php:110
+#: tooltips.php:111
 msgid "Enter a message to be displayed to users who are not logged in (shortcodes and HTML are supported)."
 msgstr ""
 
-#: tooltips.php:111
+#: tooltips.php:112
 msgid "Page Conditional Logic"
 msgstr ""
 
-#: tooltips.php:111
+#: tooltips.php:112
 msgid "Create rules to dynamically display or hide this page based on values from another field."
 msgstr ""
 
-#: tooltips.php:112
+#: tooltips.php:113
 msgid "Select which type of visual progress indicator you would like to display.  Progress Bar, Steps or None."
 msgstr ""
 
-#: tooltips.php:113
+#: tooltips.php:114
 msgid "Select which progress bar style you would like to use.  Select custom to choose your own text and background color."
 msgstr ""
 
-#: tooltips.php:114
+#: tooltips.php:115
 msgid "Name each of the pages on your form.  Page names are displayed with the selected progress indicator."
 msgstr ""
 
-#: tooltips.php:115
+#: tooltips.php:116
 msgid "Next Button Text"
 msgstr ""
 
-#: tooltips.php:115
+#: tooltips.php:116
 msgid "Enter the text you would like to appear on the page next button."
 msgstr ""
 
-#: tooltips.php:116
+#: tooltips.php:117
 msgid "Next Button Image"
 msgstr ""
 
-#: tooltips.php:116
+#: tooltips.php:117
 msgid "Enter the path to an image you would like to use as the page next button."
 msgstr ""
 
-#: tooltips.php:117
+#: tooltips.php:118
 msgid "Previous Button Text"
 msgstr ""
 
-#: tooltips.php:117
+#: tooltips.php:118
 msgid "Enter the text you would like to appear on the page previous button."
 msgstr ""
 
-#: tooltips.php:118
+#: tooltips.php:119
 msgid "Previous Button Image"
 msgstr ""
 
-#: tooltips.php:118
+#: tooltips.php:119
 msgid "Enter the path to an image you would like to use as the page previous button."
 msgstr ""
 
-#: tooltips.php:119
+#: tooltips.php:120
 msgid "Next Button Conditional Logic"
 msgstr ""
 
-#: tooltips.php:119
+#: tooltips.php:120
 msgid "Create rules to dynamically display or hide the page's Next Button based on values from another field."
 msgstr ""
 
-#: tooltips.php:120
+#: tooltips.php:121
 msgid "Create rules to dynamically display or hide the submit button based on values from another field."
 msgstr ""
 
-#: tooltips.php:121
+#: tooltips.php:122
 msgid "Select which categories are displayed. You can choose to display all of them or select individual ones."
 msgstr ""
 
-#: tooltips.php:122
+#: tooltips.php:123
 msgid "Select the post status that will be used for the post that is created by the form entry."
 msgstr ""
 
-#: tooltips.php:123
+#: tooltips.php:124
 msgid "Post Author"
 msgstr ""
 
-#: tooltips.php:123
+#: tooltips.php:124
 msgid "Select the author that will be used for the post that is created by the form entry."
 msgstr ""
 
-#: tooltips.php:124
+#: tooltips.php:125
 msgid "Select the post format that will be used for the post that is created by the form entry."
 msgstr ""
 
-#: tooltips.php:125
+#: tooltips.php:126
 msgid "Post Content Template"
 msgstr ""
 
-#: tooltips.php:125
+#: tooltips.php:126
 msgid "Check this option to format and insert merge tags into the Post Content."
 msgstr ""
 
-#: tooltips.php:126
+#: tooltips.php:127
 msgid "Post Title Template"
 msgstr ""
 
-#: tooltips.php:126
+#: tooltips.php:127
 msgid "Check this option to format and insert merge tags into the Post Title."
 msgstr ""
 
-#: tooltips.php:127
+#: tooltips.php:128
 msgid "Select the category that will be used for the post that is created by the form entry."
 msgstr ""
 
-#: tooltips.php:128
+#: tooltips.php:129
 msgid "Use Current User as Author"
 msgstr ""
 
-#: tooltips.php:128
+#: tooltips.php:129
 msgid "Selecting this option will set the post author to the WordPress user that submitted the form."
 msgstr ""
 
-#: tooltips.php:129
+#: tooltips.php:130
 msgid "Image Meta"
 msgstr ""
 
-#: tooltips.php:129
+#: tooltips.php:130
 msgid "Select one or more image metadata field to be displayed along with the image upload field. They enable users to enter additional information about the uploaded image."
 msgstr ""
 
-#: tooltips.php:130
+#: tooltips.php:131
 msgid "Check this option to set this image as the post's Featured Image."
 msgstr ""
 
-#: tooltips.php:131
+#: tooltips.php:132
 msgid "Incoming Field Data"
 msgstr ""
 
-#: tooltips.php:131
+#: tooltips.php:132
 msgid "Check this option to enable data to be passed to the form and pre-populate this field dynamically. Data can be passed via Query Strings, Shortcode and/or Hooks."
 msgstr ""
 
-#: tooltips.php:132
+#: tooltips.php:133
 msgid "Enter the content (Text or HTML) to be displayed on the form."
 msgstr ""
 
-#: tooltips.php:133
+#: tooltips.php:134
 msgid "Base Price"
 msgstr ""
 
-#: tooltips.php:133
+#: tooltips.php:134
 msgid "Enter the base price for this product."
 msgstr ""
 
-#: tooltips.php:134
+#: tooltips.php:135
 msgid "Disable Quantity"
 msgstr ""
 
-#: tooltips.php:134
+#: tooltips.php:135
 msgid "Disables the quantity field.  A quantity of 1 will be assumed or you can add a Quantity field to your form from the Pricing Fields."
 msgstr ""
 
-#: tooltips.php:135
+#: tooltips.php:136
 msgid "Product Field"
 msgstr ""
 
-#: tooltips.php:135
+#: tooltips.php:136
 msgid "Select which Product this field is tied to."
 msgstr ""
 
-#: tooltips.php:136
+#: tooltips.php:137
 msgid "Input masks provide a visual guide allowing users to more easily enter data in a specific format such as dates and phone numbers."
 msgstr ""
 
-#: tooltips.php:137
+#: tooltips.php:138
 msgid "Standard Fields provide basic form functionality."
 msgstr ""
 
-#: tooltips.php:138
+#: tooltips.php:139
 msgid "Advanced Fields are for specific uses.  They enable advanced formatting of regularly used fields such as Name, Email, Address, etc."
 msgstr ""
 
-#: tooltips.php:139
+#: tooltips.php:140
 msgid "Post Fields allow you to add fields to your form that create Post Drafts in WordPress from the submitted data."
 msgstr ""
 
-#: tooltips.php:140
+#: tooltips.php:141
 msgid "Pricing fields allow you to add fields to your form that calculate pricing for selling goods and services."
 msgstr ""
 
-#: tooltips.php:141
+#: tooltips.php:142
 msgid "Export Selected Form"
 msgstr ""
 
-#: tooltips.php:141
+#: tooltips.php:142
 msgid "Select the form you would like to export entry data from. You may only export data from one form at a time."
 msgstr ""
 
-#: tooltips.php:142
+#: tooltips.php:143
 msgid "Export Selected Forms"
 msgstr ""
 
-#: tooltips.php:142
+#: tooltips.php:143
 msgid "Select the forms you would like to export."
 msgstr ""
 
-#: tooltips.php:143
+#: tooltips.php:144
 msgid "Filter the entries by adding conditions."
 msgstr ""
 
-#: tooltips.php:144
+#: tooltips.php:145
 msgid "Export Selected Fields"
 msgstr ""
 
-#: tooltips.php:144
+#: tooltips.php:145
 msgid "Select the fields you would like to include in the export."
 msgstr ""
 
-#: tooltips.php:145
+#: tooltips.php:146
 msgid "Export Date Range"
 msgstr ""
 
-#: tooltips.php:145
+#: tooltips.php:146
 msgid "Select a date range. Setting a range will limit the export to entries submitted during that date range. If no range is set, all entries will be exported."
 msgstr ""
 
-#: tooltips.php:146
+#: tooltips.php:147
 msgid "Click the file selection button to upload a Gravity Forms export file from your computer. Please make sure your file has the .json extension, and that it was generated by the Gravity Forms Export tool."
 msgstr ""
 
-#: tooltips.php:147
+#: tooltips.php:148
 msgid "Settings License Key"
 msgstr ""
 
-#: tooltips.php:147
+#: tooltips.php:148
 msgid "Your Gravity Forms support license key is used to verify your support package, enable automatic updates and receive support."
 msgstr ""
 
-#: tooltips.php:148
+#: tooltips.php:149
 msgid "Select yes or no to enable or disable CSS output.  Setting this to no will disable the standard Gravity Forms CSS from being included in your theme."
 msgstr ""
 
-#: tooltips.php:149
+#: tooltips.php:150
 msgid "Output HTML5"
 msgstr ""
 
-#: tooltips.php:149
+#: tooltips.php:150
 msgid "Select yes or no to enable or disable HTML5 output. Setting this to no will disable the standard Gravity Forms HTML5 form field output."
 msgstr ""
 
-#: tooltips.php:150
+#: tooltips.php:151
 msgid "Select On or Off to enable or disable no-conflict mode. Setting this to On will prevent extraneous scripts and styles from being printed on Gravity Forms admin pages, reducing conflicts with other plugins and themes."
 msgstr ""
 
-#: tooltips.php:151
+#: tooltips.php:152
 msgid "reCAPTCHA Site Key"
 msgstr ""
 
-#: tooltips.php:151
+#: tooltips.php:152
 msgid "Enter your reCAPTCHA Site Key, if you do not have a key you can register for one at the provided link.  reCAPTCHA is a free service."
 msgstr ""
 
-#: tooltips.php:152
+#: tooltips.php:153
 msgid "reCAPTCHA Secret Key"
 msgstr ""
 
-#: tooltips.php:152
+#: tooltips.php:153
 msgid "Enter your reCAPTCHA Secret Key, if you do not have a key you can register for one at the provided link.  reCAPTCHA is a free service."
 msgstr ""
 
-#: tooltips.php:153
+#: tooltips.php:154
 msgid "reCAPTCHA Type"
 msgstr ""
 
-#: tooltips.php:153
+#: tooltips.php:154
 msgid "Select the type of reCAPTCHA you would like to use."
 msgstr ""
 
-#: tooltips.php:154
+#: tooltips.php:155
 msgid "Please select the currency for your location.  Currency is used for pricing fields and price calculations."
 msgstr ""
 
-#: tooltips.php:156
+#: tooltips.php:157
 msgid "Entries Conversion"
 msgstr ""
 
-#: tooltips.php:156
+#: tooltips.php:157
 msgid "Conversion is the percentage of form views that generated an entry. If a form was viewed twice, and one entry was generated, the conversion will be 50%."
 msgstr ""
 
-#: tooltips.php:157
+#: tooltips.php:158
 msgid "Tab Index Start Value"
 msgstr ""
 
-#: tooltips.php:157
+#: tooltips.php:158
 #: widget.php:172
 msgid "If you have other forms on the page (i.e. Comments Form), specify a higher tabindex start value so that your Gravity Form does not end up with the same tabindices as your other forms. To disable the tabindex, enter 0 (zero)."
 msgstr ""
 
-#: tooltips.php:158
+#: tooltips.php:159
 msgid "Override Notifications"
 msgstr ""
 
-#: tooltips.php:158
+#: tooltips.php:159
 msgid "Enter a comma separated list of email addresses you would like to receive the selected notification emails."
 msgstr ""
 
-#: tooltips.php:159
+#: tooltips.php:160
 msgid "Progress Bar Confirmation Display"
 msgstr ""
 
-#: tooltips.php:159
+#: tooltips.php:160
 msgid "Check this box if you would like the progress bar to display with the confirmation text."
 msgstr ""
 
-#: tooltips.php:160
+#: tooltips.php:161
 msgid "Progress Bar Completion Text"
 msgstr ""
 
-#: tooltips.php:160
+#: tooltips.php:161
 msgid "Enter text to display at the top of the progress bar."
 msgstr ""
 
-#: tooltips.php:161
+#: tooltips.php:162
 msgid "Use Rich Text Editor"
 msgstr ""
 
-#: tooltips.php:161
+#: tooltips.php:162
 msgid "Check this box if you would like to use the rich text editor for this field."
 msgstr ""
 
-#: tooltips.php:162
+#: tooltips.php:163
 msgid "Enable Personal Data Tools"
 msgstr ""
 
-#: tooltips.php:162
+#: tooltips.php:163
 msgid "Check this box if you would like to include data from this form when exporting or erasing personal data on this site."
 msgstr ""
 
-#: tooltips.php:163
+#: tooltips.php:164
 msgid "Identification"
 msgstr ""
 
-#: tooltips.php:163
+#: tooltips.php:164
 msgid "Select the field which will be used to identify the owner of the personal data."
 msgstr ""
 
-#: tooltips.php:164
+#: tooltips.php:165
 msgid "Select the fields which will be included when exporting or erasing personal data."
 msgstr ""
 
-#: tooltips.php:165
+#: tooltips.php:166
 msgid "Check this box if you would like to prevent the IP address from being stored during form submission."
 msgstr ""
 
-#: tooltips.php:166
+#: tooltips.php:167
 msgid "Use these settings to keep entries only as long as they are needed. Trash or delete entries automatically older than the specified number of days. The minimum number of days allowed is one. This is to ensure that all entry processing is complete before deleting/trashing. The number of days setting is a minimum, not an exact period of time. The trashing/deleting occurs during the daily cron task so some entries may appear to remain up to a day longer than expected."
 msgstr ""
 
-#: tooltips.php:167
+#: tooltips.php:168
 msgid "Password Visibility Toggle"
 msgstr ""
 
-#: tooltips.php:167
+#: tooltips.php:168
 msgid "Check this box to add a toggle allowing the user to see the password they are entering in."
 msgstr ""
 
-#: tooltips.php:168
+#: tooltips.php:169
 msgid "Enable to show a summary that lists validation errors on top of the form."
 msgstr ""
 
