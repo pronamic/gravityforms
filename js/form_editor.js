@@ -2956,7 +2956,12 @@ function SelectCustomChoice( name ){
 }
 
 function SelectPredefinedChoice(name){
-    jQuery('#gfield_bulk_add_input').val(gform_predefined_choices[name].join('\n'));
+	var list = gform_predefined_choices[name];
+	// Countries can also be an object if the gform_countries filter is used, so convert to array with just the values.
+	if( name == "Countries" && Array.isArray( list ) !== true ) {
+		list = Object.values( list );
+	}
+    jQuery('#gfield_bulk_add_input').val(list.join('\n'));
     gform_selected_custom_choice = "";
     InitBulkCustomPanel();
 }

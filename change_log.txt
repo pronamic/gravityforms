@@ -1,3 +1,11 @@
+### 2.8.10 | 2024-05-14
+- Fixed a fatal error when a user submits a form with files attached to the Save & Continue notification.
+- Fixed memory exhaustion and performance issues caused by the Dom_Parser class being loaded on every request.
+- Fixed an issue with ajax-enabled multi-page forms with conditional logic, where fields that should be hidden by conditional logic are visible for a fraction of a second.
+- Fixed an issue where the conditional logic settings for the Address Field are displayed with wrong values if the [`gform_countries`](https://docs.gravityforms.com/gform_countries) filter is used to change the country list to include country codes.
+- API: Added the [`gformIsHidden`](https://docs.gravityforms.com/gformishidden) filter to allow developers to determine if a field is hidden by conditional logic. Credit: The GravityWiz Team.
+- API: Added the [`gform_generic_map_field_choices`](https://docs.gravityforms.com/gform_generic_map_field_choices) filter for options displayed in a Generic Field Map. Credit: The GravityWiz Team.
+
 ### 2.8.9 | 2024-04-30
 - Added a new form setting to put field validation messages above inputs.
 - Added the [`gform_bypass_template_library`](https://docs.gravityforms.com/gform_bypass_template_library) filter to bypass the template library and create a blank form.

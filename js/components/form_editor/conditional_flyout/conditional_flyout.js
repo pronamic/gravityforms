@@ -254,22 +254,48 @@ function getAddressOptions( field, inputId, value ) {
 
 	var fieldAddressOptions = addressOptions[ field.addressType ];
 
-	// Address options are grouped by a key; parse them as sub-items.
+	// Associative arrays are expected to have alphanumeric keys (country codes).
+	// If asort() is used in the gform_countries filter, the resulting array will be
+	// associative even if the original array was plain, we only need the values.
+	if ( ! Array.isArray( fieldAddressOptions ) ) {
+		var allNumericKeys = true;
+		for ( var key in fieldAddressOptions ) {
+			if ( isNaN( key ) ) {
+				allNumericKeys = false;
+				break;
+			}
+		}
+		if ( allNumericKeys ) {
+			fieldAddressOptions = Object.values( fieldAddressOptions );
+		}
+	}
+
+	// True associative arrays (country codes) are handled here.
 	if ( ! Array.isArray( fieldAddressOptions ) ) {
 
 		for ( var locale in fieldAddressOptions ) {
 			var group = fieldAddressOptions[ locale ];
+			var config;
 
-			for ( var i = 0; i < group.length; i++ ) {
-				var option = group[ i ];
+			if( Array.isArray( group ) ) {
+				// Address options are grouped by a key; parse them as sub-items.
+				for (var i = 0; i < group.length; i++) {
+					var option = group[i];
 
-				var config = {
-					label: option,
-					value: option,
-					selected: option == value ? 'selected="selected"' : '',
+					config = {
+						label: option,
+						value: option,
+						selected: option == value ? 'selected="selected"' : '',
+					}
+					options.push(config);
 				}
-
-				options.push( config );
+			} else {
+				config = {
+					label: group,
+					value: locale,
+					selected: locale == value ? 'selected="selected"' : '',
+				}
+				options.push(config);
 			}
 		}
 

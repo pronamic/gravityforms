@@ -2050,31 +2050,34 @@ class GFCommon {
 		// Add attachment fields.
 		if ( rgar( $notification, 'enableAttachments', false ) ) {
 
-			// Get file upload fields and upload root.
 			$upload_fields = GFCommon::get_fields_by_type( $form, array( 'fileupload' ) );
-			$upload_root   = GFFormsModel::get_upload_root();
 
 			foreach ( $upload_fields as $upload_field ) {
 
 				// Get field value.
-				$attachment_urls = rgar( $lead, $upload_field->id );
+				$field_value = rgar( $lead, $upload_field->id );
 
 				// If field value is empty, skip.
-				if ( empty( $attachment_urls ) ) {
+				if ( empty( $field_value ) ) {
 					self::log_debug( __METHOD__ . '(): No file(s) to attach for field #' . $upload_field->id );
 					continue;
 				}
 
-				// Convert to array.
-				$attachment_urls = $upload_field->multipleFiles ? json_decode( $attachment_urls, true ) : array( $attachment_urls );
+				$files = json_decode( $field_value, true );
+				if ( ! is_array( $files ) ) {
+					$files = array( $field_value );
+				}
 
-				self::log_debug( __METHOD__ . '(): Attaching file(s) for field #' . $upload_field->id . '. ' . print_r( $attachment_urls, true ) );
+				self::log_debug( __METHOD__ . '(): Attaching file(s) for field #' . $upload_field->id . '. ' . print_r( $files, true ) );
 
 				// Loop through attachment URLs; replace URL with path and add to attachments.
-				foreach ( $attachment_urls as $attachment_url ) {
-					$attachment_url = preg_replace( '|^(.*?)/gravity_forms/|', $upload_root, $attachment_url );
-					$attachments[]  = $attachment_url;
-				}
+				foreach ( $files as $file ) {
+					if ( is_string( $file ) ) {
+						$attachments[] = GFFormsModel::get_physical_file_path( $file, rgar( $lead, 'id' ) );
+					} elseif ( ! empty( $file['tmp_path'] ) && file_exists( $file['tmp_path'] ) ) {
+						$attachments[] = $file['tmp_path'];
+					}
+ 				}
 
 			}
 

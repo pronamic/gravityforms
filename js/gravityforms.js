@@ -1008,7 +1008,18 @@ var _gformPriceFields = new Array();
 var _anyProductSelected;
 
 function gformIsHidden(element){
-    return element.parents('.gfield').not(".gfield_hidden_product").css("display") == "none";
+	isHidden = element.parents('.gfield').not(".gfield_hidden_product").css("display") == "none";
+
+	/**
+	 * Allows user to filter the logic for determining if a field is hidden by conditional logic..
+	 *
+	 * @since 2.8.10
+	 *
+	 * @param bool            Whether or not the field is hidden.
+	 * @param object $element jQuery object for field input.
+	 */
+	return gform.applyFilters('gform_is_hidden', isHidden, element);
+
 }
 
 /**
