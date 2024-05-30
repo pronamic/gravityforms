@@ -205,6 +205,7 @@ abstract class GFAddOn {
 		      ->set_form_css_properties( array( $this, 'theme_layer_form_css_properties' ) )
 		      ->set_styles( array( $this, 'theme_layer_styles' ) )
 		      ->set_scripts( array( $this, 'theme_layer_scripts' ) )
+		      ->set_capability( $this->get_form_settings_capabilities() )
 		      ->register();
 		add_action( 'gform_form_after_open', array( $this, 'output_third_party_styles' ), 998, 2 );
 	}
@@ -1644,8 +1645,8 @@ abstract class GFAddOn {
 		$caps = array();
 
 		// Add capabilities.
-		if ( ! empty( $this->_capabilities_form_settings ) && is_string( $this->_capabilities_form_settings ) ) {
-			$caps[ $this->_capabilities_form_settings ] = esc_html__( 'Form Settings', 'gravityforms' );
+		if ( ! empty( $this->get_form_settings_capabilities() ) && is_string( $this->get_form_settings_capabilities() ) ) {
+			$caps[ $this->get_form_settings_capabilities() ] = esc_html__( 'Form Settings', 'gravityforms' );
 		}
 		if ( ! empty( $this->_capabilities_uninstall ) && is_string( $this->_capabilities_uninstall ) ) {
 			$caps[ $this->_capabilities_uninstall ] = esc_html__( 'Uninstall', 'gravityforms' );
@@ -4175,6 +4176,15 @@ abstract class GFAddOn {
 	//--------------  Form settings  ---------------------------------------------------
 
 	/**
+	 * Get the capabilities required to access the form settings page.
+	 *
+	 * @return array
+	 */
+	public function get_form_settings_capabilities() {
+		return $this->_capabilities_form_settings;
+	}
+
+	/**
 	 * Initializes form settings page
 	 * Hooks up the required scripts and actions for the Form Settings page
 	 */
@@ -4183,7 +4193,7 @@ abstract class GFAddOn {
 		$subview = rgget( 'subview' );
 		add_filter( 'gform_form_settings_menu', array( $this, 'add_form_settings_menu' ), 10, 2 );
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && $view == 'settings' && $subview == $this->get_slug() && $this->current_user_can_any( $this->_capabilities_form_settings ) ) {
+		if ( rgget( 'page' ) == 'gf_edit_forms' && $view == 'settings' && $subview == $this->get_slug() && $this->current_user_can_any( $this->get_form_settings_capabilities() ) ) {
 			require_once( GFCommon::get_base_path() . '/tooltips.php' );
 			add_action( 'gform_form_settings_page_' . $this->get_slug(), array( $this, 'form_settings_page' ) );
 
@@ -4214,7 +4224,7 @@ abstract class GFAddOn {
 				// Initialize new settings renderer.
 				$renderer = new Settings(
 					array(
-						'capability'     => $this->_capabilities_form_settings,
+						'capability'     => $this->get_form_settings_capabilities(),
 						'fields'         => $sections,
 						'initial_values' => $this->get_form_settings( $form ),
 						'save_callback'  => function( $values ) use ( $form ) {
@@ -4697,7 +4707,7 @@ abstract class GFAddOn {
 			'name'           => $this->get_slug(),
 			'label'          => $this->get_short_title(),
 			'query'          => array( 'fid' => null ),
-			'capabilities'   => $this->_capabilities_form_settings,
+			'capabilities'   => $this->get_form_settings_capabilities(),
 			'icon'           => $this->get_menu_icon(),
 			'icon_namespace' => $this->get_icon_namespace(),
 		);

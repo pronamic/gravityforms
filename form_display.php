@@ -861,7 +861,7 @@ class GFFormDisplay {
 		$post_render_script = '
 			jQuery(document).trigger("gform_pre_post_render", [{ formId: "' . $form_id . '", currentPage: "' . $current_page . '", abort: function() { this.preventDefault(); } }]);
 	        
-	        if (event.defaultPrevented) {
+	        if (event && event.defaultPrevented) {
             	    return; 
         	}
 	        const gformWrapperDiv = document.getElementById( "gform_wrapper_' . $form_id . '" );

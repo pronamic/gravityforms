@@ -100,4 +100,8 @@ class Fluent_Theme_Layer extends GF_All_Access_Theme_Layer {
 		$this->icon = $icon;
 	}
 
+	public function set_capability( $capability ) {
+		$this->form_settings_capability = $capability;
+	}
+
 }

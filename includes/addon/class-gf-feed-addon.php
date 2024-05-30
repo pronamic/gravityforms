@@ -1262,7 +1262,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function ajax_toggle_is_active() {
 		check_ajax_referer( 'feed_list', 'nonce' );
 
-		if ( ! $this->current_user_can_any( $this->_capabilities_form_settings ) ) {
+		if ( ! $this->current_user_can_any( $this->get_form_settings_capabilities() ) ) {
 			wp_send_json_error( array( 'message' => esc_html__( 'Access denied.', 'gravityforms' ) ) );
 		}
 
@@ -1279,7 +1279,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function ajax_save_feed_order() {
 		check_ajax_referer( 'gform_feed_order', 'nonce' );
 
-		if ( ! $this->current_user_can_any( $this->_capabilities_form_settings ) ) {
+		if ( ! $this->current_user_can_any( $this->get_form_settings_capabilities() ) ) {
 			return;
 		}
 
@@ -1371,7 +1371,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		// Initialize new settings renderer.
 		$renderer = new Settings(
 			array(
-				'capability'     => $this->_capabilities_form_settings,
+				'capability'     => $this->get_form_settings_capabilities(),
 				'initial_values' => rgar( $current_feed, 'meta' ),
 				'save_callback'  => function( $values ) use ( $feed_id ) {
 
@@ -1584,7 +1584,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		check_admin_referer( $this->get_slug() . '_save_settings', '_' . $this->get_slug() . '_save_settings_nonce' );
 
-		if ( ! $this->current_user_can_any( $this->_capabilities_form_settings ) ) {
+		if ( ! $this->current_user_can_any( $this->get_form_settings_capabilities() ) ) {
 			GFCommon::add_error_message( esc_html__( "You don't have sufficient permissions to update the form settings.", 'gravityforms' ) );
 			return $feed_id;
 		}

@@ -188,4 +188,18 @@ class Theme_Layer_Builder {
 
 		return $this;
 	}
+
+	/**
+	 * Setter for capability.
+	 *
+	 * @param $capability
+	 *
+	 * @return $this
+	 */
+	public function set_capability( $capability ) {
+		$this->layer->set_capability( $capability );
+
+		return $this;
+	}
+
 }

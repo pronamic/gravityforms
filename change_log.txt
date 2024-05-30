@@ -1,5 +1,11 @@
+### 2.8.12 | 2024-05-29
+- Fixed an issue where a console error is thrown if gform.initializeOnLoaded is called directly.
+- Fixed an issue where the Conversational Forms Add-On settings page is not displayed if the site is using a plugin to manage roles and capabilities.
+
 ### 2.8.11 | 2024-05-15
 - Fixed an issue where some forms are broken due a missing gform variable caused by recent changes to the Dom_Parser class.
+- Change the Dropdown component con compact view for the Droplist
+- Updated package version
 
 ### 2.8.10 | 2024-05-14
 - Fixed a fatal error when a user submits a form with files attached to the Save & Continue notification.

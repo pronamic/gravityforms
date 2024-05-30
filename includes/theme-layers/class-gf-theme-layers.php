@@ -78,13 +78,14 @@ class GF_Theme_Layers extends \GFAddOn {
 			}
 
 			$tabs[] = array(
-				'name'  => $layer->name(),
-				'label' => $layer->short_title(),
-				'icon'  => $layer->icon(),
-				'query' => array(
+				'name'         => $layer->name(),
+				'label'        => $layer->short_title(),
+				'icon'         => $layer->icon(),
+				'query'        => array(
 					'theme_layer' => $layer->name(),
 					'subview'     => $this->get_slug(),
 				),
+				'capabilities' => $layer->get_form_settings_capability(),
 			);
 		}
 
@@ -103,5 +104,25 @@ class GF_Theme_Layers extends \GFAddOn {
 	public function form_settings_fields( $form ) {
 		return array();
 	}
-	
+
+	/**
+	 * Get the form settings capabilities.
+	 */
+	public function get_form_settings_capabilities() {
+		static $caps;
+
+		if ( empty( $caps ) ) {
+			$theme_layers = \GFForms::get_service_container()->get( GF_Theme_Layers_Provider::THEME_LAYERS );
+
+			foreach ( $theme_layers as $layer ) {
+				/**
+				 * @var GF_Theme_Layer $layer
+				 */
+				$caps[ $layer->name() ] = $layer->get_form_settings_capability();
+			}
+		}
+
+		return rgar( $caps, rgget( 'theme_layer' ) );
+	}
+
 }

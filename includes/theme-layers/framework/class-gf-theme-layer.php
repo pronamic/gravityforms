@@ -21,6 +21,8 @@ abstract class GF_Theme_Layer {
 	protected $short_title;
 	protected $priority;
 
+	protected $form_settings_capability;
+
 	/**
 	 * @var Definition_Engine[]
 	 */
@@ -140,6 +142,15 @@ abstract class GF_Theme_Layer {
 
 	public function icon() {
 		return $this->icon;
+	}
+
+	/**
+	 * Getter for form_settings_capability
+	 *
+	 * @return string
+	 */
+	public function get_form_settings_capability() {
+		return $this->form_settings_capability;
 	}
 
 }
