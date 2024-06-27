@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.8.12
+Version: 2.8.13
 Requires at least: 4.0
 Requires PHP: 5.6
 Author: Gravity Forms
@@ -204,7 +204,6 @@ add_action( 'init', array( 'GFForms', 'init_buffer' ) );
 add_filter( 'upgrader_pre_install', array( 'GFForms', 'validate_upgrade' ), 10, 2 );
 add_filter( 'tiny_mce_before_init', array( 'GFForms', 'modify_tiny_mce_4' ), 20 );
 add_filter( 'user_has_cap', array( 'RGForms', 'user_has_cap' ), 10, 4 );
-add_filter( 'query', array( 'GFForms', 'filter_query' ) );
 add_filter( 'plugin_auto_update_setting_html', array( 'GFForms', 'auto_update_message' ), 9, 3 );
 add_filter( 'plugin_auto_update_debug_string', array( 'GFForms', 'auto_update_debug_message' ), 10, 4 );
 
@@ -245,7 +244,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.8.12';
+	public static $version = '2.8.13';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -2125,7 +2124,7 @@ class GFForms {
 			$display_title       = ! isset( $args['title'] ) || ! empty( $args['title'] ) ? true : false;
 			$display_description = ! isset( $args['description'] ) || ! empty( $args['description'] ) ? true : false;
 			$tabindex            = isset( $args['tabindex'] ) ? absint( $args['tabindex'] ) : 0;
-			$theme               = isset( $args['theme'] ) ? GFCommon::strip_all_tags_from_json_string( $args['theme'] ) : null;
+			$theme               = isset( $args['theme'] ) ? sanitize_text_field( $args['theme'] ) : null;
             $styles              = isset( $args['styles'] ) ? GFCommon::strip_all_tags_from_json_string( $args['styles'] ) : null;
 
 			parse_str( rgpost( 'gform_field_values' ), $field_values );
@@ -6596,12 +6595,14 @@ class GFForms {
 	 * access tables that are not valid for this version of Gravity Forms.
 	 *
 	 * @since 2.3
+	 * @deprecated 2.8.13
 	 *
 	 * @param $query
 	 *
 	 * @return string
 	 */
 	public static function filter_query( $query ) {
+		_deprecated_function( __METHOD__, '2.8.13' );
 		global $wpdb;
 
 		if ( preg_match( "/$wpdb->prefix(rg_lead_detail|rg_lead_meta|rg_lead_notes|rg_lead|rg_form_meta|rg_form_view|rg_form|rg_incomplete_submissions)/", $query, $matches ) ) {

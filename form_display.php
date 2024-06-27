@@ -4810,23 +4810,23 @@ class GFFormDisplay {
 	                    		</div>";
 		}
 
-		if ( ! $ajax ) {
-			/**
-			 * Allows users to disable the spinner on non-ajax forms.
-			 *
-			 * @since 2.7
-			 *
-			 * @param bool $show Whether to show the spinner on non-ajax-forms.
-			 *
-			 * @return bool
-			 */
-			$always_show_spinner = gf_apply_filters( array( 'gform_always_show_spinner', $form_id ), true );
+		/**
+		 * Allows users to disable the spinner on non-ajax forms.
+		 *
+		 * @since 2.7
+		 *
+		 * @param bool $show Whether to show the spinner on non-ajax-forms.
+		 *
+		 * @return bool
+		 */
+		$always_show_spinner = gf_apply_filters( array( 'gform_always_show_spinner', $form_id ), true );
+		if ( ! $ajax && $always_show_spinner ) {
 			$default_spinner = GFCommon::get_base_url() . '/images/spinner.svg';
 			$spinner_url     = gf_apply_filters( array( 'gform_ajax_spinner_url', $form_id ), $default_spinner, $form );
 			$theme_slug      = self::get_form_theme_slug( $form );
 			$is_legacy       = $default_spinner !== $spinner_url || in_array( $theme_slug, array( 'gravity-theme', 'legacy' ) );
 
-			$text .= '<script>gform.initializeOnLoaded( function() {' .
+			$resume_form .= '<script>gform.initializeOnLoaded( function() {' .
 			         "gformInitSpinner( {$form_id}, '{$spinner_url}', " . ( $is_legacy ? 'true' : 'false' ) . " );" .
 			         " });</script>";
 		}

@@ -1379,8 +1379,6 @@ WHERE ln.id NOT IN
 	 * Upgrade routine from gravity forms version 2.0.4.7 and below
 	 */
 	protected function post_upgrade_schema_2047() {
-		remove_filter( 'query', array( 'GFForms', 'filter_query' ) );
-
 		global $wpdb;
 
 		$versions = $this->get_versions();

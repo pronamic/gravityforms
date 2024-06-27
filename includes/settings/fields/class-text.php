@@ -62,7 +62,7 @@ class Text extends Base {
 			esc_attr( $this->input_type ),
 			esc_attr( $this->settings->get_input_name_prefix() ),
 			esc_attr( $this->name ),
-			$value ? esc_attr( htmlspecialchars( $value, ENT_QUOTES ) ) : '',
+			! rgblank( $value ) ? esc_attr( htmlspecialchars( $value, ENT_QUOTES ) ) : '',
 			$this->get_describer() ? sprintf( 'aria-describedby="%s"', $this->get_describer() ) : '',
 			implode( ' ', $this->get_attributes() ),
 			isset( $this->append ) ? sprintf( '<span class="gform-settings-field__text-append">%s</span>', esc_html( $this->append ) ) : '',

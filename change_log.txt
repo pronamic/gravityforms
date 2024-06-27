@@ -1,3 +1,10 @@
+### 2.8.13 | 2024-06-26
+- Fixed an issue where custom theme styles are sometimes not applied on confirmation page or when navigating between pages in a multi-page form.
+- Fixed an issue where the AJAX spinner init script is output in save and continue notifications, which can impact deliverability in some environments.
+- Fixed an issue where a choice of 00 in the minute settings for the form scheduled start and end times changes to 01 on save.
+- Updated and improved the performance of database queries by removing the legacy table check.
+- AF: Fixed an issue where a saved value of 0 is not displayed in text type settings.
+
 ### 2.8.12 | 2024-05-29
 - Fixed an issue where a console error is thrown if gform.initializeOnLoaded is called directly.
 - Fixed an issue where the Conversational Forms Add-On settings page is not displayed if the site is using a plugin to manage roles and capabilities.
