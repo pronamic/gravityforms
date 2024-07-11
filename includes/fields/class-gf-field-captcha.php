@@ -33,6 +33,21 @@ class GF_Field_CAPTCHA extends GF_Field {
 	 */
 	private $secret_key;
 
+	/**
+	 * The reCAPTCHA field constructor.
+	 *
+	 * @since 2.8.13
+	 *
+	 * @param $data
+	 */
+	public function __construct( $data = array() ) {
+		parent::__construct( $data );
+
+		if ( ! has_filter( 'gform_pre_render', array( __CLASS__, 'maybe_remove_recaptcha_v2' ) ) ) {
+			add_filter( 'gform_pre_render', array( __CLASS__, 'maybe_remove_recaptcha_v2' ), 11 );
+		}
+	}
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'CAPTCHA', 'gravityforms' );
 	}
@@ -84,15 +99,56 @@ class GF_Field_CAPTCHA extends GF_Field {
 	 *
 	 * @since 2.8
 	 *
-	 * @return string
+	 * @return string|array
 	 */
 	public function get_field_sidebar_messages() {
-		if ( $this->captchaType === 'math' || $this->captchaType === 'simple_captcha' || ( ! empty( $this->get_site_key() ) && ! empty( $this->get_secret_key() ) ) ) {
+		// If the field is a math or simple captcha, we don't need to display a warning.
+		if ( $this->captchaType === 'math' || $this->captchaType === 'simple_captcha' ) {
 			return '';
 		}
 
+		// If the reCAPTCHA keys are configured and Conversational Forms is active, we need to display a warning.
+		if ( ( ! empty( $this->get_site_key() ) && ! empty( $this->get_secret_key() ) ) ) {
+			if ( is_plugin_active( 'gravityformsconversationalforms/conversationalforms.php' ) ) {
+				return array(
+					'type'    => 'notice',
+					'content' => esc_html__( 'The reCAPTCHA v2 field is not supported in Conversational Forms and will be removed, but will continue to work as expected in other contexts.', 'gravityforms' )
+				);
+
+			} else {
+				return '';
+			}
+		}
+
+		// If the reCAPTCHA keys are not configured, we need to display a warning.
 		// Translators: 1. Opening <a> tag with link to the Forms > Settings > reCAPTCHA page. 2. closing <a> tag.
 		return sprintf( __( 'To use reCAPTCHA v2 you must configure the site and secret keys on the %1$sreCAPTCHA Settings%2$s page.', 'gravityforms' ), "<a href='?page=gf_settings&subview=recaptcha' target='_blank'>", '</a>' );
+	}
+
+	/**
+	 * Recaptcha v2 does not work in conversational forms, so we have to remove it.
+	 *
+	 * @since 2.8.13
+	 *
+	 * @param $form
+	 *
+	 * @return void
+	 */
+	public static function maybe_remove_recaptcha_v2( $form ) {
+		if ( ! function_exists( 'is_conversational_form' ) ) {
+			return $form;
+		}
+
+		if ( ! is_conversational_form( $form ) ) {
+			return $form;
+		}
+
+		foreach ( $form['fields'] as $key => $field ) {
+			if ( $field->type === 'captcha' &&  ( $field->captchaType === '' || $field->captchaType === 'captcha' ) ) {
+				unset( $form['fields'][ $key ] );
+			}
+		}
+		return $form;
 	}
 
 	/**
@@ -179,6 +235,13 @@ class GF_Field_CAPTCHA extends GF_Field {
 	 * @return bool
 	 */
 	public function validate_recaptcha( $form ) {
+		if ( rgpost( 'gform_conversational_form' ) ) {
+			$hash = md5( $form['title'] . $form['id'] );
+			if ( $hash === $_POST['gform_conversational_form'] && is_plugin_active( 'gravityformsconversationalforms/conversationalforms.php' ) ) {
+				// This is a conversational form, and recaptcha v2 isn't supported
+				return true;
+			}
+		}
 		$response = $this->get_posted_recaptcha_response();
 
 		if ( ! ( $this->verify_decoded_response( $form, $response ) || $this->verify_recaptcha_response( $response ) ) ) {

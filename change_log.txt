@@ -1,3 +1,7 @@
+### 2.8.14 | 2024-07-10
+- Fixed the compatibility of the reCAPTCHA v2 field with Conversational Forms by removing the field from the form in Conversational view.
+- Fixed a PHP warning that occurs when the current user role only has the capability to access the System Status Page.
+
 ### 2.8.13 | 2024-06-26
 - Fixed an issue where custom theme styles are sometimes not applied on confirmation page or when navigating between pages in a multi-page form.
 - Fixed an issue where the AJAX spinner init script is output in save and continue notifications, which can impact deliverability in some environments.
