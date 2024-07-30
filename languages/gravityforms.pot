@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.8.14\n"
+"Project-Id-Version: Gravity Forms 2.8.15\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-07-10T16:11:10+00:00\n"
+"POT-Creation-Date: 2024-07-29T17:31:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: gravityforms\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. Author of the plugin
 #: gravityforms.php:1561
 #: gravityforms.php:1622
-#: gravityforms.php:2548
+#: gravityforms.php:2731
 #: includes/system-status/class-gf-system-report.php:364
 #: includes/system-status/class-gf-update.php:207
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:835
@@ -105,7 +105,7 @@ msgstr ""
 #: common.php:814
 #: form_list.php:46
 #: form_settings.php:114
-#: gravityforms.php:4647
+#: gravityforms.php:4830
 #: includes/addon/class-gf-addon.php:3029
 #: includes/settings/fields/class-generic-map.php:587
 #: includes/template-library/config/class-gf-template-library-config.php:90
@@ -206,7 +206,7 @@ msgstr ""
 #: common.php:956
 #: form_detail.php:916
 #: form_detail.php:1611
-#: form_display.php:3772
+#: form_display.php:3787
 #: includes/fields/class-gf-field.php:2630
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:409
 msgid "Medium"
@@ -305,7 +305,7 @@ msgid "Preview this form"
 msgstr ""
 
 #: common.php:3950
-#: gravityforms.php:5652
+#: gravityforms.php:5835
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:618
 msgid "Preview"
 msgstr ""
@@ -342,6 +342,7 @@ msgstr ""
 #: common.php:6097
 #: form_list.php:150
 #: form_list.php:607
+#: gravityforms.php:1960
 #: includes/addon/class-gf-feed-addon.php:2571
 #: includes/class-confirmation.php:156
 #: includes/class-confirmation.php:1064
@@ -357,6 +358,7 @@ msgstr ""
 #: common.php:5367
 #: form_list.php:146
 #: form_list.php:610
+#: gravityforms.php:1956
 #: includes/addon/class-gf-feed-addon.php:2574
 #: includes/class-confirmation.php:152
 #: includes/class-confirmation.php:1067
@@ -378,7 +380,7 @@ msgstr ""
 
 #: common.php:5369
 #: entry_detail.php:1402
-#: gravityforms.php:4655
+#: gravityforms.php:4838
 #: includes/webapi/webapi.php:446
 #: includes/webapi/webapi.php:539
 #: includes/webapi/webapi.php:618
@@ -388,7 +390,7 @@ msgstr ""
 #: common.php:5370
 #: form_display.php:336
 #: form_display.php:1373
-#: form_display.php:4170
+#: form_display.php:4185
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:51
 #: includes/template-library/templates/templates.php:2516
 #: includes/template-library/templates/templates.php:2712
@@ -436,6 +438,7 @@ msgid "Enter a value"
 msgstr ""
 
 #: common.php:5376
+#: preview.php:42
 msgid "Untitled Form"
 msgstr ""
 
@@ -453,7 +456,7 @@ msgstr ""
 #: common.php:5379
 #: form_display.php:1723
 #: form_list.php:326
-#: gravityforms.php:3195
+#: gravityforms.php:3378
 #: includes/fields/class-gf-field-submit.php:158
 #: includes/settings/fields/class-button.php:50
 #: includes/template-library/templates/templates.php:22
@@ -1026,6 +1029,7 @@ msgstr ""
 
 #: entry_detail.php:52
 #: form_settings.php:1125
+#: gravityforms.php:2050
 #: notification.php:111
 #: notification.php:231
 #: notification.php:849
@@ -1152,7 +1156,7 @@ msgid "Subject:"
 msgstr ""
 
 #: entry_detail.php:965
-#: print-entry.php:199
+#: print-entry.php:185
 msgid "Entry # "
 msgstr ""
 
@@ -1263,8 +1267,8 @@ msgid "Mark as Spam"
 msgstr ""
 
 #: entry_detail.php:1402
-#: gravityforms.php:5336
-#: gravityforms.php:5614
+#: gravityforms.php:5519
+#: gravityforms.php:5797
 #: includes/addon/class-gf-feed-addon.php:1788
 #: includes/class-confirmation.php:1097
 #: includes/webapi/includes/class-gf-api-keys-table.php:68
@@ -1387,6 +1391,7 @@ msgstr ""
 #: entry_list.php:1285
 #: entry_list.php:1371
 #: form_list.php:708
+#: gravityforms.php:1964
 msgid "Trash"
 msgstr ""
 
@@ -1729,7 +1734,7 @@ msgid "Select a form below to export entries. Once you have selected a form you 
 msgstr ""
 
 #: export.php:646
-#: gravityforms.php:6026
+#: gravityforms.php:6209
 #: widget.php:142
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:101
 msgid "Select a Form"
@@ -2568,7 +2573,7 @@ msgstr ""
 
 #: form_detail.php:1206
 #: form_list.php:535
-#: gravityforms.php:2567
+#: gravityforms.php:2750
 #: includes/fields/class-gf-field-post-image.php:153
 #: includes/fields/class-gf-field-post-image.php:155
 #: includes/fields/class-gf-field-post-image.php:224
@@ -3284,8 +3289,8 @@ msgid "April"
 msgstr ""
 
 #: form_detail.php:1603
-#: includes/addon/class-gf-payment-addon.php:3167
 #: includes/config/items/class-gf-config-i18n.php:41
+msgctxt "Full month name"
 msgid "May"
 msgstr ""
 
@@ -3561,7 +3566,7 @@ msgid "Good"
 msgstr ""
 
 #: form_detail.php:1767
-#: form_display.php:3772
+#: form_display.php:3787
 msgid "Strong"
 msgstr ""
 
@@ -4276,7 +4281,7 @@ msgid "Save and Continue link used is expired or invalid."
 msgstr ""
 
 #: form_display.php:1372
-#: form_display.php:4169
+#: form_display.php:4184
 msgid "Previous Page"
 msgstr ""
 
@@ -4297,81 +4302,81 @@ msgstr ""
 msgid "Reason: %s"
 msgstr ""
 
-#: form_display.php:2376
+#: form_display.php:2391
 msgid "At least one field must be filled out"
 msgstr ""
 
-#: form_display.php:2445
+#: form_display.php:2460
 msgid "This date has already been taken. Please select a new date."
 msgstr ""
 
-#: form_display.php:2449
+#: form_display.php:2464
 msgid "This field requires a unique entry and the values you entered have already been used."
 msgstr ""
 
-#: form_display.php:2450
+#: form_display.php:2465
 msgid "This field requires a unique entry and '%s' has already been used"
 msgstr ""
 
-#: form_display.php:2479
+#: form_display.php:2494
 msgid "Please enter a valid value."
 msgstr ""
 
-#: form_display.php:2479
+#: form_display.php:2494
 msgid "Invalid selection. Please select from the available choices."
 msgstr ""
 
-#: form_display.php:2607
+#: form_display.php:2622
 msgid "The text entered contains invalid characters."
 msgstr ""
 
-#: form_display.php:3041
+#: form_display.php:3056
 msgid "All choices are selected."
 msgstr ""
 
-#: form_display.php:3042
+#: form_display.php:3057
 msgid "All choices are unselected."
 msgstr ""
 
-#: form_display.php:3701
+#: form_display.php:3716
 msgid "No results matched"
 msgstr ""
 
-#: form_display.php:3755
-#: form_display.php:4422
+#: form_display.php:3770
+#: form_display.php:4437
 msgid "of"
 msgstr ""
 
-#: form_display.php:3755
+#: form_display.php:3770
 msgid "max characters"
 msgstr ""
 
-#: form_display.php:3772
+#: form_display.php:3787
 #: includes/fields/class-gf-field-password.php:193
 msgid "Strength indicator"
 msgstr ""
 
-#: form_display.php:3772
+#: form_display.php:3787
 msgid "Mismatch"
 msgstr ""
 
-#: form_display.php:3772
+#: form_display.php:3787
 msgid "Password strength unknown"
 msgstr ""
 
-#: form_display.php:3772
+#: form_display.php:3787
 msgid "Weak"
 msgstr ""
 
-#: form_display.php:3772
+#: form_display.php:3787
 msgid "Very weak"
 msgstr ""
 
-#: form_display.php:4175
+#: form_display.php:4190
 msgid "Next Page"
 msgstr ""
 
-#: form_display.php:4176
+#: form_display.php:4191
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:50
 #: includes/template-library/templates/templates.php:2511
 #: includes/template-library/templates/templates.php:2707
@@ -4389,48 +4394,48 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: form_display.php:4422
+#: form_display.php:4437
 msgid "Step"
 msgstr ""
 
-#: form_display.php:4529
+#: form_display.php:4544
 msgid "Sorry. This form is no longer accepting new submissions."
 msgstr ""
 
-#: form_display.php:4550
+#: form_display.php:4565
 msgid "This form is not yet available."
 msgstr ""
 
-#: form_display.php:4556
+#: form_display.php:4571
 msgid "Sorry. This form is no longer available."
 msgstr ""
 
-#: form_display.php:4714
+#: form_display.php:4729
 msgid "Send Link"
 msgstr ""
 
-#: form_display.php:4715
+#: form_display.php:4730
 #: notification.php:293
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: form_display.php:4716
+#: form_display.php:4731
 msgid "Email Address"
 msgstr ""
 
-#: form_display.php:5080
+#: form_display.php:5095
 msgid "Oops! We could not locate your form."
 msgstr ""
 
-#: form_display.php:5111
+#: form_display.php:5126
 msgid "Your form was not submitted. Please try again in a few minutes."
 msgstr ""
 
-#: form_display.php:5113
+#: form_display.php:5128
 msgid "There was a problem with your submission."
 msgstr ""
 
-#: form_display.php:5113
+#: form_display.php:5128
 msgid "Please review the fields below."
 msgstr ""
 
@@ -4487,7 +4492,7 @@ msgstr ""
 #: form_list.php:183
 #: gravityforms.php:1779
 #: gravityforms.php:1784
-#: gravityforms.php:5576
+#: gravityforms.php:5759
 #: includes/class-gf-osdxp.php:236
 #: includes/class-gf-osdxp.php:237
 #: includes/class-personal-data.php:893
@@ -4590,8 +4595,8 @@ msgstr ""
 
 #: form_list.php:537
 #: gravityforms.php:1794
-#: gravityforms.php:5366
-#: gravityforms.php:5625
+#: gravityforms.php:5549
+#: gravityforms.php:5808
 msgid "Entries"
 msgstr ""
 
@@ -4720,6 +4725,7 @@ msgstr[1] ""
 
 #: form_settings.php:44
 #: form_settings.php:1118
+#: gravityforms.php:1983
 #: includes/class-confirmation.php:96
 #: includes/class-confirmation.php:210
 msgid "Confirmations"
@@ -5030,7 +5036,7 @@ msgid "New Form - Gravity Forms"
 msgstr ""
 
 #: gravityforms.php:1789
-#: gravityforms.php:5678
+#: gravityforms.php:5861
 #: includes/template-library/config/class-gf-template-library-config.php:132
 msgid "New Form"
 msgstr ""
@@ -5044,9 +5050,10 @@ msgid "Settings - Gravity Forms"
 msgstr ""
 
 #: gravityforms.php:1808
-#: gravityforms.php:2273
-#: gravityforms.php:5350
-#: gravityforms.php:5636
+#: gravityforms.php:2055
+#: gravityforms.php:2456
+#: gravityforms.php:5533
+#: gravityforms.php:5819
 #: includes/addon/class-gf-addon.php:4521
 #: includes/addon/class-gf-addon.php:4799
 #: includes/addon/class-gf-addon.php:4972
@@ -5079,6 +5086,7 @@ msgid "System Status - Gravity Forms"
 msgstr ""
 
 #: gravityforms.php:1825
+#: gravityforms.php:2101
 #: includes/class-gf-osdxp.php:31
 #: includes/class-gf-osdxp.php:274
 #: includes/class-gf-osdxp.php:275
@@ -5089,71 +5097,157 @@ msgstr ""
 msgid "Help - Gravity Forms"
 msgstr ""
 
-#: gravityforms.php:1953
-msgid "%1$s &lsaquo; %2$s &#8212; WordPress"
+#: gravityforms.php:1947
+msgid "Form Not Found"
 msgstr ""
 
-#: gravityforms.php:2207
+#. translators: Search entries page title. 1. Search value
+#: gravityforms.php:1970
+msgid "Search Forms: %1$s"
+msgstr ""
+
+#: gravityforms.php:1987
+msgid "New Confirmation"
+msgstr ""
+
+#. translators: Starred entry list page title. 1. form title
+#: gravityforms.php:1999
+msgid "Starred &#8212; %1$s"
+msgstr ""
+
+#. translators: Unread entry list page title. 1. form title
+#: gravityforms.php:2004
+msgid "Unread &#8212; %1$s"
+msgstr ""
+
+#. translators: Active entry list page title. 1. form title
+#: gravityforms.php:2009
+msgid "Spam &#8212; %1$s"
+msgstr ""
+
+#. translators: Trash entry list page title. 1. form title
+#: gravityforms.php:2014
+msgid "Trash &#8212; %1$s"
+msgstr ""
+
+#. translators: Search entries page title. 1. Search value, 2. Form title.
+#: gravityforms.php:2020
+msgid "Search Entries: %1$s &#8212; %2$s"
+msgstr ""
+
+#. translators: Single entry page title. 1: entry ID, 2: form title, 3: admin title.
+#: gravityforms.php:2034
+msgid "Entry # %1$d &lsaquo; %2$s &lsaquo; %3$s"
+msgstr ""
+
+#. translators: Entry not found page title. 1: form title, 2: admin title.
+#: gravityforms.php:2037
+msgid "Entry not found &lsaquo; %1$s &lsaquo; %2$s"
+msgstr ""
+
+#: gravityforms.php:2049
+msgid "New Notification"
+msgstr ""
+
+#: gravityforms.php:2059
+#: settings.php:1259
+msgid "reCAPTCHA"
+msgstr ""
+
+#: gravityforms.php:2063
+#: includes/addon/class-gf-addon.php:1652
+#: includes/addon/class-gf-addon.php:4984
+#: includes/addon/class-gf-addon.php:5339
+#: settings.php:1296
+msgid "Uninstall"
+msgstr ""
+
+#. Translators: Export Form page title. 1: Admin title.
+#: gravityforms.php:2081
+msgid "Export Forms &lsaquo; %1$s"
+msgstr ""
+
+#. Translators: Import form page title. 1: Admin title.
+#: gravityforms.php:2086
+msgid "Import Forms &lsaquo; %1$s"
+msgstr ""
+
+#. Translators: Export Entry page title. 1: Admin title.
+#: gravityforms.php:2091
+msgid "Export Entries &lsaquo; %1$s"
+msgstr ""
+
+#. Translators: Updates page title. 1: Admin title.
+#: gravityforms.php:2096
+msgid "Updates &lsaquo; %1$s"
+msgstr ""
+
+#. Translators: System report page title. 1: Admin title.
+#: gravityforms.php:2105
+msgid "System Report &lsaquo; %1$s &lsaquo; Gravity Forms &#8212; WordPress"
+msgstr ""
+
+#: gravityforms.php:2390
 msgid "Add Gravity Form"
 msgstr ""
 
-#: gravityforms.php:2207
+#: gravityforms.php:2390
 msgid "Add Form"
 msgstr ""
 
-#: gravityforms.php:2222
+#: gravityforms.php:2405
 msgid "Please select a form"
 msgstr ""
 
 #. translators: 1: The name of the add-on, 2: version number.
-#: gravityforms.php:2308
+#: gravityforms.php:2491
 msgid "This version of the %1$s is not compatible with the version of Gravity Forms that is installed. Upgrade this add-on to version %2$s or greater to avoid compatibility issues and potential loss of data."
 msgstr ""
 
 #. translators: 1: plugin name, 2: open <a> tag, 3: version number, 4: close </a> tag
-#: gravityforms.php:2347
+#: gravityforms.php:2530
 msgid "There is a new version of %1$s available. %2$sView version %3$s details%4$s. "
 msgstr ""
 
 #. translators: 1: plugin name, 2: version number, 3: changelog URL
 #. translators: 1: plugin name, 2: version number, 3: changelog URL
-#: gravityforms.php:2351
-#: gravityforms.php:2368
+#: gravityforms.php:2534
+#: gravityforms.php:2551
 msgid "<a class=\"thickbox open-plugin-details-modal\" aria-label=\"View %1$s version %2$s details\" href=\"%3$s\">"
 msgstr ""
 
 #. translators: 1: plugin name, 2: open <a> tag, 3: version number, 4: close </a> tag, 5: open <a> tag 6. close </a> tag
-#: gravityforms.php:2364
+#: gravityforms.php:2547
 msgid "There is a new version of %1$s available. %2$sView version %3$s details%4$s or %5$supdate now%6$s. "
 msgstr ""
 
 #. translators: 1: upgrade URL, 2: plugin name
-#: gravityforms.php:2377
+#: gravityforms.php:2560
 msgid "<a href=\"%1$s\" class=\"update-link\" aria-label=\"Update %2$s now\">"
 msgstr ""
 
-#: gravityforms.php:2391
+#: gravityforms.php:2574
 msgid "%sRegister%s your copy of Gravity Forms to receive access to automatic upgrades and support. Need a license key? %sPurchase one now%s."
 msgstr ""
 
-#: gravityforms.php:2438
+#: gravityforms.php:2621
 msgid "IMPORTANT: As this is a major update, we strongly recommend creating a backup of your site before updating."
 msgstr ""
 
 #. translators: %s: version number
-#: gravityforms.php:2458
+#: gravityforms.php:2641
 msgid "The versions of the following add-ons you're running haven't been tested with Gravity Forms %s. Please update them or confirm compatibility before updating Gravity Forms, or you may experience issues:"
 msgstr ""
 
-#: gravityforms.php:2520
+#: gravityforms.php:2703
 msgid "Oops!! Something went wrong. %sPlease try again or %scontact us%s."
 msgstr ""
 
-#: gravityforms.php:2569
+#: gravityforms.php:2752
 msgid "Unread"
 msgstr ""
 
-#: gravityforms.php:2571
+#: gravityforms.php:2754
 #: includes/addon/class-gf-payment-addon.php:2810
 #: includes/fields/class-gf-field-total.php:24
 #: includes/orders/summaries/views/view-order-summary.php:60
@@ -5169,197 +5263,197 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: gravityforms.php:2591
+#: gravityforms.php:2774
 msgid "Last Entry: %s"
 msgstr ""
 
-#: gravityforms.php:2594
+#: gravityforms.php:2777
 msgid "View All Entries"
 msgstr ""
 
-#: gravityforms.php:2606
+#: gravityforms.php:2789
 msgid "View All Forms"
 msgstr ""
 
-#: gravityforms.php:2613
+#: gravityforms.php:2796
 msgid "You don't have any forms. Let's go %screate one %s!"
 msgstr ""
 
-#: gravityforms.php:2646
+#: gravityforms.php:2829
 msgid "There is an update available for Gravity Forms. %sView Details%s"
 msgstr ""
 
-#: gravityforms.php:2649
+#: gravityforms.php:2832
 msgid "Dismiss"
 msgstr ""
 
-#: gravityforms.php:3185
+#: gravityforms.php:3368
 msgid "Please select a form."
 msgstr ""
 
-#: gravityforms.php:3186
+#: gravityforms.php:3369
 msgid "Failed to load the preview for this form."
 msgstr ""
 
-#: gravityforms.php:3564
+#: gravityforms.php:3747
 msgid "Logging disabled."
 msgstr ""
 
-#: gravityforms.php:3566
+#: gravityforms.php:3749
 msgid "Unable to disable logging."
 msgstr ""
 
-#: gravityforms.php:3590
+#: gravityforms.php:3773
 msgid "Finished"
 msgstr ""
 
-#: gravityforms.php:3662
+#: gravityforms.php:3845
 msgid "Add-On browser is currently unavailable. Please try again later."
 msgstr ""
 
-#: gravityforms.php:4085
+#: gravityforms.php:4268
 msgid "There was an error while resending the notifications."
 msgstr ""
 
-#: gravityforms.php:4091
+#: gravityforms.php:4274
 msgid "No notifications have been selected. Please select a notification to be sent."
 msgstr ""
 
-#: gravityforms.php:4095
+#: gravityforms.php:4278
 msgid "The %sSend To%s email address provided is not valid."
 msgstr ""
 
-#: gravityforms.php:4692
-#: gravityforms.php:4708
+#: gravityforms.php:4875
+#: gravityforms.php:4891
 msgid "Oops! There was an error saving the form title. Please refresh the page and try again."
 msgstr ""
 
-#: gravityforms.php:4787
+#: gravityforms.php:4970
 msgid "Select a different form"
 msgstr ""
 
-#: gravityforms.php:4807
+#: gravityforms.php:4990
 msgid "Search forms"
 msgstr ""
 
-#: gravityforms.php:4811
+#: gravityforms.php:4994
 msgid "Search for form"
 msgstr ""
 
-#: gravityforms.php:5337
-#: gravityforms.php:5338
+#: gravityforms.php:5520
+#: gravityforms.php:5521
 msgid "Editor"
 msgstr ""
 
-#: gravityforms.php:5351
+#: gravityforms.php:5534
 msgid "Edit settings for this form"
 msgstr ""
 
-#: gravityforms.php:5367
+#: gravityforms.php:5550
 msgid "View entries generated by this form"
 msgstr ""
 
-#: gravityforms.php:5553
+#: gravityforms.php:5736
 #: widget.php:38
 #: assets/js/src/admin/block-editor/blocks/form/edit.js:293
 #: assets/js/src/admin/block-editor/blocks/form/index.js:24
 msgid "Form"
 msgstr ""
 
-#: gravityforms.php:5591
+#: gravityforms.php:5774
 msgid "Recent"
 msgstr ""
 
-#: gravityforms.php:5667
+#: gravityforms.php:5850
 msgid "All Forms"
 msgstr ""
 
-#: gravityforms.php:5810
+#: gravityforms.php:5993
 msgid "Auto-updates unavailable."
 msgstr ""
 
-#: gravityforms.php:5837
+#: gravityforms.php:6020
 msgid "Please register your copy of Gravity Forms to enable automatic updates."
 msgstr ""
 
-#: gravityforms.php:5889
+#: gravityforms.php:6072
 #: includes/locking/class-gf-locking.php:209
 msgid "Error"
 msgstr ""
 
-#: gravityforms.php:6042
+#: gravityforms.php:6225
 msgid "Select a form below to add it to your post or page."
 msgstr ""
 
-#: gravityforms.php:6043
+#: gravityforms.php:6226
 msgid "Select a form from the list to add it to your post or page."
 msgstr ""
 
-#: gravityforms.php:6047
+#: gravityforms.php:6230
 msgid "Can't find your form? Make sure it is active."
 msgstr ""
 
-#: gravityforms.php:6051
+#: gravityforms.php:6234
 #: widget.php:158
 msgid "Display form title"
 msgstr ""
 
-#: gravityforms.php:6056
+#: gravityforms.php:6239
 msgid "Whether or not to display the form title."
 msgstr ""
 
-#: gravityforms.php:6059
+#: gravityforms.php:6242
 #: widget.php:160
 msgid "Display form description"
 msgstr ""
 
-#: gravityforms.php:6064
+#: gravityforms.php:6247
 msgid "Whether or not to display the form description."
 msgstr ""
 
-#: gravityforms.php:6067
+#: gravityforms.php:6250
 #: widget.php:167
 msgid "Enable Ajax"
 msgstr ""
 
-#: gravityforms.php:6071
+#: gravityforms.php:6254
 msgid "Specify whether or not to use Ajax to submit the form."
 msgstr ""
 
-#: gravityforms.php:6077
+#: gravityforms.php:6260
 msgid "Specify the starting tab index for the fields of this form."
 msgstr ""
 
-#: gravityforms.php:6092
+#: gravityforms.php:6275
 msgid "Select an action"
 msgstr ""
 
-#: gravityforms.php:6104
+#: gravityforms.php:6287
 msgid "Select an action for this shortcode. Actions are added by some add-ons."
 msgstr ""
 
-#: gravityforms.php:6190
+#: gravityforms.php:6373
 msgid "Gravity Forms logging is currently enabled. "
 msgstr ""
 
-#: gravityforms.php:6191
+#: gravityforms.php:6374
 msgid "If you currently have a support ticket open, please do not disable logging until the Support Team has reviewed your logs. "
 msgstr ""
 
-#: gravityforms.php:6192
+#: gravityforms.php:6375
 msgid "Since logs may contain sensitive information, please ensure that you only leave it enabled for as long as it is needed for troubleshooting. "
 msgstr ""
 
-#: gravityforms.php:6194
+#: gravityforms.php:6377
 msgid "Once troubleshooting is complete, %1$sclick here to disable logging and permanently delete your log files.%2$s "
 msgstr ""
 
-#: gravityforms.php:6300
+#: gravityforms.php:6483
 msgid "Forms per page"
 msgstr ""
 
 #. translators: 1: The table name 2: the URL with further details
-#: gravityforms.php:6613
+#: gravityforms.php:6834
 msgid "An outdated add-on or custom code is attempting to access the %1$s table which is not valid in this version of Gravity Forms. Update your add-ons and custom code to prevent loss of form data. Further details: %2$s"
 msgstr ""
 
@@ -5490,13 +5584,6 @@ msgstr ""
 
 #: includes/addon/class-gf-addon.php:1595
 msgid "GF Add-Ons"
-msgstr ""
-
-#: includes/addon/class-gf-addon.php:1652
-#: includes/addon/class-gf-addon.php:4984
-#: includes/addon/class-gf-addon.php:5339
-#: settings.php:1296
-msgid "Uninstall"
 msgstr ""
 
 #: includes/addon/class-gf-addon.php:1655
@@ -6237,6 +6324,11 @@ msgstr ""
 
 #: includes/addon/class-gf-payment-addon.php:3166
 msgid "Apr"
+msgstr ""
+
+#: includes/addon/class-gf-payment-addon.php:3167
+msgctxt "Abbreviated month name"
+msgid "May"
 msgstr ""
 
 #: includes/addon/class-gf-payment-addon.php:3168
@@ -10273,11 +10365,12 @@ msgstr ""
 msgid "Preferences updated."
 msgstr ""
 
-#: includes/splash-page/class-gf-splash-page.php:112
-msgid "About"
+#. translators: About page title. 1: Version number.
+#: includes/splash-page/class-gf-splash-page.php:113
+msgid "About %1$s &lsaquo; System Status &lsaquo; Gravity Forms &#8212; WordPress"
 msgstr ""
 
-#: includes/splash-page/class-gf-splash-page.php:166
+#: includes/splash-page/class-gf-splash-page.php:167
 msgid "About %s"
 msgstr ""
 
@@ -11512,7 +11605,7 @@ msgid "Next Steps: Install a Payment Add-On"
 msgstr ""
 
 #: includes/template-library/templates/templates.php:1767
-msgid "To accept donations via this form you will need to install one of our payment add-ons. To learn more about your payment add-on options, visit the following page (https://www.gravityforms.com/blog/payment-add-ons). Important: Delete this tip before you publish the form."
+msgid "To accept donations on this form you will need to install one of our payment add-ons. To learn more about your payment add-on options, visit the following page (https://www.gravityforms.com/blog/payment-add-ons). Important: Delete this tip before you publish the form."
 msgstr ""
 
 #: includes/template-library/templates/templates.php:1985
@@ -13460,27 +13553,28 @@ msgstr ""
 msgid "You don't have adequate permission to preview forms."
 msgstr ""
 
-#: preview.php:50
-msgid "Form Preview - Gravity Forms"
-msgstr ""
-
-#: preview.php:111
-msgid "display grid"
-msgstr ""
-
-#: preview.php:112
-msgid "show structure"
+#. translators: Form preview page title. 1: form title, 2: site title.
+#: preview.php:45
+msgid "%1$s &lsaquo; Form Preview - Gravity Forms &lsaquo; %2$s &#8212; WordPress"
 msgstr ""
 
 #: preview.php:115
+msgid "display grid"
+msgstr ""
+
+#: preview.php:116
+msgid "show structure"
+msgstr ""
+
+#: preview.php:119
 msgid "Form Preview"
 msgstr ""
 
-#: preview.php:119
+#: preview.php:123
 msgid "Note: This is a simple form preview. This form may display differently when added to your page based on normal inheritance from parent theme styles."
 msgstr ""
 
-#: preview.php:119
+#: preview.php:123
 msgid "dismiss"
 msgstr ""
 
@@ -13492,15 +13586,20 @@ msgstr ""
 msgid "Form Id and Entry Id are required parameters."
 msgstr ""
 
-#: print-entry.php:199
+#: print-entry.php:185
 msgid "Bulk Print"
 msgstr ""
 
-#: print-entry.php:237
+#. translators: Print preview page title. 1: entry title, 2: form title, 3: site title.
+#: print-entry.php:188
+msgid "%1$s &lsaquo; %2$s &lsaquo; Print Preview - Gravity Forms &lsaquo; %3$s &#8212; WordPress"
+msgstr ""
+
+#: print-entry.php:238
 msgid "close window"
 msgstr ""
 
-#: print-entry.php:237
+#: print-entry.php:238
 msgid "Print Preview"
 msgstr ""
 
@@ -13733,10 +13832,6 @@ msgstr ""
 
 #: settings.php:1141
 msgid "Please complete the reCAPTCHA widget to validate your reCAPTCHA keys:"
-msgstr ""
-
-#: settings.php:1259
-msgid "reCAPTCHA"
 msgstr ""
 
 #: tooltips.php:9

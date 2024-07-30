@@ -38,7 +38,7 @@ class GF_Config_I18n extends GF_Config {
 					'february'  => esc_html__( 'February', 'gravityforms' ),
 					'march'     => esc_html__( 'March', 'gravityforms' ),
 					'april'     => esc_html__( 'April', 'gravityforms' ),
-					'may'       => esc_html__( 'May', 'gravityforms' ),
+					'may'       => esc_html_x('May', 'Full month name', 'gravityforms'),
 					'june'      => esc_html__( 'June', 'gravityforms' ),
 					'july'      => esc_html__( 'July', 'gravityforms' ),
 					'august'    => esc_html__( 'August', 'gravityforms' ),

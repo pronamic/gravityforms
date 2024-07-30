@@ -54,9 +54,10 @@ class Form_CSS_Properties_Output_Engine extends Output_Engine {
 		}, 999, 2 );
 
 		// Confirmations get processed too early to inject the script tag; inject via regex after render instead.
-		add_filter( 'gform_get_form_confirmation_filter', function( $markup, $form ) use ( $self ) {
-			$custom_selector = sprintf( '<style>#gform_confirmation_wrapper_%d.gform-theme{', $form['id'] );
-			$props_block     = $self->generate_props_block( $form['id'], $form, $custom_selector );
+		add_filter( 'gform_get_form_confirmation_filter', function ( $markup, $form ) use ( $self ) {
+			$form_id         = (int) rgar( $form, 'id' );
+			$custom_selector = sprintf( '<style>#gform_confirmation_wrapper_%d.gform-theme{', $form_id );
+			$props_block     = $self->generate_props_block( $form_id, $form, $custom_selector );
 
 			$processed_hash = md5( json_encode( $form ) );
 
@@ -65,7 +66,9 @@ class Form_CSS_Properties_Output_Engine extends Output_Engine {
 				self::$processed_tracker[] = $processed_hash;
 			}
 
-			return preg_replace( '/gform_confirmation_wrapper[^<]*/', '$0 ' . $props_block, $markup );
+			$target = sprintf( "<div id='gform_confirmation_message_%d", $form_id );
+
+			return str_replace( $target, $props_block . $target, $markup );
 		}, 999, 2 );
 	}
 

@@ -2008,16 +2008,31 @@ class GFFormDisplay {
 		GFAPI::add_note( $entry_id, 0, $filter_name, $note );
 	}
 
-	public static function clean_up_files( $form ) {
-		$unique_form_id = rgpost( 'gform_unique_id' );
-		if ( ! ctype_alnum( $unique_form_id ) ) {
-			return false;
-		}
-		$target_path = RGFormsModel::get_upload_path( $form['id'] ) . '/tmp/';
-		$filename    = $unique_form_id . '_input_*';
-		$files       = GFCommon::glob( $filename, $target_path );
-		if ( is_array( $files ) ) {
-			array_map( 'unlink', $files );
+	/**
+	 * Deletes tmp files for the given form.
+	 *
+	 * @since Unknown
+	 * @since 2.8.15 Added the $is_submission param.
+	 *
+	 * @param array $form          The form the tmp files are to be deleted for.
+	 * @param bool  $is_submission Indicates if tmp files for the current form submission should be deletes as well.
+	 *
+	 * @return false|void
+	 */
+	public static function clean_up_files( $form, $is_submission = true ) {
+		if ( $is_submission ) {
+			$unique_form_id = rgpost( 'gform_unique_id' );
+			if ( ! ctype_alnum( $unique_form_id ) ) {
+				return false;
+			}
+			$target_path = GFFormsModel::get_upload_path( $form['id'] ) . '/tmp/';
+			$filename    = $unique_form_id . '_input_*';
+			$files       = GFCommon::glob( $filename, $target_path );
+			if ( is_array( $files ) ) {
+				array_map( 'unlink', $files );
+			}
+		} else {
+			$target_path = GFFormsModel::get_upload_path( $form['id'] ) . '/tmp/';
 		}
 
 		// clean up files from abandoned submissions older than 48 hours (30 days if Save and Continue is enabled)

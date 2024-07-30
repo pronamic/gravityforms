@@ -3164,7 +3164,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			esc_html__( 'Feb', 'gravityforms' ),
 			esc_html__( 'Mar', 'gravityforms' ),
 			esc_html__( 'Apr', 'gravityforms' ),
-			esc_html__( 'May', 'gravityforms' ),
+			esc_html_x( 'May', 'Abbreviated month name', 'gravityforms' ),
 			esc_html__( 'Jun', 'gravityforms' ),
 			esc_html__( 'Jul', 'gravityforms' ),
 			esc_html__( 'Aug', 'gravityforms' ),

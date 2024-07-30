@@ -505,6 +505,11 @@ function GetFieldById( id ) {
     if ( 'submit' === id ) {
         return GetSubmitField();
     }
+
+    if ( 'last_page_settings' === id ) {
+        return { type: 'page' }
+    }
+
     id = parseInt( id );
     for(var i=0; i<form.fields.length; i++){
         if(form.fields[i].id == id)

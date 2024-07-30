@@ -109,7 +109,8 @@ class GF_Splash_Page {
 	 */
 	public function admin_title( $title ) {
 		if ( $this->is_splash_page() ) {
-			$title = __( 'About', 'gravityforms' ) . ' ' . $this->about_version . ' - Gravity Forms';
+			/* translators: About page title. 1: Version number. */
+			$title = sprintf( __( 'About %1$s &lsaquo; System Status &lsaquo; Gravity Forms &#8212; WordPress', 'gravityforms' ), $this->about_version );
 		}
 		return $title;
 	}

@@ -1,3 +1,14 @@
+### 2.8.15 | 2024-07-29
+- Added improvements to translator comments.
+- Added improvements for WordPress 6.6 compatibility.
+- Updated the text of the donation form template to be more consistent.
+- Updated admin page titles to be unique for better accessibility.
+- Fixed a 404 link pointing to the Chosen library in the enhanced UI info box in the field settings sidebar.
+- Fixed an issue that sometimes prevents users from editing the "End Paging" settings.
+- Fixed an issue where temporary file uploads for abandoned submissions can remain longer than intended if the form is not submitted again.
+- Fixed an issue where the expected choices are not included in the Select a Field setting on the Notification configuration page when using the [`gform_email_fields_notification_admin`](https://docs.gravityforms.com/gform_email_fields_notification_admin/) filter.
+- Fixed an issue where a form embedded in the confirmation message can't submit because block styles are inserted in the middle of the init scripts.
+
 ### 2.8.14 | 2024-07-10
 - Fixed the compatibility of the reCAPTCHA v2 field with Conversational Forms by removing the field from the form in Conversational view.
 - Fixed a PHP warning that occurs when the current user role only has the capability to access the System Status Page.

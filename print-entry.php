@@ -182,6 +182,11 @@ $form = GFAPI::get_form( $form_id );
 // Get script/styling extension.
 $min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
 
+$entry_title = count( $entry_ids ) > 1 ? esc_html__( 'Bulk Print', 'gravityforms' ) : esc_html__( 'Entry # ', 'gravityforms' ) . absint( $entry_ids[0] );
+
+/* translators: Print preview page title. 1: entry title, 2: form title, 3: site title. */
+$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &lsaquo; Print Preview - Gravity Forms &lsaquo; %3$s &#8212; WordPress', 'gravityforms' ), esc_html( $entry_title ), esc_html( $form['title'] ), esc_html( get_bloginfo( 'name' ) ) );
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -193,11 +198,7 @@ $min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] 
 		<meta name="MSSmartTagsPreventParsing" content="true" />
 		<meta name="Robots" content="noindex, nofollow" />
 		<meta http-equiv="Imagetoolbar" content="No" />
-		<title>
-			Print Preview :
-			<?php echo esc_html( $form['title'] ) ?> :
-			<?php echo count( $entry_ids ) > 1 ? esc_html__( 'Bulk Print', 'gravityforms' ) : esc_html__( 'Entry # ', 'gravityforms' ) . absint( $entry_ids[0] ); ?>
-		</title>
+		<title><?php echo esc_html( $admin_title ); ?></title>
 		<link rel='stylesheet' href='<?php echo GFCommon::get_base_url() ?>/css/print<?php echo $min; ?>.css' type='text/css' />
 		<?php
 

@@ -1765,7 +1765,7 @@ return array(
 					'displayOnly'           => true,
 					'formId'                => 8,
 					'description'           => esc_html__(
-						'To accept donations via this form you will need to install one of our payment add-ons. To learn more about your payment add-on options, visit the following page (https://www.gravityforms.com/blog/payment-add-ons). Important: Delete this tip before you publish the form.',
+						'To accept donations on this form you will need to install one of our payment add-ons. To learn more about your payment add-on options, visit the following page (https://www.gravityforms.com/blog/payment-add-ons). Important: Delete this tip before you publish the form.',
 						'gravityforms'
 					),
 					'allowsPrepopulate'     => false,
