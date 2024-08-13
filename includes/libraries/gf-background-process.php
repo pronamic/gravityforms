@@ -97,6 +97,10 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 
 			add_action( $this->cron_hook_identifier, array( $this, 'handle_cron_healthcheck' ) );
 			add_filter( 'cron_schedules', array( $this, 'schedule_cron_healthcheck' ) );
+			add_action( 'wp_delete_site', array( $this, 'delete_site_batches' ) );
+			add_action( 'make_spam_blog', array( $this, 'delete_site_batches' ) );
+			add_action( 'archive_blog', array( $this, 'delete_site_batches' ) );
+			add_action( 'make_delete_blog', array( $this, 'delete_site_batches' ) );
 		}
 
 		/**
@@ -172,6 +176,7 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 			$key = $this->generate_key();
 
 			if ( ! empty( $this->data ) ) {
+				GFCommon::log_debug( sprintf( '%s(): Saving batch %s. Tasks: %d.', __METHOD__, $key, count( $this->data ) ) );
 				$data = array(
 					'blog_id' => get_current_blog_id(),
 					'data'    => $this->data,
@@ -423,6 +428,12 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 				if ( is_multisite() ) {
 					$current_blog_id = get_current_blog_id();
 					if ( $current_blog_id !== $batch->blog_id ) {
+						if ( ! $this->is_valid_blog( $batch->blog_id ) ) {
+							GFCommon::log_debug( sprintf( '%s(): Blog #%s is no longer valid for batch %s.', __METHOD__, $batch->blog_id, $batch->key ) );
+							$this->delete_batches( $batch->blog_id );
+							continue;
+						}
+
 						$this->spawn_multisite_child_process( $batch->blog_id );
 						if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
 							// Switch back to the current blog and return so the other tasks queued in this process can be run.
@@ -721,32 +732,9 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * @return false|int
 		 */
 		public function clear_queue( $all_blogs_in_network = false ) {
-			global $wpdb;
-
-			$table        = $wpdb->options;
-			$column       = 'option_name';
-
-			if ( is_multisite() ) {
-				$table        = $wpdb->sitemeta;
-				$column       = 'meta_key';
-			}
-
-			$key = $this->identifier . '_batch_';
-
-			if ( ! $all_blogs_in_network ) {
-				$key .= 'blog_id_' . get_current_blog_id() . '_';
-			}
-
-			$key = $wpdb->esc_like( $key ) . '%';
-
-			$result = $wpdb->query( $wpdb->prepare( "
-			DELETE FROM {$table}
-			WHERE {$column} LIKE %s
-		", $key ) );
-
 			$this->data = array();
 
-			return $result;
+			return $this->delete_batches( $all_blogs_in_network );
 		}
 
 		/**
@@ -780,6 +768,77 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 				'gform_form_pre_process_async_task',
 				absint( rgar( $form, 'id' ) ),
 			), $form, $entry );
+		}
+
+		/**
+		 * Determines if the specified blog is suitable for batch processing.
+		 *
+		 * @since 2.8.16
+		 *
+		 * @param int $blog_id The blog ID.
+		 *
+		 * @return bool
+		 */
+		public function is_valid_blog( $blog_id ) {
+			$site = get_site( $blog_id );
+
+			return $site instanceof WP_Site && ! $site->deleted && ! $site->archived && ! $site->spam;
+		}
+
+		/**
+		 * Deletes the site batches when the site is deleted.
+		 *
+		 * @since 2.8.16
+		 *
+		 * @param WP_Site|int $old_site The deleted site object or ID.
+		 *
+		 * @return void
+		 */
+		public function delete_site_batches( $old_site ) {
+			$blog_id = is_object( $old_site ) ? $old_site->blog_id : $old_site;
+			$this->delete_batches( $blog_id );
+		}
+
+		/**
+		 * Deletes batches from the database.
+		 *
+		 * @since 2.8.16
+		 *
+		 * @param bool|int $all_blogs_in_network True to delete batches for all blogs. False to delete batches for the current blog. A blog ID to delete batches for the specified blog.
+		 *
+		 * @return bool|int
+		 */
+		public function delete_batches( $all_blogs_in_network = false ) {
+			global $wpdb;
+
+			if ( is_multisite() ) {
+				$table  = $wpdb->sitemeta;
+				$column = 'meta_key';
+			} else {
+				$table  = $wpdb->options;
+				$column = 'option_name';
+			}
+
+			$key = $this->identifier . '_batch_';
+
+			if ( is_bool( $all_blogs_in_network ) ) {
+				$blog_id = $all_blogs_in_network ? 0 : get_current_blog_id();
+			} else {
+				$blog_id = absint( $all_blogs_in_network );
+				if ( ! $blog_id ) {
+					return false;
+				}
+			}
+
+			if ( $blog_id ) {
+				$key .= 'blog_id_' . $blog_id . '_';
+			}
+
+			$result = $wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE {$column} LIKE %s", $wpdb->esc_like( $key ) . '%' ) );
+
+			GFCommon::log_debug( sprintf( '%s(): %d batch(es) deleted with prefix %s.', __METHOD__, $result, $key ) );
+
+			return $result;
 		}
 
 	}

@@ -1541,9 +1541,15 @@ class GFNotificationTable extends WP_List_Table {
 			unset( $actions['delete'] );
 		}
 
+		$aria_label = sprintf(
+			/* translators: %s: Notification name */
+			__( '%s (Edit)', 'gravityforms' ),
+			$item['name']
+		);
+
 		?>
 
-		<a href="<?php echo esc_url( $edit_url ); ?>"><strong><?php echo esc_html( rgar( $item, 'name' ) ); ?></strong></a>
+		<a href="<?php echo esc_url( $edit_url ); ?>" aria-label="<?php echo esc_attr( $aria_label ); ?>"><strong><?php echo esc_html( rgar( $item, 'name' ) ); ?></strong></a>
 		<div class="row-actions">
 
 			<?php

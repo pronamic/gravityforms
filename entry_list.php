@@ -1024,7 +1024,8 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 		if ( $column_id == $primary ) {
 			$edit_url = $this->get_detail_url( $entry );
-			$column_value = '<a aria-label="' . esc_attr__( 'View this entry', 'gravityforms' ) . '" href="' . $edit_url . '">' . $value . '</a>';
+			$aria_label = sprintf( esc_html__( 'View entry number %s', 'gravityforms' ), $entry['id'] );
+			$column_value = '<a aria-label="' . esc_attr__( $aria_label ) . '" href="' . $edit_url . '">' . $value . '</a>';
 
 			/**
 			 * Used to inject markup and replace the value of any primary/first column in the entry list grid.
@@ -1039,7 +1040,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 			 */
 			$column_value = apply_filters( 'gform_entries_primary_column_filter', $column_value, $form_id, $field_id, $entry, $query_string, $edit_url, $value );
 
-			// Warning ignored becuase output is expected to be escaped higher up in the chain.
+			// Warning ignored because output is expected to be escaped higher up in the chain.
 			// phpcs:ignore
 			echo $column_value;
 		} else {

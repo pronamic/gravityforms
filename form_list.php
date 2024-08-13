@@ -626,7 +626,7 @@ class GF_Form_List_Table extends WP_List_Table {
 	}
 
 	function column_title( $form ) {
-		echo '<strong><a href="?page=gf_edit_forms&id='. absint( $form->id ) .'">' . esc_html( $form->title ) . '</a></strong>';
+		echo '<strong><a href="?page=gf_edit_forms&id='. absint( $form->id ) .'" aria-label="' . esc_attr( $form->title ) . ' ' . esc_attr( '(Edit)', 'gravityforms' ) . '">' . esc_html( $form->title ) . '</a></strong>';
 	}
 
 	function column_id( $form ) {

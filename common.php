@@ -2946,13 +2946,22 @@ Content-Type: text/html;
 			self::$license_info = $license_info;
 		}
 
+		/**
+		 * If a license key doesn't exist, $license_info will be a WP_Error.
+		 * $license_info is potentially loaded from a serialized cache 
+		 * value causing the need to validate it is correct type 
+		 * before calling any of its methods.
+		 */  
+		$is_valid_license_info = ( ! is_wp_error( $license_info ) && is_a( $license_info, Gravity_Forms\Gravity_Forms\License\GF_License_API_Response::class ) );
+
 		return array(
-			'is_valid_key' => ! is_wp_error( $license_info ) && is_a( $license_info, Gravity_Forms\Gravity_Forms\License\GF_License_API_Response::class ) && $license_info->can_be_used(),
-			'reason'       => $license_info->get_error_message(),
-			'version'      => rgars( $plugins, 'gravityforms/version' ),
-			'url'          => rgars( $plugins, 'gravityforms/url' ),
-			'is_error'     => is_wp_error( $license_info ) || $license_info->has_errors(),
-			'offerings'    => $plugins,
+			'is_valid_key'    => $is_valid_license_info && $license_info->can_be_used(),
+			'reason'          => $license_info->get_error_message(),
+			'version'         => rgars( $plugins, 'gravityforms/version' ),
+			'url'             => rgars( $plugins, 'gravityforms/url' ),
+			'is_error'        => is_wp_error( $license_info ) || $license_info->has_errors(),
+			'offerings'       => $plugins,
+			'status'          => ( $is_valid_license_info ) ? $license_info->get_status() : '',
 		);
 	}
 

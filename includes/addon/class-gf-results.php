@@ -51,6 +51,8 @@ if ( ! class_exists( 'GFResults' ) ) {
 				require_once( GFCommon::get_base_path() . '/tooltips.php' );
 				add_filter( 'gform_tooltips', array( $this, 'add_tooltips' ) );
 
+				add_filter( 'admin_title', array( $this, 'set_unique_page_title' ), 100, 2 );
+
 			}
 
 		}
@@ -886,6 +888,32 @@ if ( ! class_exists( 'GFResults' ) ) {
 			) ) ? GFSurvey::get_field_score( $field, $entry ) : 0;
 		}
 
+		/**
+		 * Sets a unique page title to the results page based on the title
+		 * and the form the user is viewing.
+		 * 
+		 * @since 2.8.16
+		 * 
+		 * @filter admin_title
+		 * 
+		 * @param string $admin_title The page title with extra context added.
+		 * @param string $title       The original page title. 
+		 * 
+		 * @return string
+		 */
+		public function set_unique_page_title( $admin_title, $title ) {
+			$form_id = rgget( 'id' );
+			if ( ! $form_id ) {
+				$forms   = RGFormsModel::get_forms( null, 'title' );
+				$form_id = ( ! empty( $forms ) ) ? $forms[0]->id : '';
+			}
+
+			$form        = GFAPI::get_form( $form_id );
+			$form_title  = rgar( $form, 'title', esc_html__( 'Form Not Found', 'gravityforms' ) );
+			$admin_title = sprintf( '%1$s &lsaquo; %2$s &lsaquo; %3$s', esc_html( $this->_title ), esc_html( $form_title ), esc_html( $admin_title ) );
+			
+			return $admin_title; 
+		}
 
 		public static function get_default_field_results( $form_id, $field, $search_criteria, &$offset, $page_size, &$more_remaining = false ) {
 			$field_results = '';

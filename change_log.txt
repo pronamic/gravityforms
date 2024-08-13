@@ -1,3 +1,13 @@
+### 2.8.16 | 2024-08-12
+- Added security enhancements.
+- Added unique aria labels to the main links on the form list, entry list, confirmation list, and notification list to improve accessibility.
+- Updated the licensing messages on the plugins page to be consistent with the settings page.
+- Updated the results page title to be unique for better accessibility.
+- Updates for WP 6.6 compatibility.
+- Fixed an issue where a number field with range has an invalid aria-describedby attribute when it fails validation.
+- Fixed issues with the choices flyout in the form editor in RTL languages.
+- Fixed an issue where a database error occurs during background processing if the site that queued the task is deleted.
+
 ### 2.8.15 | 2024-07-29
 - Added improvements to translator comments.
 - Added improvements for WordPress 6.6 compatibility.
