@@ -68,7 +68,7 @@ class GF_Upgrade {
 			$this->install();
 
 			// Show installation wizard for all new installations as long as the key wasn't already set e.g. by the CLI.
-			if ( ! get_option( 'rg_gforms_key' ) ) {
+			if ( ! GFCommon::get_key() ) {
 				update_option( 'gform_pending_installation', true );
 			}
 		} elseif ( $this->is_downgrading() ) {
@@ -156,6 +156,7 @@ class GF_Upgrade {
 		$this->test_auto_increment();
 
 		$this->sync_auto_updates( $from_db_version );
+		$this->set_license_network_option();
 
 		// Start upgrade routine
 		if ( $force_upgrade || ! ( defined( 'GFORM_AUTO_DB_MIGRATION_DISABLED' ) && GFORM_AUTO_DB_MIGRATION_DISABLED ) ) {
@@ -163,6 +164,38 @@ class GF_Upgrade {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Ensures the network option for the license key is set.
+	 *
+	 * @since 2.8.17
+	 *
+	 * @return void
+	 */
+	public function set_license_network_option() {
+		if ( ! GFCommon::is_network_active() ) {
+			return;
+		}
+
+		if ( ! is_main_site() ) {
+			delete_option( 'gform_pending_installation' );
+			delete_option( 'rg_gforms_message' );
+
+			return;
+		}
+
+		$key = get_network_option( null, GFForms::LICENSE_KEY_OPT );
+		if ( $key ) {
+			return;
+		}
+
+		$key = GFCommon::get_key();
+		if ( ! $key ) {
+			return;
+		}
+
+		update_network_option( null, GFForms::LICENSE_KEY_OPT, $key );
 	}
 
 	/**

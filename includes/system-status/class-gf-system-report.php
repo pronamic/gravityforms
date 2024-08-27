@@ -443,7 +443,7 @@ class GF_System_Report {
 								'label'        => esc_html__( 'WordPress Multisite', 'gravityforms' ),
 								'label_export' => 'WordPress Multisite',
 								'value'        => is_multisite() ? __( 'Yes', 'gravityforms' ) : __( 'No', 'gravityforms' ),
-								'value_export' => is_multisite() ? 'Yes' : 'No',
+								'value_export' => is_multisite() ?  sprintf( 'Yes (%d sites)', rgar( wp_count_sites(), 'all' ) ) : 'No',
 							),
 							array(
 								'label'        => esc_html__( 'WordPress Memory Limit', 'gravityforms' ),

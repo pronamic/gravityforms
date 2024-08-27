@@ -2706,14 +2706,10 @@ Content-Type: text/html;
 	 *
 	 * @return bool True if current user can uninstall the plugin. False otherwise
 	 */
-	public static function current_user_can_uninstall( $caps = 'gravityforms_uninstall', $plugin_path = 'gravityforms/gravityforms.php' ) {
-
-		$is_multisite = function_exists( 'is_multisite' ) && is_multisite();
-		$is_network_activated = is_plugin_active_for_network( $plugin_path );
-
+	public static function current_user_can_uninstall( $caps = 'gravityforms_uninstall', $plugin_path = GF_PLUGIN_BASENAME ) {
 
 		//If an addon is network activated, it can only be uninstalled by a super admin.
-		if ( $is_multisite && $is_network_activated ) {
+		if ( self::is_network_active( $plugin_path ) ) {
 			return is_super_admin();
 		} else {
 			return self::current_user_can_any( $caps );
@@ -2863,8 +2859,24 @@ Content-Type: text/html;
 		return stripslashes( get_option( 'rg_gforms_message' ) );
 	}
 
+	/**
+	 * Returns the license key MD5.
+	 *
+	 * If this is a multisite installation, and the current site doesn't have a key saved, it will fallback to the network option containing the key from the main site.
+	 *
+	 * @since unknown
+	 * @since 2.8.17 Added the network option fallback.
+	 *
+	 * @return string|false
+	 */
 	public static function get_key() {
-		return get_option( 'rg_gforms_key' );
+		$key = get_option( GFForms::LICENSE_KEY_OPT );
+
+		if ( ! $key && ! is_main_site() ) {
+			$key = get_network_option( null, GFForms::LICENSE_KEY_OPT );
+		}
+
+		return $key;
 	}
 
 	/**
@@ -7726,6 +7738,27 @@ Content-Type: text/html;
 		}
 
 		GFCache::set( GFCache::KEY_CRON_EVENTS, $events, true );
+	}
+
+	/**
+	 * Determines if this is a network activated multisite installation.
+	 *
+	 * @since 2.8.17
+	 *
+	 * @param string $plugin Path to the plugin file relative to the plugins directory.
+	 *
+	 * @return bool
+	 */
+	public static function is_network_active( $plugin = GF_PLUGIN_BASENAME ) {
+		if ( ! is_multisite() ) {
+			return false;
+		}
+
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		return is_plugin_active_for_network( $plugin );
 	}
 
 }

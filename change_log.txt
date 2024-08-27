@@ -1,3 +1,7 @@
+### 2.8.17 | 2024-08-26
+- Updated the form restriction logging statements to include the form ID.
+- Fixed an issue where the license key is not saved for some sites in a multisite/network installation.
+
 ### 2.8.16 | 2024-08-12
 - Added security enhancements.
 - Added unique aria labels to the main links on the form list, entry list, confirmation list, and notification list to improve accessibility.

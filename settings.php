@@ -401,7 +401,7 @@ class GFSettings {
 	private static function plugin_settings_fields() {
 		$license_section_description = esc_html__( 'A valid license key is required for access to automatic plugin upgrades and product support.', 'gravityforms' );
 		$is_hidden                   = false;
-		if ( is_multisite() && ! is_main_site() && is_plugin_active_for_network( GF_PLUGIN_BASENAME ) ) {
+		if ( ! is_main_site() && GFCommon::is_network_active() ) {
 			$is_hidden                   = true;
 			$license_section_description = esc_html__( 'License key is managed by the administrator of this network', 'gravityforms' );
 		}
