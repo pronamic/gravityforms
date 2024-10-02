@@ -6724,14 +6724,8 @@ class GFFormsModel {
 
 		$entry_meta_table_name = self::get_entry_meta_table_name();
 		$field_list             = '';
-		$fields                 = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT meta_key FROM $entry_meta_table_name WHERE form_id=%d", $form_id ) );
-		foreach ( $fields as $field ) {
-			$field_list .= intval( $field->meta_key ) . ',';
-		}
-
-		if ( ! empty( $field_list ) ) {
-			$field_list = substr( $field_list, 0, strlen( $field_list ) - 1 );
-		}
+		$fields                 = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT meta_key FROM $entry_meta_table_name WHERE form_id=%d AND meta_key REGEXP '^[0-9]+(\.[0-9]+)?$'", $form_id ) );
+		$field_list             = implode( ',', array_unique( array_map( 'intval', $fields ) ) );
 
 		return $field_list;
 	}
