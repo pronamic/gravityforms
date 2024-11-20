@@ -645,6 +645,7 @@ class GF_Upgrade {
               created_by bigint unsigned,
               transaction_type tinyint,
               status varchar(20) not null default 'active',
+              source_id bigint unsigned,
               PRIMARY KEY  (id),
               KEY form_id (form_id),
               KEY form_id_status (form_id,status)

@@ -314,7 +314,12 @@ class GF_Forms_Model_Legacy {
 		 * @param $lead_id
 		 * @deprecated
 		 * @see gform_delete_entry
+		 * @remove-in 3.0
 		 */
+
+		if ( has_action( 'gform_delete_lead' ) ) {
+			trigger_error( 'The gform_delete_lead action is deprecated and will be removed in version 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED );
+		}
 		do_action( 'gform_delete_lead', $lead_id );
 
 		$lead_table             = self::get_lead_table_name();

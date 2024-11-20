@@ -1360,6 +1360,7 @@ class GFFormsModel {
 	 * Adds default form properties
 	 *
 	 * @deprecated 1.9
+	 * @remove-in 3.0
 	 */
 	public static function add_default_properties( $form ) {
 		_deprecated_function( 'GFFormsModel::add_default_properties', '1.9' );
@@ -1540,6 +1541,88 @@ class GFFormsModel {
 		}
 	}
 
+	/**
+	 * Changes the status of multiple entries.
+	 *
+	 * @since 2.9.0
+	 * @access public
+	 *
+	 * @param array  $leads  The entries to transition.
+	 * @param string $status The new status.
+	 *
+	 * @return void
+	 */
+	public static function change_entries_status( $leads, $status ) {
+		foreach ( $leads as $lead ) {
+			self::change_entry_status( $lead, $status );
+		}
+	}
+
+	/**
+	 * Changes the status of a single entry.
+	 *
+	 * @since 2.9.0
+	 * @access public
+	 *
+	 * @param int    $lead_id The entry ID.
+	 * @param string $status  The new status.
+	 *
+	 * @return void
+	 */
+	public static function change_entry_status( $lead_id, $status ) {
+		$lead = self::get_entry( $lead_id );
+
+		// If the entry is already in the desired status, return.
+		if ( $lead['status'] == $status ) {
+			return;
+		}
+
+		// save the current status in the entry meta in case we need to revert
+		$previous_status = $lead['status'];
+		gform_update_meta( $lead_id, 'previous_status', $previous_status );
+		self::update_entry_property( $lead_id, 'status', $status );
+	}
+
+	/**
+	 * Restores the status of a single entry to its previous status.
+	 *
+	 * @since 2.9.0
+	 * @access public
+	 *
+	 * @param int $lead_id The entry ID.
+	 *
+	 * @return void
+	 */
+	public static function restore_entry_status( $lead_id ) {
+		$lead = self::get_entry( $lead_id );
+
+		// If the entry is already active, return.
+		if ( $lead['status'] == 'active' ) {
+			return;
+		}
+
+		// get the previous status from the entry meta
+		$previous_status = gform_get_meta( $lead_id, 'previous_status' );
+		$new_status = $previous_status === false ? 'active' : $previous_status;
+		self::update_entry_property( $lead_id, 'status', $new_status );
+	}
+
+	/**
+	 * Restores the status of multiple entries to their previous status.
+	 *
+	 * @since 2.9.0
+	 * @access public
+	 *
+	 * @param array $leads The entries to restore.
+	 *
+	 * @return void
+	 */
+	public static function restore_entries_status( $leads ) {
+		foreach ( $leads as $lead ) {
+			self::restore_entry_status( $lead );
+		}
+	}
+
 	public static function update_entry_property( $lead_id, $property_name, $property_value, $update_akismet = true, $disable_hook = false ) {
 		global $wpdb, $current_user;
 
@@ -1708,7 +1791,12 @@ class GFFormsModel {
 				 * @param $lead_id
 				 * @deprecated Use gform_delete_entry instead
 				 * @see gform_delete_entry
+				 * @remove-in 3.0
 				 */
+
+			if ( has_action( 'gform_delete_lead' ) ) {
+				trigger_error( 'The gform_delete_lead action is deprecated and will be removed in 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED );
+			}
 				do_action( 'gform_delete_lead', $entry_id );
 
 			}
@@ -1932,8 +2020,14 @@ class GFFormsModel {
         /**
          * @deprecated
          * @see gform_post_form_duplicated
+         * @remove-in 3.0
          */
+
+		if ( has_action( 'gform_after_duplicate_form' ) ) {
+			trigger_error( 'The gform_after_duplicate_form action is deprecated and will be removed in 3.0. Use gform_post_form_duplicated instead.', E_USER_DEPRECATED );
+		}
         do_action( 'gform_after_duplicate_form', $form_id, $new_id );
+
 
 		/**
 		 * Fires after a form is duplicated
@@ -2639,7 +2733,12 @@ class GFFormsModel {
 		 * @param $lead_id
 		 * @deprecated Use gform_delete_entry instead
 		 * @see gform_delete_entry
+		 * @remove-in 3.0
 		 */
+
+		if ( has_action( 'gform_delete_lead' ) ) {
+			trigger_error( 'The gform_delete_lead action is deprecated and will be removed in version 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED );
+		}
 		do_action( 'gform_delete_lead', $entry_id );
 
 
@@ -2956,7 +3055,8 @@ class GFFormsModel {
 			 */
 			$currency = gf_apply_filters( array( 'gform_currency_pre_save_entry', $form['id'] ), GFCommon::get_currency(), $form );
 
-			$ip = rgars( $form, 'personalData/preventIP' ) ? '' : self::get_ip();
+			$ip        = rgars( $form, 'personalData/preventIP' ) ? '' : self::get_ip();
+			$source_id = self::get_source_id( $form );
 
 			$wpdb->insert(
 				$entry_table,
@@ -2969,6 +3069,7 @@ class GFFormsModel {
 					'user_agent'   => $user_agent,
 					'currency'     => $currency,
 					'created_by'   => $user_id,
+					'source_id'    => $source_id,
 				),
 				array(
 					'form_id'      => '%d',
@@ -2979,6 +3080,7 @@ class GFFormsModel {
 					'user_agent'   => '%s',
 					'currency'     => '%s',
 					'created_by'   => '%s',
+					'source_id'    => '%d',
 				)
 			);
 
@@ -3011,6 +3113,7 @@ class GFFormsModel {
 				'is_fulfilled'     => null,
 				'created_by'       => (string) $user_id,
 				'transaction_type' => null,
+				'source_id'        => $source_id,
 			);
 
 			GFCommon::log_debug( __METHOD__ . "(): Entry record created in the database. ID: {$lead_id}." );
@@ -3188,6 +3291,34 @@ class GFFormsModel {
 		GFCommon::log_debug( __METHOD__ . sprintf( '(): %s entry completed in %F seconds.', $is_new_lead ? 'Saving' : 'Updating', GFCommon::timer_end( __METHOD__ ) ) );
 	}
 
+	/**
+	 * Helper to get the ID of the post or page where the form submission originated.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param array $form The form the entry is being created for.
+	 *
+	 * @return int|null
+	 */
+	private static function get_source_id( $form ) {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+			$id = url_to_postid( $_SERVER['HTTP_REFERER'] );
+		} elseif ( rgget( 'gf_page' ) === 'preview' ) {
+			return null;
+		} elseif ( is_singular() ) {
+			$id = get_the_ID();
+		}
+
+		/**
+		 * Allows the value to be saved to the entry source_id property to be overridden.
+		 *
+		 * @since 2.9
+		 *
+		 * @param int|null  $id     The ID of the post or page where the form submission originated.
+		 * @param array     $form   The form the entry is being created for.
+		 */
+		return gf_apply_filters( array( 'gform_source_id_pre_save_entry', (int) rgar( $form, 'id' ) ), ! empty( $id ) ? $id : null, $form );
+	}
 
 	/**
 	 * Gets the extra meta data a field wants to save to the entry and updates the entry meta with the retrieved data.
@@ -3314,6 +3445,7 @@ class GFFormsModel {
 		$user_agent           = self::truncate( rgar( $_SERVER, 'HTTP_USER_AGENT' ), 250 );
 		$lead['user_agent']   = sanitize_text_field( $user_agent );
 		$lead['created_by']   = $current_user && $current_user->ID ? $current_user->ID : 'NULL';
+		$lead['source_id']    = self::get_source_id( $form );
 
 		/**
 		 * Allow the currency code to be overridden.
@@ -3847,6 +3979,7 @@ class GFFormsModel {
 
 	/**
 	 * @deprecated 2.4
+	 * @remove-in 3.0
 	 *
 	 * @param int $expiration_days
 	 *
@@ -3903,6 +4036,7 @@ class GFFormsModel {
 	/**
 	 *
 	 * @deprecated 2.4
+	 * @remove-in 3.0
 	 *
 	 * @param $token
 	 *
@@ -3934,6 +4068,7 @@ class GFFormsModel {
 	/**
 	 *
 	 * @deprecated 2.4
+	 * @remove-in 3.0
 	 *
 	 * @param        $form
 	 * @param        $entry
@@ -4206,6 +4341,7 @@ class GFFormsModel {
 
 	/**
 	 * @deprecated 2.4
+	 * @remove-in 3.0
 	 *
 	 * @param $resume_token
 	 *
@@ -4280,6 +4416,7 @@ class GFFormsModel {
 	/**
 	 *
 	 * @deprecated 2.4
+	 * @remove-in 3.0
 	 *
 	 * @param $token
 	 * @param $email
@@ -6086,7 +6223,10 @@ class GFFormsModel {
 			// making sure values submitted are sent in the value even if
 			// there isn't an input associated with it
 			$lead_field_keys = array_keys( $lead );
-			natsort( $lead_field_keys );
+			// We don't reorder the keys for Choice or Image Choice fields as they need to be rendered in the same order as they are saved in DB.
+			if ( ! $field->has_persistent_choices() ) {
+				natsort( $lead_field_keys );
+			}
 			foreach ( $lead_field_keys as $input_id ) {
 				if ( is_numeric( $input_id ) && absint( $input_id ) == absint( $field_id ) ) {
 					$val = $lead[ $input_id ];
@@ -6106,6 +6246,8 @@ class GFFormsModel {
 	/**
 	 *
 	 * @deprecated 2.0
+	 * @remove-in 3.0
+	 *
 	 * @param      $lead
 	 * @param      $field_number
 	 * @param      $form
@@ -6174,6 +6316,7 @@ class GFFormsModel {
 	/**
 	 *
 	 * @deprecated 2.3
+	 * @remove-in 3.0
 	 *
 	 * @param $form_id
 	 * @param int $sort_field_number
@@ -6244,6 +6387,7 @@ class GFFormsModel {
 	/**
 	 *
 	 * @deprecated 2.3
+	 * @remove-in 3.0
 	 *
 	 * @param $args
 	 *
@@ -6260,11 +6404,14 @@ class GFFormsModel {
 
 	/**
 	 * @deprecated 2.3
+	 * @remove-in 3.0
+	 *
 	 * @param $results
 	 *
 	 * @return array
 	 */
 	public static function build_lead_array( $results ) {
+		_deprecated_function(__METHOD__, '2.3');
 		return GF_Forms_Model_Legacy::build_lead_array( $results );
 	}
 
@@ -6317,6 +6464,7 @@ class GFFormsModel {
 	 * Use GFAPI::count_entries() instead.
 	 *
 	 * @deprecated 2.3.0.1
+	 * @remove-in 3.0
 	 *
 	 *
 	 * @param $form_id
@@ -6363,6 +6511,7 @@ class GFFormsModel {
 	 * This function is not used and is only included for backwards compatibility. Use GFAPI::count_entries() instead.
 	 *
 	 * @deprecated 2.3.0.1
+	 * @remove-in 3.0
 	 *
 	 * @since 2.3.0.1
 	 *
@@ -6808,9 +6957,12 @@ class GFFormsModel {
 
 	/**
 	 * @deprecated 2.8 HTML5 setting was removed, and HTML5 is now always enabled.
+	 * @remove-in 3.0
+	 *
 	 * @return true
 	 */
 	public static function is_html5_enabled() {
+		_deprecated_function( __METHOD__ , '2.8' );
 		return true;
 	}
 
@@ -7232,6 +7384,7 @@ class GFFormsModel {
 			'created_by',
 			'transaction_type',
 			'status',
+			'source_id',
 		);
 	}
 
@@ -7321,6 +7474,7 @@ class GFFormsModel {
 
 	/**
 	 * @deprecated 2.2 Use gf_upgrade()->dbDelta() instead
+	 * @remove-in 3.0
 	 */
 	public static function dbDelta( $sql ) {
 		_deprecated_function( 'dbDelta', '2.2', 'gf_upgrade()->dbDelta()' );
@@ -7517,6 +7671,7 @@ class GFFormsModel {
 	 * Returns an array of field IDs that have been encrypted using GFCommon::encrypt()
 	 *
 	 * @deprecated
+	 * @remove-in 3.0
 	 *
 	 * @since unknown
 	 *
@@ -7541,6 +7696,7 @@ class GFFormsModel {
 	 * Stores the field IDs that have been encrypted using GFCommon::encrypt()
 	 *
 	 * @deprecated
+	 * @remove-in 3.0
 	 *
 	 * @since unknown
 	 *
@@ -7568,6 +7724,7 @@ class GFFormsModel {
 	 * Checks whether the given field was encrypted using GFCommon::encrpyt() and registered using GFCommon::set_encrypted_fields()
 	 *
 	 * @deprecated
+	 * @remove-in 3.0
 	 *
 	 * @since unknown
 	 *
@@ -7699,6 +7856,7 @@ class GFFormsModel {
 
 	/**
 	 * @deprecated 2.4.16
+	 * @remove-in 3.0
 	 *
 	 * @param $entry
 	 * @param $form
@@ -7706,6 +7864,7 @@ class GFFormsModel {
 	 * @return mixed
 	 */
 	public static function delete_password( $entry, $form ) {
+		_deprecated_function( __FUNCTION__, '2.4.16' );
 		$password_fields = self::get_fields_by_type( $form, array( 'password' ) );
 		if ( is_array( $password_fields ) ) {
 			foreach ( $password_fields as $password_field ) {
@@ -8171,6 +8330,8 @@ class GFFormsModel {
 	 *
 	 * @since 2.4.24
 	 *
+	 * @since 2.7.17 Added support for encrypting settings fields.
+	 *
 	 * @param int    $feed_id        The ID of the feed being updated.
 	 * @param string $property_name  The name of the property (column) being updated.
 	 * @param mixed  $property_value The new value of the specified property.
@@ -8191,13 +8352,18 @@ class GFFormsModel {
 		}
 
 		if ( $property_name === 'meta' ) {
-			if ( is_array( $property_value ) ) {
-				$property_value = json_encode( $property_value );
-			}
-
-			if ( empty( $property_value ) || ! is_string( $property_value ) || $property_value[0] !== '{' ) {
+			$is_valid_format = ( is_array( $property_value ) && is_string( key( $property_value ) ) ) || ( is_string( $property_value ) && strpos( $property_value, '{' ) === 0 );
+			if ( ! $is_valid_format ) {
 				return new WP_Error( 'invalid_meta', __( 'Feed meta should be an associative array or JSON', 'gravityforms' ) );
 			}
+
+			$feed = GFAPI::get_feed( $feed_id );
+			if ( is_wp_error( $feed ) ) {
+				return $feed;
+			}
+			$meta           = is_array( $property_value ) ? $property_value : json_decode( $property_value, true );
+			$encrypted_meta = GFAPI::encrypt_feed_meta( $meta, $feed['addon_slug'] );
+			$property_value = json_encode( $encrypted_meta );
 		}
 
 		global $wpdb;

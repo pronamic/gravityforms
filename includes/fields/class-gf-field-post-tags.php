@@ -82,15 +82,14 @@ class GF_Field_Post_Tags extends GF_Field {
 		$aria_describedby      = $this->get_aria_describedby();
 
 		// Use the WordPress built-in class "howto" in the form editor.
-		$text_hint_class = $is_form_editor ? 'howto' : 'gfield_post_tags_hint gfield_description';
-		$text_hint       = '<p class="' . $text_hint_class . '" id="' . $field_id . '_desc">' . gf_apply_filters( array(
+		$text_hint = '<p class="gfield_post_tags_hint gfield_description" id="' . $field_id . '_desc">' . gf_apply_filters( array(
 				'gform_post_tags_hint',
 				$form_id,
 				$this->id,
 			), esc_html__( 'Separate tags with commas', 'gravityforms' ), $form_id ) . '</p>';
 
 		return "<div class='ginput_container ginput_container_post_tags'>
-					<input name='input_{$id}' id='{$field_id}' type='text' value='{$value}' class='{$class}' {$tabindex} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$disabled_text}/> {$text_hint}
+					<input name='input_{$id}' id='{$field_id}' type='text' value='{$value}' class='{$class}' {$tabindex} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$disabled_text}/>{$text_hint}
 				</div>";
 	}
 

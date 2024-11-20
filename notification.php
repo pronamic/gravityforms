@@ -529,13 +529,17 @@ Class GFNotification {
 		 *
 		 * @deprecated
 		 * @since 1.7
-		 *
+		 * @remove-in 3.0
 		 * @param array $ui_settings  An array of settings for the notification UI.
 		 * @param array $notification The current notification object being edited.
 		 * @param array $form         The current form object to which the notification being edited belongs.
 		 * @param null  $is_valid     Whether or not the current notification has passed validation. (Deprecated.)
 		 */
 		$legacy_settings = apply_filters( 'gform_notification_ui_settings', array(), $notification, $form, null );
+
+		if ( has_filter( 'gform_notification_ui_settings' ) ) {
+			trigger_error( 'gform_notification_ui_settings is deprecated and will be removed in version 3.0.', E_USER_DEPRECATED );
+		}
 
 		if ( empty( $legacy_settings ) ) {
 			return $fields;

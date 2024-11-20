@@ -35,6 +35,28 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 	}
 
 	/**
+	 * Array of no conflict styles.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @var array Array of style to be added to the no conflict style list.
+	 */
+	private $_no_conflict_styles = array();
+
+	/**
+	 * Adds a style handle to the list of no conflict styles.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param string $handle Style to be added to the no conflict list.
+	 *
+	 * @return void
+	 */
+	public function add_no_conflict_style( $handle ) {
+		$this->_no_conflict_styles[] = $handle;
+	}
+
+	/**
 	 * Setter for scripts.
 	 *
 	 * @since 2.7
@@ -55,48 +77,122 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 	public function output() {
 		$self = $this;
 
-		// Enqueue scripts and styles for blocks.
-		add_action( 'gform_post_enqueue_scripts', function ( $found_forms, $found_blocks, $post ) use ( $self ) {
-			foreach ( $found_blocks as $block ) {
-				$settings = $self->get_settings( $block['attrs']['formId'] );
-				$form     = \GFFormsModel::get_form( $block['attrs']['formId'] );
-				$styles   = call_user_func_array( $self->styles, array( $form, false, $settings, $block['attrs'] ) );
-				$scripts  = call_user_func_array( $self->scripts, array( $form, false, $settings, $block['attrs'] ) );
+		// Don't enqueue assets if we're doing an AJAX request.
+		if ( defined( 'DOING_AJAX' ) &&  DOING_AJAX ) {
+			return;
+		}
 
-				$this->process_form_assets( $styles, $scripts );
+		// Enqueue styles for admin pages other than the form editor and block editor.
+		add_action( 'admin_enqueue_scripts', function() use ( $self ) {
+
+			// Ignore block editor pages because they are handled separately below.
+			if ( \GFCommon::is_block_editor_page() ) {
+				return;
 			}
 
-		}, 999, 3 );
+			// Handle pages where there is a form context.
+			$form = $settings = array();
+			if ( in_array( \GFForms::get_page(), array( 'form_editor', 'entry_detail', 'entry_detail_edit' ) ) ) {
+				$form = GFAPI::get_form( rgget( 'id' ) );
+				$settings = $self->get_settings( $form['id'] );
+			}
 
-		// Enqueue scripts and styles for forms that aren't in blocks.
-		add_action( 'gform_enqueue_scripts', function ( $form, $ajax ) use ( $self ) {
-			$page_instance  = isset( $form['page_instance'] ) ? $form['page_instance'] : - 1;
-			$settings       = $this->get_settings( $form['id'] );
-			$block_settings = $this->get_block_settings( $form['id'], $page_instance );
+			$self->enqueue_form_styles( $form, $settings );
+		}, 1000 );
 
-			// Get the settings from the shortcode attribute or form properties, if they exist.
-			$shortcode_settings = $this->parse_form_style( $form );
+		// Enqueue styles for the block editor.
+		add_action('enqueue_block_editor_assets', function() use ( $self ) {
+			$self->enqueue_form_styles();
+		}, 1000 );
 
-			// If we have conflicting block and shortcode settings, block settings take priority.
-			$style_settings = ! empty( $block_settings ) ? $block_settings : $shortcode_settings;
-
-			$styles         = call_user_func_array( $self->styles, array( $form, $ajax, $settings, $style_settings ) );
-			$scripts        = call_user_func_array( $self->scripts, array( $form, $ajax, $settings, $style_settings ) );
-
-			$this->process_form_assets( $styles, $scripts );
-
-		}, 999, 2 );
-
-		add_action( 'gform_enqueue_scripts', function () use ( $self ) {
+		// Enqueue styles in form preview.
+		add_filter( 'gform_preview_styles', function( $styles, $form ) use ( $self ) {
 			global $wp_styles;
-			$queued = $wp_styles->queue;
-			usort( $queued, array( $self, 'sort_enqueues_by_group' ) );
-			$wp_styles->queue = $queued;
 
-			return;
-		}, 1000, 0 );
+			$settings = $this->get_settings( $form['id'] );
+			$self->enqueue_form_assets( $form, false, $settings, array() );
+			return array_unique( array_merge( $styles, $wp_styles->queue ) );
+		}, 10, 2 );
+
+		// Enqueue scripts and styles anywhere a form is loaded (admin or front end). Except for the block editor and form editor, which are handled above.
+		add_action( 'gform_enqueue_scripts', function( $form, $ajax ) use ( $self ) {
+			$settings = $this->get_settings( $form['id'] );
+			$style_settings = $this->parse_form_style( $form );
+			$self->enqueue_form_assets( $form, $ajax, $settings, $style_settings );
+		}, 1000, 4 );
+
+		// Adds theme layer styles to the no conflict list so that they get enqueued when no conflict mode is enabled.
+		add_filter( 'gform_noconflict_styles', function ( $styles ) {
+			return array_unique( array_merge( $styles, $this->_no_conflict_styles ) );
+		});
 	}
 
+	/**
+	 * Enqueues the scripts and styles for a form in the appropriate order and group.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param array $form           The form to enqueue scripts and styles for.
+	 * @param bool  $ajax           Whether the form is being loaded via AJAX.
+	 * @param array $settings       The settings for the form.
+	 * @param array $style_settings The custom styles defined when embedding a form via the block editor or via the shortcode.
+	 */
+	protected function enqueue_form_assets( $form, $ajax, $settings, $style_settings ) {
+
+		$styles   = call_user_func_array( $this->styles, array( $form, $ajax, $settings, $style_settings ) );
+		$scripts  = call_user_func_array( $this->scripts, array( $form, $ajax, $settings, $style_settings ) );
+		$this->process_form_assets( $styles, $scripts );
+
+		$this->sort_enqueued_styles();
+	}
+
+	/**
+	 * Enqueue the styles for a form in the appropriate order and group.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param array $form     The form to enqueue styles for. Optional. Some pages such as the block editor page won't have a form context.
+	 * @param array $settings The settings for the form.
+	 */
+	protected function enqueue_form_styles( $form = array(), $settings = array() ) {
+		$styles = call_user_func_array( $this->styles, array( $form, false, $settings ) );
+		$this->process_styles( $styles );
+
+		$this->sort_enqueued_styles();
+	}
+
+	/**
+	 * Sorts enqueued styles by group. See {@see Asset_Enqueue_Output_Engine::sort_enqueues_by_group()} for more information.
+	 *
+	 * @since 2.9.0
+	 */
+	public function sort_enqueued_styles() {
+		global $wp_styles;
+
+		// Sort styles by group.
+		$queued = $wp_styles->queue;
+		usort( $queued, array( $this, 'sort_enqueues_by_group' ) );
+		$wp_styles->queue = $queued;
+	}
+
+	/**
+	 * Sorts enqueued styles by group. Core styles are always first within their respective groups.
+	 * Groups are "reset", "foundation", "framework", and "theme". Groups are sorted in that order, and within each group, core styles are always first followed by other styles.
+	 * For example, if an add-on has a style in the "foundation" and "framework" groups, styles will be sorted in the following order:
+	 * 1. Core reset style
+	 * 2. Core foundation style
+	 * 3. Add-on foundation style
+	 * 4. Core framework style
+	 * 5. Add-on framework style
+	 * 6. Core theme style
+	 *
+	 * @since 2.7.4
+	 *
+	 * @param string $a Style handle.
+	 * @param string $b Style handle.
+	 *
+	 * @return int
+	 */
 	public function sort_enqueues_by_group( $a, $b ) {
 		$comp_keys = array_keys( self::$groups );
 
@@ -159,8 +255,8 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 	 *
 	 * @since 2.7.4
 	 *
-	 * @param array $styles  Styles to enqueue
-	 * @param array $scripts Scripts to enqueue
+	 * @param array $styles  Styles to enqueue.
+	 * @param array $scripts Scripts to enqueue.
 	 */
 	public function process_form_assets( $styles, $scripts ) {
 		foreach ( $scripts as $script_args ) {
@@ -174,6 +270,13 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 		$this->process_styles( $styles );
 	}
 
+	/**
+	 * Enqueue the styles of a form.
+	 *
+	 * @since Unknown
+	 *
+	 * @param array $styles An array of style slugs to be enqued.
+	 */
 	private function process_styles( $styles ) {
 		foreach( $styles as $key => $style_args ) {
 			if ( ! is_numeric( $key ) ) {
@@ -193,6 +296,8 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 			}
 
 			call_user_func_array( 'wp_enqueue_style', $style_args );
+
+			$this->add_no_conflict_style( $style_args[0] );
 		}
 
 	}

@@ -634,6 +634,16 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 	//--------  Feed data methods  -------------------------
 
+	/**
+	 * Gets the feeds for the specified form id.
+	 *
+	 * @since Unknown
+	 * @since 2.7.17 Added support for decrypting settings fields.
+	 *
+	 * @param int $form_id The form id to get feeds for.
+	 *
+	 * @return array Returns an array of feeds for the specified form id.
+	 */
 	public function get_feeds( $form_id = null ) {
 		global $wpdb;
 
@@ -646,7 +656,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$results = $wpdb->get_results( $sql, ARRAY_A );
 		foreach ( $results as &$result ) {
-			$result['meta'] = json_decode( $result['meta'], true );
+			$result['meta'] = $this->decrypt_feed_meta( json_decode( $result['meta'], true ) );
 		}
 
 		return $results;
@@ -656,6 +666,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	 * Queries and returns all active feeds for this Add-On
 	 *
 	 * @since 2.4
+	 * @since 2.7.17 Added support for decrypting settings fields.
 	 *
 	 * @param int $form_id The Form Id to get feeds from.
 	 *
@@ -673,12 +684,23 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$results = $wpdb->get_results( $sql, ARRAY_A );
 		foreach ( $results as &$result ) {
-			$result['meta'] = json_decode( $result['meta'], true );
+			$result['meta'] = $this->decrypt_feed_meta( json_decode( $result['meta'], true ) );
 		}
 
 		return $results;
 	}
 
+	/**
+	 * Gets the feeds for the specified addon slug and form id.
+	 *
+	 * @since Unknown
+	 * @since 2.7.17 Added support for decrypting settings fields.
+	 *
+	 * @param string $slug The addon slug to get feeds for.
+	 * @param int $form_id (optional) The form id to get feeds for. If not specified, all feeds for the specified addon slug will be returned.
+	 *
+	 * @return array Returns an array of feeds for the specified form id.
+	 */
 	public function get_feeds_by_slug( $slug, $form_id = null ) {
 		global $wpdb;
 
@@ -694,7 +716,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$results = $wpdb->get_results( $sql, ARRAY_A );
 		foreach( $results as &$result ) {
-			$result['meta'] = json_decode( $result['meta'], true );
+			$result['meta'] = $this->decrypt_feed_meta( json_decode( $result['meta'], true ) );
 		}
 
 		return $results;
@@ -716,6 +738,16 @@ abstract class GFFeedAddOn extends GFAddOn {
 		}
 	}
 
+	/**
+	 * Gets a feed by its id.
+	 *
+	 * @since Unknown
+	 * @since 2.7.17 Added support for decrypting settings fields.
+	 *
+	 * @param int $id The feed id.
+	 *
+	 * @return array Returns the feed array if found, false otherwise.
+	 */
 	public function get_feed( $id ) {
 		global $wpdb;
 
@@ -731,7 +763,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			return false;
 		}
 
-		$row['meta'] = json_decode( $row['meta'], true );
+		$row['meta'] = $this->decrypt_feed_meta( json_decode( $row['meta'], true ) );
 
 		return $row;
 	}
@@ -772,6 +804,20 @@ abstract class GFFeedAddOn extends GFAddOn {
 		return $meets_conditional_logic ? false : $has_active_feed;
 	}
 
+	/**
+	 * Decrypts the feed meta row and return the decripted array.
+	 *
+	 * @since 2.7.17
+	 *
+	 * @param array $row The feed meta row to decrypt.
+	 *
+	 * @return array Returns the feed meta row with values decrypted appropriately.
+	 */
+	private function decrypt_feed_meta( $row ) {
+
+		return $this->get_encryptor()->decrypt_feed_meta( $row );
+	}
+
 	public function get_single_submission_feed( $entry = false, $form = false ) {
 
 		if ( ! $entry && ! $form ) {
@@ -779,26 +825,18 @@ abstract class GFFeedAddOn extends GFAddOn {
 		}
 
 		$feed = false;
-
 		if ( ! empty( $this->_single_submission_feed ) && ( ! $form || $this->_single_submission_feed['form_id'] == $form['id'] ) ) {
-
 			$feed = $this->_single_submission_feed;
-
 		} elseif ( ! empty( $entry['id'] ) ) {
-
 			$feeds = $this->get_feeds_by_entry( $entry['id'] );
-
 			if ( empty( $feeds ) ) {
 				$feed = $this->get_single_submission_feed_by_form( $form, $entry );
 			} else {
 				$feed = $this->get_feed( $feeds[0] );
 			}
-
 		} elseif ( $form ) {
-
 			$feed                          = $this->get_single_submission_feed_by_form( $form, $entry );
 			$this->_single_submission_feed = $feed;
-
 		}
 
 		return $feed;
@@ -924,8 +962,22 @@ abstract class GFFeedAddOn extends GFAddOn {
 		return true;
 	}
 
+	/**
+	 * Updates the feed meta
+	 *
+	 * @since  Unknown
+	 *
+	 * @since 2.7.17 Added support for encrypting of settings fields.
+	 *
+	 * @param int $id     Feed ID
+	 * @param array $meta Feed meta to be updated
+	 *
+	 * @return bool
+	 */
 	public function update_feed_meta( $id, $meta ) {
 		global $wpdb;
+
+		$meta = $this->get_encryptor()->encrypt_feed_meta( $meta, $this->get_fields_to_encrypt() );
 
 		$meta = json_encode( $meta );
 		$wpdb->update( "{$wpdb->prefix}gf_addon_feed", array( 'meta' => $meta ), array( 'id' => $id ), array( '%s' ), array( '%d' ) );
@@ -942,6 +994,19 @@ abstract class GFFeedAddOn extends GFAddOn {
 		return $wpdb->rows_affected > 0;
 	}
 
+	/**
+	 * Insert a new feed record.
+	 *
+	 * @since Unknown
+	 *
+	 * @since 2.7.17 Added support for encrypting settings fields.
+	 *
+	 * @param int $form_id    Form ID.
+	 * @param bool $is_active If the feed is active or not.
+	 * @param array $meta     Feed meta
+	 *
+	 * @return false|int Returns the ID of the newly created feed or false if the feed table does not exist.
+	 */
 	public function insert_feed( $form_id, $is_active, $meta ) {
 		global $wpdb;
 
@@ -950,10 +1015,45 @@ abstract class GFFeedAddOn extends GFAddOn {
 			return false;
 		}
 
+		$meta = $this->get_encryptor()->encrypt_feed_meta( $meta, $this->get_fields_to_encrypt() );
+
 		$meta = json_encode( $meta );
 		$wpdb->insert( "{$wpdb->prefix}gf_addon_feed", array( 'addon_slug' => $this->get_slug(), 'form_id' => $form_id, 'is_active' => $is_active, 'meta' => $meta ), array( '%s', '%d', '%d', '%s' ) );
 
 		return $wpdb->insert_id;
+	}
+
+	/**
+	 * Get the array of feed settings field names that are configured to be encrypted.
+	 *
+	 * @since  2.7.16
+	 *
+	 * @return array Returns an array with all field names that are configured to be encrypted.
+	 */
+	public function get_fields_to_encrypt() {
+
+		static $cached_fields_to_encrypt;
+		if ( rgar( $cached_fields_to_encrypt, $this->_slug ) ) {
+			return $cached_fields_to_encrypt[ $this->_slug ];
+		}
+
+		$groups = $this->get_feed_settings_fields();
+
+		// Loop through feed settings fields and create array of fields that are configured to be encrypted
+		$fields_to_encrypt = array();
+		foreach ( $groups as $group ) {
+			if ( ! isset( $group['fields'] ) ) {
+				continue;
+			}
+			foreach ( $group['fields'] as $field ) {
+				if ( rgar( $field, 'encrypt' ) ) {
+					$fields_to_encrypt[] = $field['name'];
+				}
+			}
+		}
+		$cached_fields_to_encrypt[ $this->_slug ] = $fields_to_encrypt;
+
+		return $fields_to_encrypt;
 	}
 
 	public function delete_feed( $id ) {
@@ -1390,11 +1490,17 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 				},
 				'before_fields'  => function() use ( $form ) {
+					$script     = sprintf( 'var form = %s;', wp_json_encode( $form ) );
+					$entry_meta = $this->get_feed_settings_entry_meta( $form );
+					if ( ! empty( $entry_meta ) ) {
+						$script .= sprintf( 'var entry_meta = %s;', wp_json_encode( $entry_meta ) );
+					}
+
 					return sprintf( '
 						<input type="hidden" name="gf_feed_id" value="%d" />
-						<script type="text/javascript">var form = %s;</script>',
+						%s',
 						(int) $this->get_current_feed_id(),
-						wp_json_encode( $form )
+						GFCommon::get_inline_script_tag( $script, false )
 					);
 				},
 			)
@@ -1437,6 +1543,29 @@ abstract class GFFeedAddOn extends GFAddOn {
 		}
 
 		$this->get_settings_renderer()->process_postback();
+	}
+
+	/**
+	 * Returns an array of entry meta fields to be assigned to the JavaScript entry_meta variable used by the feed condition setting.
+	 *
+	 * @since 2.9
+	 *
+	 * @param array $form       The form the feed is being created or edited for.
+	 * @param array $entry_meta An empty array or the entry meta fields to be assigned to the JavaScript entry_meta variable.
+	 *
+	 * @return array
+	 */
+	public function get_feed_settings_entry_meta( $form, $entry_meta = array() ) {
+		/**
+		 * Allows population of the JavaScript entry_meta variable on the feed configuration page.
+		 *
+		 * @since 2.9
+		 *
+		 * @param array       $entry_meta An empty array or the entry meta fields to be assigned to the JavaScript entry_meta variable.
+		 * @param array       $form       The form the feed is being created or edited for.
+		 * @param GFFeedAddOn $addon      The current add-on instance.
+		 */
+		return apply_filters( 'gform_entry_meta_pre_render_feed_settings', $entry_meta, $form, $this );
 	}
 
 	/**

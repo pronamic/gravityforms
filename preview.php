@@ -22,20 +22,21 @@ if ( ! GFCommon::current_user_can_any( array( 'gravityforms_edit_forms', 'gravit
 	die( esc_html__( "You don't have adequate permission to preview forms.", 'gravityforms' ) );
 }
 
+// Get form ID.
+$form_id = absint( rgget( 'id' ) );
+
 /**
  * Fires when a Form Preview is loaded.
  *
  * The hook fires when a Form Preview is initialized and before it is rendered.
  *
  * @since 2.5
+ * @since 2.9 Added the $form_id parameter.
  */
-do_action( 'gform_preview_init' );
+do_action( 'gform_preview_init', $form_id );
 
 // Load form display class.
 require_once( GFCommon::get_base_path() . '/form_display.php' );
-
-// Get form ID.
-$form_id = absint( rgget( 'id' ) );
 
 // Get form object.
 $form       = RGFormsModel::get_form_meta( $_GET['id'] );

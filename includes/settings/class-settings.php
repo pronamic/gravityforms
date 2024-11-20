@@ -1677,7 +1677,6 @@ class Settings {
 		} else if ( is_string( $callback ) ) {
 			update_option( $callback, $values );
 		}
-
 	}
 
 
@@ -2641,6 +2640,7 @@ class Settings {
 
 	}
 
+
 	/**
 	 * Save previous field values.
 	 *
@@ -2717,10 +2717,6 @@ class Settings {
 
 	}
 
-
-
-
-
 	// # MISC HELPER METHODS -------------------------------------------------------------------------------------------
 
 	/**
@@ -2735,5 +2731,4 @@ class Settings {
 		return ! rgempty( 'gform-settings-save' );
 
 	}
-
 }

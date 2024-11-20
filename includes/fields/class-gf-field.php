@@ -63,6 +63,17 @@ class GF_Field extends stdClass implements ArrayAccess {
 	}
 
 	/**
+	 * Whether the choice field has entries that persist after changing the field type.
+	 *
+	 * @since 2.9
+	 *
+	 * @return boolean
+	 */
+	public function has_persistent_choices() {
+		return in_array( $this->type, array( 'multi_choice', 'image_choice' ) );
+	}
+
+	/**
 	 * Fires the deprecation notice only once per page. Not fired during AJAX requests.
 	 *
 	 * @param string $offset The array key being accessed.
@@ -331,6 +342,26 @@ class GF_Field extends stdClass implements ArrayAccess {
 	}
 
 	/**
+	 * Returns the form editor icon for the field type.
+	 *
+	 * Sometimes the field type and the input type are not the same, but we want the field type icon.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @return string
+	 */
+	public function get_form_editor_field_type_icon() {
+		if ( $this->type !== $this->inputType ) {
+			$field_class = GF_Fields::get( $this->type );
+			if ( $field_class ) {
+				return $field_class->get_form_editor_field_icon();
+			}
+		}
+
+		return $this->get_form_editor_field_icon();
+	}
+
+	/**
 	 * Returns the field's form editor description.
 	 *
 	 * @since 2.5
@@ -550,8 +581,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		$disable_ajax_reload = $this->disable_ajax_reload();
 		$ajax_reload_id      = $disable_ajax_reload === 'skip' || $disable_ajax_reload === 'true' || $disable_ajax_reload === true ? 'true' : esc_attr( rgar( $atts, 'id' ) );
 		$is_form_editor      = $this->is_form_editor();
-
-		$target_input_id         = esc_attr( rgar( $atts, 'id' ) );
+		$target_input_id     = esc_attr( rgar( $atts, 'id' ) );
 
 		// Get the field sidebar messages, this could be an array of messages or a warning message string.
 		$field_sidebar_messages  = GFCommon::is_form_editor() ? $this->get_field_sidebar_messages() : '';
@@ -565,7 +595,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		}
 
 		if ( ! empty( $sidebar_message_content ) ) {
-			$atts['class'] .= ' gfield_' . ( $sidebar_message_type === 'error' ? 'warning' : $sidebar_message_type );
+			$atts['class'] .= ' gfield-has-sidebar-message gfield-has-sidebar-message--type-' . ( $sidebar_message_type === 'error' ? 'warning' : $sidebar_message_type );
 			if ( $sidebar_message_type === 'error' ) {
 				$atts['aria-invalid'] = 'true';
 			}
@@ -583,7 +613,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 			rgar( $atts, 'data-field-position' ) ? ' data-field-position="' . esc_attr( $atts['data-field-position'] ) . '"' : '',
 			$ajax_reload_id,
 			rgar( $atts, 'aria-invalid' ) ? ' aria-invalid="true"' : '',
-			empty( $sidebar_message_content ) ? '' : '<span class="field-' . $sidebar_message_type . '-message-content hidden">' . \GFCommon::maybe_wp_kses( $sidebar_message_content ) . '</span>'
+			empty( $sidebar_message_content ) ? '' : '<span class="field-sidebar-message-content field-sidebar-message-content--type-' . $sidebar_message_type . ' hidden">' . \GFCommon::maybe_wp_kses( $sidebar_message_content ) . '</span>'
 		);
 
 	}
@@ -652,7 +682,16 @@ class GF_Field extends stdClass implements ArrayAccess {
 		} else {
 			$label = wp_strip_all_tags( $this->get_field_label( true, '' ) );
 		}
-		return sprintf( '%1$s - %2$s, %3$s.', esc_attr( $label ), esc_attr( $this->type ), esc_attr( $action ) );
+
+		// Sometimes the field editor label is different from the field type, so make sure we're using the correct field type.
+		$field_class = GF_Fields::get( $this->type );
+		if ( is_object( $field_class ) ) {
+			$field_title = $field_class->get_form_editor_field_title();
+		} else {
+			$field_title = $this->type;
+		}
+
+		return sprintf( '%1$s - %2$s, %3$s.', esc_attr( $label ), esc_attr( $field_title ), esc_attr( $action ) );
 	}
 
 	// # SUBMISSION -----------------------------------------------------------------------------------------------------
@@ -669,6 +708,50 @@ class GF_Field extends stdClass implements ArrayAccess {
 	}
 
 	/**
+	 * Returns the input ID given the choice key for Multiple Choice and Image Choice fields.
+	 *
+	 * @since 2.9
+	 *
+	 * @param string $key The choice key.
+	 *
+	 * @return string
+	 */
+	public function get_input_id_from_choice_key( $key ) {
+		$input_id = '';
+		if ( is_array( $this->inputs ) ) {
+			foreach ( $this->inputs as $input ) {
+				if ( rgar( $input, 'key' ) == $key ) {
+					$input_id = rgar( $input, 'id' );
+					break;
+				}
+			}
+		}
+		return $input_id;
+	}
+
+	/**
+	 * Returns the choice ID given the input key for Multiple Choice and Image Choice fields.
+	 *
+	 * @since 2.9
+	 *
+	 * @param string $key The choice key.
+	 *
+	 * @return string
+	 */
+	public function get_choice_id_from_input_key( $key ) {
+		$choice_id = '';
+		if ( is_array( $this->choices ) ) {
+			foreach ( $this->choices as $index => $choice ) {
+				if ( rgar( $choice, 'key' ) == $key ) {
+					$choice_id = $index;
+					break;
+				}
+			}
+		}
+		return $choice_id;
+	}
+
+	/**
 	 * Used to determine the required validation result.
 	 *
 	 * @param int $form_id The ID of the form currently being processed.
@@ -679,7 +762,8 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		$copy_values_option_activated = $this->enableCopyValuesOption && rgpost( 'input_' . $this->id . '_copy_values_activated' );
 
-		if ( is_array( $this->inputs ) ) {
+		// GF_Field_Radio can now have inputs if it's a Choice or Image Choice field
+		if ( is_array( $this->inputs ) && ! ( $this instanceof GF_Field_Radio ) ) {
 			foreach ( $this->inputs as $input ) {
 
 				if ( $copy_values_option_activated ) {
@@ -1662,7 +1746,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 			$drag_handle = '';
 		}
 
-		$field_icon = '<span class="gfield-field-action gfield-icon" title="' . $this->get_form_editor_field_title() . '">' . GFCommon::get_icon_markup( array( 'icon' => $this->get_form_editor_field_icon() ) ) . '</span>';
+		$field_icon = '<span class="gfield-field-action gfield-icon" title="' . $this->get_form_editor_field_title() . '">' . GFCommon::get_icon_markup( array( 'icon' => $this->get_form_editor_field_type_icon() ) ) . '</span>';
 
 		$field_id = '<span class="gfield-compact-icon--id">' . sprintf( esc_html__( 'ID: %s', 'gravityforms' ), $this->id ) . '</span>';
 
@@ -1671,21 +1755,30 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		$field_sidebar_messages    = $this->get_field_sidebar_messages();
 		$sidebar_message           = is_array( rgar( $field_sidebar_messages, '0' ) ) ? array_shift( $field_sidebar_messages ) : $field_sidebar_messages;
-		$compact_view_warning_icon = '';
+		$compact_view_sidebar_message_icon = '';
 		if ( ! empty( $sidebar_message ) ) {
-			$compact_view_warning_icon = rgar( $sidebar_message, 'type' ) === 'warning' || ! is_array( $sidebar_message ) ? '<span class="gform-icon gform-icon--exclamation-simple gform-icon--preset-active gform-icon-preset--status-error gform-compact-view-warning-icon" ></span>' : '';
+			$sidebar_message_types = array(
+				'warning' => array( 'gform-icon--exclamation-simple', 'gform-icon-preset--status-error' ),
+				'error'   => array( 'gform-icon--exclamation-simple', 'gform-icon-preset--status-error' ),
+				'info'    => array( 'gform-icon--information-simple', 'gform-icon-preset--status-info' ),
+				'notice'  => array( 'gform-icon--information-simple', 'gform-icon-preset--status-info' ),
+				'success' => array( 'gform-icon--checkmark-simple', 'gform-icon-preset--status-correct' ),
+			);
+			$compact_view_sidebar_message_icon_type        = is_array( $field_sidebar_messages ) ? rgar( $sidebar_message, 'type' ) : 'warning';
+			$compact_view_sidebar_message_icon_helper_text = is_array( $field_sidebar_messages ) ? rgar( $sidebar_message, 'icon_helper_text' ) : __( 'This field has an issue', 'gravityforms' );
+			$compact_view_sidebar_message_icon             = sprintf( '<span class="gfield-sidebar-message-icon gform-icon gform-icon--preset-active %1$s" title="%2$s" aria-label="%2$s"></span>', implode( ' ', $sidebar_message_types[ $compact_view_sidebar_message_icon_type ] ), esc_attr( $compact_view_sidebar_message_icon_helper_text ) );
 		}
 
 		$admin_buttons = "
-			<div class='gfield-admin-icons'>
+			<div class='gfield-admin-icons gform-theme__disable'>
 				{$drag_handle}
 				{$duplicate_field_link}
 				{$edit_field_link}
 				{$delete_field_link}
-				{$compact_view_warning_icon}
+				{$compact_view_sidebar_message_icon}
 				{$field_icon}
 			</div>
-			<div class='gfield-compact-icons'>
+			<div class='gfield-compact-icons gform-theme__disable'>
 				{$field_id}
 				{$conditional}
 			</div>";
@@ -1713,7 +1806,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 */
 	public function get_hidden_admin_markup() {
 
-		 return "<div class='admin-hidden-markup'><i class='gform-icon gform-icon--hidden'></i><span>Hidden</span></div>";
+		 return '<div class="admin-hidden-markup"><i class="gform-icon gform-icon--hidden" aria-hidden="true" title="'. esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) .'"></i><span>'. esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) .'</span></div>';
 
 	}
 

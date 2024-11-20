@@ -10,18 +10,9 @@ var GFPageConditionalLogic = function (args) {
         // Assign options to instance.
         self.options = args;
 
-        self.paginationType = self.options.pagination.type;
-
         self.triggerInputIds = self.getTriggerInputIds(self.options.pages);
 
         self.formWrapper = '#gform_wrapper_' + self.options.formId;
-
-        if (self.paginationType === 'steps') {
-            self.originalCurrentPage = parseInt($(self.formWrapper + ' .gf_step_active .gf_step_number').text(), 10);
-        } else if (self.paginationType === 'percentage') {
-            self.originalCurrentPage = parseInt($(self.formWrapper + ' .gf_step_current_page').text(), 10);
-            self.originalProgress = parseInt($(self.formWrapper + ' .gf_progressbar_percentage span').text(), 10);
-        }
 
 		self.startAtZero = $(self.formWrapper + ' .gf_progressbar_wrapper').data('startAtZero');
 
@@ -47,70 +38,19 @@ var GFPageConditionalLogic = function (args) {
 
     self.evaluatePages = function () {
 
-        var page, stepNumber, isMatch, isVisible, progress, visibleStepNumber = 1, currentPage = self.originalCurrentPage;
+        let page, isMatch, isVisible;
 
-        for (var i = 0; i < self.options.pages.length; i++) {
+        for ( let i = 0; i < self.options.pages.length; i++ ) {
 
             page = self.options.pages[i];
-            stepNumber = i + 2; // plus 2 because the first page field is actually Step 2.
-            isMatch = self.evaluatePage(page, self.options.formId);
-            isVisible = self.isPageVisible(page);
+            isMatch = self.evaluatePage( page, self.options.formId );
+            isVisible = self.isPageVisible( page );
 
-            if (!isMatch && isVisible !== false) {
-                self.hidePage(page, stepNumber);
-            } else if (isMatch && !isVisible) {
-                self.showPage(page, stepNumber);
+            if ( ! isMatch && isVisible !== false ) {
+                self.hidePage( page );
+            } else if ( isMatch && !isVisible ) {
+                self.showPage( page );
             }
-
-            // check if the page is visible and
-	        // available as a step after evaluation.
-            isVisible = self.isPageVisible(page);
-            if (isVisible) {
-                visibleStepNumber++;
-
-                if (self.paginationType === 'steps') {
-                    $('#gf_step_' + self.options.formId + '_' + stepNumber).find('.gf_step_number').html(visibleStepNumber);
-                } else if (self.paginationType === 'percentage' && self.originalCurrentPage == stepNumber) {
-                    currentPage = visibleStepNumber;
-                    $(self.formWrapper + ' .gf_step_current_page').html(currentPage);
-                }
-            }
-
-        }
-
-        if (self.paginationType === 'percentage') {
-            currentPage = self.options.pagination.display_progressbar_on_confirmation === true || self.startAtZero ? ( currentPage - 1 ) : currentPage;
-        } else {
-            currentPage = parseInt($(self.formWrapper + ' .gf_step_active .gf_step_number').text(), 10);
-			if(self.startAtZero) {
-				currentPage -= 1;
-			}
-        }
-
-        progress = Math.floor( currentPage / visibleStepNumber * 100 );
-
-        if (self.paginationType === 'percentage') {
-            var progressPercent = progress + '%';
-
-            $(self.formWrapper + ' .gf_step_page_count').html(visibleStepNumber);
-            $(self.formWrapper + ' .gf_progressbar_percentage span').html(progressPercent);
-            $(self.formWrapper + ' .gf_progressbar_percentage').removeClass('percentbar_' + self.originalProgress).addClass('percentbar_' + progress).css('width', progressPercent);
-        }
-
-        // Update the form button based on progress
-        if ( progress === 100 ) {
-            // Treat the current page as the last one.
-            self.updateButtonToSubmitText( self.originalCurrentPage - 1, isMatch );
-        } else {
-	        // Update the button on the current page.
-	        $( '[id^=gform_next_button_' + self.options.formId + '_]' ).each( function ( e, element ) {
-		        if ( $( element ).is(':visible') ) {
-			        self.updateButtonToNextText( self.options.pages[ e ] );
-		        }
-	        });
-
-            // Update the button on the last page.
-            self.updateButtonToSubmitText( undefined, isMatch );
         }
 
         /**
@@ -123,6 +63,14 @@ var GFPageConditionalLogic = function (args) {
          */
         gform.doAction('gform_frontend_pages_evaluated', self.options.pages, self.options.formId, self);
         gform.doAction('gform_frontend_pages_evaluated_{0}'.gformFormat(self.options.formId), self.options.pages, self.options.formId, self);
+        gform.utils.trigger( {
+            event: 'gform/frontend_pages/evaluated',
+            data: {
+                formId: self.options.formId,
+                pages: self.options.pages
+            },
+            native: false
+        } );
 
     };
 
@@ -179,7 +127,7 @@ var GFPageConditionalLogic = function (args) {
         return false;
     };
 
-    self.showPage = function (page, stepNumber) {
+    self.showPage = function ( page ) {
 
         var isVisible = self.isPageVisible(page);
 
@@ -188,8 +136,7 @@ var GFPageConditionalLogic = function (args) {
         }
 
         page.isVisible = true;
-        $('#gf_step_' + self.options.formId + '_' + stepNumber).removeClass('gf_step_hidden');
-
+        $('#gform_' + self.options.formId + ' div[data-js="page-field-id-' + page.fieldId + '"]').attr('data-conditional-logic', 'visible');
         /**
          * Fires after the conditional logic on the form has been evaluated and the page has been found to be visible.
          *
@@ -203,16 +150,16 @@ var GFPageConditionalLogic = function (args) {
 
     };
 
-    self.hidePage = function (page, stepNumber) {
+    self.hidePage = function ( page ) {
 
-        var isVisible = self.isPageVisible(page);
+        var isVisible = self.isPageVisible( page );
 
         if (isVisible === false) {
             return;
         }
 
         page.isVisible = false;
-        $('#gf_step_' + self.options.formId + '_' + stepNumber).addClass('gf_step_hidden');
+        $('#gform_' + self.options.formId + ' div[data-js="page-field-id-' + page.fieldId + '"]').attr('data-conditional-logic', 'hidden');
 
         /**
          * Fires after the conditional logic on the form has been evaluated and the page has become hidden.
@@ -226,132 +173,6 @@ var GFPageConditionalLogic = function (args) {
         gform.doAction('gform_frontend_page_hidden_{0}'.gformFormat(self.options.formId), page, self.options.formId);
 
     };
-
-	/**
-	 * The lastPageIndex might get miscalculated at some point during the flow. If it's outside the bounds of
-	 * the page numbers, this resets it to the last natural page.
-	 *
-	 * @since 2.5.3
-	 *
-	 * @param {number|undefined} lastPageIndex The calculated last page of the form.
-	 * @return {number} The calculated last page number.
-	 */
-	self.getValidatedLastPageIndex = function( lastPageIndex ) {
-		if ( lastPageIndex === undefined ||  lastPageIndex < 0 || lastPageIndex >= self.options.pages.length ) {
-			return self.options.pages.length - 1;
-		}
-
-		return lastPageIndex;
-	};
-
-	/**
-	 * Checks whether the page the user is on is also considered to be the last page.
-	 *
-	 * Without conditional logic, forms have cardinal page numbers: 1, 2, 3, 4, 5, 6.
-	 * With conditional logic, a "last page" of a form might not be the last page. e.g., 4 is the "submit" page.
-	 *
-	 * @since 2.5.3
-	 *
-	 * @param {number|string} targetPageNumber Next page to be shown.
-	 * @param {number|string} lastPageNumber Actual last page of the form without conditional logic.
-	 * @param {number|undefined} lastPageIndex In the scenario above, lastPageIndex is 4.
-	 * @return {boolean} True or false whether the current page is the last calculated page.
-	 */
-	self.currentPageIsLastPage = function( targetPageNumber, lastPageNumber, lastPageIndex ) {
-		return targetPageNumber === lastPageNumber || lastPageIndex !== undefined;
-	};
-
-	/**
-	 * Updates the text of the next button to be submit text on a paginated form.
-	 *
-	 * This method changes the text of the next button to the text of
-	 * the submit button on the form if the user is on the page
-	 * determined to be the last page of the form.
-	 *
-	 * @since Unknown
-	 *
-	 * @param {number|undefined} lastPageIndex The calculated last page of the form.
-	 * @param {boolean} isMatch Whether the current conditional logic condition has been met.
-	 * @return {void}
-	 */
-	self.updateButtonToSubmitText = function ( lastPageIndex, isMatch) {
-		var targetPageNumber = parseInt($('#gform_target_page_number_' + self.options.formId).val(), 10),
-			lastPageNumber = self.options.pages.length + 1;
-
-		// No need to update the button, we're not on the last page.
-		if ( ! self.currentPageIsLastPage( targetPageNumber, lastPageNumber, lastPageIndex ) ) {
-			return;
-		}
-
-		var calculatedLastPageIndex = self.getValidatedLastPageIndex( lastPageIndex );
-
-		var lastPageField = self.options.pages[ calculatedLastPageIndex ],
-			lastNextButton = $('#gform_next_button_' + self.options.formId + '_' + lastPageField.fieldId),
-			isLastPageVisible = self.isPageVisible(lastPageField),
-			formButton = $('#gform_submit_button_' + self.options.formId);
-
-		if (! isLastPageVisible ) {
-			if (formButton.attr('type') === 'image') {
-				// Cache last next button image alt.
-				if (lastNextButton.attr('type') === 'image') {
-					lastNextButton.data('alt', lastNextButton.attr('alt'));
-				}
-				lastNextButton.attr('type', 'image').attr('src', formButton.attr('src')).attr('alt', formButton.attr('alt')).addClass('gform_image_button').removeClass('button');
-			} else {
-				lastNextButton.attr('type', 'button').val(formButton.val()).addClass('button').removeClass('gform_image_button');
-			}
-
-			// Set a mark on the page, so later on we can reset the button when evaluating pages.
-			self.options.pages[ calculatedLastPageIndex ].isUpdated = true;
-		} else {
-			self.updateButtonToNextText( lastPageField );
-		}
-
-		// if actual submit button has conditional logic rules, apply them to the next button
-		if ( formButton.attr( 'data-conditional-logic' ) === 'hidden' ) {
-			var nextButton = $('#gform_next_button_' + self.options.formId + '_' + lastPageField.fieldId);
-			if( isMatch ) {
-				gf_show_button( nextButton );
-			} else {
-				gf_hide_button( nextButton );
-			}
-		}
-
-    };
-
-	/**
-	 * Updates the text of the submit button to be next text on a paginated form.
-	 *
-	 * This method changes the text of the submit button to the text of
-	 * the next button on the form if the user is on the page
-	 * determined to not be the last page of the form.
-	 *
-	 * @since Unknown
-	 *
-	 * @param {number|undefined} page The current page of the form.
-	 * @return {void}
-	 */
-	self.updateButtonToNextText = function ( page ) {
-		// No need to reset if the button hasn't been updated.
-		if ( ! page.hasOwnProperty( 'isUpdated' ) ) {
-			return;
-		}
-
-		delete page.isUpdated;
-
-		var nextButton = $('#gform_next_button_' + self.options.formId + '_' + page.fieldId);
-		if (page.nextButton.type === 'image') {
-			nextButton.attr('type', 'image').attr('src', page.nextButton.imageUrl).attr('alt', nextButton.data('alt')).addClass('gform_image_button').removeClass('button');
-		} else {
-			nextButton.attr('type', 'button').val(page.nextButton.text).addClass('button').removeClass('gform_image_button');
-		}
-
-		// formButton = $('#gform_submit_button_' + self.options.formId);
-		// if ( formButton.attr( 'data-conditional-logic' ) === 'visible' ) {
-		// 	var nextButton = $('#gform_next_button_' + self.options.formId + '_' + lastPageField.fieldId);
-		// 	gf_show_button( nextButton );
-		// }
-	}
 
     this.init();
 };

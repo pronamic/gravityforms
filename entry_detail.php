@@ -447,13 +447,7 @@ class GFEntryDetail {
 
 		$mode = empty( $_POST['screen_mode'] ) ? 'view' : $_POST['screen_mode'];
 
-		if ( $mode === 'edit' ) {
-			wp_print_styles( 'gform_admin_theme' );
-		}
-
 		$screen = get_current_screen();
-
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
 
 		?>
 		<script type="text/javascript">
@@ -735,7 +729,7 @@ class GFEntryDetail {
 				<label for="name"><?php esc_html_e( 'Details', 'gravityforms' ); ?></label>
 			</h3>
 
-			<div class="inside gform_wrapper gravity-theme">
+			<div class="inside gform_wrapper gravity-theme gform_wrapper_edit_form_entry">
 				<table class="form-table entry-details">
 					<tbody>
 					<?php

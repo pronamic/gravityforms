@@ -86,6 +86,15 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 	}
 
 	/**
+	 * Whether the config has been localized.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @var bool
+	 */
+	private static $is_localized = false;
+
+	/**
 	 * Initiailize any actions or hooks.
 	 *
 	 * @since 2.6
@@ -100,16 +109,43 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 		$self = $this;
 
 		add_action( 'wp_enqueue_scripts', function () use ( $container ) {
-			$container->get( self::CONFIG_COLLECTION )->handle();
+			// Only localize during wp_enqueue_scripts if none of the other more specific events have been fired.
+			if ( ! self::$is_localized ) {
+				$container->get( self::CONFIG_COLLECTION )->handle();
+			}
 		}, 9999 );
 
 		add_action( 'admin_enqueue_scripts', function () use ( $container ) {
-			$container->get( self::CONFIG_COLLECTION )->handle();
+			// Only localize during admin_enqueue_scripts if none of the other more specific events have been fired.
+			if ( ! self::$is_localized ) {
+				$container->get( self::CONFIG_COLLECTION )->handle();
+			}
 		}, 9999 );
 
-		add_action( 'gform_preview_init', function () use ( $container ) {
-			$container->get( self::CONFIG_COLLECTION )->handle();
-		}, 0 );
+		add_action( 'gform_output_config', function ( $form_ids = null ) use ( $container ) {
+			$container->get( self::CONFIG_COLLECTION )->handle( true, $form_ids );
+			self::$is_localized = true;
+		} );
+
+		add_action( 'gform_post_enqueue_scripts', function ( $found_forms, $found_blocks, $post ) use ( $container ) {
+			$form_ids = array_column( $found_forms, 'formId' );
+			$container->get( self::CONFIG_COLLECTION )->handle( true, array( 'form_ids' => $form_ids ) );
+			self::$is_localized = true;
+		}, 10, 3);
+
+		add_action( 'gform_preview_init', function ( $form_id ) use ( $container ) {
+			$form_ids = array( $form_id );
+			$container->get( self::CONFIG_COLLECTION )->handle( true, array( 'form_ids' => $form_ids ) );
+			self::$is_localized = true;
+		}, 10, 2);
+
+		add_action('wp_ajax_gform_get_config', function () use ( $container ) {
+			$container->get( self::CONFIG_COLLECTION )->handle_ajax();
+		});
+
+		add_action('wp_ajax_nopriv_gform_get_config', function () use ( $container ) {
+			$container->get( self::CONFIG_COLLECTION )->handle_ajax();
+		});
 
 		add_action( 'rest_api_init', function () use ( $container, $self ) {
 			register_rest_route( 'gravityforms/v2', '/tests/mock-data', array(

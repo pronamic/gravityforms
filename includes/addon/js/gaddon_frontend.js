@@ -36,6 +36,10 @@ var GFFrontendFeeds = function( args ) {
 
 	};
 
+	self.saveToState = function() {
+		gform.state.set( self.options.formId, 'feeds', self.options.feeds );
+	}
+
 	self.evaluateFeeds = function() {
 
 		var feed, isMatch, isActivated;
@@ -67,6 +71,7 @@ var GFFrontendFeeds = function( args ) {
 		gform.doAction( 'gform_{0}_frontend_feeds_evaluated'.gformFormat( feed.addonSlug ), self.options.feeds, self.options.formId, self );
 		gform.doAction( 'gform_{0}_frontend_feeds_evaluated_{0}'.gformFormat( feed.addonSlug, self.options.formId ), self.options.feeds, self.options.formId, self );
 
+		self.saveToState();
 	};
 
 	self.evaluateFeed = function( feed, formId ) {

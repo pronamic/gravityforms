@@ -278,7 +278,7 @@ class GF_Field_Date extends GF_Field {
 		$field_position = substr( $format, 0, 3 );
 		if ( $is_form_editor ) {
 
-			$datepicker_display = in_array( $this->dateType, array( 'datefield', 'datedropdown' ) ) ? 'none' : 'block';
+			$datepicker_display = in_array( $this->dateType, array( 'datefield', 'datedropdown' ) ) ? 'none' : 'flex';
 			$datefield_display  = $this->dateType == 'datefield' ? 'inline' : 'none';
 			$dropdown_display   = $this->dateType == 'datedropdown' ? 'inline' : 'none';
 			$icon_display       = $this->calendarIconType == 'calendar' ? 'inline' : 'none';
@@ -328,7 +328,7 @@ class GF_Field_Date extends GF_Field {
 			$day_dropdown   = "<div class='gfield_date_dropdown_day ginput_date_dropdown ginput_container ginput_container_date gform-grid-col' id='gfield_dropdown_date_day' style='display:$dropdown_display'>" . $this->get_day_dropdown( '', "{$field_id}_2", rgar( $date_info, 'day' ), '', $disabled_text, $day_placeholder_value ) . '</div>';
 			$year_dropdown  = "<div class='gfield_date_dropdown_year ginput_date_dropdown ginput_container ginput_container_date gform-grid-col' id='gfield_dropdown_date_year' style='display:$dropdown_display'>" . $this->get_year_dropdown( '', "{$field_id}_3", rgar( $date_info, 'year' ), '', $disabled_text, $year_placeholder_value, $form ) . '</div>';
 
-			$field_string = "<div class='ginput_container ginput_container_date gform-grid-col' id='gfield_input_datepicker' style='display:$datepicker_display'><input name='ginput_datepicker' type='text' {$date_picker_placeholder} {$disabled_text} value='{$picker_value}'/><img src='" . GFCommon::get_base_url() . "/images/datepicker/datepicker.svg' id='gfield_input_datepicker_icon' style='display:$icon_display'/></div>";
+			$field_string = "<div class='ginput_container ginput_container_date' id='gfield_input_datepicker' style='display:$datepicker_display'><input name='ginput_datepicker' type='text' {$date_picker_placeholder} {$disabled_text} value='{$picker_value}'/><img src='" . GFCommon::get_base_url() . "/images/datepicker/datepicker.svg' id='gfield_input_datepicker_icon' style='display:$icon_display'/></div>";
 
 			switch ( $field_position ) {
 				case 'dmy' :
@@ -1015,7 +1015,7 @@ class GF_Field_Date extends GF_Field {
 	 * @return string
 	 */
 	public function get_field_placeholder_attribute() {
-		if ( $this->dateType === 'datepicker' && empty( $this->placeholder ) ) {
+		if ( empty( $this->placeholder ) ) {
 			$format = $this->is_form_editor() ? wp_strip_all_tags( $this->get_date_format() ) : $this->get_date_format();
 
 			return sprintf( "placeholder='%s'", esc_attr( $format ) );
@@ -1086,7 +1086,7 @@ class GF_Field_Date extends GF_Field {
 	public function get_filter_settings() {
 		$filter_settings                = parent::get_filter_settings();
 		$filter_settings['placeholder'] = esc_html__( 'yyyy-mm-dd', 'gravityforms' );
-		$filter_settings['cssClass']    = 'datepicker ymd_dash';
+		$filter_settings['cssClass']    = 'datepicker gform-datepicker ymd_dash';
 
 		return $filter_settings;
 	}

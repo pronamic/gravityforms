@@ -125,6 +125,14 @@ class Base implements ArrayAccess {
 	 */
 	public $settings;
 
+	/** Used to check if encryption is suppported.
+	 *
+	 * @since 2.7.15.2
+	 *
+	 * @var bool
+	 */
+	public $encrypt;
+
 	/**
 	 * Field id.
 	 *

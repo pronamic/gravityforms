@@ -137,7 +137,7 @@ if ( 0 == $entry_ids ) {
 	 * Allow the entry list search criteria to be overridden.
 	 *
 	 * @deprecated 2.3 Use "gform_search_criteria_entry_list" instead.
-	 *
+	 * @remove-in 3.0
 	 * @since  1.9.14.30
 	 *
 	 * @param array $search_criteria An array containing the search criteria.

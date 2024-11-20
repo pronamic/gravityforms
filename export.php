@@ -147,6 +147,10 @@ class GFExport {
 			foreach ( $form_ids as $key => $form_id ) {
 				$forms[ $key ] = GFAPI::get_form( $form_id );
 			}
+
+			if ( rgpost( 'gf_import_media' ) ) {
+				$forms = self::import_form_media( $form_ids, $forms );
+			}
 			/**
 			 * Fires after forms have been imported.
 			 *
@@ -162,7 +166,129 @@ class GFExport {
 	}
 
 	/**
-	 * Removes any extraneous strings from the begining of the JSON file to be imported.
+	 * If a form includes images, import them into the WordPress media library.
+	 *
+	 * @since 2.9
+	 *
+	 * @param $form_ids
+	 * @param $forms
+	 *
+	 * @return mixed
+	 */
+	public static function import_form_media( $form_ids, $forms ) {
+		foreach ( $forms as $form ) {
+			$updated_form = self::find_and_replace_media( $form );
+			GFFormsModel::update_form_meta( $form['id'], $updated_form );
+		}
+
+		foreach ( $form_ids as $key => $form_id ) {
+			$forms[ $key ] = GFAPI::get_form( $form_id );
+		}
+
+		return $forms;
+	}
+
+	/**
+	 * Iterate through the form meta data to find images that need to be imported.
+	 *
+	 * Any meta data with the key of "file_url" will be imported into the WordPress media library.
+	 *
+	 * @since 2.9
+	 *
+	 * @param $form_meta
+	 *
+	 * @return mixed
+	 */
+	public static function find_and_replace_media( &$form_meta ) {
+		foreach( $form_meta as $key => &$value ) {
+			if( is_array( $value ) || is_object( $value ) ) {
+				if( rgar( $value, 'file_url' ) ) {
+					$new_media = self::import_media( $value['file_url'] );
+					if( $new_media ) {
+						$value['attachment_id'] = $new_media;
+						$value['file_url']      = wp_get_attachment_url( $new_media );
+					}
+				}
+				// Recursively call the function to handle nested arrays
+				self::find_and_replace_media( $value );
+			}
+		}
+
+		return $form_meta;
+	}
+
+	/**
+	 * Import images into the WordPress media library.
+	 *
+	 * @since 2.9
+	 *
+	 * @param $image_url
+	 *
+	 * @return false|int|WP_Error
+	 */
+	public static function import_media( $image_url ) {
+		GFCommon::log_debug( __METHOD__ . '(): Importing ' . esc_url( $image_url ) . 'to media library' );
+		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+		// Download to temp directory.
+		$temp_file = download_url( $image_url );
+
+		if( is_wp_error( $temp_file ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Import Failed => ' . print_r( $temp_file, 1 ) );
+			return false;
+		}
+
+		// Move the temp file into the uploads directory.
+		$file = array(
+			'name'     => basename( $image_url ),
+			'type'     => mime_content_type( $temp_file ),
+			'tmp_name' => $temp_file,
+			'size'     => filesize( $temp_file ),
+		);
+		$sideload = wp_handle_sideload(
+			$file,
+			array(
+				'test_form'   => false
+			)
+		);
+
+		if( ! empty( $sideload[ 'error' ] ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Import Failed => ' . print_r( $temp_file, 1 ) );
+			return false;
+		}
+
+		// Add the image to the media library.
+		$attachment_id = wp_insert_attachment(
+			array(
+				'guid'           => $sideload[ 'url' ],
+				'post_mime_type' => $sideload[ 'type' ],
+				'post_title'     => basename( $sideload[ 'file' ] ),
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+			),
+			$sideload[ 'file' ]
+		);
+
+		if( is_wp_error( $attachment_id ) || ! $attachment_id ) {
+			GFCommon::log_debug( __METHOD__ . '(): Unable to add image to media library ' . print_r( $image_url, 1 ) );
+			return false;
+		}
+
+		// Update metadata, regenerate image sizes.
+		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+		wp_update_attachment_metadata(
+			$attachment_id,
+			wp_generate_attachment_metadata( $attachment_id, $sideload[ 'file' ] )
+		);
+
+		GFCommon::log_debug( __METHOD__ . '(): Successfully imported ' . esc_url( $image_url ) );
+
+		return $attachment_id;
+	}
+
+	/**
+	 * Removes any extraneous strings from the beginning of the JSON file to be imported.
 	 *
 	 * @since 2.5.16
 	 *
@@ -369,6 +495,12 @@ class GFExport {
                                     <label for="gf_import_file"><?php esc_html_e( 'Select Files', 'gravityforms' ); ?></label> <?php gform_tooltip( 'import_select_file' ) ?>
                                 </th>
                                 <td><input type="file" name="gf_import_file[]" id="gf_import_file" multiple /></td>
+							</tr>
+							<tr valign="top">
+								<th scope="row">
+									<label for="gf_import_media"><?php esc_html_e( 'Import Images', 'gravityforms' ); ?></label> <?php gform_tooltip( 'import_media' ) ?>
+								</th>
+								<td><input type="checkbox" name="gf_import_media" id="gf_import_media" /><?php esc_html_e( 'Import images used in this form into your media library.', 'gravityforms' ); ?></td>
                             </tr>
                         </table>
                         <br /><br />
@@ -799,6 +931,7 @@ class GFExport {
 
 	/**
 	 * @deprecated No longer used.
+	 * @remove-in 3.0
 	 */
 	public static function get_gmt_timestamp( $local_timestamp ) {
 		_deprecated_function( 'GFExport::get_gmt_timestamp', '2.0.7', 'GFCommon::get_gmt_timestamp' );
@@ -808,6 +941,7 @@ class GFExport {
 
 	/**
 	 * @deprecated No longer used.
+	 * @remove-in 3.0
 	 */
 	public static function get_gmt_date( $local_date ) {
 		_deprecated_function( 'GFExport::get_gmt_date', '2.0.7' );

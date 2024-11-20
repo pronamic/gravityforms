@@ -5,20 +5,45 @@
 
 if ( ! gform ) {
 	document.addEventListener( 'gform_main_scripts_loaded', function() { gform.scriptsLoaded = true; } );
+	document.addEventListener( 'gform/theme/scripts_loaded', function() { gform.themeScriptsLoaded = true; } );
 	window.addEventListener( 'DOMContentLoaded', function() { gform.domLoaded = true; } );
 
 	var gform = {
 		domLoaded: false,
 		scriptsLoaded: false,
-		initializeOnLoaded: function( fn ) {
-			if ( gform.domLoaded && gform.scriptsLoaded ) {
+		themeScriptsLoaded: false,
+		isFormEditor: () => typeof InitializeEditor === 'function',
+
+		/**
+		 * @deprecated 2.9 the use of initializeOnLoaded in the form editor context is deprecated.
+		 * @remove-in 3.1 this function will not check for gform.isFormEditor().
+		 */
+		callIfLoaded: function ( fn ) {
+			if ( gform.domLoaded && gform.scriptsLoaded && ( gform.themeScriptsLoaded || gform.isFormEditor() ) ) {
+				if ( gform.isFormEditor() ) {
+					console.warn( 'The use of gform.initializeOnLoaded() is deprecated in the form editor context and will be removed in Gravity Forms 3.1.' );
+				}
 				fn();
-			} else if( ! gform.domLoaded && gform.scriptsLoaded ) {
-				window.addEventListener( 'DOMContentLoaded', fn );
-			} else {
-				document.addEventListener( 'gform_main_scripts_loaded', fn );
+				return true;
+			}
+			return false;
+		},
+
+		/**
+		 * Call a function when all scripts are loaded
+		 *
+		 * @param function fn the callback function to call when all scripts are loaded
+		 *
+		 * @returns void
+		 */
+		initializeOnLoaded: function( fn ) {
+			if ( ! gform.callIfLoaded( fn ) ) {
+				document.addEventListener( 'gform_main_scripts_loaded', () => { gform.scriptsLoaded = true; gform.callIfLoaded( fn ); } );
+				document.addEventListener( 'gform/theme/scripts_loaded', () => { gform.themeScriptsLoaded = true; gform.callIfLoaded( fn ); } );
+				window.addEventListener( 'DOMContentLoaded', () => { gform.domLoaded = true; gform.callIfLoaded( fn ); } );
 			}
 		},
+
 		hooks: { action: {}, filter: {} },
 		addAction: function( action, callable, priority, tag ) {
 			gform.addHook( 'action', action, callable, priority, tag );

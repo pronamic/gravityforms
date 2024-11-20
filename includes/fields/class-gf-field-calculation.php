@@ -79,7 +79,7 @@ class GF_Field_Calculation extends GF_Field {
 
 		if ( $is_entry_detail || $is_form_editor  ) {
 			$style          = $this->disableQuantity ? "style='display:none;'" : '';
-			$quantity_field = " <span class='ginput_quantity_label gform-field-label gform-field-label--type-sub-large' {$style}>{$product_quantity_sub_label}</span> <input type='number' name='input_{$id}.3' value='{$quantity}' id='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity' size='10' min='0' {$disabled_text} />";
+			$quantity_field = " <span class='ginput_quantity_label gform-field-label' {$style}>{$product_quantity_sub_label}</span> <input type='number' name='input_{$id}.3' value='{$quantity}' id='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity' size='10' min='0' {$disabled_text} />";
 		} elseif ( ! $this->disableQuantity ) {
 			$tabindex                  = $this->get_tabindex();
 			$describedby_extra_id = array();
@@ -107,7 +107,7 @@ class GF_Field_Calculation extends GF_Field {
 						<span class='gform-field-label gform-field-label--type-sub-large ginput_product_price_label'>" . gf_apply_filters( array( 'gform_product_price', $form_id, $this->id ), esc_html__( 'Price', 'gravityforms' ), $form_id ) . ":</span>
 						<span class='gform-field-label gform-field-label--type-sub-large ginput_product_price' id='{$field_id}'>" . esc_html( GFCommon::to_money( $price, $currency ) ) . "</span>
 					$wrapper_close
-					<input type='hidden' name='input_{$id}.2' id='ginput_base_price_{$form_id}_{$this->id}' class='gform_hidden' value='" . esc_attr( $price ) . "'/>
+					<input type='hidden' name='input_{$id}.2' id='ginput_base_price_{$form_id}_{$this->id}' class='gform_hidden ginput_calculated_price' value='" . esc_attr( $price ) . "'/>
 					{$quantity_field}
 				</div>";
 	}

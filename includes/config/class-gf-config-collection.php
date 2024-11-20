@@ -39,31 +39,57 @@ class GF_Config_Collection {
 	 *
 	 * @return array
 	 */
-	public function handle( $localize = true ) {
+	public function handle( $localize = true, $args = null ) {
+
 		$scripts          = $this->get_configs_by_script();
 		$data_to_localize = array();
 
 		foreach ( $scripts as $script => $items ) {
-			$item_data        = $this->localize_data_for_script( $script, $items, $localize );
+			$item_data        = $this->localize_data_for_script( $script, $items, $localize, $args );
 			$data_to_localize = array_merge( $data_to_localize, $item_data );
 		}
 
 		return $data_to_localize;
 	}
 
+	public function handle_ajax() {
+
+		// Check nonce.
+		$nonce_result = check_ajax_referer( 'gform_config_ajax', 'gform_ajax_nonce', false );
+
+		if ( ! $nonce_result ) {
+			wp_send_json_error( esc_html__( 'Unable to verify nonce. Please refresh the page and try again.', 'gravityforms' ) );
+		}
+
+		$args        = json_decode( rgpost( 'args' ), true );
+		$config_path = rgpost( 'config_path' );
+		$configs     = $this->get_configs_by_path( $config_path, $args );
+
+		if ( ! $configs ) {
+			wp_send_json_error( sprintf( esc_html__( 'Unable to find config: %s', 'gravityforms' ), $config_path ) );
+		}
+
+		$data = $this->get_merged_data_for_object( $configs, $args );
+		wp_send_json_success( $data );
+	}
 	/**
 	 * Localize the data for the given script.
 	 *
 	 * @since 2.6
 	 *
-	 * @param string      $script
-	 * @param GF_Config[] $items
+	 * @param string $script   The script to localize.
+	 * @param array  $items    The associative array of configs to process for this script.
+	 * @param bool   $localize Whether to actually localize the data, or simply return it.
+	 * @param array  $args     The arguments to pass to the config objects.
+	 *
+	 * @return array Returns the localized data.
 	 */
-	private function localize_data_for_script( $script, $items, $localize = true ) {
+	private function localize_data_for_script( $script, $items, $localize = true, $args = null ) {
 		$data = array();
 
 		foreach ( $items as $name => $configs ) {
-			$localized_data = $this->get_merged_data_for_object( $configs );
+
+			$localized_data = $this->get_merged_data_for_object( $configs, $args );
 
 			/**
 			 * Allows users to filter the data localized for a given script/resource.
@@ -96,13 +122,15 @@ class GF_Config_Collection {
 	 *
 	 * @param GF_Config[] $configs
 	 */
-	private function get_merged_data_for_object( $configs ) {
+	private function get_merged_data_for_object( $configs, $args ) {
 		// Squash warnings for PHP < 7.0 when running tests.
 		@usort( $configs, array( $this, 'sort_by_priority' ) );
 
 		$data = array();
 
 		foreach ( $configs as $config ) {
+
+			$config->set_args( $args );
 
 			// Config is set to overwrite data - simply return its value without attempting to merge.
 			if ( $config->should_overwrite() ) {
@@ -145,6 +173,27 @@ class GF_Config_Collection {
 		}
 
 		return $data_to_localize;
+	}
+
+	/**
+	 * Gets a list of configs that match the specified config path.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param string $config_path The path of the config to be returned.
+	 * @param array  $args        The arguments to pass to the config objects.
+	 *
+	 * @return array Returns an array of configs that are associated with the specified config path.
+	 */
+	private function get_configs_by_path( $config_path, $args )
+	{
+		$configs = array();
+		foreach ( $this->configs as $config ) {
+			if ( $config->enable_ajax( $config_path, $args ) ) {
+				$configs[] = $config;
+			}
+		}
+		return $configs;
 	}
 
 	/**

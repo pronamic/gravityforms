@@ -2152,10 +2152,12 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		// keep 'gform_subscription_payment_failed' for backward compatability
 		/**
-		 * @deprecated Use gform_post_fail_subscription_payment now
+		 * @deprecated Use gform_post_fail_subscription_payment now.
+		 * @remove-in 3.0
 		 */
 		do_action( 'gform_subscription_payment_failed', $entry, $action['subscription_id'] );
 		if ( has_filter( 'gform_subscription_payment_failed' ) ) {
+			trigger_error( 'gform_subscription_payment_failed is deprecated and will be removed in version 3.0. Use gform_post_fail_subscription_payment.', E_USER_DEPRECATED );
 			$this->log_debug( __METHOD__ . '(): Executing functions hooked to gform_subscription_payment_failed.' );
 		}
 		/**
@@ -2373,6 +2375,20 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 
 	//--------- Feed Settings ----------------
+
+	/**
+	 * Returning an empty array because payment feed logic is evaluated before entry meta is saved.
+	 *
+	 * @since 2.9
+	 *
+	 * @param array $form       The form the feed is being created or edited for.
+	 * @param array $entry_meta An empty array or the entry meta fields to be assigned to the JavaScript entry_meta variable.
+	 *
+	 * @return array
+	 */
+	public function get_feed_settings_entry_meta( $form, $entry_meta = array() ) {
+		return array();
+	}
 
 	/**
 	 * Remove the add new button from the title if the form requires a credit card field.

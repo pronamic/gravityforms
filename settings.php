@@ -46,7 +46,7 @@ class GFSettings {
 	 *
 	 * @since  Unknown
 	 * @access public
-	 *
+	 * @remove-in 3.0
 	 * @uses GFSettings::$addon_pages
 	 *
 	 * @param string|array $name      The settings page slug.

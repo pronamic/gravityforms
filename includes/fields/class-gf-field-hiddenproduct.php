@@ -101,7 +101,7 @@ class GF_Field_HiddenProduct extends GF_Field {
 
 		$field_type = $is_entry_detail || $is_form_editor ? 'text' : 'hidden';
 
-		return $quantity_field . $product_name_field . "<input name='input_{$id}.2' id='ginput_base_price_{$form_id}_{$this->id}' type='{$field_type}' value='{$price}' class='gform_hidden ginput_amount' {$disabled_text}/>";
+		return "<div class='ginput_container ginput_container_product_price_hidden'>" . $quantity_field . $product_name_field . "<input name='input_{$id}.2' id='ginput_base_price_{$form_id}_{$this->id}' type='{$field_type}' value='{$price}' class='gform_hidden ginput_amount' {$disabled_text}/></div>";
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {

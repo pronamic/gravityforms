@@ -154,13 +154,15 @@ class GF_Field_Submit extends GF_Field {
 		$form_id        = absint( $form['id'] );
 		$is_form_editor = $this->is_form_editor();
 
-		$class        = esc_attr( 'gform-button gform-button--white ' );
+		$class_theme  = $is_form_editor ? esc_attr( 'gform-theme-button gform-theme-button--secondary ' ) : '';
+		$class        = sprintf( '%s%s', esc_attr( 'gform-button gform-button--white ' ), $class_theme );
 		$default_text = __( 'Submit', 'gravityforms' );
 		$button       = rgar( $form, 'button', array( 'type' => 'link' ) );
 
 		$inline = rgar( $form['button'], 'location', 'bottom' );
 
-		// If we're in the editor or the button is inline, display the button.  Otherwise, the button will be added to the footer in form_display.php.
+		// If we're in the editor or the button is inline, display the button.
+		// Otherwise, the button will be added to the footer in form_display.php.
 		if ( $is_form_editor || 'inline' == $inline ) {
 			$submit = GFFormDisplay::get_form_button( $form_id, "gform_submit_button_{$form_id}", $button, $default_text, $class, $default_text, 0 );
 			return gf_apply_filters( array( 'gform_submit_button', $form_id ), $submit, $form );

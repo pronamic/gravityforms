@@ -4,6 +4,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
 
+require_once( plugin_dir_path( __FILE__ ) . 'field-decorator-choice/class-gf-field-decorator-choice-radio-markup.php' );
 
 class GF_Field_Radio extends GF_Field {
 
@@ -117,6 +118,11 @@ class GF_Field_Radio extends GF_Field {
 
 	public function get_field_input( $form, $value = '', $entry = null ) {
 
+		if ( $this->type == 'image_choice' ) {
+			$this->image_markup = new GF_Field_Decorator_Choice_Radio_Markup( $this );
+			return $this->image_markup->get_field_input( $form, $value, $entry );
+		}
+
 		$form_id         = $form['id'];
 		$is_entry_detail = $this->is_entry_detail();
 		$is_form_editor  = $this->is_form_editor();
@@ -145,6 +151,17 @@ class GF_Field_Radio extends GF_Field {
 			$choice_id = 0;
 			$count     = 1;
 
+			/**
+			 * A filter that allows for the setting of the maximum number of choices shown in
+			 * the form editor for choice based fields (radio, checkbox, image, and multiple choice).
+			 *
+			 * @since 2.9
+			 *
+			 * @param int    $max_choices_visible_count The default number of choices visible is 5.
+			 * @param object $field                     The current field object.
+			 */
+			$max_choices_count = gf_apply_filters( array( 'gform_field_choices_max_count_visible', $form_id ), 5, $this );
+
 			$tag = GFCommon::is_legacy_markup_enabled( $form_id ) ? 'li' : 'div';
 
 			foreach ( $field_choices as $choice ) {
@@ -157,7 +174,7 @@ class GF_Field_Radio extends GF_Field {
 
 				$choices .= $this->get_choice_html( $choice, $choice_id, $value, $disabled_text, $is_admin );
 
-				if ( $is_form_editor && $count >= 5 ) {
+				if ( $is_form_editor && $count >= $max_choices_count ) {
 					$editor_limited = true;
 					break;
 				}
@@ -182,7 +199,7 @@ class GF_Field_Radio extends GF_Field {
 
 			$total = sizeof( $field_choices );
 			if ( $is_form_editor && ( $count < $total ) ) {
-				$choices .= "<{$tag} class='gchoice_total'>" . sprintf( esc_html__( '%d of %d items shown. Edit field to view all', 'gravityforms' ), $count, $total ) . "</{$tag}>";
+				$choices .= "<{$tag} class='gchoice_total'><span>" . sprintf( esc_html__( '%d of %d items shown. Edit choices to view all.', 'gravityforms' ), $count, $total ) . "</span></{$tag}>";
 			}
 		}
 
@@ -191,8 +208,8 @@ class GF_Field_Radio extends GF_Field {
 		 *
 		 * @since unknown
 		 *
-		 * @param string         $choices The choices HTML.
-		 * @param GF_Field_Radio $field   The current field object.
+		 * @param string $choices The choices HTML.
+		 * @param object $field   The current field object.
 		 */
 		return gf_apply_filters( array( 'gform_field_choices', $this->formId ), $choices, $this );
 	}
@@ -449,6 +466,7 @@ class GF_Field_Radio extends GF_Field {
 		$use_value       = in_array( 'value', $modifiers );
 		$format_currency = ! $use_value && in_array( 'currency', $modifiers );
 		$use_price       = $format_currency || ( ! $use_value && in_array( 'price', $modifiers ) );
+		$image_url 	     = in_array( 'img_url', $modifiers );
 
 		if ( is_array( $raw_value ) && (string) intval( $input_id ) != $input_id ) {
 			$items = array( $input_id => $value ); // Float input Ids. (i.e. 4.1 ). Used when targeting specific checkbox items.
@@ -461,20 +479,32 @@ class GF_Field_Radio extends GF_Field {
 		$ary = array();
 
 		foreach ( $items as $input_id => $item ) {
-			if ( $use_value ) {
-				list( $val, $price ) = rgexplode( '|', $item, 2 );
-			} elseif ( $use_price ) {
-				list( $name, $val ) = rgexplode( '|', $item, 2 );
-				if ( $format_currency ) {
-					$val = GFCommon::to_money( $val, rgar( $entry, 'currency' ) );
-				}
-			} elseif ( $this->type == 'post_category' ) {
-				$use_id     = strtolower( $modifier ) == 'id';
-				$item_value = GFCommon::format_post_category( $item, $use_id );
+			switch (true) {
+				case $use_value:
+					list( $val, $price ) = rgexplode( '|', $item, 2 );
+					break;
 
-				$val = RGFormsModel::is_field_hidden( $form, $this, array(), $entry ) ? '' : $item_value;
-			} else {
-				$val = RGFormsModel::is_field_hidden( $form, $this, array(), $entry ) ? '' : RGFormsModel::get_choice_text( $this, $raw_value, $input_id );
+				case $use_price:
+					list( $name, $val ) = rgexplode( '|', $item, 2 );
+					if ( $format_currency ) {
+						$val = GFCommon::to_money( $val, rgar( $entry, 'currency' ) );
+					}
+					break;
+
+				case $image_url:
+					$image_choice = new GF_Field_Image_Choice( $this );
+					$val = $image_choice->get_merge_tag_img_url( $raw_value, $input_id, $entry, $form, $this );
+					break;
+
+				case $this->type == 'post_category':
+					$use_id     = strtolower( $modifier ) == 'id';
+					$item_value = GFCommon::format_post_category( $item, $use_id );
+					$val = RGFormsModel::is_field_hidden( $form, $this, array(), $entry ) ? '' : $item_value;
+					break;
+
+				default:
+					$val = RGFormsModel::is_field_hidden( $form, $this, array(), $entry ) ? '' : RGFormsModel::get_choice_text( $this, $raw_value, $input_id );
+					break;
 			}
 
 			$ary[] = GFCommon::format_variable_value( $val, $url_encode, $esc_html, $format );
@@ -549,6 +579,17 @@ class GF_Field_Radio extends GF_Field {
 		$operators = $this->type == 'product' ? array( 'is' ) : array( 'is', 'isnot', '>', '<' );
 
 		return $operators;
+	}
+
+	/**
+	 * Override to return null instead of the array of inputs in case this is a choice field.
+	 *
+	 * @since 2.9
+	 *
+	 * @return array|null
+	 */
+	public function get_entry_inputs() {
+		return null;
 	}
 
 }

@@ -99,7 +99,6 @@ class Full_Screen_Handler {
 	 * @return string
 	 */
 	public function load_full_screen_template( $template ) {
-		$form_for_display = $this->get_form_for_display();
 
 		/**
 		 * External filter usable by third-party code to modify/return the form ID for display. Useful for

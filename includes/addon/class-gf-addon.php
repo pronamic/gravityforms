@@ -9,6 +9,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 }
 
 use Gravity_Forms\Gravity_Forms\Settings\Settings;
+use Gravity_Forms\Gravity_Forms\Settings\GF_Settings_Encryption;
 use Gravity_Forms\Gravity_Forms\TranslationsPress_Updater;
 use Gravity_Forms\Gravity_Forms\Save_Form\GF_Save_Form_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Save_Form\GF_Save_Form_Helper;
@@ -78,6 +79,11 @@ abstract class GFAddOn {
 	 */
 	public $app_hook_suffix;
 
+	/**
+	 * @var string The '.min' suffix to append to asset files in production mode.
+	 */
+	protected $_asset_min;
+
 	private $_saved_settings = array();
 	private $_previous_settings = array();
 
@@ -92,6 +98,13 @@ abstract class GFAddOn {
 	 * @var array Stores a copy of setting fields that failed validation; only populated after validate_settings() has been called.
 	 */
 	private $_setting_field_errors = array();
+
+	/**
+	 * Stores the current instance of the Settings encryption class.
+	 *
+	 * @var \Gravity_Forms\Gravity_Forms\Settings\GF_Settings_Encryption
+	 */
+	private $_encryptor;
 
 	// ------------ Permissions -----------
 	/**
@@ -170,6 +183,7 @@ abstract class GFAddOn {
 	 * Class constructor which hooks the instance into the WordPress init action
 	 */
 	function __construct() {
+		$this->_asset_min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$this->update_path();
 		$this->bootstrap();
 
@@ -189,25 +203,84 @@ abstract class GFAddOn {
 	 */
 	public function bootstrap() {
 		add_action( 'init', array( $this, 'init' ), 15 );
-		if ( $this->_enable_theme_layer ) {
+
+		$is_admin_ajax = defined('DOING_AJAX') && DOING_AJAX;
+		if ( $this->_enable_theme_layer && ! $is_admin_ajax ) {
 			add_action( 'init', array( $this, 'init_theme_layer' ), 0, 0 );
 		}
 	}
 
+	/**
+	 * Initializes the theme layer process for the add-on.
+	 *
+	 * @since Unknown
+	 *
+	 */
 	public function init_theme_layer() {
 		$layer = new Theme_Layer_Builder();
 		$layer->set_name( $this->theme_layer_slug() )
-		      ->set_short_title( $this->theme_layer_title() )
-		      ->set_priority( $this->theme_layer_priority() )
-		      ->set_icon( $this->theme_layer_icon() )
-		      ->set_settings_fields( $this->theme_layer_settings_fields() )
-		      ->set_overidden_fields( $this->theme_layer_overridden_fields() )
-		      ->set_form_css_properties( array( $this, 'theme_layer_form_css_properties' ) )
-		      ->set_styles( array( $this, 'theme_layer_styles' ) )
-		      ->set_scripts( array( $this, 'theme_layer_scripts' ) )
-		      ->set_capability( $this->get_form_settings_capabilities() )
-		      ->register();
+			  ->set_short_title( $this->theme_layer_title() )
+			  ->set_priority( $this->theme_layer_priority() )
+			  ->set_icon( $this->theme_layer_icon() )
+			  ->set_settings_fields( $this->theme_layer_settings_fields() )
+			  ->set_overidden_fields( $this->theme_layer_overridden_fields() )
+			  ->set_form_css_properties( array( $this, 'theme_layer_form_css_properties' ) )
+			  ->set_styles( array( $this, 'theme_layer_styles' ) )
+			  ->set_scripts( array( $this, 'theme_layer_scripts' ) )
+			  ->set_capability( $this->get_form_settings_capabilities() )
+			  ->register();
 		add_action( 'gform_form_after_open', array( $this, 'output_third_party_styles' ), 998, 2 );
+	}
+
+	/**
+	 * Helper method that returns the theme styles that should be enqueued for the add-on. Returns an array in the format accepted by the Gravity Forms theme layer set_styles() method
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param array  $form               The current form object to enqueue styles for.
+	 * @param string $field_type         The field type associated with the add-on. Styles will only be enqueued on the frontend if the form has a field with the specified field type.
+	 * @param string $gravity_theme_path The path to the gravity theme style. Optional. Only needed for add-ons that implement the gravity theme outside the default /assets/css/dist/theme.css path.
+	 *
+	 * @return array Returns and array of styles to enqueue in the format accepted by the Gravity Forms theme layer set_styles() method.
+	 */
+	public function get_theme_layer_styles( $form, $field_type = '', $gravity_theme_path = '' ) {
+
+		$themes = $this->get_themes_to_enqueue( $form, $field_type );
+		$styles = array();
+
+		// Maybe enqueue theme framework.
+		if ( in_array( 'orbital', $themes ) ) {
+			$styles['foundation'] = array(
+				array( "{$this->_slug}_theme_foundation", $this->get_base_url() . "/assets/css/dist/theme-foundation{$this->_asset_min}.css" ),
+			);
+			$styles['framework'] = array(
+				array( "{$this->_slug}_theme_framework", $this->get_base_url() . "/assets/css/dist/theme-framework{$this->_asset_min}.css" ),
+			);
+		}
+
+		// Maybe enqueue gravity theme.
+		if ( in_array( 'gravity-theme', $themes ) ) {
+			$path = $gravity_theme_path ? $gravity_theme_path : $this->get_base_url() . "/assets/css/dist/theme{$this->_asset_min}.css";
+			$styles['theme'] = array(
+				array( "{$this->_slug}_gravity_theme", $path ),
+			);
+		}
+
+		return $styles;
+	}
+
+	/**
+	 * Helper method that returns the themes that should be enqueued for the add-on. Returns an array of theme slugs.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param array        $form        The current form object to enqueue styles for.
+	 * @param string|array $field_types The field type(s) associated with the add-on. Themes will only be enqueued on the frontend if the form has a field with the specified field type(s). Can be a string with a single field type or an array of strings with multiple field types.
+	 *
+	 * @return array Returns and array of theme slugs to enqueue.
+	 */
+	public function get_themes_to_enqueue ( $form, $field_types = '' ) {
+		return \GFFormDisplay::get_themes_to_enqueue( $form, $field_types );
 	}
 
 	/**
@@ -266,6 +339,32 @@ abstract class GFAddOn {
 		}
 
 		return $instances;
+	}
+
+	/**
+	 * Finds a registered add-on by its slug and return its instance.
+	 *
+	 * @since 2.7.17
+	 *
+	 * @param string $slug The add-on slug.
+	 *
+	 * @return GFAddOn Returns an instance of the add-on with the specified slug.
+	 */
+	public static function get_addon_by_slug( $slug ) {
+
+		static $map = array();
+
+		if ( isset( $map[ $slug ] ) ) {
+			return $map[ $slug ];
+		}
+
+		$addons = GFAddOn::get_registered_addons( true );
+
+		foreach ( $addons as $addon ) {
+			$map[ $addon->get_slug() ] = $addon;
+		}
+
+		return rgar( $map, $slug );
 	}
 
 	/**
@@ -1528,7 +1627,7 @@ abstract class GFAddOn {
 	 *       );
 	 * }
 	 *
-     * @return array|bool
+	 * @return array|bool
 	 */
 	public function get_results_page_config() {
 		return false;
@@ -1610,8 +1709,8 @@ abstract class GFAddOn {
 	 */
 	public function members_register_caps() {
 
-        // Get capabilities.
-        $caps = $this->get_members_caps();
+		// Get capabilities.
+		$caps = $this->get_members_caps();
 
 		// If no capabilities were found, exit.
 		if ( empty( $caps ) ) {
@@ -2270,7 +2369,7 @@ abstract class GFAddOn {
 	}
 
 	public function has_setting_field_type( $type, $fields ) {
-        if ( ! empty( $fields ) ) {
+		if ( ! empty( $fields ) ) {
 			foreach ( $fields as &$section ) {
 				foreach ( $section['fields'] as $field ) {
 					if ( rgar( $field, 'type' ) == $type ) {
@@ -2312,7 +2411,34 @@ abstract class GFAddOn {
 		return false;
 	}
 
+	/**
+	 * Sets the current instance of object that handles settings encryption.
+	 *
+	 * @since 2.7.17
+	 *
+	 * @param \Gravity_Forms\Gravity_Forms\Settings\GF_Settings_Encryption $encryptor Settings encryptor.
+	 *
+	 * @return void
+	 */
+	public function set_encryptor( $encryptor ) {
+		$this->_encryptor = $encryptor;
+	}
 
+
+	/**
+	 * Returns the current instance of the settings encryptor.
+	 *
+	 * @since 2.7.17
+	 *
+	 * @return GF_Settings_Encryption Returns the current instance of the settings encryptor.
+	 */
+	public function get_encryptor() {
+		if ( ! $this->_encryptor ) {
+			require_once( GFCommon::get_base_path() . '/includes/settings/class-gf-settings-encryption.php' );
+			$this->_encryptor = new GF_Settings_Encryption();
+		}
+		return $this->_encryptor;
+	}
 
 	//------------- Field Types ------------------------------------------------------
 
@@ -3128,7 +3254,7 @@ abstract class GFAddOn {
 			}
 		}
 
- 		return $fields;
+		return $fields;
 	}
 
 	/**
@@ -3806,11 +3932,11 @@ abstract class GFAddOn {
 		$error = $this->get_field_errors( $field );
 
 		return '<span
-            class="gf_tooltip tooltip"
-            title="<h6>' . esc_html__( 'Validation Error', 'gravityforms' ) . '</h6>' . $error . '"
-            style="display:inline-block;position:relative;right:-3px;top:1px;font-size:14px;">
-                <i class="fa fa-exclamation-circle icon-exclamation-sign gf_invalid"></i>
-            </span>';
+			class="gf_tooltip tooltip"
+			title="<h6>' . esc_html__( 'Validation Error', 'gravityforms' ) . '</h6>' . $error . '"
+			style="display:inline-block;position:relative;right:-3px;top:1px;font-size:14px;">
+				<i class="fa fa-exclamation-circle icon-exclamation-sign gf_invalid"></i>
+			</span>';
 	}
 
 	/**
@@ -4771,6 +4897,7 @@ abstract class GFAddOn {
 					'fields'         => $sections,
 					'initial_values' => $this->get_plugin_settings(),
 					'save_callback'  => array( $this, 'update_plugin_settings' ),
+					'field_encryption_disabled' => true,
 				)
 			);
 
@@ -4891,14 +5018,29 @@ abstract class GFAddOn {
 	}
 
 	/**
+	 * @var array Holds the cached plugin settings.
+	 *
+	 * @since 2.7.17
+	 */
+	private static $_plugin_settings = array();
+
+	/**
 	 * Returns the currently saved plugin settings
 	 *
 	 * @since Unknown
 	 *
-	 * @return array|false
+	 * @since 2.7.17 Added caching of plugin settings and encrypting of settings.
+	 *
+	 * @return array|false Returns the plugin settings or false if the settings haven't been saved yet.
 	 */
 	public function get_plugin_settings() {
-		return get_option( 'gravityformsaddon_' . $this->get_slug() . '_settings' );
+		if ( isset( self::$_plugin_settings[ $this->get_slug() ] ) ) {
+			return self::$_plugin_settings[$this->get_slug() ];
+		}
+
+		self::$_plugin_settings[ $this->get_slug() ] = $this->get_encryptor()->decrypt( get_option( 'gravityformsaddon_' . $this->get_slug() . '_settings' ) );
+
+		return self::$_plugin_settings[ $this->get_slug() ];
 	}
 
 	/**
@@ -4915,7 +5057,6 @@ abstract class GFAddOn {
 
 		$settings = $this->get_plugin_settings();
 		return isset( $settings[ $setting_name ] ) ? $settings[ $setting_name ] : null;
-
 	}
 
 	/**
@@ -4923,10 +5064,14 @@ abstract class GFAddOn {
 	 *
 	 * @since Unknown
 	 *
+	 * @since 2.7.17 Added caching of plugin settings and encrypting of settings.
+	 *
 	 * @param array $settings Plugin settings to be saved.
 	 */
 	public function update_plugin_settings( $settings ) {
-		update_option( 'gravityformsaddon_' . $this->get_slug() . '_settings', $settings );
+
+		self::$_plugin_settings[$this->get_slug() ] = $settings;
+		update_option( 'gravityformsaddon_' . $this->get_slug() . '_settings', $this->get_encryptor()->encrypt( $settings ) );
 	}
 
 	/**

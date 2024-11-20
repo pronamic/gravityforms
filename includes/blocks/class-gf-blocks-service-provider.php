@@ -132,6 +132,21 @@ class GF_Blocks_Service_Provider extends GF_Service_Provider {
 						// buttonPrimaryBackgroundColor
 						'default' => rgar( $global_styles, 'inputPrimaryColor' ) ? $global_styles['inputPrimaryColor'] : '', // #204ce5
 					),
+				'inputImageChoiceAppearance'   =>
+					array(
+						'type'    => 'string',
+						'default' => rgar( $global_styles, 'inputImageChoiceAppearance' ) ? $global_styles['inputImageChoiceAppearance'] : 'card',
+					),
+				'inputImageChoiceStyle'        =>
+					array(
+						'type'    => 'string',
+						'default' => rgar( $global_styles, 'inputImageChoiceStyle' ) ? $global_styles['inputImageChoiceStyle'] : 'square',
+					),
+				'inputImageChoiceSize'         =>
+					array(
+						'type'    => 'string',
+						'default' => rgar( $global_styles, 'inputImageChoiceSize' ) ? $global_styles['inputImageChoiceSize'] : 'md',
+					),
 				'labelFontSize'                =>
 					array(
 						'type'    => 'string',

@@ -81,6 +81,13 @@ abstract class GF_Config {
 	protected $overwrite = false;
 
 	/**
+	 * An args array. Use in the data() method to retrieve data specific to the specified args. For example, form specific configs will have an array of form ids specified in args.
+	 *
+	 * @var array
+	 */
+	protected $args = array();
+
+	/**
 	 * Constructor
 	 *
 	 * @param GF_Config_Data_Parser $parser
@@ -97,6 +104,26 @@ abstract class GF_Config {
 	 * @return array
 	 */
 	abstract protected function data();
+
+	/**
+	 * Override this method to add enable ajax loading for a specific config path.
+	 * To enable loading data() via ajax, check if $config_path is one of the paths that are provided by the config. If so, return true.
+	 *
+	 * Example:
+	 * public function enable_ajax( $config_path, $args ) {
+	 *    return str_starts_with( $config_path, 'gform_theme_config/common/form/product_meta' );
+	 * }
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param string $config_path The full path to the config item when stored in the browser's window object, for example: "gform_theme_config/common/form/product_meta"
+	 * @param array  $args        The args used to load the config data. This will be empty for generic config items. For form specific items will be in the format: array( 'form_ids' => array(123,222) ).
+	 *
+	 * @return bool Return true to load the config data associated with the provided $config_path. Return false otherwise.
+	 */
+	public function enable_ajax( $config_path, $args ) {
+		return false;
+	}
 
 	/**
 	 * Determine if the config should enqueue its data. If should_enqueue() is a method,
@@ -187,4 +214,68 @@ abstract class GF_Config {
 		return $this->overwrite;
 	}
 
+	/**
+	 * Sets the $form_ids arrays.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param array $args Args array to be set
+	 *
+	 * @return void
+	 */
+	public function set_args( $args ) {
+		$this->args = $args;
+	}
+
+	/**
+	 * Validates the config data against a hash to ensure it has not been tampered with.
+	 * This method is called via AJAX, initiated by the gform.config.isValid() JS method.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @return void
+	 */
+	public static function validate_ajax() {
+
+		// Check nonce
+		$nonce_result = check_ajax_referer( 'gform_config_ajax', 'gform_ajax_nonce', false );
+
+		if ( ! $nonce_result ) {
+			wp_send_json_error( esc_html__( 'Unable to verify nonce. Please refresh the page and try again.', 'gravityforms' ) );
+		}
+
+		$config = json_decode( rgpost( 'config' ), true );
+		$hash   = rgar( $config, 'hash' );
+		if ( ! $hash ) {
+			wp_send_json_error( esc_html__( 'Invalid config.', 'gravityforms' ) );
+		}
+
+		// Remove hash from config before validating.
+		unset( $config['hash'] );
+
+		// Compare hash to config.
+		if ( $hash !== self::hash( $config ) ) {
+			wp_send_json_error( esc_html__( 'Config validation failed. Hash does not match', 'gravityforms' ) );
+		}
+
+		// Send success response.
+		wp_send_json_success();
+	}
+
+	/**
+	 * Hashes the config data.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param array $config
+	 *
+	 * @return string Returns the hash of the config data.
+	 */
+	public static function hash( $config ) {
+		return wp_hash( json_encode( $config ) );
+	}
 }
+
+// AJAX hash validation for config data.
+add_action('wp_ajax_gform_validate_config', array( 'Gravity_Forms\Gravity_Forms\Config\GF_Config', 'validate_ajax' ) );
+add_action('wp_ajax_nopriv_gform_validate_config', array( 'Gravity_Forms\Gravity_Forms\Config\GF_Config', 'validate_ajax' ) );

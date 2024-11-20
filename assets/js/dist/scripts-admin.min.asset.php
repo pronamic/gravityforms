@@ -1,0 +1,1 @@
+<?php return array('dependencies' => array('gform_gravityforms_admin_components', 'gform_gravityforms_libraries', 'gform_gravityforms_react_utils', 'gform_gravityforms_utils', 'jquery', 'wp-block-editor', 'wp-components', 'wp-data', 'wp-edit-post', 'wp-element', 'wp-i18n', 'wp-plugins', 'wp-polyfill', 'wp-server-side-render'), 'version' => '277eab8b8bd47d7ff3e9');

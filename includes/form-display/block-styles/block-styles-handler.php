@@ -131,6 +131,12 @@ class Block_Styles_Handler {
 			/* Global CSS API: Control - File */
 			'gf-ctrl-file-btn-bg-color-hover' => GFCommon::darken_color( $color_palette['inside-control']['color-darker'], 2 ),
 
+			/* Global CSS API: Field - Choice (Checkbox, Radio, Image, & Consent) */
+			'gf-field-img-choice-size'                => 'var(--gf-field-img-choice-size-' . $applied_settings['inputImageChoiceSize'] . ')',
+			'gf-field-img-choice-card-space'          => 'var(--gf-field-img-choice-card-space-' . $applied_settings['inputImageChoiceSize'] . ')',
+			'gf-field-img-choice-check-ind-size'      => 'var(--gf-field-img-choice-check-ind-size-' . $applied_settings['inputImageChoiceSize'] . ')',
+			'gf-field-img-choice-check-ind-icon-size' => 'var(--gf-field-img-choice-check-ind-icon-size-' . $applied_settings['inputImageChoiceSize'] . ')',
+
 			/* Global CSS API: Field - Page */
 			'gf-field-pg-steps-number-color' => 'rgba(' . implode( ', ', GFCommon::darken_color( $applied_settings['labelColor'], 0, 'rgb' ) ) . ', 0.8)',
 		);
@@ -144,7 +150,44 @@ class Block_Styles_Handler {
 	}
 
 	public function styles( $form, $ajax, $settings, $block_settings ) {
-		return array();
-	}
 
+		$themes = \GFFormDisplay::get_themes_to_enqueue( $form );
+		$styles = array( 'theme' => array() );
+
+		if ( in_array( 'orbital', $themes ) ) {
+			$styles['theme']      = array( array( 'gravity_forms_orbital_theme' ) );
+			$styles['foundation'] = array( array( 'gravity_forms_theme_foundation' ) );
+			$styles['framework']  = array( array( 'gravity_forms_theme_framework' ) );
+			$styles['reset']      = array( array( 'gravity_forms_theme_reset' ) );
+
+			if ( GFCommon::is_form_editor() ) {
+				$styles['framework'][] = array( 'gravity_forms_theme_framework_admin' );
+				$styles['foundation'][] = array( 'gravity_forms_theme_foundation_admin' );
+			}
+		}
+
+		if ( in_array( 'gravity-theme', $themes ) ) {
+
+			if ( GFCommon::is_entry_detail() ) {
+				$styles['theme'][] = array( 'gform_theme_admin' );
+			} else {
+				$styles['theme'][] = array( 'gform_basic' );
+
+				/**
+				 * Allows users to disable the main theme.css file from being loaded on the Front End.
+				 *
+				 * @param boolean Whether to disable the theme css.
+				 * @since 2.5-beta-3
+				 *
+				 */
+				$disable_theme_css = apply_filters( 'gform_disable_form_theme_css', false );
+				if ( ! $disable_theme_css ) {
+					$styles['theme'][] = array( 'gform_theme' );
+				}
+			}
+
+		}
+
+		return $styles;
+	}
 }

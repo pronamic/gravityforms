@@ -565,11 +565,16 @@ class GFFormSettings {
 		 * Filters the form settings before they are displayed.
 		 *
 		 * @deprecated
+		 * @remove-in 3.0
 		 * @since 1.7
 		 *
 		 * @param array $form_settings The form settings.
 		 * @param array $form          The Form Object.
 		 */
+
+		if ( has_filter( 'gform_form_settings' ) ) {
+			trigger_error( 'gform_form_settings is deprecated and will be removed in version 3.0.', E_USER_DEPRECATED );
+		}
 		$legacy_settings = apply_filters( 'gform_form_settings', array(), $form );
 
 		// If legacy settings exist, add to fields.
@@ -676,6 +681,7 @@ class GFFormSettings {
 		    ></span>
 		    <div class="gform-alert__message-wrap">
 		        <p class="gform-alert__message">' . esc_html__( 'Legacy markup is incompatible with many new features, including the Orbital Theme.', 'gravityforms' ) . '</p>
+		        <p class="gform-alert__message">' . esc_html__( 'Legacy markup will be removed in Gravity Forms 3.1.0, and then all forms will use modern markup.  We recommend using modern markup on all forms.', 'gravityforms' ) . '</p>
 			    <a
 		            class="gform-alert__cta gform-button gform-button--white gform-button--size-xs"
 			        href="https://docs.gravityforms.com/about-legacy-markup"

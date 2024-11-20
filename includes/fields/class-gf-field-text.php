@@ -119,15 +119,14 @@ class GF_Field_Text extends GF_Field {
 		// For Post Tags, Use the WordPress built-in class "howto" in the form editor.
 		$text_hint = '';
 		if ( $this->type === 'post_tags' ) {
-			$text_hint_class = $is_form_editor ? 'howto' : 'gfield_post_tags_hint gfield_description';
-			$text_hint       = '<p class="' . $text_hint_class . '" id="' . $field_id . '_desc">' . gf_apply_filters( array(
+			$text_hint = '<p class="gfield_post_tags_hint gfield_description" id="' . $field_id . '_desc">' . gf_apply_filters( array(
 					'gform_post_tags_hint',
 					$form_id,
 					$this->id,
 				), esc_html__( 'Separate tags with commas', 'gravityforms' ), $form_id ) . '</p>';
 		}
 
-		$input = "<input name='input_{$id}' id='{$field_id}' type='{$html_input_type}' value='{$value}' class='{$class}' {$max_length} {$aria_describedby} {$tabindex} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$autocomplete} /> {$text_hint}";
+		$input = "<input name='input_{$id}' id='{$field_id}' type='{$html_input_type}' value='{$value}' class='{$class}' {$max_length} {$aria_describedby} {$tabindex} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$autocomplete} />{$text_hint}";
 
 		return sprintf( "<div class='ginput_container ginput_container_text'>%s</div>", $input );
 	}

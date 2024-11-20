@@ -19,6 +19,7 @@ class GF_Config_Global {
 		return array(
 			'hmr_dev'     => defined( 'GF_ENABLE_HMR' ) && GF_ENABLE_HMR,
 			'public_path' => trailingslashit( \GFCommon::get_base_url() ) . 'assets/js/dist/',
+			'config_nonce' => wp_create_nonce( 'gform_config_ajax' ),
 		);
 	}
 

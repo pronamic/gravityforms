@@ -8,7 +8,6 @@ function initLayoutEditor( $ ) {
 	 * @returns {jQuery}
 	 */
 	$.fn.setGroupId = function ( groupId ) {
-
 		this.attr( 'data-groupId', groupId );
 
 		this.each( function () {
@@ -184,7 +183,7 @@ function initLayoutEditor( $ ) {
 			$field.setGroupId( getGroupId() );
 
 			// If the submit button is inline, move it back to its own row
-			if( jQuery('#field_submit').data( 'field-position' ) == 'inline' ) {
+			if( jQuery('#field_submit').attr( 'data-field-position' ) == 'inline' ) {
 				moveButtonToBottom();
 			}
 
@@ -263,6 +262,10 @@ function initLayoutEditor( $ ) {
 
 	// Re-initialize the field after it's markup is refreshed (e.g. after the description is updated).
 	gform.addAction( 'gform_after_refresh_field_preview', function( fieldId ) {
+		initElement( $( '#field_' + fieldId ) );
+	} );
+
+	gform.addAction( 'gform_after_change_input_type', function( fieldId ) {
 		initElement( $( '#field_' + fieldId ) );
 	} );
 
@@ -631,7 +634,7 @@ function initLayoutEditor( $ ) {
 	 * @since 2.6
 	 */
 	function setSubmitButtonGroup() {
-		if ( $( '#field_submit' ).data( 'field-position') === 'inline' ) {
+		if ( $( '#field_submit' ).attr( 'data-field-position') === 'inline' ) {
 			// Find the last group id.
 			var lastGroup = jQuery( '#field_submit' ).prev().attr( 'data-groupid' );
 			// Move the submit button to the group.
@@ -671,6 +674,8 @@ function initLayoutEditor( $ ) {
 						return false;
 					}
 
+					ui.helper.addClass( 'gform-theme__disable' );
+
 					// Match the helper to the current elements size.
 					ui.helper
 						.width( $( this ).width() )
@@ -679,7 +684,6 @@ function initLayoutEditor( $ ) {
 					$container.addClass( 'dragging' );
 					$elem = $( this ).clone();
 					$elem.addClass( 'placeholder' );
-
 					$( this ).addClass( 'fieldPlaceholder' );
 				},
 				drag: function( event, ui ) {
@@ -689,19 +693,19 @@ function initLayoutEditor( $ ) {
 					}
 
 					/**
-					 * New field buttons are dragged relative to #wpbody so their position needs to be adjusted to work the
+					 * New field buttons are dragged relative to #wpbody so their position needs to be adjusted to work
 					 * the same way as dragging an existing field (which is relative to #gform_fields).
 					 */
 					var helperTop = ui.position.top - 0 + ( ui.helper.outerHeight() / 2 ),
 						helperLeft = ui.position.left - 0 + ( ui.helper.outerWidth() / 2 );
 
 					handleDrag( event, ui, helperTop, helperLeft );
-
 				},
 				stop: function( event, ui ) {
 					$( this ).removeClass( 'fieldPlaceholder' );
 					$editorContainer.removeClass( 'droppable' );
 					$container.removeClass( 'dragging' );
+					ui.helper.removeClass( 'gform-theme__disable' );
 
 					var isAddingField = false;
 
@@ -740,16 +744,31 @@ function initLayoutEditor( $ ) {
 
 		$elements().removeClass( 'hovering' );
 
-		if ( ! isInEditorArea( helperLeft, helperTop ) ) {
+		var isCompactView = $( '.gform-compact-view' ).length > 0;
+
+		if ( ! isInEditorArea( helperLeft, helperTop, isCompactView ) ) {
 			$indicator( false ).remove();
 			return;
+		}
+
+		// drop indicator is a different distance from field in compact view.
+		if ( isCompactView ) {
+			var topDistanceAllFields = -9;
+			var topDistance = 9;
+			var bottomDistance = 5;
+			var bottomDistanceAllFields = 5;
+		} else {
+			var topDistanceAllFields = -10;
+			var topDistance = 10;
+			var bottomDistance = 0;
+			var bottomDistanceAllFields = 0;
 		}
 
 		// Check if field is dragged *above* all other fields.
 		if ( helperTop < 0 ) {
 			$indicator()
 				.css( {
-					top: -30,
+					top: topDistanceAllFields,
 					left: 0,
 					height: '4px',
 					width: $container.outerWidth()
@@ -765,7 +784,7 @@ function initLayoutEditor( $ ) {
 			if ( $elements().last().data( 'field-class' ) !== 'gform_editor_submit_container' && $elements().last().prev().data( 'field-class' ) !== 'gform_editor_submit_container' ) {
 				$indicator()
 					.css( {
-						top: $container.outerHeight() - 14,
+						top: $container.outerHeight() - bottomDistanceAllFields,
 						left: 0,
 						height: '4px',
 						width: $container.outerWidth()
@@ -847,15 +866,6 @@ function initLayoutEditor( $ ) {
 					where: where,
 					target: $target
 				} );
-
-				// drop indicator is a different distance from field in compact view.
-				if ( $target.parents( '.gform-compact-view' ).length > 0 ) {
-					var topDistance = 10;
-					var bottomDistance = 6;
-				} else {
-					var topDistance = 30;
-					var bottomDistance = 26;
-				}
 
 				// Where on the child field has the helper been dragged?
 				switch ( where ) {
@@ -984,11 +994,11 @@ function initLayoutEditor( $ ) {
 	 *
 	 * @param {number} x The left position of the coordinate.
 	 * @param {number} y The top position of the coordinate.
+	 * @param {boolean} isCompactView Whether or not the form editor is in compact view.
 	 *
 	 * @returns {boolean}
 	 */
-	function isInEditorArea( x, y ) {
-
+	function isInEditorArea( x, y, isCompactView = false ) {
 		if ( ! gform.tools.isRtl() ) {
 			var editorOffsetLeft = $editorContainer.offset().left;
 		} else {
@@ -999,7 +1009,7 @@ function initLayoutEditor( $ ) {
 			offsetLeft = containerOffset.left - editorOffsetLeft,
 			buttonWidth = $button.outerWidth() || null,
 			editorArea = {
-				top: -offsetTop + buttonWidth,
+				top: isCompactView ? -offsetTop : -offsetTop + buttonWidth,
 				right: -offsetLeft + $editorContainer.outerWidth() - $sidebar.outerWidth() - buttonWidth,
 				bottom: -offsetTop + $editorContainer.outerHeight(),
 				left: -offsetLeft,

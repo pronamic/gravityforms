@@ -22,6 +22,9 @@ class GF_Settings_Service_Provider extends GF_Service_Provider {
 	const SETTINGS_CONFIG_I18N  = 'settings_config_i18n';
 	const SETTINGS_CONFIG_ADMIN = 'settings_config_admin';
 
+	// Encryption utils
+	const SETTINGS_ENCRYPTION = 'settings_encryption';
+
 	/**
 	 * Array mapping config class names to their container ID.
 	 *
@@ -42,6 +45,14 @@ class GF_Settings_Service_Provider extends GF_Service_Provider {
 	 * @param GF_Service_Container $container
 	 */
 	public function register( GF_Service_Container $container ) {
+
+		// Encryption utils
+		require_once( plugin_dir_path( __FILE__ ) . '/class-gf-settings-encryption.php' );
+		$container->add( self::SETTINGS_ENCRYPTION, function () {
+			return new GF_Settings_Encryption();
+		} );
+
+
 		// Configs
 		require_once( plugin_dir_path( __FILE__ ) . '/config/class-gf-settings-config-i18n.php' );
 		require_once( plugin_dir_path( __FILE__ ) . '/config/class-gf-settings-config-admin.php' );

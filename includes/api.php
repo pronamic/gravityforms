@@ -960,6 +960,11 @@ class GFAPI {
 		}
 		$transaction_type = ! empty( $entry['transaction_type'] ) ? intval( $entry['transaction_type'] ) : 'NULL';
 
+		if ( ! isset( $entry['source_id'] ) ) {
+			$entry['source_id'] = null;
+		}
+		$source_id = ! empty( $entry['source_id'] ) ? absint( $entry['source_id'] ) : 'NULL';
+
 		$entry_table = GFFormsModel::get_entry_table_name();
 		$sql = $wpdb->prepare(
 			"
@@ -983,7 +988,8 @@ class GFAPI {
                 created_by = {$user_id},
                 transaction_type = {$transaction_type},
                 status = %s,
-                payment_method = %s
+                payment_method = %s,
+                source_id = {$source_id}
                 WHERE
                 id = %d
                 ", $form_id, $is_starred, $is_read, $ip, $source_url, $user_agent, $currency, $status, $payment_method, $entry_id
@@ -1236,6 +1242,7 @@ class GFAPI {
 		$transaction_id = isset( $entry['transaction_id'] ) ? sprintf( "'%s'", esc_sql( $entry['transaction_id'] ) ) : 'NULL';
 		$is_fulfilled   = isset( $entry['is_fulfilled'] ) ? intval( $entry['is_fulfilled'] ) : 'NULL';
 		$status         = isset( $entry['status'] ) ? $entry['status'] : 'active';
+		$source_id      = isset( $entry['source_id'] ) ? absint( $entry['source_id'] ) : 'NULL';
 
 		global $current_user;
 		$user_id = isset( $entry['created_by'] ) ? absint( $entry['created_by'] ) : '';
@@ -1250,9 +1257,9 @@ class GFAPI {
 			$wpdb->prepare(
 				"
                 INSERT INTO $entry_table
-                (form_id, post_id, date_created, date_updated, is_starred, is_read, ip, source_url, user_agent, currency, payment_status, payment_date, payment_amount, transaction_id, is_fulfilled, created_by, transaction_type, status, payment_method)
+                (form_id, post_id, date_created, date_updated, is_starred, is_read, ip, source_url, user_agent, currency, payment_status, payment_date, payment_amount, transaction_id, is_fulfilled, created_by, transaction_type, status, payment_method, source_id)
                 VALUES
-                (%d, {$post_id}, {$date_created}, {$date_updated}, %d,  %d, %s, %s, %s, %s, {$payment_status}, {$payment_date}, {$payment_amount}, {$transaction_id}, {$is_fulfilled}, {$user_id}, {$transaction_type}, %s, %s)
+                (%d, {$post_id}, {$date_created}, {$date_updated}, %d,  %d, %s, %s, %s, %s, {$payment_status}, {$payment_date}, {$payment_amount}, {$transaction_id}, {$is_fulfilled}, {$user_id}, {$transaction_type}, %s, %s, {$source_id})
                 ", $form_id, $is_starred, $is_read, $ip, $source_url, $user_agent, $currency, $status, $payment_method
 			)
 		);
@@ -1700,8 +1707,9 @@ class GFAPI {
 			$result['validation_messages'] = self::get_field_validation_errors( $submission_details['form'] );
 		}
 
-		$result['page_number']          = $submission_details['page_number'];
-		$result['source_page_number']   = $submission_details['source_page_number'];
+		$result['form']               = $submission_details['form'];
+		$result['page_number']        = $submission_details['page_number'];
+		$result['source_page_number'] = $submission_details['source_page_number'];
 
 		if ( $submission_details['is_valid'] ) {
 			$confirmation_message = $submission_details['confirmation_message'];
@@ -1720,6 +1728,7 @@ class GFAPI {
 			}
 
 			$result['entry_id'] = rgars( $submission_details, 'lead/id' );
+			$result['is_spam']  = rgars( $submission_details, 'is_spam' );
 		}
 
 		if ( isset( $submission_details['resume_token'] ) ) {
@@ -1777,6 +1786,7 @@ class GFAPI {
 			'validation_messages' => array(),
 			'page_number'         => $is_valid ? $target_page : $failed_validation_page,
 			'source_page_number'  => $source_page,
+			'form'                => $form,
 		);
 
 		if ( $is_valid ) {
@@ -1964,6 +1974,7 @@ class GFAPI {
 	 * @since 1.8
 	 * @since 2.4.24 Updated $is_active to support using null to return both active and inactive feeds.
 	 * @since 2.6.1  Updated $form_ids to support an array of IDs.
+	 * @since 2.7.17 Added support for decrypting settings fields.
 	 *
 	 * @param mixed          $feed_ids   The ID of the Feed or an array of Feed IDs.
 	 * @param null|int|int[] $form_ids   The ID of the Form to which the Feeds belong or array of Form IDs.
@@ -2013,16 +2024,76 @@ class GFAPI {
 			$sql .= ' WHERE ' . join( ' AND ', $where_arr );
 		}
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_results( $sql, ARRAY_A );
 		if ( empty( $results ) ) {
 			return new WP_Error( 'not_found', __( 'Feed not found', 'gravityforms' ) );
 		}
 
 		foreach ( $results as &$result ) {
-			$result['meta'] = json_decode( $result['meta'], true );
+			$result['meta'] = self::get_encryptor()->decrypt_feed_meta( json_decode( $result['meta'], true ) );
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Encrypts feed meta fields based on feed settings fields configuratino and returns the resulting feed meta array.
+	 *
+	 * @since 2.7.17
+	 *
+	 * @param array  $feed_meta  The feed meta array to encrypt.
+	 * @param string $addon_slug The slug of the add-on to which the feed belongs.
+	 *
+	 * @return array Returns the feed meta arra with the fields that should be encrypted.
+	 */
+	public static function encrypt_feed_meta( $feed_meta, $addon_slug ) {
+
+		require_once( GFCommon::get_base_path() . '/includes/addon/class-gf-addon.php' );
+		$addon = GFAddon::get_addon_by_slug( $addon_slug );
+		if ( ! is_a( $addon, 'GFAddon' ) ) {
+			return $feed_meta;
+		}
+
+		return self::get_encryptor()->encrypt_feed_meta( $feed_meta, $addon->get_fields_to_encrypt() );
+	}
+
+	/**
+	 * The encryption service object.
+	 *
+	 * @since 2.7.17
+	 *
+	 * @var \Gravity_Forms\Gravity_Forms\Settings\GF_Settings_Encryption The encryption service object.
+	 */
+	private static $_encryptor;
+
+	/**
+	 * Gets the encryption service object.
+	 *
+	 * @since 2.7.17
+	 *
+	 * @return \Gravity_Forms\Gravity_Forms\Settings\GF_Settings_Encryption An instance of the encryption service object.
+	 */
+	public static function get_encryptor() {
+		if ( ! self::$_encryptor ) {
+			require_once( GFCommon::get_base_path() . '/includes/settings/class-gf-settings-service-provider.php' );
+			self::$_encryptor = GFForms::get_service_container()->get( \Gravity_Forms\Gravity_Forms\Settings\GF_Settings_Service_Provider::SETTINGS_ENCRYPTION );
+		}
+
+		return self::$_encryptor;
+	}
+
+	/**
+	 * Sets the encryption service object to be used by GFAPI
+	 *
+	 * @since 2.7.17
+	 *
+	 * @param Gravity_Forms\Gravity_Forms\Settings\GF_Settings_Encryption $encryptor The encryption service object to be used.
+	 *
+	 * @return void
+	 */
+	public static function set_encryptor( $encryptor ) {
+		self::$_encryptor = $encryptor;
 	}
 
 	/**
@@ -2084,6 +2155,9 @@ class GFAPI {
 	/**
 	 * Updates a feed.
 	 *
+	 * @since Unknown
+	 * @since 2.7.17 Added support for encrypting settings fields.
+	 *
 	 * @param int   $feed_id   The ID of the feed being updated.
 	 * @param array $feed_meta The feed meta to replace the existing feed meta.
 	 * @param null  $form_id   The ID of the form that the feed is associated with
@@ -2102,6 +2176,8 @@ class GFAPI {
 		if ( is_wp_error( $lookup_result ) ) {
 			return $lookup_result;
 		}
+
+		$feed_meta = self::encrypt_feed_meta( $feed_meta, $lookup_result[0]['addon_slug'] );
 
 		$feed_meta_json = json_encode( $feed_meta );
 		$table          = $wpdb->prefix . 'gf_addon_feed';
@@ -2124,6 +2200,8 @@ class GFAPI {
 	 * Adds a feed with the given Feed object.
 	 *
 	 * @since  1.8
+	 * @since 2.7.17 Added support for encrypting settings fields.
+	 *
 	 * @access public
 	 * @global $wpdb
 	 *
@@ -2149,6 +2227,8 @@ class GFAPI {
 		if ( $form_id !== 0 && $form_id !== '0' && ! self::form_id_exists( $form_id ) ) {
 			return new WP_Error( 'not_found', __( 'Form not found', 'gravityforms' ) );
 		}
+
+		$feed_meta = self::encrypt_feed_meta( $feed_meta, $addon_slug );
 
 		$feed_meta_json = json_encode( $feed_meta );
 		$sql            = $wpdb->prepare( "INSERT INTO {$table} (form_id, meta, addon_slug) VALUES (%d, %s, %s)", $form_id, $feed_meta_json, $addon_slug );

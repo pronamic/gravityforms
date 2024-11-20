@@ -1,8 +1,64 @@
-### 2.8.18 | 2024-10-01
-- Fixed spacing and margin issues in the form list, help page, and settings page in RTL.
-- Fixed an issue where `get_submitted_fields()` is not returning the correct field values if meta keys are not numeric.
+### 2.9.0 | 2024-11-05
+- Added a new "Multiple Choice" field.
+- Added a new "Image Choice" field.
+- Added new AJAX submission functionality.
+- Added support for encrypting and decrypting settings fields.
+- Added the ability to import images into the media library when forms are imported.
+- Added screen reader only headings to the form editor for better accessibility.
+- Added accessibility improvements to the "allowed file extensions" setting in the form editor.
+- Added notices about the removal of Legacy Markup in 3.1.0.
+- Added the ability to output config scripts by using the `gform_output_config` action.
+- Added the ability to clear default choices in the choices flyout in the form editor.
+- Updated the form editor to use the Orbital theme.
+- Updated location of some field settings from the choices flyout to the form editor sidebar.
+- Updated field configuration error messages in the form editor to be more consistent.
+- Updated browser alerts in the form editor to use a dialog modal.
+- Updated the markup of many settings in the form editor sidebar for better accessibility.
+- Updated the "Select All" functionality on the Checkbox field so that if all choices have been selected, and then one is deselected, the button goes back to saying "Select All".
+- Updated the compact view in the form editor to show icons based on the field type, not the field input type.
+- Updated asset enqueuing in the front end and the admin to be more efficient.
+- Fixed an issue that prevents users from closing the conditional logic flyout in the form editor.
+- Fixed an issue where dynamic field population is not working for fields inside a Repeater.
+- Fixed an issue where forms with multiple pages hidden by conditional logic can fail honeypot validation.
+- Fixed an issue where the full screen handler performs an unnecessary database query, which impacts front-end performance for some hosting environments.
+- Fixed an issue where the embed_post and custom_field merge tags return empty when used in notifications and add-on feeds that are processed asynchronously.
+- Fixed an issue where canceling a confirmation dialog still applies the change on choice fields.
+- Fixed an issue in the Orbital theme where ordered and unordered lists are not using the theme list-style property where expected.
+- Fixed an issue where the inline styles for the Theme Framework are always being output for forms using the Orbital theme when they should be disabled.
+- Fixed a bug that causes the wrong page titles on the Import Forms and Export Forms pages.
+- Removed support for Internet Explorer.
+- AF: Added the [`gform_entry_meta_pre_render_feed_settings`](https://docs.gravityforms.com/gform-entry-meta-pre-render-feed-settings) filter, so entry meta fields can be made available to the feed conditional logic setting.
+- API: Added the `source_id` column to the `gf_entry` table.
+- API: Added the [`gform_field_choices_max_count_visible`](https://docs.gravityforms.com/gform-field-choices-max-count-visible/) filter to allow for the setting of the maximum number of choices shown in the form editor for choice based fields.
+- API: Added the [`gform_image_choice_input_visibility`](https://docs.gravityforms.com/gform-image-choice-input-visibility/) filter for the default input visibility for the Image Choice field.
+- API: Added the [`gform_image_choice_label_visibility_default`](https://docs.gravityforms.com/gform-image-choice-label-visibility-default/) filter for the default label visibility for the Image Choice field.
+- API: Added the [`gform_checkbox_limit_exact_message`](https://docs.gravityforms.com/gform-checkbox-limit-exact-message/) filter to allow the customization of the message displayed on the Multiple Choice field when the field requires an exact number of selections.
+- API: Added the [`gform_checkbox_limit_range_message`](https://docs.gravityforms.com/gform-checkbox-limit-range-message/) filter to allow the customization of the message displayed on the Multiple Choice field when the field requires a range of selections.
+- API: Added the [`gform_checkbox_limit_max_message`](https://docs.gravityforms.com/gform-checkbox-limit-max-message/) filter to allow the customization of the message displayed on the Multiple Choice field when the field requires a maximum number of selections.
+- API: Added the [`gform_checkbox_limit_min_message`](https://docs.gravityforms.com/gform-checkbox-limit-min-message/) filter to allow the customization of the message displayed on the Multiple Choice field when the field requires a minimum number of selections.
+- API: Added the [`gform_default_choice_alignment`](https://docs.gravityforms.com/gform-default-choice-alignment/) filter to set the default alignment for the Multiple Choice field.
+- API: Added a JS module to keep track of current product field selection.
+- API: Added a JS state management module to keep track of form stata.
+- API: Added the [`gform_source_id_pre_save_entry`](https://docs.gravityforms.com/gform_source_id_pre_save_entry/) filter, so the value to be saved to the entry source_id property can be overridden.
+- API: Added a new [`gform/ajax/post_page_change`](https://docs.gravityforms.com/gform-ajax-post_page_change/) JavaScript event that runs after a page change with the new AJAX functionality.
+- API: Updated the config framework to support form specific config items to be added to the config object and output to the page.
+- API: Updated the theme framework utility classes of `.gform-theme__disable` and `.gform-theme__disable-framework` to also disable theme framework styles for field labels and descriptions.
+- API: Deprecated the `UpdateFieldChoices` function. Use `RefreshSelectedFieldPreview` instead.
+- API: Removed the deprecated form Theme Framework global CSS API properties.
+- API: Added the [`gform_entry_meta_pre_evaluate_conditional_logic`](https://docs.gravityforms.com/gform-entry-meta-pre-evaluate-conditional-logic) filter, so the entry meta fields supported for use with conditional logic can be customized before the rules are evaluated.
+- API: Added the [`gform_entries_action_links`](https://docs.gravityforms.com/gform-entries-action-links) filter to allow for modification of an entry action links in the form entries page.
+- API: Updated the product config logic so that it filters the form via the ['gform_pre_render'](https://docs.gravityforms.com/gform_pre_render/) filter.
+- API: Added a new Javascript event [`gform/post_init`](https://docs.gravityforms.com/gform-post-init/) that is triggered after the form has been initialized and can be used by add-ons to load necessary scripts after all Gravity Forms scripts are loaded.
 
-### 2.8.17 | 2024-08-26
+
+
+
+### 2.8.18
+- Fixed spacing and margin issues in the admin and help sections for RTL mode.
+- Fix spacing and margin issues in the settings currency dropdown when viewing the site in RTL.
+- Fixed an issue where get_submitted_fields() is not returning the correct field values if meta keys are not numeric.
+
+### 2.8.17
 - Updated the form restriction logging statements to include the form ID.
 - Fixed an issue where the license key is not saved for some sites in a multisite/network installation.
 

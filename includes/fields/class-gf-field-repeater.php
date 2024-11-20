@@ -191,7 +191,19 @@ class GF_Field_Repeater extends GF_Field {
 						$prefix = $sub_field->id . '_';
 					}
 
-					$field_items = $this->flatten( $values, $prefix, $sub_field->is_value_submission_array() );
+					if ( $sub_field instanceof GF_Field_List ) {
+						// List field expects an array. If we flatten the List Field values, we end up adding extra repeater items instead of populating the list.
+						if ( is_array( $values ) && is_array( $values[0] ) ) {
+							$field_items = array();
+							foreach ( $values as $key => $value ) {
+								$field_items[ $prefix . $key ] = $value;
+							}
+						} else {
+							$field_items = array( $prefix . '0' => $values );
+						}
+					} else {
+						$field_items = $this->flatten( is_array( $values ) ? $values : array( $values ), $prefix, $sub_field->is_value_submission_array() );
+					}
 				}
 				$items = array_merge( $items, $field_items );
 			}
@@ -692,6 +704,8 @@ class GF_Field_Repeater extends GF_Field {
 
 		$repeater_fields = array();
 
+		$is_new_entry = empty( $_POST[ 'is_submit_' . $this->formId ] ) && ! array_key_exists( 'id', $entry );
+
 		foreach ( $repeater_field->fields as $field ) {
 			if ( is_array( $field->fields ) ) {
 				$repeater_fields[] = $field;
@@ -706,7 +720,7 @@ class GF_Field_Repeater extends GF_Field {
 
 						$input_id = $input['id'];
 
-						$key = $input_id . $index . '_' . $i;
+						$key = $input_id . $index . ( $is_new_entry ? '' : '_' . $i );
 
 						$value = isset( $entry[ $key ] ) ? $entry[ $key ] : '';
 
