@@ -748,7 +748,7 @@ class GF_Field_Date extends GF_Field {
 			$placeholder = esc_html__( 'Month', 'gravityforms' );
 		}
 
-		return $this->get_number_dropdown( $name, $id, $selected_value, $tabindex, $disabled_text, $placeholder, 1, 12, $aria_attributes );
+		return $this->get_dropdown_label( $id, $placeholder ) . $this->get_number_dropdown( $name, $id, $selected_value, $tabindex, $disabled_text, $placeholder, 1, 12, $aria_attributes );
 	}
 
 	/**
@@ -772,7 +772,7 @@ class GF_Field_Date extends GF_Field {
 			$placeholder = esc_html__( 'Day', 'gravityforms' );
 		}
 
-		return $this->get_number_dropdown( $name, $id, $selected_value, $tabindex, $disabled_text, $placeholder, 1, 31, $aria_attributes );
+		return $this->get_dropdown_label( $id, $placeholder ) . $this->get_number_dropdown( $name, $id, $selected_value, $tabindex, $disabled_text, $placeholder, 1, 31, $aria_attributes );
 	}
 
 	/**
@@ -805,7 +805,21 @@ class GF_Field_Date extends GF_Field {
 		$year_min = apply_filters( 'gform_date_min_year', '1920', $form, $this );
 		$year_max = apply_filters( 'gform_date_max_year', date( 'Y' ) + 1, $form, $this );
 
-		return $this->get_number_dropdown( $name, $id, $selected_value, $tabindex, $disabled_text, $placeholder, $year_max, $year_min, $aria_attributes );
+		return $this->get_dropdown_label( $id, $placeholder ) . $this->get_number_dropdown( $name, $id, $selected_value, $tabindex, $disabled_text, $placeholder, $year_max, $year_min, $aria_attributes );
+	}
+
+	/**
+	 * Generates the markup for the hidden label for the date dropdown fields.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @param string $id              Field ID.
+	 * @param string $placeholder     Placeholder value.
+	 *
+	 * @return string
+	 */
+	private function get_dropdown_label( $id, $placeholder ) {
+		return "<label for='{$id}' class='gform-field-label gform-field-label--type-sub hidden_sub_label screen-reader-text'>{$placeholder}</label>";
 	}
 
 	/**

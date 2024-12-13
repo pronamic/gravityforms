@@ -325,20 +325,32 @@ function getAddressOptions( field, inputId, value ) {
  * @param {string} objectType The object type of the current field.
  */
 function generateGFConditionalLogic( fieldId, objectType ) {
-	if ( GF_CONDITIONAL_INSTANCE && GF_CONDITIONAL_INSTANCE.fieldId != fieldId  ) {
-		GF_CONDITIONAL_INSTANCES_COLLECTION.forEach( function( instance, instanceIndex ) {
+
+	// If this flyout is already loaded, do nothing.
+	const isAlreadyLoaded = GF_CONDITIONAL_INSTANCES_COLLECTION.filter( function( instance ) {
+		return instance.deactivated !== true && instance.fieldId === fieldId && instance.objectType === objectType;
+	}).length > 0;
+	if ( isAlreadyLoaded ) {
+		return;
+	}
+
+	// If we're changing fields, deactivate and hide all current instances of the flyout and update the flyout collection.
+	const isChangingFields = GF_CONDITIONAL_INSTANCE && GF_CONDITIONAL_INSTANCE.fieldId !== fieldId;
+	if ( isChangingFields ) {
+		GF_CONDITIONAL_INSTANCES_COLLECTION.forEach(function (instance, instanceIndex) {
 			instance.hideFlyout();
 			instance.removeEventListeners();
 			instance.deactivated = true;
 		});
+
+		// Remove deactivated instances from the collection.
+		GF_CONDITIONAL_INSTANCES_COLLECTION = GF_CONDITIONAL_INSTANCES_COLLECTION.filter( function( instance ) {
+			return instance.deactivated !== true;
+		});
 	}
 
+	// Create new flyout instance and add it to the collection.
 	GF_CONDITIONAL_INSTANCE = new GFConditionalLogic( fieldId, objectType );
-
-	GF_CONDITIONAL_INSTANCES_COLLECTION = GF_CONDITIONAL_INSTANCES_COLLECTION.filter( function( instance ) {
-		return instance.deactivated !== true;
-	});
-
 	GF_CONDITIONAL_INSTANCES_COLLECTION.push( GF_CONDITIONAL_INSTANCE );
 }
 

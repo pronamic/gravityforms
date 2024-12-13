@@ -497,17 +497,7 @@ class GF_Confirmation {
 		$form_id         = absint( rgget( 'id' ) );
 		$confirmation_id = rgpost( 'confirmation_id' ) ? rgpost( 'confirmation_id' ) : rgget( 'cid' );
 
-		/**
-		 * Filters to form meta being used within the confirmations edit page.
-		 *
-		 * @since Unknown
-		 *
-		 * @param array $form The Form Object.
-		 */
-		$form = gf_apply_filters( array(
-			'gform_admin_pre_render',
-			$form_id
-		), GFFormsModel::get_form_meta( $form_id ) );
+		$form = GFCommon::gform_admin_pre_render( GFFormsModel::get_form_meta( $form_id ) );
 
 		// Get confirmation object.
 		$confirmation = self::get_confirmation( $confirmation_id, $form );

@@ -623,18 +623,19 @@ class GF_System_Report {
 								'value'              => esc_html( GFCommon::get_db_version() ),
 								'type'               => 'version_check',
 								'version_compare'    => '>',
-								'minimum_version'    => '5.0.0',
-								'validation_message' => esc_html__( 'Gravity Forms requires MySQL 5 or above.', 'gravityforms' ),
+								'minimum_version'    => ( GFCommon::get_dbms_type() === 'SQLite' ) ? '3.0.0' : '5.0.0',
+								// translators: %s is the database type (MySQL, MariaDB or SQLite).						
+								'validation_message' => sprintf( esc_html__( 'Gravity Forms requires %s or above.', 'gravityforms' ) , ( GFCommon::get_dbms_type() === 'SQLite' ) ? 'SQLite 3.0' : 'MySQL 5' ),
 							),
 							array(
 								'label'        => esc_html__( 'Database Character Set', 'gravityforms' ),
 								'label_export' => 'Database Character Set',
-								'value'        => esc_html( $wpdb->get_var( 'SELECT @@character_set_database' ) ),
+								'value'        => esc_html( ( GFCommon::get_dbms_type() === 'SQLite' ) ? $wpdb->charset : $wpdb->get_var( 'SELECT @@character_set_database' ) ),
 							),
 							array(
 								'label'        => esc_html__( 'Database Collation', 'gravityforms' ),
 								'label_export' => 'Database Collation',
-								'value'        => esc_html( $wpdb->get_var( 'SELECT @@collation_database' ) ),
+								'value'        => esc_html( ( GFCommon::get_dbms_type() === 'SQLite' ) ? $wpdb->collate : $wpdb->get_var( 'SELECT @@collation_database' ) ),
 							),
 						),
 					),
@@ -817,7 +818,7 @@ class GF_System_Report {
 
 		$is_writable = wp_is_writable( $upload_path );
 
-		$disable_css      = apply_filters( 'gform_disable_css', get_option( 'rg_gforms_disable_css' ) );
+		$disable_css      = GFCommon::is_frontend_default_css_disabled();
 		$enable_html5     = get_option( 'rg_gforms_enable_html5', false );
 		$no_conflict_mode = get_option( 'gform_enable_noconflict' );
 		$updates          = get_option( 'gform_enable_background_updates' );
@@ -1006,7 +1007,7 @@ class GF_System_Report {
 		// If database version is out of date, add upgrade database option.
 		if ( version_compare( $versions['current_db_version'], GFForms::$version, '<' ) ) {
 
-			if ( gf_upgrade()->is_upgrading() ) {
+			if ( gf_upgrade()->is_upgrading() && version_compare( $versions['previous_db_version'], '2.3-beta-1', '<' ) && GFCommon::table_exists( $wpdb->prefix . 'rg_form' ) ) {
 				$status = get_option( 'gform_upgrade_status' );
 				$status = empty( $status ) ? '' : sprintf( __( 'Current Status: %s', 'gravityforms' ), $status );
 				$percent = self::get_upgrade_percent_complete();
@@ -1591,13 +1592,29 @@ class GF_System_Report {
 
 		$results = $wpdb->get_results( $query );
 
+		if ( $wpdb->last_error || ! isset( $results[0] ) ) {
+			return 0;
+		}	
+
 		$c = $results[0];
+
+		if ( ! isset( $c->form_count ) ) {
+			return 0;
+		}
 
 		$count = $c->form_count + $c->form_meta_count + $c->form_view_count + $c->entry_count + $c->entry_meta_count + $c->entry_notes_count;
 
 		$legacy_count = $c->legacy_form_count + $c->legacy_form_meta_count + $c->legacy_form_view_count + $c->lead_count + $c->lead_detail_count + $c->lead_meta_count + $c->lead_notes_count;
 
+		if ( 0 == $legacy_count ) {
+			return 100;
+		}
+
 		$percent_complete = round( $count / $legacy_count * 100, 2 );
+
+		if ( $percent_complete > 100 ) {
+			$percent_complete = 100;
+		}
 
 		return $percent_complete;
 	}

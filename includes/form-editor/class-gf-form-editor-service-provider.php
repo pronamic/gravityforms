@@ -5,6 +5,7 @@ namespace Gravity_Forms\Gravity_Forms\Form_Editor;
 use Gravity_Forms\Gravity_Forms\Config\GF_Config_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Choices_UI\Config\GF_Choices_UI_Config;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Choices_UI\Config\GF_Choices_UI_Config_I18N;
+use Gravity_Forms\Gravity_Forms\Form_Editor\Choices_UI\Config\GF_Dialog_Config_I18N;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Save_Form\Config\GF_Form_Editor_Form_Save_Config;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Save_Form\Endpoints\GF_Save_Form_Endpoint_Form_Editor;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Renderer\GF_Form_Editor_Renderer;
@@ -25,6 +26,7 @@ class GF_Form_Editor_Service_Provider extends GF_Service_Provider {
 	// Configs
 	const CHOICES_UI_CONFIG       = 'embed_config';
 	const CHOICES_UI_CONFIG_I18N  = 'embed_config_i18n';
+	const DIALOG_CONFIG_I18N      = 'dialog_config_i18n';
 	const FORM_EDITOR_SAVE_CONFIG = 'form_editor_save_config';
 	const FORM_EDITOR_RENDERER    = 'form_editor_renderer';
 
@@ -38,6 +40,7 @@ class GF_Form_Editor_Service_Provider extends GF_Service_Provider {
 	protected $configs = array(
 		self::CHOICES_UI_CONFIG       => GF_Choices_UI_Config::class,
 		self::CHOICES_UI_CONFIG_I18N  => GF_Choices_UI_Config_I18N::class,
+		self::DIALOG_CONFIG_I18N      => GF_Dialog_Config_I18N::class,
 		self::FORM_EDITOR_SAVE_CONFIG => GF_Form_Editor_Form_Save_Config::class,
 	);
 
@@ -61,12 +64,17 @@ class GF_Form_Editor_Service_Provider extends GF_Service_Provider {
 	);
 
 	public function register( GF_Service_Container $container ) {
+		// Dialog Alert Config
+		require_once( plugin_dir_path( __FILE__ ) . '/dialog-alert/config/class-gf-dialog-config-i18n.php' );
+
 		// Choices UI Configs
 		require_once( plugin_dir_path( __FILE__ ) . '/choices-ui/config/class-gf-choices-ui-config.php' );
 		require_once( plugin_dir_path( __FILE__ ) . '/choices-ui/config/class-gf-choices-ui-config-i18n.php' );
+
 		// Form Saver Configs
 		require_once plugin_dir_path( __FILE__ ) . 'save-form/config/class-gf-form-editor-form-save-config.php';
 		require_once plugin_dir_path( __FILE__ ) . 'save-form/endpoints/class-gf-save-form-endpoint-form-editor.php';
+
 		// Editor Renderers.
 		require_once plugin_dir_path( __FILE__ ) . 'renderer/class-gf-form-editor-renderer.php';
 

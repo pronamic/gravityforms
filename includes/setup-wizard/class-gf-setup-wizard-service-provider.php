@@ -100,12 +100,14 @@ class GF_Setup_Wizard_Service_Provider extends GF_Service_Provider {
 			return false;
 		}
 
+		$page = \GFForms::get_page_query_arg();
+
 		// Don't display on the system status page.
-		if ( rgget( 'page' ) == 'gf_system_status' ) {
+		if ( $page == 'gf_system_status' ) {
 			return false;
 		}
 
-		if ( rgget( 'page' ) == 'gf_settings' && rgar( $_COOKIE, GF_Setup_Wizard_Config::INVALID_KEY_COOKIE ) ) {
+		if ( $page == 'gf_settings' && rgar( $_COOKIE, GF_Setup_Wizard_Config::INVALID_KEY_COOKIE ) ) {
 			return false;
 		}
 

@@ -1379,7 +1379,11 @@ class GFCommon {
 		if ( strpos( $text, '{' ) !== false ) {
 
 			//embed url
-			$current_page_url = empty( $entry ) ? RGFormsModel::get_current_page_url() : rgar( $entry, 'source_url' );
+			$current_page_url = empty( $entry ) ? GFFormsModel::get_current_page_url() : rgar( $entry, 'source_url' );
+			if ( $current_page_url && ! empty( $entry['source_id'] ) && strpos( $current_page_url, admin_url( 'admin-ajax.php' ) ) === 0 ) {
+				$current_page_url = (string) get_permalink( $entry['source_id'] );
+			}
+
 			if ( $esc_html ) {
 				$current_page_url = esc_html( $current_page_url );
 			}
@@ -1477,7 +1481,7 @@ class GFCommon {
 			$text       = str_replace( '{user_agent}', self::format_variable_value( $user_agent, $url_encode, $esc_html, $format, $nl2br ), $text );
 
 			//referrer
-			$referer = RGForms::get( 'HTTP_REFERER', $_SERVER );
+			$referer = isset( $_POST['ajax_referer'] ) ? esc_url( urldecode( $_POST['ajax_referer'] ) ) : rgar( $_SERVER, 'HTTP_REFERER' );
 			if ( $esc_html ) {
 				$referer = esc_html( $referer );
 			}
@@ -4871,6 +4875,7 @@ Content-Type: text/html;
 	}
 
 	public static function get_card_types() {
+
 		$cards = array(
 
 			array(
@@ -5303,9 +5308,48 @@ Content-Type: text/html;
 			)
 		);
 
-		return RGFormsModel::matches_operation( $merge_tag, $value, $condition ) ? do_shortcode( $content ) : '';
+		$merge_tag = self::maybe_format_numeric( $merge_tag, $condition );
+
+		return RGFormsModel::matches_conditional_operation( $merge_tag, $value, $condition ) ? do_shortcode( $content ) : '';
 
 	}
+
+	/**
+	 * If the specified conditional logic operation requires a number formatted as numeric, this method will format it and return the result.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @param string $text          The text to be formatted.
+	 * @param string $operation     The conditional logic operation to be performed. (i.e. >, <, ...)
+	 * @param string $number_format How the $text parameter is formatted. (i.e. currency, decimal_dot, ...).
+     * NOTE: This parameter is optional for backwards compatibility, but it is recommended to always specify it. When not specified, the method will "best guess" the format based on the $text parameter and the default currency of the site.
+	 *
+	 * @return int|mixed|string Returns a number formatted as a float.
+	 */
+	public static function maybe_format_numeric( $text, $operation, $number_format = '' ) {
+
+		// If $text is not a string, return it as is.
+		if ( ! is_string( $text ) ) {
+			return $text;
+		}
+
+		// If this is not a numeric operation, return text as is.
+		if ( ! in_array( $operation, array( '>', '<', 'greater_than', 'less_than' ) ) ) {
+			return $text;
+		}
+
+		// If number format is specified, format number if $text is numeric for this format. Otherwise, return $text as is.
+		if ( $number_format ) {
+			return GFCommon::is_numeric( $text, $number_format ) ? GFCommon::clean_number( $text, $number_format ) : $text;
+		}
+
+		// If number format is not specified, set it to currency if $text is numeric for the current currency. Otherwise, use decimal_dot.
+		$number_format = GFCommon::is_numeric( $text, 'currency' ) ? 'currency' : 'decimal_dot';
+
+		// Return the formatted number, or 0 if number is not numeric for the format.
+		return GFCommon::is_numeric( $text, $number_format ) ? GFCommon::clean_number( $text, $number_format ) : 0;
+	}
+
 
 	public static function is_valid_for_calcuation( $field ) {
 
@@ -7520,21 +7564,27 @@ Content-Type: text/html;
 	 * Return current database management system.
 	 *
 	 * @since 2.5
+	 * @since 2.9 added SQLite detection.
 	 *
-	 * @return string either MySQL or MariaDB
+	 * @return string either MySQL, MariaDB, or SQLite.
 	 */
 	public static function get_dbms_type() {
 		static $type;
-
+		global $wpdb;
+		
 		if ( empty( $type ) ) {
 			$type = strpos( strtolower( self::get_dbms_version() ), 'mariadb' ) ? 'MariaDB' : 'MySQL';
+			
+			if ( get_class( $wpdb ) === 'WP_SQLite_DB' ) {
+				$type = 'SQLite';
+			}
 		}
-
+		
 		return $type;
 	}
 
 	/**
-	 * Returns the raw value from a SELECT version() db query.
+	 * Returns the raw value from a SELECT version() or SELECT sqlite_version() db query.
 	 *
 	 * @since 2.7.1
 	 *
@@ -7546,6 +7596,11 @@ Content-Type: text/html;
 		if ( empty( $value ) ) {
 			global $wpdb;
 			$value = $wpdb->get_var( 'SELECT version();' );
+
+			if ( ( get_class( $wpdb ) === 'WP_SQLite_DB' ) || $wpdb->last_error ) {
+				$value = $wpdb->get_var( 'SELECT sqlite_version();' );
+			}
+
 		}
 
 		return $value;
@@ -7854,6 +7909,68 @@ Content-Type: text/html;
 		}
 
 		return is_plugin_active_for_network( $plugin );
+	}
+
+	/**
+	 * Passes the given form through the gform_admin_pre_render filter.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @param array|null $form The current form.
+	 *
+	 * @return array|null
+	 */
+	public static function gform_admin_pre_render( $form ) {
+		if ( ! is_array( $form ) || ! isset( $form['id'] ) ) {
+			return $form;
+		}
+
+		static $forms = array();
+
+		$form_id = (int) $form['id'];
+		if ( ! isset( $forms[ $form_id ] ) ) {
+			/**
+			 * Allows the form to be customized before it is used in an admin context.
+			 *
+			 * @since unknown
+			 *
+			 * @param array $form The current form.
+			 */
+			$forms[ $form_id ] = gf_apply_filters( array( 'gform_admin_pre_render', $form_id ), $form );
+		}
+
+		return $forms[ $form_id ];
+	}
+
+	/**
+	 * Applies the gform_disable_css filter and checks 'disable css global' setting to decide if default css should be output or not.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @return bool|null
+	 */
+	public static function is_frontend_default_css_disabled() {
+		/**
+		 * Allows users to disable all CSS files from being loaded on the Front End.
+		 *
+		 * @since 2.8
+		 *
+		 * @param boolean Whether to disable css.
+		 */
+		return apply_filters( 'gform_disable_css', get_option( 'rg_gforms_disable_css' ) );
+	}
+
+	/**
+	 * Decides whether to output the default css or not.
+	 *
+	 * Some admin pages need the default css even if the global setting is disabled or the frontend disable filter is used to disable outputting the css.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @return bool
+	 */
+	public static function output_default_css() {
+		return (bool) ( ! GFCommon::is_frontend_default_css_disabled() || GFCommon::is_form_editor() || GFCommon::is_entry_detail() );
 	}
 
 }

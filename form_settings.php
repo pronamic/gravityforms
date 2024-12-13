@@ -649,18 +649,12 @@ class GFFormSettings {
 	 * @return bool
 	 */
 	public static function legacy_is_in_use() {
-		$legacy_is_in_use = GFCache::get( 'legacy_is_in_use' );
-		if ( empty( $legacy_is_in_use ) ) {
-			$legacy_is_in_use = false;
-			$forms            = GFAPI::get_forms( null, false, 'date_created', 'ASC' );
-			foreach ( $forms as $form ) {
-				if ( rgar( $form, 'markupVersion' ) && $form['markupVersion'] == 1 ) {
-					$legacy_is_in_use = true;
-					break;
-				}
-			}
+		$legacy_is_in_use = GFCache::get( 'legacy_is_in_use', $found_in_cache );
 
-			GFCache::set( 'legacy_is_in_use', $legacy_is_in_use, true, 2 * WEEK_IN_SECONDS );
+		if ( ! $found_in_cache ) {
+			$legacy_is_in_use = GFFormsModel::has_legacy_markup();
+
+			GFCache::set( 'legacy_is_in_use', $legacy_is_in_use, true,  DAY_IN_SECONDS );
 		}
 
 		return $legacy_is_in_use;
@@ -707,20 +701,15 @@ class GFFormSettings {
 
 		require_once( GFCommon::get_base_path() . '/form_detail.php' );
 
-		$form_id       = rgget( 'id' );
-		$form          = GFFormsModel::get_form_meta( $form_id );
-		$form          = gf_apply_filters( array( 'gform_admin_pre_render', $form_id ), $form );
+		$form_id = rgget( 'id' );
+		$form    = GFCommon::gform_admin_pre_render( GFFormsModel::get_form_meta( $form_id ) );
 
 		// Initialize new settings renderer.
 		$renderer = new Settings(
 			array(
 				'fields'         => array_values( self::form_settings_fields( $form ) ),
 				'initial_values' => self::get_initial_values( $form ),
-				'save_callback'  => function( $values ) use ( &$form ) {
-
-					// Get form object.
-					$form_id = rgget( 'id' );
-					$form    = GFFormsModel::get_form_meta( $form_id );
+				'save_callback'  => function( $values ) use ( &$form, $form_id ) {
 
 					// Set form version.
 					$form['version'] = GFForms::$version;
@@ -1057,7 +1046,7 @@ class GFFormSettings {
 
 						$query = array(
 							'subview' => $tab['name'],
-							'page'    => rgget( 'page' ),
+							'page'    => GFForms::get_page_query_arg(),
 							'id'      => rgget( 'id' ),
 							'view'    => rgget( 'view' ),
 						);

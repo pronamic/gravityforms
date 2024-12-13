@@ -108,9 +108,7 @@ class GF_License_API_Connector extends GF_API_Connector {
 			false
 		);
 
-		if ( $license_info->can_be_used() ) {
-			$this->cache->set( 'rg_gforms_license_info_' . $key, serialize( $license_info ), true, DAY_IN_SECONDS );
-		}
+		$this->cache->set( 'rg_gforms_license_info_' . $key, serialize( $license_info ), true, DAY_IN_SECONDS );
 
 		return $license_info;
 	}

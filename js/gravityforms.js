@@ -774,7 +774,6 @@ var gformCalculateTotalPrice =  gform.tools.debounce(function(formId){
 	if(!_gformPriceFields[formId]) {
 		return;
 	}
-
 	var price = 0;
 
 	_anyProductSelected = false; //Will be used by gformCalculateProductPrice().
@@ -1182,8 +1181,18 @@ function gformInitPriceFields(){
 		gformCalculateTotalPrice( formId );
 
 		gform.state.watch( formId, ['products', 'feeds'], gformHandleProductChange );
+		bindProductChangeEvent();
 	} );
 }
+
+function bindProductChangeEvent() {
+	document.addEventListener( 'gform/products/product_field_changed', function( event ) {
+		const productIds = { formId : event.detail.formId, productFieldId : event.detail.productFieldId }
+
+		jQuery( document ).trigger( 'gform_price_change', [ productIds, event.detail.htmlInput, this ] );
+	} );
+}
+
 
 function gformHandleProductChange( formId, key, data ) {
 	gformCalculateTotalPrice( formId );
@@ -3099,11 +3108,13 @@ function gformInitSpinner(formId, spinnerUrl, isLegacy = true) {
  */
 function gformShowSpinner( formId, spinnerUrl ) {
 
-	let spinnerCheck = gform.applyFilters('gform_spinner_url', spinnerUrl, formId);
+	let filteredSpinner = gform.applyFilters('gform_spinner_url', spinnerUrl, formId);
+	let defaultSpinner = gform.applyFilters('gform_spinner_url', gf_global.spinnerUrl, formId);
 
-	const isLegacy = spinnerCheck !== spinnerUrl;
+	// Legacy spinner: this is not referring to Legacy Markup, but to the pre-2.7 spinner implementation.
+	const isLegacy = filteredSpinner !== defaultSpinner;
 	if ( isLegacy ) {
-		gformAddSpinner( formId, spinnerUrl );
+		gformAddSpinner( formId, filteredSpinner );
 		return;
 	}
 

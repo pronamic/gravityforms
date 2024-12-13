@@ -110,12 +110,7 @@ class GFEntryDetail {
 			return  self::$_form;
 		}
 
-		$form = GFFormsModel::get_form_meta( absint( $_GET['id'] ) );
-
-		$form_id = absint( $form['id'] );
-
-		$form    = apply_filters( 'gform_admin_pre_render', $form );
-		$form    = apply_filters( 'gform_admin_pre_render_' . $form_id, $form );
+		$form = GFCommon::gform_admin_pre_render( GFFormsModel::get_form_meta( absint( $_GET['id'] ) ) );
 
 		self::set_current_form( $form );
 

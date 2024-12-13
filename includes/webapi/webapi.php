@@ -88,9 +88,11 @@ if ( class_exists( 'GFForms' ) ) {
 			}
 
 			$is_v2_enabled = $this->is_v2_enabled( $this->get_plugin_settings() ) || $this->is_v2_enabled();
-			if ( $is_v2_enabled  ) {
+			if ( $is_v2_enabled ) {
 
-				$this->maybe_upgrade_schema();
+				if ( is_admin() && $this->current_user_can_any( array( 'manage_options', 'gravityforms_api_settings' ) ) ) {
+					$this->maybe_upgrade_schema();
+				}
 
 				if ( ! is_admin() ) {
 					require_once( plugin_dir_path( __FILE__ ) . 'v2/class-gf-rest-authentication.php' );
@@ -788,7 +790,7 @@ if ( class_exists( 'GFForms' ) ) {
 				$format = 'json';
 			}
 
-			$schema    = strtolower( ( rgget( 'schema' ) ) );
+			$schema    = strtolower( (string) rgget( 'schema' ) );
 			$offset    = isset( $_GET['paging']['offset'] ) ? strtolower( $_GET['paging']['offset'] ) : 0;
 			$page_size = isset( $_GET['paging']['page_size'] ) ? strtolower( $_GET['paging']['page_size'] ) : 10;
 

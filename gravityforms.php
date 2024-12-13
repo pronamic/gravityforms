@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.0
+Version: 2.9.1
 Requires at least: 4.0
 Requires PHP: 5.6
 Author: Gravity Forms
@@ -123,7 +123,7 @@ define( 'GF_SUPPORTED_WP_VERSION', version_compare( get_bloginfo( 'version' ), G
  *
  * @var string GF_MIN_WP_VERSION_SUPPORT_TERMS The version number
  */
-define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '6.4' );
+define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '6.5' );
 
 /**
  * The filesystem path of the directory that contains the plugin, includes trailing slash.
@@ -247,7 +247,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.0';
+	public static $version = '2.9.1';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -1280,9 +1280,9 @@ class GFForms {
 	 */
 	private static function no_conflict_mode( &$wp_objects, $wp_required_objects, $gf_required_objects, $type = 'scripts' ) {
 
-		$current_page = trim( strtolower( rgget( 'page' ) ) );
+		$current_page = self::get_page_query_arg();
 		if ( empty( $current_page ) ) {
-			$current_page = trim( strtolower( rgget( 'gf_page' ) ) );
+			$current_page = trim( strtolower( (string) rgget( 'gf_page' ) ) );
 		}
 		if ( empty( $current_page ) ) {
 			$current_page = RG_CURRENT_PAGE;
@@ -1740,6 +1740,22 @@ class GFForms {
 	}
 
 	/**
+	 * Returns the lowercase value of the string-based page query argument.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @return string
+	 */
+	public static function get_page_query_arg() {
+		$page = self::get( 'page' );
+		if ( empty( $page ) || ! is_string( $page ) ) {
+			return '';
+		}
+
+		return trim( strtolower( $page ) );
+	}
+
+	/**
 	 * Determines if the current page is part of Gravity Forms.
 	 *
 	 * Returns true if the current page is one of Gravity Forms page or first-party add-on page. False otherwise.
@@ -1752,7 +1768,7 @@ class GFForms {
 	public static function is_gravity_page() {
 
 		// Gravity Forms pages
-		$current_page   = trim( strtolower( self::get( 'page' ) ) );
+		$current_page   = self::get_page_query_arg();
 		$gf_pages       = array( 'gf_edit_forms', 'gf_new_form', 'gf_entries', 'gf_settings', 'gf_export', 'gf_help', 'gf_addons', 'gf_system_status' );
 		$gf_addon_pages = array( 'gravityformscoupons' );
 
@@ -2117,7 +2133,7 @@ class GFForms {
 				$subview    = rgget( 'subview' );
 				$page_title = __( 'System Status', 'gravityforms' );
 
-		if ( ! $form_id || rgget( 'page' ) != 'gf_edit_forms' || rgget( 'view' ) != 'settings' ) {
+		if ( ! $form_id || self::get_page_query_arg() != 'gf_edit_forms' || rgget( 'view' ) != 'settings' ) {
 			return $admin_title;
 		}
 
@@ -3423,7 +3439,7 @@ class GFForms {
 			wp_enqueue_media();
 		}
 
-		if ( self::has_members_plugin() && rgget( 'page' ) === 'roles' ) {
+		if ( self::has_members_plugin() && self::get_page_query_arg() === 'roles' ) {
 		    wp_enqueue_style( 'gform_dashicons' );
         }
 
@@ -3468,84 +3484,85 @@ class GFForms {
 	 *   updates
 	 */
 	public static function get_page() {
+		$page = self::get_page_query_arg();
 
-		if ( rgget( 'page' ) == 'gf_new_form' ) {
+		if ( $page == 'gf_new_form' ) {
 			return 'new_form';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && ! rgget( 'id' ) ) {
+		if ( $page == 'gf_edit_forms' && ! rgget( 'id' ) ) {
 			return 'form_list';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && ! rgget( 'view' ) ) {
+		if ( $page == 'gf_edit_forms' && ! rgget( 'view' ) ) {
 			return 'form_editor';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && ( ! rgget( 'subview' ) || rgget( 'subview' ) == 'settings' ) ) {
+		if ( $page == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && ( ! rgget( 'subview' ) || rgget( 'subview' ) == 'settings' ) ) {
 			return 'form_settings';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'personal-data' ) {
+		if ( $page == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'personal-data' ) {
 			return 'personal_data';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'confirmation' ) {
+		if ( $page == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'confirmation' ) {
 			return 'confirmation';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'notification' && rgget( 'nid' ) ) {
+		if ( $page == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'notification' && rgget( 'nid' ) ) {
 			return 'notification_edit';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'notification' && isset( $_GET['nid'] ) ) {
+		if ( $page == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'notification' && isset( $_GET['nid'] ) ) {
 			return 'notification_edit';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'notification' ) {
+		if ( $page == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) == 'notification' ) {
 			return 'notification_list';
 		}
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) ) {
+		if ( $page == 'gf_edit_forms' && rgget( 'view' ) == 'settings' && rgget( 'subview' ) ) {
 			return 'form_settings_' . rgget( 'subview' );
 		}
 
-		if ( rgget( 'page' ) == 'gf_entries' && ( ! rgget( 'view' ) || rgget( 'view' ) == 'entries' ) ) {
+		if ( $page == 'gf_entries' && ( ! rgget( 'view' ) || rgget( 'view' ) == 'entries' ) ) {
 			return 'entry_list';
 		}
 
-		if ( rgget( 'page' ) == 'gf_entries' && rgget( 'view' ) == 'entry' && isset( $_POST['screen_mode'] ) && $_POST['screen_mode'] == 'edit' ) {
+		if ( $page == 'gf_entries' && rgget( 'view' ) == 'entry' && isset( $_POST['screen_mode'] ) && $_POST['screen_mode'] == 'edit' ) {
 			return 'entry_detail_edit';
 		}
 
-		if ( rgget( 'page' ) == 'gf_entries' && rgget( 'view' ) == 'entry' ) {
+		if ( $page == 'gf_entries' && rgget( 'view' ) == 'entry' ) {
 			return 'entry_detail';
 		}
 
-		if ( rgget( 'page' ) == 'gf_settings' ) {
+		if ( $page == 'gf_settings' ) {
 			return 'settings';
 		}
 
-		if ( rgget( 'page' ) == 'gf_addons' ) {
+		if ( $page == 'gf_addons' ) {
 			return 'addons';
 		}
 
-		if ( rgget( 'page' ) == 'gf_entries' && strpos( rgget( 'view' ), 'gf_results' ) !== false ) {
+		if ( $page == 'gf_entries' && strpos( rgget( 'view' ), 'gf_results' ) !== false ) {
 			return 'results';
 		}
 
-		if ( rgget( 'page' ) == 'gf_export' && ( rgget( 'subview' ) == 'export_entry' || ! isset( $_GET['subview'] ) ) ) {
+		if ( $page == 'gf_export' && ( rgget( 'subview' ) == 'export_entry' || ! isset( $_GET['subview'] ) ) ) {
 			return 'export_entry';
 		}
 
-		if ( rgget( 'page' ) == 'gf_export' && rgget( 'subview' ) == 'export_form' ) {
+		if ( $page == 'gf_export' && rgget( 'subview' ) == 'export_form' ) {
 			return 'export_form';
 		}
 
-		if ( rgget( 'page' ) == 'gf_export' && rgget( 'subview' ) == 'import_form' ) {
+		if ( $page == 'gf_export' && rgget( 'subview' ) == 'import_form' ) {
 			return 'import_form';
 		}
 
-		if ( rgget( 'page' ) == 'gf_system_status' ) {
+		if ( $page == 'gf_system_status' ) {
 			return rgget( 'subview' ) === 'updates' ? 'updates' : 'system_status';
 		}
 
@@ -4145,7 +4162,6 @@ class GFForms {
 	 *
 	 * @uses   GFForms::maybe_display_wizard()
 	 * @uses   GFCommon::ensure_wp_version()
-	 * @uses   GFForms::get()
 	 * @uses   GFEntryList::leads_page()
 	 * @uses   GFEntryDetail::lead_detail_page()
 	 * @uses   GFFormSettings::form_settings_page()
@@ -4161,8 +4177,8 @@ class GFForms {
 			return;
 		};
 
-		$id   = RGForms::get( 'id' );
-		$view = RGForms::get( 'view' );
+		$id   = rgget( 'id' );
+		$view = rgget( 'view' );
 
 		if ( $view == 'entries' ) {
 			require_once( GFCommon::get_base_path() . '/entry_list.php' );
@@ -4210,6 +4226,10 @@ class GFForms {
 	public static function get( $name, $array = null ) {
 		if ( ! isset( $array ) ) {
 			$array = $_GET;
+		}
+
+		if ( ! is_array( $array ) ) {
+			return '';
 		}
 
 		if ( isset( $array[ $name ] ) ) {
@@ -5251,7 +5271,7 @@ class GFForms {
 
 		// Set class for display mode on entries list page.
 		$view_class = null;
-		if ( isset( $_GET['page'] ) && $_GET['page'] === 'gf_entries' && ! isset( $_GET['lid'] ) ) {
+		if ( self::get_page_query_arg() === 'gf_entries' && ! isset( $_GET['lid'] ) ) {
 			if ( class_exists( 'GFEntryList' ) ) {
 				$option_values = GFEntryList::get_screen_options_values();
 				$view_class    = ( $option_values['display_mode'] === 'full_width' ) ? ' gform_form_settings_wrap--full-width' : null;
@@ -5709,7 +5729,7 @@ class GFForms {
 		switch ( $item ) {
 
 			case 'editor':
-				if ( in_array( rgget( 'page' ), array(
+				if ( in_array( self::get_page_query_arg(), array(
 						'gf_edit_forms',
 						'gf_new_form'
 					) ) && rgempty( 'view', $_GET )
@@ -5725,24 +5745,26 @@ class GFForms {
 				break;
 
 			case 'notifications' :
-				if ( rgget( 'page' ) == 'gf_new_form' ) {
+				$page = self::get_page_query_arg();
+				if ( $page == 'gf_new_form' ) {
 					return 'gf_toolbar_disabled';
-				} else if ( rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'notification' ) {
+				} else if ( $page == 'gf_edit_forms' && rgget( 'view' ) == 'notification' ) {
 					return 'gf_toolbar_active';
 				}
 				break;
 
 			case 'entries' :
-				if ( rgget( 'page' ) == 'gf_new_form' ) {
+				$page = self::get_page_query_arg();
+				if ( $page == 'gf_new_form' ) {
 					return 'gf_toolbar_disabled';
-				} else if ( rgget( 'page' ) == 'gf_entries' && strpos( rgget( 'view' ), 'gf_results_' ) === false ) {
+				} else if ( $page == 'gf_entries' && strpos( rgget( 'view' ), 'gf_results_' ) === false ) {
 					return 'gf_toolbar_active';
 				}
 
 				break;
 
 			case 'preview' :
-				if ( rgget( 'page' ) == 'gf_new_form' ) {
+				if ( self::get_page_query_arg() == 'gf_new_form' ) {
 					return 'gf_toolbar_disabled';
 				}
 
@@ -7065,25 +7087,15 @@ if ( ! function_exists( 'rgget' ) ) {
 	/**
 	 * Helper function for getting values from query strings or arrays
 	 *
-	 * @param string $name The key
-	 * @param array $array The array to search through.  If null, checks query strings.  Defaults to null.
+	 * @since 2.9.1 Updated to use GFForms::get().
+	 *
+	 * @param string $name  The key
+	 * @param array  $array The array to search through.  If null, checks query strings.  Defaults to null.
 	 *
 	 * @return string The value.  If none found, empty string.
 	 */
 	function rgget( $name, $array = null ) {
-		if ( ! isset( $array ) ) {
-			$array = $_GET;
-		}
-
-		if ( ! is_array( $array ) ) {
-			return '';
-		}
-
-		if ( isset( $array[ $name ] ) ) {
-			return $array[ $name ];
-		}
-
-		return '';
+		return GFForms::get( $name, $array );
 	}
 }
 
@@ -7091,17 +7103,15 @@ if ( ! function_exists( 'rgpost' ) ) {
 	/**
 	 * Helper function to obtain POST values.
 	 *
-	 * @param string $name The key
-	 * @param bool $do_stripslashes Optional. Performs stripslashes_deep.  Defaults to true.
+	 * @since 2.9.1 Updated to use GFForms::post().
+	 *
+	 * @param string $name            The key
+	 * @param bool   $do_stripslashes Optional. Performs stripslashes_deep.  Defaults to true.
 	 *
 	 * @return string The value.  If none found, empty string.
 	 */
 	function rgpost( $name, $do_stripslashes = true ) {
-		if ( isset( $_POST[ $name ] ) ) {
-			return $do_stripslashes ? stripslashes_deep( $_POST[ $name ] ) : $_POST[ $name ];
-		}
-
-		return '';
+		return GFForms::post( $name, $do_stripslashes );
 	}
 }
 

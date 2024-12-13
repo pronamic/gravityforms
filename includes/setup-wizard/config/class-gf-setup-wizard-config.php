@@ -63,7 +63,7 @@ class GF_Setup_Wizard_Config extends GF_Config {
 							'organization'         => $this->get_organization_options(),
 							'invalidKeyCookieName' => self::INVALID_KEY_COOKIE,
 							'hasLicense'           => ! empty( \GFCommon::get_key() ),
-							'isSettingsPage'       => rgget( 'page' ) == 'gf_settings',
+							'isSettingsPage'       => \GFForms::get_page_query_arg() == 'gf_settings',
 						),
 						'shouldDisplay' => $this->get_should_display(),
 					),
@@ -74,7 +74,7 @@ class GF_Setup_Wizard_Config extends GF_Config {
 
 	private function get_should_display() {
 		// Don't display on the system status page.
-		if ( rgget( 'page' ) == 'gf_system_status' ) {
+		if ( \GFForms::get_page_query_arg() == 'gf_system_status' ) {
 			return false;
 		}
 

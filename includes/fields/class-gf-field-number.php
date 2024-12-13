@@ -216,11 +216,11 @@ class GF_Field_Number extends GF_Field {
 		$id       = intval( $this->id );
 		$field_id = $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
 
-		$size          = $this->size;
-		$disabled_text = $is_form_editor ? "disabled='disabled'" : '';
-		$class_suffix  = $is_entry_detail ? '_admin' : '';
-		$class         = $size . $class_suffix;
-		$class         = esc_attr( $class );
+		$size            = $this->size;
+		$disabled_text   = $is_form_editor ? "disabled='disabled'" : '';
+		$class_suffix    = $is_entry_detail ? '_admin' : '';
+		$class_read_only = ( ! $is_entry_detail && ! $is_form_editor ) && $this->has_calculation() ? ' gform-text-input-reset' : '';
+		$class           = esc_attr( $size . $class_suffix . $class_read_only );
 
 		$instruction = '';
 		$read_only   = '';
@@ -231,7 +231,6 @@ class GF_Field_Number extends GF_Field {
 
 				// calculation-enabled fields should be read only
 				$read_only = 'readonly="readonly"';
-
 			} else {
 
 				$message          = $this->get_range_message();

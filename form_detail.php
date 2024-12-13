@@ -126,7 +126,7 @@ class GFFormDetail {
 			self::maybe_add_submit_button( $form );
 		}
 
-		$form = gf_apply_filters( array( 'gform_admin_pre_render', $form_id ), $form );
+		$form = GFCommon::gform_admin_pre_render( $form );
 
 		/**
 		* Allow users to perform actions before the form editor is rendered.
@@ -1580,7 +1580,7 @@ class GFFormDetail {
 
 								<?php
 								$window_title = esc_html__( 'Bulk Add / Predefined Choices', 'gravityforms' );
-								$modal = json_encode( "<div class='tb-title'><div class='tb-title__logo'></div><div class='tb-title__text'><div class='tb-title__main'>" . $window_title . "</div><div class='tb-title__sub'>" . esc_html__( 'Select a category and customize the predefined choices or paste your own list to bulk add choices.', 'gravityforms' ) . "</div></div></div>" );
+								$modal = json_encode( "<div class='tb-title'><div class='tb-title__logo'></div><div class='tb-title__text'><div class='tb-title__main'>" . $window_title . "</div><div class='tb-title__sub'>" . esc_html__( 'Select a category and customize the predefined choices or paste your own list to bulk add choices.', 'gravityforms' ) . "</div></div></div>", JSON_UNESCAPED_UNICODE );
 								?>
 								<div class="choices-ui__section" data-js="choices-ui-section" data-type="bulk-choices">
 									<h6 class="choices-ui__section-label"><?php esc_html_e( 'Add Bulk Choices', 'gravityforms' ) ?></h6>

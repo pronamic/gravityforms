@@ -115,7 +115,7 @@ class GF_Template_Library_Service_Provider extends GF_Service_Provider {
 	}
 
 	public function should_enqueue_library() {
-		$current_page = trim( strtolower( rgget( 'page' ) ) );
+		$current_page = \GFForms::get_page_query_arg();
 		$gf_pages     = array( 'gf_edit_forms', 'gf_new_form' );
 
 		if ( $current_page === 'gf_edit_forms' ) {

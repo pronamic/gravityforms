@@ -465,7 +465,7 @@ class GF_Field_List extends GF_Field {
 		$column_text = rgar( $column, 'text' );
 
 		$aria_label_template = isset( $column['text'] ) ? $column_text : $this->label;
-		$aria_label_template .= ", Row {0}";
+		$aria_label_template .= __( ', Row {0}', 'gravityforms' );
 
 		/**
 		 * Filters the column input.

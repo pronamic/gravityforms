@@ -23,6 +23,9 @@ class GF_License_Statuses {
 	const NO_LICENSE_KEY        = 'no_license_key';
 	const NO_DATA               = 'rest_no_route';
 
+	const REQUEST_BLOCKED       = 'http_request_blocked';
+	const REQUEST_FAILED        = 'http_request_failed';
+
 	const USABILITY_VALID       = 'success';
 	const USABILITY_ALLOWED     = 'warning';
 	const USABILITY_NOT_ALLOWED = 'error';
@@ -36,7 +39,7 @@ class GF_License_Statuses {
 	 *
 	 * @return mixed|string|void
 	 */
-	public static function get_message_for_code( $code ) {
+	public static function get_message_for_code( $code, $error_message = '' ) {
 
 		$general_invalid_message = sprintf(
 		/* translators: %1s and %2s are link tag markup */
@@ -44,6 +47,7 @@ class GF_License_Statuses {
 			'<a href="https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=purchase-link&utm_campaign=license-enforcement" target="_blank">',
 			'</a>'
 		);
+		$error_message = ! empty( $error_message ) ? ' ' . $error_message : '';
 
 		$map = array(
 			self::VALID_KEY             => __( 'Your license key has been successfully validated. ', 'gravityforms' ),
@@ -69,6 +73,19 @@ class GF_License_Statuses {
 				'<a href="https://www.gravityforms.com" target="_blank">', 
 				'</a>' 
 			),
+			self::REQUEST_FAILED        => sprintf(
+				/* translators: %1s and %2s are link tag markup */
+				__( 'There was an error while validating your license key; please try again later. If the problem persists, please %1$scontact support%2$s. ', 'gravityforms' ),
+				'<a href="https://www.gravityforms.com/support/" target="_blank">',
+				'</a>'
+			) . $error_message,
+			self::REQUEST_BLOCKED       => sprintf(
+				/* translators: %1s and %2s are link tag markup */
+				__( 'Your IP has been blocked by Gravity for exceeding our API rate limits. If you think this is a mistake, please %1$scontact support%2$s. ', 'gravityforms' ),
+				'<a href="https://www.gravityforms.com/support/" target="_blank">',
+				'</a>'
+			) . $error_message,
+
 			self::SITE_UNREGISTERED     => $general_invalid_message,
 			self::INVALID_LICENSE_KEY   => $general_invalid_message,
 			self::URL_CHANGED           => $general_invalid_message,

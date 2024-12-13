@@ -251,7 +251,7 @@ class GFFormList {
 			jQuery( document ).ready( function( $ ) {
 				$( 'body' ).addClass( 'gform_new_form' );
 				// load new form modal on New Form page
-				<?php if ( rgget( 'page' ) == 'gf_new_form' && ! rgget( 'paged' ) ) :    ?>
+				<?php if ( GFForms::get_page_query_arg() == 'gf_new_form' && ! rgget( 'paged' ) ) :    ?>
 					loadNewFormModal();
 				<?php endif; ?>
 

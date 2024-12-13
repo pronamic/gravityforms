@@ -130,17 +130,33 @@ class GF_Field_Textarea extends GF_Field {
 				'media_buttons' => false,
 				'quicktags'     => false,
 				'tinymce'		=> array( 'init_instance_callback' =>  "function (editor) {
-												editor.on( 'keyup paste mouseover', function (e) {
-													var content = editor.getContent( { format: 'text' } ).trim();													
-													var textarea = jQuery( '#' + editor.id ); 
-													textarea.val( content ).trigger( 'keyup' ).trigger( 'paste' ).trigger( 'mouseover' );													
-												
-													
-												});}" ),
+					editor.on( 'keyup paste mouseover', function (e) {
+						var content = editor.getContent( { format: 'text' } ).trim();													
+						var textarea = jQuery( '#' + editor.id ); 
+						textarea.val( content ).trigger( 'keyup' ).trigger( 'paste' ).trigger( 'mouseover' );		
+					} );
+					editor.on( 'focus', function () {
+						var iframe = editor.iframeElement;
+						if ( iframe ) {
+							iframe.classList.add( 'wp-editor-iframe-active' );
+						}
+					} );
+			        editor.on( 'blur', function () {
+			            var iframe = editor.iframeElement;
+			            if ( iframe ) {
+			                iframe.classList.remove( 'wp-editor-iframe-active' );
+			            }
+			        } );
+				}" ),
 			), $this, $form, $entry );
 
 			$editor_settings = apply_filters( sprintf( 'gform_rich_text_editor_options_%d', $form['id'] ),               $editor_settings, $this, $form, $entry );
 			$editor_settings = apply_filters( sprintf( 'gform_rich_text_editor_options_%d_%d', $form['id'], $this->id ), $editor_settings, $this, $form, $entry );
+
+			// Add 'textarea' to the list of tags that should not be texturized
+			if ( ! has_filter( 'no_texturize_tags', array( __CLASS__, 'remove_textarea_texturize' ) ) ) {
+				add_filter( 'no_texturize_tags', array( __CLASS__, 'remove_textarea_texturize' ) );
+			}
 
 			if ( ! has_action( 'wp_tiny_mce_init', array( __class__, 'start_wp_tiny_mce_init_buffer' ) ) ) {
 				add_action( 'wp_tiny_mce_init', array( __class__, 'start_wp_tiny_mce_init_buffer' ) );
@@ -211,6 +227,21 @@ class GF_Field_Textarea extends GF_Field {
 	public static function start_wp_tiny_mce_init_buffer() {
 		ob_start();
 		add_action( 'after_wp_tiny_mce', array( __class__, 'end_wp_tiny_mce_init_buffer' ), 1 );
+	}
+
+	/**
+	 * Adds 'textarea' to the list of tags that should not be texturized.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @param array $tags The list of tags that should not be texturized.
+	 *
+	 * @return array The updated list of tags.
+	 */
+	public static function remove_textarea_texturize( $tags ) {
+		$tags[] = 'textarea';
+
+		return $tags;
 	}
 
 	public static function end_wp_tiny_mce_init_buffer() {

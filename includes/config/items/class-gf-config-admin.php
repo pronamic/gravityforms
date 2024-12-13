@@ -11,9 +11,9 @@ use Gravity_Forms\Gravity_Forms\Config\GF_Configurator;
  *
  * @since 2.6
  */
-class GF_Config_Admin_I18n extends GF_Config {
+class GF_Config_Admin extends GF_Config {
 
-	protected $name               = 'gform_admin_i18n';
+	protected $name               = 'gform_admin_config';
 	protected $script_to_localize = 'gform_gravityforms_admin_vendors';
 
 	/**
@@ -34,14 +34,18 @@ class GF_Config_Admin_I18n extends GF_Config {
 	 */
 	public function data() {
 		return array(
-			// named sub objects that match the admin js file name (camelCased) they are localizing
-			'formAdmin'   => array(
-				'toggleFeedInactive' => esc_html__( 'Inactive', 'gravityforms' ),
-				'toggleFeedActive'   => esc_html__( 'Active', 'gravityforms' ),
+			'data' => array(
+				'is_block_editor' => \GFCommon::is_block_editor_page(),
 			),
-			'shortcodeUi' => array(
-				'editForm'   => esc_html__( 'Edit Form', 'gravityforms' ),
-				'insertForm' => esc_html__( 'Insert Form', 'gravityforms' ),
+			'i18n' => array(
+				'form_admin'   => array(
+					'toggle_feed_inactive' => esc_html__( 'Inactive', 'gravityforms' ),
+					'toggle_feed_active'   => esc_html__( 'Active', 'gravityforms' ),
+				),
+				'shortcode_ui' => array(
+					'edit_form'   => esc_html__( 'Edit Form', 'gravityforms' ),
+					'insert_form' => esc_html__( 'Insert Form', 'gravityforms' ),
+				),
 			),
 		);
 	}

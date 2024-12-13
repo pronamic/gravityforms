@@ -1462,7 +1462,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function feed_settings_init() {
 		// Get current form.
 		$form = ( $this->get_current_form() ) ? $this->get_current_form() : array();
-		$form = gf_apply_filters( array( 'gform_admin_pre_render', rgar( $form, 'id', 0 ) ), $form );
+		$form = GFCommon::gform_admin_pre_render( $form );
 
 		// Get current feed ID, feed object.
 		$feed_id      = $this->_multiple_feeds ? $this->get_current_feed_id() : $this->get_default_feed_id( rgar( $form, 'id', 0 ) );

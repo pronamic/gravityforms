@@ -66,7 +66,7 @@ class GF_Template_Library_Config extends GF_Config {
 	}
 
 	public function should_enqueue() {
-		$current_page = trim( strtolower( rgget( 'page' ) ) );
+		$current_page = \GFForms::get_page_query_arg();
 		$gf_pages     = array( 'gf_edit_forms', 'gf_new_form' );
 
 		return in_array( $current_page, $gf_pages );
@@ -123,7 +123,7 @@ class GF_Template_Library_Config extends GF_Config {
 						'templates'     => $bypassTemplateLibrary ? array() : array_values( $this->get_templates() ),
 						'licenseType'   => $license_info->get_data_value( 'product_code' ),
 						'defaults'      => array(
-							'isLibraryOpen'             => rgget( 'page' ) === 'gf_new_form',
+							'isLibraryOpen'             => \GFForms::get_page_query_arg() === 'gf_new_form',
 							'flyoutOpen'                => (bool)$bypassTemplateLibrary,
 							'flyoutFooterButtonLabel'   => $bypassTemplateLibrary ? __( 'Create Form', 'gravityforms' ) : '',
 							'flyoutTitleValue'          => '',

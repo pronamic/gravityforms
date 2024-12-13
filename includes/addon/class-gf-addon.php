@@ -245,6 +245,10 @@ abstract class GFAddOn {
 	 */
 	public function get_theme_layer_styles( $form, $field_type = '', $gravity_theme_path = '' ) {
 
+		if ( GFCommon::output_default_css() === false ) {
+			return array();
+		}
+
 		$themes = $this->get_themes_to_enqueue( $form, $field_type );
 		$styles = array();
 
@@ -1357,11 +1361,13 @@ abstract class GFAddOn {
 		ob_start(); ?>
 
 		<script>
-			gform.extensions = gform.extensions || {};
-			gform.extensions.styles = gform.extensions.styles || {};
-			<?php echo $base_identifier; ?> = <?php echo $base_identifier; ?> || {};
-			<?php echo $form_identifier; ?> = <?php echo $form_identifier; ?> || {};
-			<?php echo $full_identifier; ?> = <?php echo json_encode( $properties ); ?>;
+			if ( typeof gform !== 'undefined' ) {
+				gform.extensions = gform.extensions || {};
+				gform.extensions.styles = gform.extensions.styles || {};
+				<?php echo $base_identifier; ?> = <?php echo $base_identifier; ?> || {};
+				<?php echo $form_identifier; ?> = <?php echo $form_identifier; ?> || {};
+				<?php echo $full_identifier; ?> = <?php echo json_encode( $properties ); ?>;
+			}
 		</script>
 
 		<?php
@@ -4319,7 +4325,7 @@ abstract class GFAddOn {
 		$subview = rgget( 'subview' );
 		add_filter( 'gform_form_settings_menu', array( $this, 'add_form_settings_menu' ), 10, 2 );
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && $view == 'settings' && $subview == $this->get_slug() && $this->current_user_can_any( $this->get_form_settings_capabilities() ) ) {
+		if ( GFForms::get_page_query_arg() == 'gf_edit_forms' && $view == 'settings' && $subview == $this->get_slug() && $this->current_user_can_any( $this->get_form_settings_capabilities() ) ) {
 			require_once( GFCommon::get_base_path() . '/tooltips.php' );
 			add_action( 'gform_form_settings_page_' . $this->get_slug(), array( $this, 'form_settings_page' ) );
 
@@ -4327,7 +4333,7 @@ abstract class GFAddOn {
 			if ( $this->method_is_overridden( 'form_settings_fields' ) ) {
 
 				// Get current form.
-				$form = $this->get_current_form();
+				$form = GFCommon::gform_admin_pre_render( $this->get_current_form() );
 
 				// Get fields.
 				$sections = array_values( $this->form_settings_fields( $form ) );
@@ -4411,11 +4417,10 @@ abstract class GFAddOn {
 		// Display page header.
 		GFFormSettings::page_header( $this->_title );
 
-		// Get current form.
-		$form = $this->get_current_form();
-		$form = gf_apply_filters( array( 'gform_admin_pre_render', $form['id'] ), $form );
-
 		if ( $this->method_is_overridden( 'form_settings' ) ) {
+
+			$form = $this->get_current_form();
+			$form = GFCommon::gform_admin_pre_render( $form );
 
 			// Enables plugins to override settings page by implementing a form_settings() function.
 			$this->form_settings( $form );
@@ -4730,8 +4735,8 @@ abstract class GFAddOn {
 	 * Not intended to be overridden or called directly by add-ons.
 	 */
 	public function app_tab_page() {
-		$page        = sanitize_text_field( rgget( 'page' ) );
-		$current_tab = sanitize_text_field( rgget( 'view' ) );
+		$page        = sanitize_text_field( GFForms::get_page_query_arg() );
+		$current_tab = sanitize_text_field( (string) rgget( 'view' ) );
 
 		if ( $page == $this->get_slug() . '_settings' ) {
 
@@ -4877,7 +4882,7 @@ abstract class GFAddOn {
 		);
 
 		// Load Tooltips functions.
-		if ( rgget( 'page' ) == 'gf_settings' && $subview == $this->get_slug() && $this->current_user_can_any( $this->_capabilities_settings_page ) ) {
+		if ( GFForms::get_page_query_arg() == 'gf_settings' && $subview == $this->get_slug() && $this->current_user_can_any( $this->_capabilities_settings_page ) ) {
 			require_once( GFCommon::get_base_path() . '/tooltips.php' );
 		}
 
@@ -6375,7 +6380,7 @@ abstract class GFAddOn {
 		*/
 		$save_form_helper = GFForms::get_service_container()->get( GF_Save_Form_Service_Provider::GF_SAVE_FROM_HELPER );
 		if (
-				rgget( 'page' ) == 'gf_edit_forms' && ! rgempty( 'id', $_GET ) && rgempty( 'view', $_GET )
+				GFForms::get_page_query_arg() == 'gf_edit_forms' && ! rgempty( 'id', $_GET ) && rgempty( 'view', $_GET )
 				|| $save_form_helper->is_ajax_save_action()
 		) {
 			return true;
@@ -6389,7 +6394,7 @@ abstract class GFAddOn {
 	 */
 	public function is_form_list() {
 
-		if ( rgget( 'page' ) == 'gf_edit_forms' && rgempty( 'id', $_GET ) && rgempty( 'view', $_GET ) ) {
+		if ( GFForms::get_page_query_arg() == 'gf_edit_forms' && rgempty( 'id', $_GET ) && rgempty( 'view', $_GET ) ) {
 			return true;
 		}
 
@@ -6405,7 +6410,7 @@ abstract class GFAddOn {
 	 */
 	public function is_form_settings( $tab = null ) {
 
-		$is_form_settings = rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings';
+		$is_form_settings = GFForms::get_page_query_arg() == 'gf_edit_forms' && rgget( 'view' ) == 'settings';
 		$is_tab           = $this->_tab_matches( $tab );
 
 		if ( $is_form_settings && $is_tab ) {
@@ -6442,7 +6447,7 @@ abstract class GFAddOn {
 	 */
 	public function is_plugin_settings( $tab = '' ) {
 
-		$is_plugin_settings = rgget( 'page' ) == 'gf_settings';
+		$is_plugin_settings = GFForms::get_page_query_arg() == 'gf_settings';
 		$is_tab             = $this->_tab_matches( $tab );
 
 		if ( $is_plugin_settings && $is_tab ) {
@@ -6461,7 +6466,7 @@ abstract class GFAddOn {
 	 */
 	public function is_app_settings( $tab = '' ) {
 
-		$is_app_settings = rgget( 'page' ) == $this->get_slug() . '_settings';
+		$is_app_settings = GFForms::get_page_query_arg() == $this->get_slug() . '_settings';
 		$is_tab          = $this->_tab_matches( $tab );
 
 		if ( $is_app_settings && $is_tab ) {
@@ -6477,7 +6482,7 @@ abstract class GFAddOn {
 	 */
 	public function is_plugin_page() {
 
-		return strtolower( rgget( 'page' ) ) == strtolower( $this->get_slug() );
+		return GFForms::get_page_query_arg() == strtolower( $this->get_slug() );
 	}
 
 	/**
@@ -6485,7 +6490,7 @@ abstract class GFAddOn {
 	 * @return bool
 	 */
 	public function is_entry_view() {
-		if ( rgget( 'page' ) == 'gf_entries' && rgget( 'view' ) == 'entry' && ( ! isset( $_POST['screen_mode'] ) || rgpost( 'screen_mode' ) == 'view' ) ) {
+		if ( GFForms::get_page_query_arg() == 'gf_entries' && rgget( 'view' ) == 'entry' && ( ! isset( $_POST['screen_mode'] ) || rgpost( 'screen_mode' ) == 'view' ) ) {
 			return true;
 		}
 
@@ -6497,7 +6502,7 @@ abstract class GFAddOn {
 	 * @return bool
 	 */
 	public function is_entry_edit() {
-		if ( rgget( 'page' ) == 'gf_entries' && rgget( 'view' ) == 'entry' && rgpost( 'screen_mode' ) == 'edit' ) {
+		if ( GFForms::get_page_query_arg() == 'gf_entries' && rgget( 'view' ) == 'entry' && rgpost( 'screen_mode' ) == 'edit' ) {
 			return true;
 		}
 
@@ -6505,7 +6510,7 @@ abstract class GFAddOn {
 	}
 
 	public function is_entry_list() {
-		if ( rgget( 'page' ) == 'gf_entries' && ( rgget( 'view' ) == 'entries' || rgempty( 'view', $_GET ) ) ) {
+		if ( GFForms::get_page_query_arg() == 'gf_entries' && ( rgget( 'view' ) == 'entries' || rgempty( 'view', $_GET ) ) ) {
 			return true;
 		}
 
@@ -6516,7 +6521,7 @@ abstract class GFAddOn {
 	 * Returns TRUE if the current page is the results page. Otherwise, returns FALSE
 	 */
 	public function is_results() {
-		if ( rgget( 'page' ) == 'gf_entries' && rgget( 'view' ) == 'gf_results_' . $this->get_slug() ) {
+		if ( GFForms::get_page_query_arg() == 'gf_entries' && rgget( 'view' ) == 'gf_results_' . $this->get_slug() ) {
 			return true;
 		}
 

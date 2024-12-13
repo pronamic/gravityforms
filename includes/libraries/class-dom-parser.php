@@ -133,7 +133,7 @@ class Dom_Parser {
 			array_splice( $pieces, $insert_position, 0, $string );
 			$content = implode( "\n", $pieces );
 		} else {
-			$content = preg_replace( '/(<[\s]*head(?!e)[^>]*>)/', '$0 ' . $string, $this->content, 1 );
+			$content = preg_replace( '/(<[\s]*head(?!e)[^>]*>)/', '$0 ' . $string, $content, 1 );
 		}
 
 		return $content;
@@ -301,7 +301,18 @@ class Dom_Parser {
 			return false;
 		}
 
-		return true;
+		/**
+		 * Allow developers to disable the DOM parser entirely.
+		 * This filter is useful for environments where performance is a priority and the DOM parser is not needed.
+		 * Only recommended for advanced users who understand the implications of disabling the DOM parser.
+		 *
+		 * @since 2.9.1
+		 *
+		 * Example:
+		 * add_filter( 'gform_disable_dom_parser', '__return_true' ); // Disables the Dom parser on every page.
+		 */
+ 		$is_disabled = apply_filters( 'gform_disable_dom_parser', false );
+		return ! $is_disabled;
 	}
 
 	/**

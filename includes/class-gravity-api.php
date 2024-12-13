@@ -412,7 +412,8 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 					// Restore the WP_Error.
 					$error = new WP_Error( $response_body['code'], $response_body['message'], $response_body['data'] );
 				} else {
-					$error = new WP_Error( 'server_error', 'Error from server: ' . $response_message );
+					$error_code = $response_code == 429 ? 'http_request_blocked' : 'http_request_failed';
+					$error = new WP_Error( $error_code, 'Error from server: ' . $response_message );
 				}
 
 				return $error;

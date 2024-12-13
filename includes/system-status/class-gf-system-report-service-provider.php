@@ -39,7 +39,7 @@ class GF_System_Report_Service_Provider extends GF_Service_Provider {
 	public function init( GF_Service_Container $container ) {
 
 		add_action( 'admin_init', function () use ( $container ) {
-			if ( rgget( 'page' ) == 'gf_system_status' ) {
+			if ( GFForms::get_page_query_arg() == 'gf_system_status' ) {
 				$container->get( self::SYSTEM_REPORT )->remove_emoji_script();
 			}
 		} );

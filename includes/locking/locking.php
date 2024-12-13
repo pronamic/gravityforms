@@ -114,7 +114,7 @@ class GFFormSettingsLocking extends GFLocking {
 	}
 
 	protected function is_edit_page() {
-		$is_edit_page = rgget( 'page' ) == 'gf_edit_forms' && rgget( 'view' ) == 'settings';
+		$is_edit_page = GFForms::get_page_query_arg() == 'gf_edit_forms' && rgget( 'view' ) == 'settings';
 
 		return $is_edit_page;
 	}

@@ -151,8 +151,12 @@ class Block_Styles_Handler {
 
 	public function styles( $form, $ajax, $settings, $block_settings ) {
 
-		$themes = \GFFormDisplay::get_themes_to_enqueue( $form );
 		$styles = array( 'theme' => array() );
+		if ( GFCommon::output_default_css() === false ) {
+			return $styles;
+		}
+
+		$themes = \GFFormDisplay::get_themes_to_enqueue( $form );
 
 		if ( in_array( 'orbital', $themes ) ) {
 			$styles['theme']      = array( array( 'gravity_forms_orbital_theme' ) );
@@ -161,7 +165,7 @@ class Block_Styles_Handler {
 			$styles['reset']      = array( array( 'gravity_forms_theme_reset' ) );
 
 			if ( GFCommon::is_form_editor() ) {
-				$styles['framework'][] = array( 'gravity_forms_theme_framework_admin' );
+				$styles['framework'][]  = array( 'gravity_forms_theme_framework_admin' );
 				$styles['foundation'][] = array( 'gravity_forms_theme_foundation_admin' );
 			}
 		}
@@ -185,7 +189,6 @@ class Block_Styles_Handler {
 					$styles['theme'][] = array( 'gform_theme' );
 				}
 			}
-
 		}
 
 		return $styles;

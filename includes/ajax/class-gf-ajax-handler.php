@@ -107,9 +107,11 @@ class GF_Ajax_Handler {
 			$result = $this->add_validation_summary( $form, $result );
 		}
 
-        // Adding confirmation markup if there is a confirmation message to be displayed.
+		// Adding confirmation markup if there is a confirmation message to be displayed.
 		if ( rgar( $result, 'confirmation_type' ) == 'message' && ! empty( rgar( $result, 'confirmation_message' ) ) ) {
-			$result['confirmation_markup'] = \GFFormDisplay::get_form( $form_id, false, false, false, rgpost( 'gform_field_values' ) );
+
+			// Get confirmation markup from get_form(). This is necessary to ensure that confirmation markup is properly formatted.
+			$result['confirmation_markup'] = \GFFormDisplay::get_form( $form_id, false, false, false, rgpost( 'gform_field_values' ), false, 0, rgpost( 'gform_theme' ), rgpost( 'gform_style_settings') );
 		}
 
 		/**

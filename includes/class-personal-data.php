@@ -808,7 +808,7 @@ class GF_Personal_Data {
 			if ( $field && $field->get_input_type() == 'email' ) {
 
 				$conditions[] = new GF_Query_Condition(
-					new GF_Query_Column( $identification_field, $form['id'] ),
+					new GF_Query_Column( $identification_field, intval( $form['id'] ) ),
 					GF_Query_Condition::EQ,
 					new GF_Query_Literal( $email_address )
 				);
@@ -824,7 +824,7 @@ class GF_Personal_Data {
 				}
 
 				$conditions[] = new GF_Query_Condition(
-					new GF_Query_Column( $identification_field, $form['id'] ),
+					new GF_Query_Column( $identification_field, intval( $form['id'] ) ),
 					GF_Query_Condition::EQ,
 					new GF_Query_Literal( $user->ID )
 				);

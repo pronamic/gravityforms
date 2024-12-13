@@ -82,11 +82,12 @@ if ( ! class_exists( 'GFForms' ) ) {
 
 		var pageNameFields = jQuery(".gform_page_names input");
 		for (var i = 0; i < pages.length; i++) {
-			var pageName = form["pagination"] && form["pagination"]["pages"] && form["pagination"]["pages"][i] ? form["pagination"]["pages"][i].replace("'", "&#39") : "";
-			if (pageNameFields.length > i && pageNameFields[i].value)
+			var pageName = form["pagination"] && form["pagination"]["pages"] && form["pagination"]["pages"][i] ? form["pagination"]["pages"][i] : "";
+			if (pageNameFields.length > i && pageNameFields[i].value) {
 				pageName = pageNameFields[i].value;
+			}
 
-			str += "<li><label class='inline' for='gform_pagename_" + i + "' >" + <?php echo json_encode( esc_html__( 'Page', 'gravityforms' ) ); ?> + " " + (i + 1) + "</label> <input type='text' class='fieldwidth-4' id='gform_pagename_" + i + "' value='" + pageName + "' /></li>";
+			str += "<li><label class='inline' for='gform_pagename_" + i + "' >" + <?php echo json_encode( esc_html__( 'Page', 'gravityforms' ) ); ?> + " " + (i + 1) + "</label> <input type='text' class='fieldwidth-4' id='gform_pagename_" + i + "' value='" + pageName.replace("'", "&#39;") + "' /></li>";
 		}
 		str += "</ul>";
 

@@ -29,19 +29,29 @@ class GF_Settings_Config_I18N extends GF_Config {
 					),
 				),
 			),
-			'components'    => array(
+			'field_map' => array(
+				'i18n' => array(
+					'add'                 => __( 'Add', 'gravityforms' ),
+					'add_custom_key'      => __( 'Add Custom Key', 'gravityforms' ),
+					'add_custom_value'    => __( 'Add Custom Value', 'gravityforms' ),
+					'delete'              => __( 'Delete', 'gravityforms' ),
+					'remove_custom_value' => __( 'Remove Custom Value', 'gravityforms' ),
+					'select_a_field'      => __( 'Select a Field', 'gravityforms' ),
+				),
+			),
+			'components' => array(
 				'color_picker' => array(
 					'i18n' => array(
 						'apply' => __( 'Apply', 'gravityforms' ),
 						'hex'   => __( 'Hex', 'gravityforms' ),
 					),
 				),
-				'swatch'       => array(
+				'swatch' => array(
 					'i18n' => array(
 						'swatch' => __( 'swatch', 'gravityforms' ),
 					),
 				),
-				'file_upload'  => array(
+				'file_upload' => array(
 					'i18n' => array(
 						'click_to_upload' => __( 'Click to upload', 'gravityforms' ),
 						'drag_n_drop'     => __( 'or drag and drop', 'gravityforms' ),

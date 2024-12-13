@@ -862,11 +862,11 @@ function ConfirmationObj() {
 	};
 
 	gaddon.toggleFeedSwitch = function( btn, is_active ) {
-		var i18n = window.gform_admin_i18n;
+		var i18n = window.gform_admin_config.i18n;
 		if ( is_active ) {
-			jQuery( btn ).removeClass( 'gform-status--active' ).addClass( 'gform-status--inactive' ).find( '.gform-status-indicator-status' ).html( i18n.formAdmin.toggleFeedInactive );
+			jQuery( btn ).removeClass( 'gform-status--active' ).addClass( 'gform-status--inactive' ).find( '.gform-status-indicator-status' ).html( i18n.form_admin.toggle_feed_inactive );
 		} else {
-			jQuery( btn ).removeClass( 'gform-status--inactive' ).addClass( 'gform-status--active' ).find( '.gform-status-indicator-status' ).html( i18n.formAdmin.toggleFeedActive );
+			jQuery( btn ).removeClass( 'gform-status--inactive' ).addClass( 'gform-status--active' ).find( '.gform-status-indicator-status' ).html( i18n.form_admin.toggle_feed_active );
 		}
 	};
 

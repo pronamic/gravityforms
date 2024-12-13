@@ -815,13 +815,14 @@ class GFFormDisplay {
 	 */
 	public static function get_form_theme_slug( $form ) {
 
-		$form = (array) $form;
-		$slug = '';
+		$form            = (array) $form;
+		$slug            = '';
+		$is_wp_dashboard = is_admin() && ! defined( 'DOING_AJAX' );
 
 		// If form is legacy, return that early to avoid calculating orbital styles.
 		if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
 			$slug = 'legacy';
-		} elseif ( is_admin() || GFCommon::is_preview() ) {
+		} elseif ( $is_wp_dashboard || GFCommon::is_preview() ) {
 			$slug = 'gravity-theme';
 		} elseif ( GFCommon::is_form_editor() ) {
 			$slug = 'orbital';
@@ -1137,7 +1138,7 @@ class GFFormDisplay {
 				$lead                 = $submission_info['lead'];
 				$confirmation_message = rgget( 'confirmation_message', $submission_info );
 
-				if ( $is_valid && ! RGForms::get( 'is_confirmation', $submission_info ) ) {
+				if ( $is_valid && ! rgar( $submission_info, 'is_confirmation' ) ) {
 
 					if ( $submission_info['page_number'] == 0 ) {
                         /**
@@ -1594,57 +1595,10 @@ class GFFormDisplay {
 			}
 
 			return $form_string;
+
 		} else {
-			$progress_confirmation = '';
 
-			//check admin setting for whether the progress bar should start at zero
-			$start_at_zero = rgars( $form, 'pagination/display_progressbar_on_confirmation' );
-
-			/**
-			 * Filters whether the progress bar should start at zero.
-			 *
-			 * Change the progress bar on multi-page forms to start at zero percent.
-			 * By default, the progress bar starts as if your first step has been completed.
-			 *
-			 * @since 1.6.3
-			 *
-			 * @param string  $start_at_zero Admin setting for progress bar.
-			 * @param array $form The current form object.
-			 */
-			$start_at_zero     = apply_filters( 'gform_progressbar_start_at_zero', $start_at_zero, $form );
-			$confirmation_type = rgars( $form, 'confirmation/type' );
-			$pagination_type   = rgars( $form, 'pagination/type' );
-
-			//show progress bar on confirmation
-			if ( $start_at_zero && $has_pages && ! $is_admin && isset( $form['confirmation'] ) && ( $form['confirmation']['type'] == 'message' && $form['pagination']['type'] == 'percentage' ) ) {
-				$progress_confirmation = self::get_progress_bar( $form, 0, $confirmation_message );
-				if ( $ajax ) {
-					$progress_confirmation = self::get_ajax_postback_html( $progress_confirmation );
-				}
-			} else {
-				//return regular confirmation message
-				if ( $ajax ) {
-					$progress_confirmation = self::get_ajax_postback_html( $confirmation_message );
-				} else {
-					$progress_confirmation = $confirmation_message;
-				}
-			}
-
-			/**
-			 * Filters the form confirmation text.
-			 *
-			 * This filter allows the form confirmation text to be programmatically changed before it is rendered to the page.
-			 *
-			 * @since 2.5.15
-			 *
-			 * @param string  $progress_confirmation Confirmation text to be filtered.
-			 * @param array $form The current form object
-			 */
-			$progress_confirmation = gf_apply_filters( array( 'gform_get_form_confirmation_filter', $form_id ), $progress_confirmation, $form );
-
-			GFCommon::log_debug( __METHOD__ . sprintf( '(): Preparing form (#%d) confirmation completed in %F seconds.', $form_id, GFCommon::timer_end( __METHOD__ ) ) );
-
-			return $progress_confirmation;
+			return self::get_confirmation_markup( $form, $confirmation_message, $ajax, $style_settings, $form_theme );
 		}
 	}
 
@@ -1695,7 +1649,7 @@ class GFFormDisplay {
 		$is_form_editor = GFCommon::is_form_editor();
 		$tabindex       = GFCommon::get_tabindex();
 		$input_type     = ( rgar( $button, 'type' ) === 'link' ) ? 'button' : 'submit';
-		$input_onclick  = $is_form_editor ? '' : "onclick='gform.submission.handleButtonClick(this)'";
+		$input_onclick  = $is_form_editor ? '' : "onclick='gform.submission.handleButtonClick(this);'";
 
 		if ( ! empty( $target_page_number ) ) {
 			$input_type  = 'button';
@@ -1782,20 +1736,14 @@ class GFFormDisplay {
 
 		$tabindex = (int) $tabindex;
 
-		$theme = $theme ? "&amp;theme={$theme}" : '';
+		$theme_query = $theme ? "&amp;theme={$theme}" : '';
 
 		// Make sure style settings are valid JSON.
-		if ( ! empty( $style_settings ) ) {
-			$valid_json = json_decode( $style_settings );
-			if ( null !== $valid_json ) {
-				$style_settings = "&amp;styles={$style_settings}";
-			} else {
-				$style_settings = '';
-			}
-		}
+		$is_valid_json = empty( $style_settings ) ? null : json_decode( $style_settings );
+		$style_settings_query = $is_valid_json ? "&amp;styles={$style_settings}" : '';
 
 		if ( $ajax ) {
-			$footer .= "<input type='hidden' name='gform_ajax' value='" . esc_attr( "form_id={$form_id}&amp;title={$display_title}&amp;description={$display_description}&amp;tabindex={$tabindex}{$theme}{$style_settings}" ) . "' />";
+			$footer .= "<input type='hidden' name='gform_ajax' value='" . esc_attr( "form_id={$form_id}&amp;title={$display_title}&amp;description={$display_description}&amp;tabindex={$tabindex}{$theme_query}{$style_settings_query}" ) . "' />";
 		}
 
 		$current_page     = self::get_current_page( $form_id );
@@ -1822,6 +1770,8 @@ class GFFormDisplay {
 		$unique_id = isset( self::$submission[ $form_id ] ) && rgar( self::$submission[ $form_id ], 'resuming_incomplete_submission' ) == true ? rgar( GFFormsModel::$unique_ids, $form_id ) : GFFormsModel::get_form_unique_id( $form_id );
 		$footer   .= "
             <input type='hidden' class='gform_hidden' name='gform_submission_method' data-js='gform_submission_method_{$form_id}' value='{$submission_method}' />
+            <input type='hidden' class='gform_hidden' name='gform_theme' data-js='gform_theme_{$form_id}' id='gform_theme_{$form_id}' value='{$theme}' />
+            <input type='hidden' class='gform_hidden' name='gform_style_settings' data-js='gform_style_settings_{$form_id}' id='gform_style_settings_{$form_id}' value='{$style_settings}' />
             <input type='hidden' class='gform_hidden' name='is_submit_{$form_id}' value='1' />
             <input type='hidden' class='gform_hidden' name='gform_submit' value='{$form_id}' />
             {$save_inputs}
@@ -2726,6 +2676,11 @@ class GFFormDisplay {
 		}
 
 		if ( ! isset( $_gf_state ) ) {
+
+			if ( empty( $_POST["state_{$form_id}"] ) || ! is_string( $_POST["state_{$form_id}"] ) ) {
+				return true;
+			}
+
 			$state = json_decode( base64_decode( $_POST[ "state_{$form_id}" ] ), true );
 
 			if ( ! $state || ! is_array( $state ) || sizeof( $state ) != 2 ) {
@@ -3015,16 +2970,7 @@ class GFFormDisplay {
 	public static function get_form_enqueue_assets( $form, $theme = null ) {
 		$assets = array();
 
-		/**
-		 * Allows users to disable all CSS files from being loaded on the Front End.
-		 *
-		 * @since 2.8
-		 *
-		 * @param boolean Whether to disable css.
-		 */
-		$disable_css = apply_filters( 'gform_disable_css', get_option( 'rg_gforms_disable_css' ) );
-
-		if ( ! $disable_css ) {
+		if ( ! GFCommon::is_frontend_default_css_disabled() ) {
 
 			if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
 
@@ -4836,7 +4782,7 @@ class GFFormDisplay {
 								<input type='hidden' name='gform_resume_token' value='{$resume_token}' />
 								<input type='hidden' name='gform_send_resume_link' value='{$form_id}' />
 								{$form_submission_inputs}
-	                            <input type='submit' name='gform_send_resume_link_button' id='gform_send_resume_link_button_{$form_id}' onclick='gform.submission.handleButtonClick(this)' value='{$resume_submit_button_text}' {$ajax_submit}/>
+	                            <input type='submit' name='gform_send_resume_link_button' id='gform_send_resume_link_button_{$form_id}' onclick='gform.submission.handleButtonClick(this);' value='{$resume_submit_button_text}' {$ajax_submit}/>
 	                            {$validation_output}
 	                            {$nonce_input}
 							</form>
@@ -4860,7 +4806,7 @@ class GFFormDisplay {
 								<input type='hidden' name='gform_resume_token' value='{$resume_token}' />
 								<input type='hidden' name='gform_send_resume_link' value='{$form_id}' />
 								{$form_submission_inputs}
-								<input type='submit' name='gform_send_resume_link_button' id='gform_send_resume_link_button_{$form_id}' onclick='gform.submission.handleButtonClick(this)' value='{$resume_submit_button_text}' {$ajax_submit}/>
+								<input type='submit' name='gform_send_resume_link_button' id='gform_send_resume_link_button_{$form_id}' onclick='gform.submission.handleButtonClick(this);' value='{$resume_submit_button_text}' {$ajax_submit}/>
                                 {$nonce_input}
                             </div>
 						</form>
@@ -5191,7 +5137,7 @@ class GFFormDisplay {
 		$wrapper_class = GFCommon::is_legacy_markup_enabled( $form ) ? 'gform_validation_errors validation_error' : 'gform_validation_errors';
 
 		$validation_errors_markup = sprintf(
-			'<div class="%s" id="%s" data-js="gform-focus-validation-error">%s%s</div>',
+			'<div class="%s" id="%s" data-js="gform-focus-validation-error" autofocus>%s%s</div>',
 			$wrapper_class,
 			$validation_container_id,
 			$validation_message_markup,
@@ -5482,5 +5428,72 @@ class GFFormDisplay {
 		} else {
 			self::$cached_forms = array();
 		}
+	}
+
+	/**
+	 * @param array $form
+	 * @param string $confirmation_message
+	 * @param bool $ajax
+	 * @return mixed
+	 */
+	public static function get_confirmation_markup( $form, $confirmation_message, $ajax, $style_settings = false, $form_theme = null ) {
+
+		// Ensuring styles and theme are set on the form object.
+		$form = self::set_form_styles( $form, $style_settings, $form_theme );
+
+		//check admin setting for whether the progress bar should start at zero
+		$start_at_zero = rgars($form, 'pagination/display_progressbar_on_confirmation');
+
+		/**
+		 * Filters whether the progress bar should start at zero.
+		 *
+		 * Change the progress bar on multi-page forms to start at zero percent.
+		 * By default, the progress bar starts as if your first step has been completed.
+		 *
+		 * @param string $start_at_zero Admin setting for progress bar.
+		 * @param array $form The current form object.
+		 * @since 1.6.3
+		 *
+		 */
+		$start_at_zero = apply_filters('gform_progressbar_start_at_zero', $start_at_zero, $form );
+
+		$confirmation_type = rgars( $form, 'confirmation/type' );
+		$pagination_type   = rgars( $form, 'pagination/type' );
+		$is_admin          = GFCommon::is_form_editor() || GFCommon::is_entry_detail();
+		$has_pages         = self::has_pages( $form );
+
+		$has_confirmation_message = isset( $form['confirmation'] ) && $form['confirmation']['type'] == 'message';
+		$has_progress_bar         = $start_at_zero && $has_pages && $form['pagination']['type'] == 'percentage';
+		$confirmation_markup      = '';
+
+		if ( $has_confirmation_message && $has_progress_bar && ! $is_admin  ) {
+			//show progress bar on confirmation
+			$confirmation_markup = self::get_progress_bar( $form, 0, $confirmation_message );
+			if ( $ajax ) {
+				$confirmation_markup = self::get_ajax_postback_html( $confirmation_markup );
+			}
+		} else {
+			//return regular confirmation message
+			if ( $ajax ) {
+				$confirmation_markup = self::get_ajax_postback_html( $confirmation_message );
+			} else {
+				$confirmation_markup = $confirmation_message;
+			}
+		}
+
+		/**
+		 * Filters the form confirmation text.
+		 *
+		 * This filter allows the form confirmation text to be programmatically changed before it is rendered to the page.
+		 *
+		 * @param string $confirmation_markup Confirmation text to be filtered.
+		 * @param array $form The current form object
+		 * @since 2.5.15
+		 *
+		 */
+		$confirmation_markup = gf_apply_filters( array( 'gform_get_form_confirmation_filter', $form['id'] ), $confirmation_markup, $form );
+
+		GFCommon::log_debug(__METHOD__ . sprintf('(): Preparing form (#%d) confirmation completed in %F seconds.', $form['id'], GFCommon::timer_end(__METHOD__)));
+		return $confirmation_markup;
 	}
 }
