@@ -750,7 +750,16 @@ class GF_Field_FileUpload extends GF_Field {
 
 	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
 		if ( $this->multipleFiles ) {
-			$uploaded_files_arr = empty( $value ) ? array() : json_decode( $value, true );
+			if ( is_array( $value ) ) {
+				$uploaded_files_arr = $value;
+			} else {
+				$uploaded_files_arr = json_decode( $value, true );
+				if ( ! is_array( $uploaded_files_arr ) ) {
+					$uploaded_files_arr = array( $value );
+				}
+			}
+
+
 			$file_count         = count( $uploaded_files_arr );
 			if ( $file_count > 1 ) {
 				$value = empty( $uploaded_files_arr ) ? '' : sprintf( esc_html__( '%d files', 'gravityforms' ), count( $uploaded_files_arr ) );
@@ -938,7 +947,12 @@ class GF_Field_FileUpload extends GF_Field {
 
 		$value = rgar( $entry, $input_id );
 		if ( $this->multipleFiles && ! empty( $value ) ) {
-			return implode( ' , ', json_decode( $value, true ) );
+			$decoded = json_decode( $value, true );
+			if ( ! is_array( $decoded ) ) {
+				return $value;
+			}
+
+			return implode( ' , ', $decoded );
 		}
 
 		return $value;

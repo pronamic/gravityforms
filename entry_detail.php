@@ -549,6 +549,7 @@ class GFEntryDetail {
 						formId                 : '<?php echo absint( $form['id'] ); ?>'
 					},
 					function (response) {
+						response = response.trim();
 						if (response) {
 							displayMessage(response, "error", "#notifications");
 						} else {

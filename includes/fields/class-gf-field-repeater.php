@@ -613,12 +613,15 @@ class GF_Field_Repeater extends GF_Field {
 			if ( ! $field->failed_validation ) {
 				$field->validate( $field_value, $form );
 			}
-
+			
+			$context = GFFormDisplay::get_submission_context();
 			$custom_validation_result = gf_apply_filters( array( 'gform_field_validation', $form['id'], $field->id ), array(
 				'is_valid' => $field->failed_validation ? false : true,
 				'message'  => $field->validation_message
-			), $field_value, $form, $field );
+			), $field_value, $form, $field, $context );
 			$field->failed_validation  = rgar( $custom_validation_result, 'is_valid' ) ? false : true;
+			$field->validation_message = rgar( $custom_validation_result, 'message' );
+			
 		}
 
 		$validation_message = ( $field->failed_validation && ! empty( $field->validation_message ) ) ? sprintf( "<div class='gfield_description validation_message'>%s</div>", $field->validation_message ) : '';

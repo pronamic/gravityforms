@@ -1533,14 +1533,29 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * @return bool
 	 */
 	public function is_description_above( $form ) {
-		$form_label_placement        = rgar( $form, 'labelPlacement' );
-		$field_label_placement       = $this->labelPlacement;
-		$form_description_placement  = rgar( $form, 'descriptionPlacement' );
-		$field_description_placement = $this->descriptionPlacement;
-		if ( empty( $field_description_placement ) ) {
-			$field_description_placement = $form_description_placement;
+		$field_description_setting = $this->descriptionPlacement;
+		$form_description_setting =  rgar( $form, 'descriptionPlacement' ) ? $form['descriptionPlacement'] : 'below';
+		$form_label_placement = rgar( $form, 'labelPlacement' ) ? $form['labelPlacement'] : 'top_label';
+
+		if( ! $field_description_setting ) {
+			$field_description_setting = $form_description_setting;
 		}
-		$is_description_above = $field_description_placement == 'above' && ( $field_label_placement == 'top_label' || $field_label_placement == 'hidden_label' || ( empty( $field_label_placement ) && $form_label_placement == 'top_label' ) );
+
+		$is_description_above = false;
+
+		$description_can_be_above = false;
+
+		if( $this->labelPlacement == 'top_label' || $this->labelPlacement == 'hidden_label' ) {
+			$description_can_be_above = true;
+		}
+
+		if( ! $this->labelPlacement && $form_label_placement == 'top_label' ) {
+			$description_can_be_above = true;
+		}
+
+		if ( $field_description_setting == 'above' && $description_can_be_above ) {
+			$is_description_above = true;
+		}
 
 		return $is_description_above;
 	}
@@ -2655,7 +2670,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 */
 	public function get_allowable_tags( $form_id = null ) {
 		if ( empty( $form_id ) ) {
-			$form_id = $this->form_id;
+			$form_id = $this->formId;
 		}
 		$form_id    = absint( $form_id );
 		$allow_html = $this->allow_html();

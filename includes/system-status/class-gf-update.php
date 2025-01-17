@@ -56,84 +56,52 @@ class GF_Update {
 
                 <tbody id="the-list">
 				<?php
-				// All installed plugins
 				$plugins = get_plugins();
-
 				// Loop through updates.
 				foreach ( $updates as $update ) {
-					$update_available = ! empty( $update['latest_version'] ) && version_compare( $update['installed_version'], $update['latest_version'], '<' );
-					$update_class     = $update_available ? ' update' : '';
-					$settings_link    = $update['slug'] == 'gravityforms' ? admin_url( 'admin.php?page=gf_settings' ) : admin_url( 'admin.php?page=gf_settings&subview=' . $update['slug'] );
-					$plugin           = $plugins[ $update['path'] ];
-
+					$installed_version = rgar( $update, 'installed_version' );
+					$latest_version    = rgar( $update, 'latest_version' );
+					$name              = rgar( $update, 'name' );
+					$slug              = rgar( $update, 'slug' );
+					$plugin_path       = rgar( $update, 'path' );
+					
+					$update_available  = ! empty( $latest_version ) && version_compare( $installed_version, $latest_version, '<' );
+					$update_class      = $update_available ? ' update' : '';
+					$settings_link     = $slug == 'gravityforms' ? admin_url( 'admin.php?page=gf_settings' ) : admin_url( 'admin.php?page=gf_settings&subview=' . $slug );
+					
+					$plugin            = rgar( $plugins, $update['path'] );
+					$description       = rgar( $plugin, 'Description' );
+					$installed_version = rgar( $update, 'installed_version' );
 					?>
-                <tr class="inactive<?php echo $update_class ?>" data-slug="admin-bar-form-search"
-                    data-plugin="gw-admin-bar-form-manager.php">
-                    <td class="plugin-title column-primary"><strong><?php echo $update['name'] ?></strong>
-                        <div class="row-actions visible">
-                            <span class="deactivate"><a
-                                        href="<?php echo $settings_link ?>"><?php esc_html_e( 'Settings', 'gravityforms' ) ?></a></span>
-                        </div>
-                    </td>
-                    <td class="column-description desc">
-                    <div class="plugin-description">
-                        <p><?php echo $plugin['Description'] ?></p>
-                    </div>
-                    <div class="active second plugin-version-author-uri">
-                        Version <?php echo $update['installed_version'] ?> |
-                        <a href="<?php echo $plugin['PluginURI'] ?>"><?php esc_html_e( 'Visit plugin page', 'gravityforms' ) ?></a>
-                    </div>
-					<?php if ( $update_available ) { ?>
-
-                        <div class="update-message notice inline notice-warning notice-alt">
-                            <p>
-								<?php
-
-								printf( esc_html__( 'There is a new version of %s available. ', 'gravityforms' ), $update['name'] );
-
-								if ( $update['is_valid_key'] ) {
-									// Changelog URL is different in a multisite network.
-									$changelog_url = wp_nonce_url( self_admin_url( 'admin-ajax.php?action=gf_get_changelog&plugin=' . urlencode( $update['slug'] ) . '&TB_iframe=true&width=640&height=808' ) );
-
-									if ( ! current_user_can( 'update_plugins' ) ) {
-										printf( esc_html__( '%1$sView version %2$s details %3$s. ', 'gravityforms' ),
-											'<a href="' . $changelog_url . '" class="thickbox open-plugin-details-modal">',
-											$update['latest_version'],
-											'</a>'
-										);
-									} else {
-										printf( esc_html__( '%1$sView version %2$s details %3$s or %4$supdate now%5$s.', 'gravityforms' ),
-											'<a href="' . $changelog_url . '" class="thickbox open-plugin-details-modal">',
-											$update['latest_version'],
-											'</a>',
-											'<a href="' . $update['upgrade_url'] . '" class="update-link">',
-											'</a>'
-										);
-									}
-
-								} else {
-
-									printf(
-										esc_html__( '%sRegister%s your copy of Gravity Forms to receive access to automatic updates and support. Need a license key? %sPurchase one now%s.', 'gravityforms' ),
-										'<a href="admin.php?page=gf_settings">',
-										'</a>',
-										'<a href="https://www.gravityforms.com">',
-										'</a>'
-									);
-
-								}
-								?>
-                            </p>
-                        </div>
-                        </td>
-                        </tr>
-						<?php
-					}
-				}
+					<tr class="inactive<?php echo $update_class ?>" data-slug="admin-bar-form-search"
+						data-plugin="gw-admin-bar-form-manager.php">
+						<td class="plugin-title column-primary"><strong><?php echo esc_html( $name ) ?></strong>
+							<div class="row-actions visible">
+								<span class="deactivate"><a
+											href="<?php echo esc_url( $settings_link ); ?>"><?php esc_html_e( 'Settings', 'gravityforms' ) ?></a></span>
+							</div>
+						</td>
+						<td class="column-description desc">
+							<div class="plugin-description">
+								<p><?php echo esc_html( $description ); ?></p>
+							</div>
+							<div class="active second plugin-version-author-uri">
+								Version <?php echo esc_html( $installed_version ); ?> |
+								<a href="<?php echo rgar( $plugin, 'PluginURI' ); ?>"><?php esc_html_e( 'Visit plugin page', 'gravityforms' ); ?></a>
+							</div>
+							<?php 
+							$messages = GFForms::get_status_messages( $plugin_path, $plugin, $slug, $installed_version );
+							if ( ! empty( $messages) ) {
+								echo self::get_markup_for_status_messages( $messages );
+							}
+							?>
+						</td>
+					</tr>
+					<?php 
+				} 
 				?>
                 </tbody>
             </table>
-
         </div>
 
 		<?php
@@ -167,18 +135,21 @@ class GF_Update {
 		// Get upgrade URL.
 		$upgrade_url = wp_nonce_url( 'update.php?action=upgrade-plugin&amp;plugin=' . urlencode( $plugin_path ), 'upgrade-plugin_' . $plugin_path );
 
+
+		$version_message = array();
+
 		// Prepare version message and icon.
 		if ( empty( $version_info['version'] ) || version_compare( GFForms::$version, $version_info['version'], '>=' ) ) {
 
 			$version_icon    = 'dashicons-yes';
-			$version_message = esc_html__( 'Your version of Gravity Forms is up to date.', 'gravityforms' );
+			$version_message[] = esc_html__( 'Your version of Gravity Forms is up to date.', 'gravityforms' );
 
 		} else {
 
-			if ( rgar( $version_info, 'is_valid_key' ) ) {
+			if ( rgar( $version_info, 'is_valid_key' ) && rgar( $version_info, 'is_available' ) ) {
 
 				$version_icon    = 'dashicons-no';
-				$version_message = sprintf(
+				$version_message[] = sprintf(
 					'%s<p>%s</p>',
 					esc_html__( 'There is a new version of Gravity Forms available.', 'gravityforms' ),
 					esc_html__( 'You can update to the latest version automatically or download the update and install it manually.', 'gravityforms' )
@@ -187,7 +158,7 @@ class GF_Update {
 
 
 				$version_icon    = 'dashicons-no';
-				$version_message = sprintf(
+				$version_message[] = sprintf(
 					'%s<p>%s</p>',
 					esc_html__( 'There is a new version of Gravity Forms available.', 'gravityforms' ),
 					sprintf(
@@ -226,6 +197,29 @@ class GF_Update {
 
 		return $updates;
 
+	}
+
+	/**
+	 * Generates the markup for displaying the status messages. 
+	 * 
+	 * @since: 2.9
+	 *
+	 * @param array $messages An array of status messages.
+	 * 
+	 * @return string The html markup for the status messages.
+	 */
+	public static function get_markup_for_status_messages( $messages ) {
+		$markup = '';
+
+		if ( ! empty( $messages ) ) {
+			$markup .= '<div class="update-message notice inline notice-warning notice-alt">';
+			$markup .= '<p>';
+			$markup .= implode( ' ', $messages );
+			$markup .= '</p>';
+			$markup .= '</div>';
+		}
+
+		return $markup;
 	}
 
 }

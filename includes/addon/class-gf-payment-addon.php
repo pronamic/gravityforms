@@ -162,6 +162,15 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 	 */
 	protected $_requires_smallest_unit = false;
 
+	/**
+	 * Out of the box, payment add-ons do not support feed reprocessing.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @var bool
+	 */
+	protected $_supports_feed_reprocessing = false;
+
 	//--------- Initialization ----------
 	/**
 	 * Runs before the payment add-on is initialized.
@@ -486,24 +495,24 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 				$feed_meta = $feed['meta'];
 
-				$frontend_feeds[ $key ]['transactionType']                  = rgar( $feed_meta, 'transactionType' );
-				$frontend_feeds[ $key ]['subscription_name']                = rgar( $feed_meta, 'subscription_name' );
-				$frontend_feeds[ $key ]['recurringAmount']                  = rgar( $feed_meta, 'recurringAmount' );
-				$frontend_feeds[ $key ]['billingCycle_length']              = rgar( $feed_meta, 'billingCycle_length' );
-				$frontend_feeds[ $key ]['billingCycle_unit']                = rgar( $feed_meta, 'billingCycle_unit' );
-				$frontend_feeds[ $key ]['setupFee_enabled']                 = rgar( $feed_meta, 'setupFee_enabled' );
-				$frontend_feeds[ $key ]['trial_enabled']                    = rgar( $feed_meta, 'trial_enabled' );
-				$frontend_feeds[ $key ]['trialPeriod']                      = rgar( $feed_meta, 'trialPeriod' );
-				$frontend_feeds[ $key ]['paymentAmount']                    = rgar( $feed_meta, 'paymentAmount' );
-				$frontend_feeds[ $key ]['billingInformation_address_line1'] = rgar( $feed_meta, 'billingInformation_address_line1' );
-				$frontend_feeds[ $key ]['billingInformation_address_line2'] = rgar( $feed_meta, 'billingInformation_address_line1' );
-				$frontend_feeds[ $key ]['billingInformation_city']          = rgar( $feed_meta, 'billingInformation_city' );
-				$frontend_feeds[ $key ]['billingInformation_state']         = rgar( $feed_meta, 'billingInformation_state' );
-				$frontend_feeds[ $key ]['billingInformation_zip']           = rgar( $feed_meta, 'billingInformation_zip' );
-				$frontend_feeds[ $key ]['billingInformation_country']       = rgar( $feed_meta, 'billingInformation_country' );
-				$frontend_feeds[ $key ]['customerInformation_email']        = rgar( $feed_meta, 'customerInformation_email' );
-				$frontend_feeds[ $key ]['customerInformation_description']  = rgar( $feed_meta, 'customerInformation_description' );
-				$frontend_feeds[ $key ]['customerInformation_coupon']       = rgar( $feed_meta, 'customerInformation_coupon' );
+				$frontend_feeds[ $key ]['transactionType']                    = rgar( $feed_meta, 'transactionType' );
+				$frontend_feeds[ $key ]['subscription_name']                  = rgar( $feed_meta, 'subscription_name' );
+				$frontend_feeds[ $key ]['recurringAmount']                    = rgar( $feed_meta, 'recurringAmount' );
+				$frontend_feeds[ $key ]['billingCycle_length']                = rgar( $feed_meta, 'billingCycle_length' );
+				$frontend_feeds[ $key ]['billingCycle_unit']                  = rgar( $feed_meta, 'billingCycle_unit' );
+				$frontend_feeds[ $key ]['setupFee_enabled']                   = rgar( $feed_meta, 'setupFee_enabled' );
+				$frontend_feeds[ $key ]['trial_enabled']                      = rgar( $feed_meta, 'trial_enabled' );
+				$frontend_feeds[ $key ]['trialPeriod']                        = rgar( $feed_meta, 'trialPeriod' );
+				$frontend_feeds[ $key ]['paymentAmount']                      = rgar( $feed_meta, 'paymentAmount' );
+				$frontend_feeds[ $key ]['billingInformation_address_line1']   = rgar( $feed_meta, 'billingInformation_address_line1' );
+				$frontend_feeds[ $key ]['billingInformation_address_line2']   = rgar( $feed_meta, 'billingInformation_address_line1' );
+				$frontend_feeds[ $key ]['billingInformation_address_city']    = rgar( $feed_meta, 'billingInformation_address_city' );
+				$frontend_feeds[ $key ]['billingInformation_address_state']   = rgar( $feed_meta, 'billingInformation_address_state' );
+				$frontend_feeds[ $key ]['billingInformation_address_zip']     = rgar( $feed_meta, 'billingInformation_address_zip' );
+				$frontend_feeds[ $key ]['billingInformation_address_country'] = rgar( $feed_meta, 'billingInformation_address_country' );
+				$frontend_feeds[ $key ]['customerInformation_email']          = rgar( $feed_meta, 'customerInformation_email' );
+				$frontend_feeds[ $key ]['customerInformation_description']    = rgar( $feed_meta, 'customerInformation_description' );
+				$frontend_feeds[ $key ]['customerInformation_coupon']         = rgar( $feed_meta, 'customerInformation_coupon' );
 			}
 		}
 

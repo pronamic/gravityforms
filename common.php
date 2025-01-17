@@ -226,7 +226,21 @@ class GFCommon {
 		$index_file_path = $dir . '/index.html';
 		GFCommon::log_debug( __METHOD__ . '(): Adding file: ' . $index_file_path );
 
-		if ( $f = fopen( $index_file_path, 'w' ) ) {
+		$check_file_exists = false;
+
+		/*
+		 * Setting this filter to true will check if the empty index file exists before adding it.
+		 *
+		 * @since 2.9.2
+		 *
+		 * @param bool $check_file_exists Whether to check if the empty index file exists before adding it. Default is false.
+		 * @param string $dir The directory path where the empty file is being added.
+		 */
+		if ( true === apply_filters( 'gform_check_empty_index_file_exists', false, $dir ) ) {
+			$check_file_exists = file_exists( $index_file_path );
+		}
+
+		if ( ! $check_file_exists && $f = fopen( $index_file_path, 'w' ) ) {
 			fclose( $f );
 		}
 
@@ -1376,7 +1390,7 @@ class GFCommon {
 
 	public static function replace_variables_prepopulate( $text, $url_encode = false, $entry = false, $esc_html = false, $form = false, $nl2br = false, $format = 'html' ) {
 
-		if ( strpos( $text, '{' ) !== false ) {
+		if ( is_string( $text ) && strpos( $text, '{' ) !== false ) {
 
 			//embed url
 			$current_page_url = empty( $entry ) ? GFFormsModel::get_current_page_url() : rgar( $entry, 'source_url' );
@@ -2977,10 +2991,10 @@ Content-Type: text/html;
 
 		/**
 		 * If a license key doesn't exist, $license_info will be a WP_Error.
-		 * $license_info is potentially loaded from a serialized cache 
-		 * value causing the need to validate it is correct type 
+		 * $license_info is potentially loaded from a serialized cache
+		 * value causing the need to validate it is correct type
 		 * before calling any of its methods.
-		 */  
+		 */
 		$is_valid_license_info = ( ! is_wp_error( $license_info ) && is_a( $license_info, Gravity_Forms\Gravity_Forms\License\GF_License_API_Response::class ) );
 
 		return array(
@@ -2991,6 +3005,7 @@ Content-Type: text/html;
 			'is_error'        => is_wp_error( $license_info ) || $license_info->has_errors(),
 			'offerings'       => $plugins,
 			'status'          => ( $is_valid_license_info ) ? $license_info->get_status() : '',
+			'is_available'    => rgars( $plugins, 'gravityforms/is_available' ),
 		);
 	}
 
@@ -3183,7 +3198,7 @@ Content-Type: text/html;
 			$option->response[ $plugin_path ] = new stdClass();
 		}
 
-		$version = rgar( $version_info, 'version' );
+		$version = rgar( $version_info, 'version', '0' );
 
 		$url    = rgar( $version_info, 'url' );
 		$plugin = array(
@@ -4422,6 +4437,7 @@ Content-Type: text/html;
 	public static function get_total( $products ) {
 
 		$total = 0;
+		$has_product = false;
 		foreach ( $products['products'] as $product ) {
 
 			$price = self::to_number( $product['price'] );
@@ -4431,12 +4447,17 @@ Content-Type: text/html;
 				}
 			}
 			$quantity = self::to_number( $product['quantity'], GFCommon::get_currency() );
+			if ( $quantity !== 0 ) {
+				$has_product = true;
+			}
 			$subtotal = $quantity * $price;
 			$total += $subtotal;
 
 		}
 
-		$total += floatval( $products['shipping']['price'] );
+		if ( $has_product ) {
+			$total += floatval( $products['shipping']['price'] );
+		}
 
 		return $total;
 	}
@@ -4520,8 +4541,9 @@ Content-Type: text/html;
 		if ( self::akismet_enabled( $form_id ) ) {
 			$is_spam = self::is_akismet_spam( $form, $entry );
 			self::log_debug( __METHOD__ . '(): Result from Akismet: ' . json_encode( $is_spam ) );
-
-			self::set_spam_filter( $form_id, __( 'Akismet Spam Filter', 'gravityforms' ), '' );
+			if ( $is_spam ) {
+				self::set_spam_filter( $form_id, __( 'Akismet Spam Filter', 'gravityforms' ), '' );
+			}
 		}
 
 		$gform_entry_is_spam_args = array( 'gform_entry_is_spam', $form_id );
@@ -5593,6 +5615,8 @@ Content-Type: text/html;
 		$gf_vars['DeleteFormTitle']    = esc_html__('Confirm', 'gravityforms');
 		$gf_vars['DeleteForm']         = esc_html__("You are about to move this form to the trash. 'Cancel' to abort. 'OK' to delete.", 'gravityforms');
         $gf_vars['DeleteCustomChoice'] = esc_html__("Delete this custom choice list? 'Cancel' to abort. 'OK' to delete.", 'gravityforms');
+
+		$gf_vars['FieldAdded'] = esc_html__( ' field added to form', 'gravityforms' );
 
         if ( ( is_admin() && rgget( 'id' ) ) || ( self::is_form_editor() && rgpost( 'form_id' ) ) ) {
 
@@ -7571,15 +7595,15 @@ Content-Type: text/html;
 	public static function get_dbms_type() {
 		static $type;
 		global $wpdb;
-		
+
 		if ( empty( $type ) ) {
 			$type = strpos( strtolower( self::get_dbms_version() ), 'mariadb' ) ? 'MariaDB' : 'MySQL';
-			
+
 			if ( get_class( $wpdb ) === 'WP_SQLite_DB' ) {
 				$type = 'SQLite';
 			}
 		}
-		
+
 		return $type;
 	}
 

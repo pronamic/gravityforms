@@ -799,6 +799,13 @@ class GF_Upgrade {
 		}
 		*/
 
+		// Setting the version of Gravity Forms that was installed initially.
+		// If upgrading from a version prior to 2.7.14.2 and this option's existence,
+		// we set this to be the version you are upgrading from as that's all we can do.
+		if ( ! get_option( 'rg_form_original_version' ) ) {
+			update_option( 'rg_form_original_version', $versions['previous_db_version'], false );
+		}
+
 		if ( GFForms::$background_upgrader->get_data() ) {
 			GFForms::$background_upgrader->push_to_queue( array( $this, 'post_background_upgrade' ) );
 			GFForms::$background_upgrader->save();

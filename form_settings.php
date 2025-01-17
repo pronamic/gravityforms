@@ -843,6 +843,9 @@ class GFFormSettings {
 
 		// Get all of the current values.
 		foreach ( $form as $key => $value ) {
+			if ( in_array( $key, array( 'fields', 'notifications', 'confirmations' ) ) ) {
+				continue;
+			}
 			if ( is_array( $value ) ) {
 				foreach ( $value as $sub_key => $sub_value ) {
 					if ( is_array( $sub_value ) ) {
@@ -855,9 +858,8 @@ class GFFormSettings {
 
 					}
 				}
-			} else {
-				$initial_values[ $key ] = $value;
 			}
+			$initial_values[ $key ] = $value;
 		}
 
 		// Start and end times are formatted differently than other fields.

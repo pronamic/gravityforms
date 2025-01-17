@@ -4,6 +4,7 @@
 // INITIALIZING PAGE
 //-------------------------------------------------
 
+
 jQuery( document ).ready(
 	function () {
 		InitializeEditor();
@@ -723,7 +724,10 @@ function LoadFieldSettings() {
 	jQuery("#field_label_placement").val(field.labelPlacement);
 	jQuery("#field_description_placement").val(field.descriptionPlacement);
 	jQuery("#field_sub_label_placement").val(field.subLabelPlacement);
-	if ((field.labelPlacement == 'left_label' || field.labelPlacement == 'right_label' || (field.labelPlacement == '' && form.labelPlacement != 'top_label'))) {
+	if (field.labelPlacement == 'left_label' ||
+		field.labelPlacement == 'right_label' ||
+		(field.labelPlacement == '' && (form.labelPlacement == 'left_label' || form.labelPlacement == 'right_label'))
+	) {
 		jQuery('#field_description_placement_container').hide();
 	} else {
 		jQuery('#field_description_placement_container').show();
@@ -1198,7 +1202,7 @@ function LoadFieldSettings() {
 		jQuery('#field_password_fields_container').html(passwordFields);
 		// remove the toggle from the "Enter Password" field
 		jQuery('#field_password_fields_container .field_custom_input_row').first().find('.gform-field__toggle').remove();
-		
+
 		// Show/Hide Size setting.
 		var confirmEnabled = field.inputs[1].isHidden == 'undefined' ? true : !field.inputs[1].isHidden;
 		if (confirmEnabled) {
@@ -2539,6 +2543,13 @@ function EndAddField(field, fieldString, index){
 	InitializeFields();
 
 	newFieldElement.removeClass('field_selected');
+
+	// Get the sidebar button that currently has focus
+	var focusedElement = document.activeElement;
+	if ( focusedElement.tagName === 'BUTTON' ) {
+		var fieldType = focusedElement.value;
+		wp.a11y.speak( fieldType + gf_vars.FieldAdded );
+	}
 
 	jQuery(document).trigger('gform_field_added', [form, field]);
 }

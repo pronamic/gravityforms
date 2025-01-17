@@ -239,6 +239,7 @@ class GFSettings {
 
 			delete_option( 'widget_gform_widget' );
 			delete_option( 'rg_gforms_default_theme' );
+			delete_option( 'rg_form_original_version' );
 			delete_option( 'gform_version_info' );
 
 			delete_option( 'gf_telemetry_data' );
@@ -392,16 +393,28 @@ class GFSettings {
 	* @return bool
 	*/
     public static function is_orbital_default() {
-		if ( 'orbital' == get_option( 'rg_gforms_default_theme' ) ) {
+		$theme_option = get_option( 'rg_gforms_default_theme' );
+
+		// Fallback if the option is not set
+		if ( ! $theme_option ) {
+			$versions = gf_upgrade()->get_versions();
+
+			// New install or upgrade from version that supports this feature
+			if ( version_compare( get_option( 'rg_form_original_version', $versions['version'] ), '2.7.14.2', '>=' ) ) {
+				return true;
+			}
+
+			// Upgrade from version prior to this feature
+			if ( version_compare( $versions['previous_db_version'], '2.7.14.2', '<' ) ) {
+				return false;
+			}
+		}
+
+		if ( 'orbital' == $theme_option ) {
 			return true;
 		}
 
-		// If there is no default theme saved, and if this is an old installation, Gravity Theme should be the default.
-		if ( version_compare( get_option( 'rg_form_original_version', '1.0.0' ), '2.7.14.2', '<' ) ) {
-		    return false;
-		}
-
-		return true;
+		return false;
     }
 
 

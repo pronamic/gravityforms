@@ -263,7 +263,7 @@ class GF_Field_Text extends GF_Field {
 	 * @return string
 	 */
 	public function get_aria_describedby( $extra_ids = array() ) {
-		if ( $this->type === 'text' || $this->type === 'post_custom_field' ) {
+		if ( $this->type === 'text' || $this->type === 'post_custom_field' || $this->type === 'survey' ) {
 			return parent::get_aria_describedby( $extra_ids );
 		}
 

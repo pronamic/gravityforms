@@ -120,7 +120,7 @@ class GF_Field_SingleProduct extends GF_Field {
 
 		if ( $is_entry_detail || $is_form_editor  ) {
 			$style          = $this->disableQuantity ? "style='display:none;'" : '';
-			$quantity_field = " <span class='ginput_quantity_label gform-field-label' {$style}>{$product_quantity_sub_label}</span> <input type='number' name='input_{$id}.3' value='{$quantity}' id='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity' size='10' {$disabled_text} {$style}/>";
+			$quantity_field = " <label for='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity_label gform-field-label' {$style}>{$product_quantity_sub_label}</label> <input type='number' name='input_{$id}.3' value='{$quantity}' id='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity' size='10' {$disabled_text} {$style}/>";
 		} else if ( ! $this->disableQuantity ) {
 			$tabindex                  = $this->get_tabindex();
 
@@ -132,7 +132,7 @@ class GF_Field_SingleProduct extends GF_Field {
 			$quantity_aria_describedby = $this->get_aria_describedby( $describedby_extra_id );
 			$quantity_aria_label       = sprintf( 'aria-label="%s %s"', __( 'Quantity', 'gravityforms' ), $product_name );
 
-			$quantity_field            .= " <span class='ginput_quantity_label gform-field-label' aria-hidden='true'>" . $product_quantity_sub_label . "</span> <input type='number' name='input_{$id}.3' value='{$quantity}' id='input_{$form_id}_{$this->id}_1' class='ginput_quantity' size='10' min='0' {$tabindex} {$disabled_text} {$quantity_aria_label} {$quantity_aria_describedby} />";
+			$quantity_field            .= " <label for='ginput_quantity_{$form_id}_{$this->id}_1' class='ginput_quantity_label gform-field-label' aria-hidden='true'>" . $product_quantity_sub_label . "</label> <input type='number' name='input_{$id}.3' value='{$quantity}' id='input_{$form_id}_{$this->id}_1' class='ginput_quantity' size='10' min='0' {$tabindex} {$disabled_text} {$quantity_aria_label} {$quantity_aria_describedby} />";
 		} else {
 			if ( ! is_numeric( $quantity ) ) {
 				$quantity = 1;
@@ -150,8 +150,8 @@ class GF_Field_SingleProduct extends GF_Field {
 			return "<div class='ginput_container ginput_container_singleproduct'>
 					<input type='hidden' name='input_{$id}.1' value='{$product_name}' class='gform_hidden' />
 					$wrapper_open
-						<label for='ginput_price_{$form_id}_{$this->id}_2' class='gform-field-label gform-field-label--type-sub-large ginput_product_price_label'>" . gf_apply_filters( array( 'gform_product_price', $form_id, $this->id ), esc_html__( 'Price', 'gravityforms' ), $form_id ) . ":</label>
-						<input type='text' readonly name='input_{$id}.2' class='ginput_product_price gform-text-input-reset' id='ginput_base_price_{$form_id}_{$this->id}' value='" . esc_attr( $price ) . "' {$product_aria_describedby} />
+						<label for='ginput_base_price_{$form_id}_{$this->id}' class='gform-field-label gform-field-label--type-sub-large ginput_product_price_label'>" . gf_apply_filters( array( 'gform_product_price', $form_id, $this->id ), esc_html__( 'Price', 'gravityforms' ), $form_id ) . ":</label>
+							<input type='text' readonly name='input_{$id}.2' class='ginput_product_price gform-text-input-reset' id='ginput_base_price_{$form_id}_{$this->id}' value='" . esc_attr( $price ) . "' {$product_aria_describedby} />
 					$wrapper_close
 					{$quantity_field}
 				</div>";

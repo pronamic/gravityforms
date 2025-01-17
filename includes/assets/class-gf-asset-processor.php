@@ -55,8 +55,8 @@ class GF_Asset_Processor {
 
 		foreach( $registered as &$asset ) {
 
-			// Bail if not one of our assets.
-			if ( $asset->src && strpos( $asset->src, 'gravityforms/assets/js/dist' ) === false ) {
+			// Bail if not one of our assets or asset is empty.
+			if ( $asset->src && strpos( $asset->src, 'gravityforms/assets/js/dist' ) === false  || is_null( $asset->src ) ) {
 				continue;
 			}
 

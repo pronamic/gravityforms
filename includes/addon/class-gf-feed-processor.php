@@ -99,21 +99,15 @@ class GF_Feed_Processor extends GF_Background_Process {
 
 		}
 
-		$processed_feeds = $addon->get_feeds_by_entry( $entry['id'] );
+		$form = $this->filter_form( GFAPI::get_form( $item['form_id'] ), $entry );
 
-		if ( is_array( $processed_feeds ) && in_array( $feed['id'], $processed_feeds ) ) {
-			call_user_func( array(
-				$addon,
-				'log_debug',
-			), __METHOD__ . "(): already processed feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']} for {$addon_slug}. Bailing." );
-
+		if ( ! $this->can_process_feed( $feed, $entry, $form, $addon ) ) {
 			return false;
 		}
 
 		$item = $this->increment_attempts( $item );
 
 		$max_attempts = 1;
-		$form         = $this->filter_form( GFAPI::get_form( $item['form_id'] ), $entry );
 
 		/**
 		 * Allow the number of retries to be modified before the feed is abandoned.
@@ -223,22 +217,65 @@ class GF_Feed_Processor extends GF_Background_Process {
 		), __METHOD__ . '(): Marking entry #' . $entry['id'] . ' as fulfilled for ' . $feed['addon_slug'] );
 		gform_update_meta( $entry['id'], "{$feed['addon_slug']}_is_fulfilled", true );
 
-		// Get current processed feeds.
-		$meta = gform_get_meta( $entry['id'], 'processed_feeds' );
-
-		// If no feeds have been processed for this entry, initialize the meta array.
-		if ( empty( $meta ) ) {
-			$meta = array();
-		}
-
-		// Add this feed to this Add-On's processed feeds.
-		$meta[ $feed['addon_slug'] ][] = $feed['id'];
-
 		// Update the entry meta.
-		gform_update_meta( $entry['id'], 'processed_feeds', $meta );
+		GFAPI::update_processed_feeds_meta( $entry['id'], $addon_slug, $feed['id'], rgar( $form, 'id' ) );
 
 		return false;
 
+	}
+
+	/**
+	 * Determines if the feed can be processed based on the contents of the processed feeds entry meta.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @param array       $entry The entry being processed.
+	 * @param array       $feed  The feed queued for processing.
+	 * @param array       $form  The form the entry belongs to.
+	 * @param GFFeedAddOn $addon The current instance of the add-on the feed belongs to.
+	 *
+	 * @return bool
+	 */
+	public function can_process_feed( $feed, $entry, $form, $addon ) {
+		$entry_id          = (int) rgar( $entry, 'id' );
+		$processed_feeds   = GFAPI::get_processed_feeds_meta( $entry_id, $addon->get_slug() );
+		$already_processed = ! empty( $processed_feeds ) && in_array( (int) rgar( $feed, 'id' ), $processed_feeds );
+
+		if ( ! $already_processed ) {
+			return true;
+		}
+
+		$feed_name = rgars( $feed, 'meta/feed_name' ) ? $feed['meta']['feed_name'] : rgars( $feed, 'meta/feedName' );
+
+		if ( ! $addon->is_reprocessing_supported( $feed, $entry, $form ) ) {
+			$addon->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT supported.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
+
+			return false;
+		}
+
+		/**
+		 * Allows reprocessing of the feed to be enabled.
+		 *
+		 * @since 2.9.2
+		 *
+		 * @param bool        $allow_reprocessing Indicates if the feed can be reprocessed. Default is false.
+		 * @param array       $feed               The feed queued for processing.
+		 * @param array       $entry              The entry being processed.
+		 * @param array       $form               The form the entry belongs to.
+		 * @param GFFeedAddOn $addon              The current instance of the add-on the feed belongs to.
+		 * @param array       $processed_feeds    An array of feed IDs that have already been processed for the given entry.
+		 */
+		$allow_reprocessing = apply_filters( 'gform_allow_async_feed_reprocessing', false, $feed, $entry, $form, $addon, $processed_feeds );
+
+		if ( ! $allow_reprocessing ) {
+			$addon->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT allowed.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
+
+			return false;
+		}
+
+		$addon->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing IS allowed.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
+
+		return true;
 	}
 
 	/**

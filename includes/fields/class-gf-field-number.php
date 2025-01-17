@@ -259,9 +259,8 @@ class GF_Field_Number extends GF_Field {
 		$placeholder_attribute = $this->get_field_placeholder_attribute();
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
-
-		$range_message        = $this->get_range_message();
-		$describedby_extra_id = empty( $range_message && ! $this->failed_validation ) ? array() : array( "gfield_instruction_{$this->formId}_{$this->id}" );
+		
+		$describedby_extra_id = '' == $instruction ? array() : array( "gfield_instruction_{$this->formId}_{$this->id}" );
 		$aria_describedby     = $this->get_aria_describedby( $describedby_extra_id );
 
 		$autocomplete_attribute = $this->enableAutocomplete ? $this->get_field_autocomplete_attribute() : '';

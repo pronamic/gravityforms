@@ -319,13 +319,15 @@ abstract class GFAddOn {
 	 * Gets all active, registered Add-Ons.
 	 *
 	 * @since Unknown
-	 * @since 2.5.6 Added the $return_instances param.
+	 * @since 2.5.6  Added the $return_instances param.
+	 * @since 2.9.2  Added the $slug_as_key param.
 	 *
 	 * @param bool $return_instances Indicates if the current instances of the add-ons should be returned. Default is false.
+	 * @param bool $slug_as_key      Indicates if the add-on slug should be used as the key to the add-on instance. Default is false.
 	 *
-	 * @return string[]|GFAddOn[] An array of class names or instances.
+	 * @return string[]|(GFAddOn|GFFeedAddOn|GFPaymentAddOn)[] An array of class names or instances.
 	 */
-	public static function get_registered_addons( $return_instances = false ) {
+	public static function get_registered_addons( $return_instances = false, $slug_as_key = false ) {
 		$active_addons = array_unique( self::$_registered_addons['active'] );
 
 		if ( ! $return_instances ) {
@@ -339,7 +341,15 @@ abstract class GFAddOn {
 			if ( ! is_callable( $callback ) ) {
 				continue;
 			}
-			$instances[] = call_user_func( $callback );
+
+			/** @var GFAddOn|GFFeedAddOn|GFPaymentAddOn $instance */
+			$instance = call_user_func( $callback );
+
+			if ( $slug_as_key ) {
+				$instances[ $instance->get_slug() ] = $instance;
+			} else {
+				$instances[] = $instance;
+			}
 		}
 
 		return $instances;

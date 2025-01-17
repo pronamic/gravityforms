@@ -22,6 +22,8 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 
 		private static $instance = null;
 
+		private static $raw_response = null;
+
 		public static function get_instance() {
 			if ( null == self::$instance ) {
 				self::$instance = new self;
@@ -262,7 +264,12 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 
 			$nocache = $cache ? '' : 'nocache=1'; //disabling server side caching
 
-			$raw_response = GFCommon::post_to_manager( 'version.php', $nocache, $options );
+			// Store the raw_response for this page load. This will keep us from hitting the api multiple times per pageload.
+			if ( is_null( self::$raw_response ) ) {
+				self::$raw_response = GFCommon::post_to_manager( 'version.php', $nocache, $options );
+			}
+
+			$raw_response = self::$raw_response;;
 			$version_info = array(
 				'is_valid_key' => '1',
 				'version'      => '',

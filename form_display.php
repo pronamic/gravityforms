@@ -749,7 +749,7 @@ class GFFormDisplay {
 
 		if ( $mode == 'render' ) {
 			$is_valid     = rgars( self::$submission, "{$form['id']}/is_valid" );
-			$is_last_page = $is_valid && $target_page == self::get_max_page_number( $form );
+			$is_last_page = ( $is_valid && $target_page == self::get_max_page_number( $form ) ) || (string) $target_page === '0';
 		} else {
 			$is_last_page = (string) $target_page === '0';
 		}
@@ -1736,14 +1736,12 @@ class GFFormDisplay {
 
 		$tabindex = (int) $tabindex;
 
-		$theme_query = $theme ? "&amp;theme={$theme}" : '';
-
 		// Make sure style settings are valid JSON.
 		$is_valid_json = empty( $style_settings ) ? null : json_decode( $style_settings );
-		$style_settings_query = $is_valid_json ? "&amp;styles={$style_settings}" : '';
 
 		if ( $ajax ) {
-			$footer .= "<input type='hidden' name='gform_ajax' value='" . esc_attr( "form_id={$form_id}&amp;title={$display_title}&amp;description={$display_description}&amp;tabindex={$tabindex}{$theme_query}{$style_settings_query}" ) . "' />";
+			$ajax_value = self::prepare_ajax_input_value( $form_id, $display_title, $display_description, $tabindex, $theme, $is_valid_json ? $style_settings : null );
+			$footer     .= "<input type='hidden' name='gform_ajax' value='" . esc_attr( $ajax_value ) . "' />";
 		}
 
 		$current_page     = self::get_current_page( $form_id );
@@ -1767,11 +1765,13 @@ class GFFormDisplay {
 			$footer .= wp_nonce_field( 'gform_submit_' . $form_id, '_gform_submit_nonce_' . $form_id, true, false );
 		}
 
-		$unique_id = isset( self::$submission[ $form_id ] ) && rgar( self::$submission[ $form_id ], 'resuming_incomplete_submission' ) == true ? rgar( GFFormsModel::$unique_ids, $form_id ) : GFFormsModel::get_form_unique_id( $form_id );
-		$footer   .= "
-            <input type='hidden' class='gform_hidden' name='gform_submission_method' data-js='gform_submission_method_{$form_id}' value='{$submission_method}' />
-            <input type='hidden' class='gform_hidden' name='gform_theme' data-js='gform_theme_{$form_id}' id='gform_theme_{$form_id}' value='{$theme}' />
-            <input type='hidden' class='gform_hidden' name='gform_style_settings' data-js='gform_style_settings_{$form_id}' id='gform_style_settings_{$form_id}' value='{$style_settings}' />
+		$unique_id      = isset( self::$submission[ $form_id ] ) && rgar( self::$submission[ $form_id ], 'resuming_incomplete_submission' ) == true ? rgar( GFFormsModel::$unique_ids, $form_id ) : GFFormsModel::get_form_unique_id( $form_id );
+		$style_settings = $is_valid_json ? esc_attr( $style_settings ) : '';
+
+		$footer .= "
+            <input type='hidden' class='gform_hidden' name='gform_submission_method' data-js='gform_submission_method_{$form_id}' value='" . self::get_submission_method( $submission_method ) . "' />
+            <input type='hidden' class='gform_hidden' name='gform_theme' data-js='gform_theme_{$form_id}' id='gform_theme_{$form_id}' value='" . esc_attr( $theme ) . "' />
+            <input type='hidden' class='gform_hidden' name='gform_style_settings' data-js='gform_style_settings_{$form_id}' id='gform_style_settings_{$form_id}' value='" . $style_settings . "' />
             <input type='hidden' class='gform_hidden' name='is_submit_{$form_id}' value='1' />
             <input type='hidden' class='gform_hidden' name='gform_submit' value='{$form_id}' />
             {$save_inputs}
@@ -2445,38 +2445,46 @@ class GFFormDisplay {
 		if ( $field->isRequired && self::is_empty( $field, $form['id'] ) ) {
 			// Invalid when marked as required and there is no value.
 			$field->set_required_error( $value );
-		} elseif ( $field->noDuplicates && GFFormsModel::is_duplicate( $form['id'], $field, $value ) ) {
-			// Invalid when the value has been used by an existing entry and duplicate values aren't allowed.
-			$field->failed_validation = true;
-
-			switch ( $field->get_input_type() ) {
-				case 'date' :
-					$message = __( 'This date has already been taken. Please select a new date.', 'gravityforms' );
-					break;
-
-				default:
-					$message = is_array( $value ) ? __( 'This field requires a unique entry and the values you entered have already been used.', 'gravityforms' ) :
-						sprintf( __( "This field requires a unique entry and '%s' has already been used", 'gravityforms' ), $value );
-					break;
-			}
-
+		} elseif ( $field->noDuplicates ) {
 			/**
-			 * Allows the no duplicate validation message to be customized.
+			 * Filter the value checked during duplicate value checks.
 			 *
-			 * @since 1.5
-			 * @since 1.8.5 Added $field and $value params.
-			 * @since 2.7   Moved from GFFormDisplay::validate().
+			 * @since TBD
 			 *
-			 * @param string   $message The no duplicate validation message.
-			 * @param array    $form    The form currently being validated.
-			 * @param GF_Field $field   The field currently being validated.
-			 * @param mixed    $value   The value currently being validated.
+			 * @param string     $value   The value being checked against existing entries for duplicates.
+			 * @param \GF_Field  $field   The field being checked for duplicates.
+			 * @param int        $form_id The ID of the form being checked for duplicates.
 			 */
-			$field->validation_message = gf_apply_filters( array(
-				'gform_duplicate_message',
-				$form['id']
-			), $message, $form, $field, $value );
-
+			$value = apply_filters( 'gform_value_pre_duplicate_check', $value, $field, $form['id'] );
+			if ( GFFormsModel::is_duplicate( $form['id'], $field, $value ) ) {
+					// Invalid when the value has been used by an existing entry and duplicate values aren't allowed.
+				$field->failed_validation = true;
+				switch ( $field->get_input_type() ) {
+					case 'date' :
+						$message = __( 'This date has already been taken. Please select a new date.', 'gravityforms' );
+						break;
+					default:
+						$message = is_array( $value ) ? __( 'This field requires a unique entry and the values you entered have already been used.', 'gravityforms' ) :
+							sprintf( __( "This field requires a unique entry and '%s' has already been used", 'gravityforms' ), $value );
+						break;
+				}
+				/**
+				 * Allows the no duplicate validation message to be customized.
+				 *
+				 * @since 1.5
+				 * @since 1.8.5 Added $field and $value params.
+				 * @since 2.7   Moved from GFFormDisplay::validate().
+				 *
+				 * @param string $message The no duplicate validation message.
+				 * @param array $form The form currently being validated.
+				 * @param GF_Field $field The field currently being validated.
+				 * @param mixed $value The value currently being validated.
+				 */
+				$field->validation_message = gf_apply_filters( array(
+					'gform_duplicate_message',
+					$form['id']
+				), $message, $form, $field, $value );
+			}
 		} elseif ( self::failed_state_validation( $form['id'], $field, $value ) ) {
 			// Invalid when the field or state input values have been tampered with.
 			$field->failed_validation  = true;
@@ -4263,9 +4271,7 @@ class GFFormDisplay {
 		$sublabel_class        = "field_sublabel_{$sublabel_setting}";
 
 		$has_description_class    = ! empty( $field->description ) ? 'gfield--has-description' : 'gfield--no-description';
-		$form_description_setting = rgempty( 'descriptionPlacement', $form ) ? 'below' : $form['descriptionPlacement'];
-		$description_setting      = ! isset( $field->descriptionPlacement ) || empty( $field->descriptionPlacement ) ? $form_description_setting : $field->descriptionPlacement;
-		$description_setting      = $description_setting == 'above' && ( $field->labelPlacement == 'top_label' || $field->labelPlacement == 'hidden_label' || ( empty( $field->labelPlacement ) && $form[ 'labelPlacement' ] == 'top_label' ) ) ? 'above' : 'below';
+		$description_setting      = $field->is_description_above( $form ) ? 'above' : 'below';
 		$description_class        = "field_description_{$description_setting}";
 
 		$form_validation_setting = rgempty( 'validationPlacement', $form ) ? 'below' : $form['validationPlacement'];
@@ -4647,7 +4653,7 @@ class GFFormDisplay {
 		$resume_token = rgpost( 'gform_resume_token' );
 		$resume_token = sanitize_key( $resume_token );
 
-		if ( empty( $form_id ) || empty( $email ) || empty( $resume_token ) || ! GFCommon::is_valid_email( $email ) ) {
+		if ( empty( $form_id ) || ! GFFormDisplay::is_submit_form_id_valid( $form_id ) || empty( $email ) || empty( $resume_token ) || ! GFCommon::is_valid_email( $email ) ) {
 			return;
 		}
 
@@ -4742,8 +4748,8 @@ class GFFormDisplay {
 
 		$action = esc_url( remove_query_arg( 'gf_token' ) );
 
-		$submission_method = rgpost( 'gform_submission_method' );
-		$is_iframe_ajax    = $submission_method == self::SUBMISSION_METHOD_IFRAME;
+		$submission_method = self::get_submission_method();
+		$is_iframe_ajax    = self::is_iframe_submission_method();
 		$anchor            = self::get_anchor( $form, $is_iframe_ajax );
 		$action           .= $anchor['id'];
 
@@ -4763,7 +4769,8 @@ class GFFormDisplay {
 
 		$iframe_ajax_fields = '';
 		if ( $is_iframe_ajax ) {
-			$iframe_ajax_fields  = "<input type='hidden' name='gform_ajax' value='" . esc_attr( "form_id={$form_id}&amp;title=1&amp;description=1&amp;tabindex=1" ) . "' />";
+			$ajax_value         = self::prepare_ajax_input_value( $form_id, true, true, 1 );
+			$iframe_ajax_fields = "<input type='hidden' name='gform_ajax' value='" . esc_attr( $ajax_value ) . "' />";
 			$iframe_ajax_fields .= "<input type='hidden' name='gform_field_values' value='' />";
 		}
 
@@ -5033,6 +5040,11 @@ class GFFormDisplay {
 			return false;
 		}
 
+		if ( is_null( $ajax_form_id ) ) {
+			$ajax_args    = self::parse_ajax_input();
+			$ajax_form_id = is_array( $ajax_args ) ? rgar( $ajax_args, 'form_id', 0 ) : null;
+		}
+
 		if ( $ajax_form_id !== null && absint( $ajax_form_id ) !== $form_id ) {
 			return false;
 		}
@@ -5044,6 +5056,133 @@ class GFFormDisplay {
 		}
 
 		return $form_id;
+	}
+
+	/**
+	 * Returns the safe value of/for the gform_submission_method input.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @param string $method The method or an empty string to get it from the submission.
+	 *
+	 * @return string
+	 */
+	public static function get_submission_method( $method = '' ) {
+		if ( empty( $method ) ) {
+			$method = rgpost( 'gform_submission_method' );
+		}
+
+		return GFCommon::whitelist( $method, array(
+			self::SUBMISSION_METHOD_POSTBACK,
+			self::SUBMISSION_METHOD_IFRAME,
+			self::SUBMISSION_METHOD_AJAX,
+			self::SUBMISSION_METHOD_CUSTOM,
+		) );
+	}
+
+	/**
+	 * Determines if the iframe-based Ajax submission method is in use.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @return bool
+	 */
+	public static function is_iframe_submission_method() {
+		return self::get_submission_method() === self::SUBMISSION_METHOD_IFRAME;
+	}
+
+	/**
+	 * Parses and sanitizes the value of the gform_ajax input.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @param bool $bypass_cache Indicates if the cached arguments should be ignored. Default is false.
+	 *
+	 * @return array|false
+	 */
+	public static function parse_ajax_input( $bypass_cache = false ) {
+		static $args = null;
+
+		if ( ! $bypass_cache && ! is_null( $args ) ) {
+			return $args;
+		}
+
+		$args = false;
+		if ( ! self::is_iframe_submission_method() || ! isset( $_POST['gform_ajax'] ) ) {
+			return false;
+		}
+
+		$args  = array();
+		$value = rgpost( 'gform_ajax' );
+		if ( empty( $value ) || ! is_string( $value ) ) {
+			return array();
+		}
+
+		parse_str( $value, $args );
+
+		if ( empty( $args['form_id'] ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): form_id arg is missing or empty.' );
+			$args = array();
+
+			return $args;
+		}
+
+		if ( empty( $args['hash'] ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): hash arg is missing or empty.' );
+			$args = array();
+
+			return $args;
+		}
+
+		$args['form_id']     = absint( $args['form_id'] );
+		$args['title']       = ! isset( $args['title'] ) || ! empty( $args['title'] );
+		$args['description'] = ! isset( $args['description'] ) || ! empty( $args['description'] );
+		$args['tabindex']    = isset( $args['tabindex'] ) ? absint( $args['tabindex'] ) : 0;
+		$args['theme']       = isset( $args['theme'] ) ? sanitize_text_field( $args['theme'] ) : null;
+		$args['styles']      = isset( $args['styles'] ) ? GFCommon::strip_all_tags_from_json_string( $args['styles'] ) : null;
+
+		$expected_hash = wp_hash( self::prepare_ajax_input_value( $args['form_id'], $args['title'], $args['description'], $args['tabindex'], $args['theme'], $args['styles'], false ) );
+		if ( $args['hash'] !== $expected_hash ) {
+			GFCommon::log_debug( __METHOD__ . '(): args failed hash validation.' );
+			$args = array();
+
+			return $args;
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Prepares the value for the gform_ajax input.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @param int         $form_id             The form ID.
+	 * @param bool        $display_title       Indicates if display of the form title is enabled.
+	 * @param bool        $display_description Indicates if display of the form description is enabled.
+	 * @param int         $tabindex            The starting tabindex.
+	 * @param null|string $theme               Null or the name of the form theme.
+	 * @param null|string $styles              Null or the JSON encoded form styles.
+	 * @param bool        $include_hash        Indicates if the hash should be included.
+	 *
+	 * @return string
+	 */
+	public static function prepare_ajax_input_value( $form_id, $display_title, $display_description, $tabindex, $theme = null, $styles = null, $include_hash = true ) {
+		$value = "form_id={$form_id}&amp;title={$display_title}&amp;description={$display_description}&amp;tabindex={$tabindex}";
+
+		if ( ! empty( $theme ) ) {
+			$value .= '&amp;theme=' . $theme;
+		}
+
+		if ( ! empty( $styles ) ) {
+			$value .= '&amp;styles=' . $styles;
+		}
+
+		if ( $include_hash ) {
+			$value .= '&amp;hash=' . wp_hash( $value );
+		}
+
+		return $value;
 	}
 
 	/**

@@ -65,6 +65,15 @@ abstract class GFFeedAddOn extends GFAddOn {
 	protected $_bypass_feed_delay = false;
 
 	/**
+	 * Indicates if the add-on supports processing feeds multiple times for the same entry.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @var bool
+	 */
+	protected $_supports_feed_reprocessing = true;
+
+	/**
 	 * An array of properties relating to the delayed payment functionality.
 	 *
 	 * Set by passing the array to `$this->add_delayed_payment_support()` in `init()`.
@@ -96,6 +105,21 @@ abstract class GFFeedAddOn extends GFAddOn {
 	 * @var array Tables where table error has been rendered.
 	 */
 	private $_table_error_rendered = array();
+
+	/**
+	 * Gets all active, registered feed add-ons.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @return (GFFeedAddOn|GFPaymentAddOn)[]
+	 */
+	public static function get_registered_feed_addons() {
+		$addons = GFAddOn::get_registered_addons( true, true );
+
+		return array_filter( $addons, function ( $addon ) {
+			return $addon instanceof GFFeedAddOn;
+		} );
+	}
 
 	/**
 	 * Attaches any filters or actions needed to bootstrap the addon.
@@ -398,7 +422,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 					gform_update_meta( $entry['id'], "{$this->get_slug()}_is_fulfilled", true );
 
 					// Adding this feed to the list of processed feeds
-					$processed_feeds[] = $feed['id'];
+					$processed_feeds[] = (int) $feed['id'];
 				}
 
 			} else {
@@ -414,21 +438,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		// If any feeds were processed, save the processed feed IDs.
 		if ( ! empty( $processed_feeds ) ) {
-
-			// Get current processed feeds.
-			$meta = gform_get_meta( $entry['id'], 'processed_feeds' );
-
-			// If no feeds have been processed for this entry, initialize the meta array.
-			if ( empty( $meta ) ) {
-				$meta = array();
-			}
-
-			// Add this Add-On's processed feeds to the entry meta.
-			$meta[ $this->get_slug() ] = $processed_feeds;
-
-			// Update the entry meta.
-			gform_update_meta( $entry['id'], 'processed_feeds', $meta );
-
+			GFAPI::update_processed_feeds_meta( $entry['id'], $this->get_slug(), $processed_feeds, rgar( $form, 'id' ) );
 		}
 
 		// Return the entry object.
@@ -512,6 +522,21 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		return $is_asynchronous;
 
+	}
+
+	/**
+	 * Determines if the add-on supports processing feeds multiple times for the same entry (e.g. by the async processor).
+	 *
+	 * @since 2.9.2
+	 *
+	 * @param array $feed  The feed to be processed
+	 * @param array $entry The entry being processed.
+	 * @param array $form  The form that the entry belongs to
+	 *
+	 * @return bool
+	 */
+	public function is_reprocessing_supported( $feed, $entry, $form ) {
+		return $this->_supports_feed_reprocessing;
 	}
 
 	/**

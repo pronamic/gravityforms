@@ -137,17 +137,19 @@ class GFAutoUpgrade {
 			$option->response[ $this->_path ] = new stdClass();
 		}
 
+		$new_version = rgar( $version_info, 'version', '0' );
+
 		$plugin = array(
 			'plugin'      => $this->_path,
 			'url'         => $this->_url,
 			'slug'        => $this->_slug,
 			'package'     => $version_info['url'] ? str_replace( '{KEY}', $key, $version_info['url'] ) : '',
-			'new_version' => $version_info['version'],
+			'new_version' => $new_version,
 			'id'          => '0',
 		);
 
 		//Empty response means that the key is invalid. Do not queue for upgrade
-		if ( ! rgar( $version_info, 'is_valid_key' ) || version_compare( $this->_version, $version_info['version'], '>=' ) ) {
+		if ( ! rgar( $version_info, 'is_valid_key' ) || version_compare( $this->_version, $new_version, '>=' ) ) {
 			unset( $option->response[ $this->_path ] );
 			$option->no_update[ $this->_path ] = (object) $plugin;
 		} else {
@@ -209,9 +211,13 @@ class GFAutoUpgrade {
 	private function get_version_info( $offering, $use_cache = true ) {
 
 		$version_info = GFCommon::get_version_info( $use_cache );
-		$is_valid_key = rgar( $version_info, 'is_valid_key' ) && rgars( $version_info, "offerings/{$offering}/is_available" );
 
-		$info = array( 'is_valid_key' => $is_valid_key, 'version' => rgars( $version_info, "offerings/{$offering}/version" ), 'url' => rgars( $version_info, "offerings/{$offering}/url" ) );
+		$info = array( 
+			'is_valid_key' => rgar( $version_info, 'is_valid_key' ),
+			'version'      => rgars( $version_info, "offerings/{$offering}/version" ),
+			'url'          => rgars( $version_info, "offerings/{$offering}/url" ),
+			'is_available' => rgars( $version_info, "offerings/{$offering}/is_available" ),
+		);
 
 		return $info;
 	}
