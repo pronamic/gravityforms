@@ -60,23 +60,42 @@ class GFCommon {
 
 	public static function is_numeric( $value, $number_format = '' ) {
 
-		if ( $number_format == 'currency' ) {
-			$number_format = self::is_currency_decimal_dot() ? 'decimal_dot' : 'decimal_comma';
-			$value         = self::remove_currency_symbol( $value );
+		// Keep support for a blank $number_format for backwards compatibility.
+		if ( empty( $number_format ) ) {
+			return preg_match( "/^(-?[0-9]{0,3}(?:,?[0-9]{3})*(?:\.[0-9]{1,2})?)$/", $value ) || preg_match( "/^(-?[0-9]{0,3}(?:\.?[0-9]{3})*(?:,[0-9]{2})?)$/", $value );
 		}
 
-		switch ( $number_format ) {
-			case 'decimal_dot':
-				return preg_match( "/^(-?[0-9]{1,3}(?:,?[0-9]{3})*(?:\.[0-9]+)?)$/", $value );
-				break;
+		// Removing currency symbol for currency format.
+		if ( $number_format == 'currency' ) {
+			$value = self::remove_currency_symbol( $value );
+		}
 
+		// Getting separators.
+		$separators    = self::get_number_separators( $number_format );
+		$thousands_sep = $separators['thousand'] === '.' ? '\.' : $separators['thousand'];
+		$decimal_sep   = $separators['decimal'] === '.' ? '\.' : $separators['decimal'];
+
+		return rgblank( $value ) ? false : preg_match( "/^(-?[0-9]{1,3}(?:{$thousands_sep}?[0-9]{3})*(?:{$decimal_sep}[0-9]+)?)$/", $value );
+	}
+
+	/**
+	 * Returns the decimal and thousands separators for the specified number format.
+	 *
+	 * @since 2.9.3
+	 *
+	 * @param string $number_format The number format to get the separators for.
+	 *
+	 * @return array Returns an array containing the decimal and thousands separators.
+	 */
+	public static function get_number_separators( $number_format ) {
+		switch( $number_format ) {
+			case 'currency':
+				$currency = RGCurrency::get_currency( self::get_currency() );
+				return array( 'decimal' => rgar( $currency, 'decimal_separator', '.' ), 'thousand' => rgar( $currency, 'thousand_separator', ',' ) );
 			case 'decimal_comma':
-				return preg_match( "/^(-?[0-9]{1,3}(?:\.?[0-9]{3})*(?:,[0-9]+)?)$/", $value );
-				break;
-
+				return array( 'decimal' => ',', 'thousand' => '.' );
 			default:
-				return preg_match( "/^(-?[0-9]{0,3}(?:,?[0-9]{3})*(?:\.[0-9]{1,2})?)$/", $value ) || preg_match( "/^(-?[0-9]{0,3}(?:\.?[0-9]{3})*(?:,[0-9]{2})?)$/", $value );
-
+				return array( 'decimal' => '.', 'thousand' => ',' );
 		}
 	}
 
@@ -131,16 +150,19 @@ class GFCommon {
 			$currency = RGCurrency::get_currency( $code );
 		}
 
+		// Removing left symbol
 		if ( ! empty( $currency['symbol_left'] ) ) {
 			$value = str_replace( $currency['symbol_left'], '', $value );
 		}
 
+		// Removing right symbol
 		if ( ! empty( $currency['symbol_right'] ) ) {
 			$value = str_replace( $currency['symbol_right'], '', $value );
 		}
 
-		// Some symbols can't be easily matched up, so this will catch any of them.
-		$value = preg_replace( '/[^,.\d]/', '', $value );
+		// Some symbols can't be easily matched up, so this will catch any of them. Removes all non-numeric characters (except the decimal separator) from the beginning and end of the string.
+		$ds = rgar( $currency, 'decimal_separator', '.' );
+		$value = preg_replace("/(^[^{$ds}\d]*)|([^{$ds}\d]*$)/", '', $value);
 
 		return $value;
 	}
@@ -333,7 +355,7 @@ class GFCommon {
 			}
 		}
 
-		//Removing thousand separators but keeping decimal point
+		//Removing thousands separators but keeping decimal point
 		$array = str_split( $clean_number );
 		for ( $i = 0, $count = sizeof( $array ); $i < $count; $i ++ ) {
 			$char = $array[ $i ];
@@ -346,6 +368,13 @@ class GFCommon {
 			}
 		}
 
+		// Adding leading zero if number starts with a decimal char.
+		$starts_with_separator = strpos( $float_number, '.' ) === 0 || strpos( $float_number, ',' ) === 0;
+		if ( $starts_with_separator ) {
+			$float_number = '0' . $float_number;
+		}
+
+		// Adding negative sign if number is negative.
 		if ( $is_negative ) {
 			$float_number = '-' . $float_number;
 		}
@@ -5225,7 +5254,7 @@ Content-Type: text/html;
 			foreach ( $matches as $match ) {
 
 				list( $text, $input_id ) = $match;
-				$value   = self::get_calculation_value( $input_id, $form, $lead, $number_format );
+				$value   = self::get_calculation_value( $input_id, $form, $lead, $number_format, rgar( $match, 4 )  );
 				$value   = apply_filters( 'gform_merge_tag_value_pre_calculation', $value, $input_id, rgar( $match, 4 ), $field, $form, $lead );
 				$formula = str_replace( $text, $value, $formula );
 
@@ -5268,10 +5297,25 @@ Content-Type: text/html;
 
 		return $number;
 	}
+	
+	/**
+	 * Gets the calculation value for a specific field.
+	 *
+	 * @since unknown
+	 *
+	 * @since 2.9.3 Added the $modifier parameter.
+	 *
+	 * @param int    $field_id      The ID of the field.
+	 * @param array  $form          The form object.
+	 * @param array  $lead          The lead object.
+	 * @param string $number_format The number format.
+	 * @param string $modifier      The modifier.
+	 *
+	 * @return float|int The calculation value.
+	 */
+	public static function get_calculation_value( $field_id, $form, $lead, $number_format = '', $modifier = '' ) {
 
-	public static function get_calculation_value( $field_id, $form, $lead, $number_format = '' ) {
-
-		$filters = array( 'price', 'value', '' );
+		$filters = $modifier ? array( $modifier ) : array( 'price', 'value', '' );
 		$value   = false;
 
 		$field            = RGFormsModel::get_field( $form, $field_id );
@@ -5344,7 +5388,7 @@ Content-Type: text/html;
 	 * @param string $text          The text to be formatted.
 	 * @param string $operation     The conditional logic operation to be performed. (i.e. >, <, ...)
 	 * @param string $number_format How the $text parameter is formatted. (i.e. currency, decimal_dot, ...).
-     * NOTE: This parameter is optional for backwards compatibility, but it is recommended to always specify it. When not specified, the method will "best guess" the format based on the $text parameter and the default currency of the site.
+	 * NOTE: This parameter is optional for backwards compatibility, but it is recommended to always specify it. When not specified, the method will "best guess" the format based on the $text parameter and the default currency of the site.
 	 *
 	 * @return int|mixed|string Returns a number formatted as a float.
 	 */
@@ -5360,18 +5404,47 @@ Content-Type: text/html;
 			return $text;
 		}
 
-		// If number format is specified, format number if $text is numeric for this format. Otherwise, return $text as is.
-		if ( $number_format ) {
-			return GFCommon::is_numeric( $text, $number_format ) ? GFCommon::clean_number( $text, $number_format ) : $text;
+		// For product and option fields with pipe-delimited values, use the first value.
+		if ( strpos( $text, '|' ) !== false ) {
+			$text = explode( '|', $text )[0];
 		}
 
-		// If number format is not specified, set it to currency if $text is numeric for the current currency. Otherwise, use decimal_dot.
-		$number_format = GFCommon::is_numeric( $text, 'currency' ) ? 'currency' : 'decimal_dot';
+		// Add leading zero if necessary.
+		$text = GFCommon::maybe_add_leading_zero( $text );
 
-		// Return the formatted number, or 0 if number is not numeric for the format.
-		return GFCommon::is_numeric( $text, $number_format ) ? GFCommon::clean_number( $text, $number_format ) : 0;
+		// If number format is not specified, best guess the format based on $text.
+		if ( ! $number_format ) {
+			// If number format is not specified, set it to currency if $text is numeric for the current currency. Otherwise, use decimal_dot.
+			$number_format = GFCommon::is_numeric( $text, 'currency' ) ? 'currency' : 'decimal_dot';
+		}
+
+		// If the number is numeric for the specified number_format, return the formatted number.
+		if ( GFCommon::is_numeric( $text, $number_format ) ) {
+			return GFCommon::clean_number( $text, $number_format );
+		}
+
+		// If the number is formatted as date or time, return it as is.
+		if ( GFCommon::is_date_time_formatted( $text ) ) {
+			return $text;
+		}
+
+		// Return 0 if the text is not numeric.
+		return 0;
 	}
 
+	/**
+	 * Determines if the specified text is formatted as a date or time.
+	 *
+	 * @since 2.9.3
+	 *
+	 * @param string $text The text to be evaluated.
+	 *
+	 * @return bool Returns true if $text is formatted as a date or time, false otherwise.
+	 */
+	public static function is_date_time_formatted( $text ) {
+		$result = date_parse( $text );
+		return $result['error_count'] === 0 && $result['warning_count'] === 0;
+	}
 
 	public static function is_valid_for_calcuation( $field ) {
 

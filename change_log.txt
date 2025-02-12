@@ -1,3 +1,21 @@
+### 2.9.3 | 2025-02-11
+- Added the [`gform_file_upload_tmp_dir`](http://docs.gravityforms.com/gform_file_upload_tmp_dir/) filter to allow developers to change the temporary directory used for file uploads.
+- Fixed an issue with conditional logic for numbers formatted as date or time.
+- Fixed an issue that causes the entry list to sometimes have display problems on mobile screens.
+- Fixed an issue where some icons are missing in compact view in the form editor.
+- Fixed an issue where Ajax submissions can abort when the field values block setting contains multiple parameters or when using a tabindex of -1.
+- Fixed an issue where Ajax submissions can abort when a third-party embed method passes a string instead of a boolean as the value of the $display_title or $display_description arguments of the gravity_form function.
+- Fixed an issue where calculations based on an Image Choice field only run if you click the input, not the image.
+- Fixed an issue where the form list page throws a JavaScript error if the user does not have the `gravityforms_create_form` capability.
+- Fixed an issue that allows the File Upload Field to bypass validation checks when using a maximum file constraint.
+- Fixed an issue where the `:value` of product fields in calculations uses price upon submission.
+- Fixed an issue where changing the 'gform_sticky_admin_messages' database values can cause a fatal error.
+- Fixed an issue with product fields that do not update the total when the markup is updated via custom code.
+- Removed "send you a birthday cake" custom validation message from template library forms.
+- Updated handling of images for the Image Choice field so that thumbnail sizes are only generated for images used in the field.
+- Updated the form preview to use the Orbital theme.
+- API: Updated the React components to support the use of the newly created internal component icon kit.
+
 ### 2.9.2 | 2025-01-16
 - Added a screen reader announcement to the form editor when a new field is added to a form for improved accessibility.
 - Added security enhancements. Credit: mikemyers via Wordfence.

@@ -29,7 +29,7 @@ return array(
 					'id'                    => 1,
 					'isRequired'            => true,
 					'size'                  => 'medium',
-					'errorMessage'          => 'We need to know your name. What if we wanted to send you a birthday cake?',
+					'errorMessage'          => '',
 					'label'                 => esc_html__( 'Name', 'gravityforms' ),
 					'inputs'                => array(
 						array(
@@ -153,7 +153,7 @@ return array(
 					'id'                    => 2,
 					'isRequired'            => true,
 					'size'                  => 'large',
-					'errorMessage'          => 'please supply a valid email address',
+					'errorMessage'          => 'Please supply a valid email address',
 					'label'                 => esc_html__( 'Email', 'gravityforms' ),
 					'formId'                => 84,
 					'inputType'             => '',
@@ -468,7 +468,7 @@ return array(
 					'id'                    => 1,
 					'isRequired'            => true,
 					'size'                  => 'medium',
-					'errorMessage'          => 'We need to know your name. What if we wanted to send you a birthday cake?',
+					'errorMessage'          => '',
 					'label'                 => esc_html__( 'Your Name', 'gravityforms' ),
 					'inputs'                => array(
 						array(

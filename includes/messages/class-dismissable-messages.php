@@ -115,8 +115,10 @@ class Dismissable_Messages {
 		if ( ! $messages ) {
 			$messages        = self::$dismissible_messages;
 			$sticky_messages = $this->get_sticky_messages();
-			$messages        = array_merge( $messages, $sticky_messages );
-			$messages        = array_values( $messages );
+			if ( is_array( $sticky_messages ) ) {
+				$messages = array_merge( $messages, $sticky_messages );
+				$messages = array_values( $messages );
+			}
 		}
 
 		if ( empty( $page ) ) {

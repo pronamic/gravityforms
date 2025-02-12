@@ -12,6 +12,18 @@ class GF_Field_Image_Choice extends GF_Field_Multiple_Choice {
 
 	public $checkbox_choice;
 
+	public function __construct( $data = array() ) {
+		if ( ! has_action( 'gform_after_save_form', array( __class__, 'resize_images' ) ) ) {
+			add_action( 'gform_after_save_form', array( __class__, 'resize_images' ), 10, 2 );
+		}
+
+		if ( ! has_action( 'gform_forms_post_import', array( __class__, 'resize_images_after_import' ) ) ) {
+			add_action( 'gform_forms_post_import', array( __class__, 'resize_images_after_import' ), 10, 2 );
+		}
+
+		parent::__construct( $data );
+	}
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Image Choice', 'gravityforms' );
 	}
@@ -58,6 +70,64 @@ class GF_Field_Image_Choice extends GF_Field_Multiple_Choice {
 			'image_choice_ui_show_label_setting'
 		);
 	}
+
+	/*
+	 * Generate the needed image sizes for the image choice field.
+	 *
+	 * @since 2.9.3
+	 *
+	 * @param array $form The form.
+	 * @param bool $is_new_form Is the form new.
+	 */
+	public static function resize_images( $form, $is_new_form ) {
+
+		// Put our registered image sizes back temporarily.
+		remove_filter( 'intermediate_image_sizes_advanced', array( 'GFForms', 'remove_image_sizes' ) );
+
+		$image_sizes = GFForms::get_image_sizes();
+
+		foreach ( $form['fields'] as $field ) {
+			if ( $field->type == 'image_choice' ) {
+				foreach ( $field->choices as $choice ) {
+					if ( rgar( $choice, 'attachment_id' ) ) {
+						// get the image to check if it has already been resized or not
+						$image = wp_get_attachment_image_src(
+							$choice['attachment_id'],
+							'gform-' .  key( $image_sizes )
+						);
+
+						if ( is_array( $image ) && $image[3] === false ) {
+							GFCommon::log_debug( __METHOD__ . '(): Resizing image attachment id ' . $choice['attachment_id'] . ' for the image choice field in form ' . $form['id'] );
+							$file_path   = get_attached_file( $choice['attachment_id'] );
+							$attach_data = wp_generate_attachment_metadata( $choice['attachment_id'], $file_path );
+							wp_update_attachment_metadata( $choice['attachment_id'], $attach_data );
+						}
+					}
+				}
+			}
+		}
+
+		// Take our registered image sizes back out
+		add_filter( 'intermediate_image_sizes_advanced', array( 'GFForms', 'remove_image_sizes' ), 10, 2 );
+	}
+
+	/**
+	 * Trigger the resizing of images after form import.
+	 *
+	 * @since 2.9.3
+	 *
+	 * @param array $forms The forms being imported.
+	 */
+	public static function resize_images_after_import( $forms ) {
+		if ( ! rgpost( 'gf_import_media' ) ) {
+			return;
+		}
+
+		foreach ( $forms as $form ) {
+			self::resize_images( $form, false );
+		}
+	}
+
 
 	/**
 	 * Get the choice labels visibility setting default for the image choice field.

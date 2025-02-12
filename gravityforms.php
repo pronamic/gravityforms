@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.2
+Version: 2.9.3
 Requires at least: 4.0
 Requires PHP: 5.6
 Author: Gravity Forms
@@ -13,7 +13,7 @@ Text Domain: gravityforms
 Domain Path: /languages
 
 ------------------------------------------------------------------------
-Copyright 2009-2024 Rocketgenius, Inc.
+Copyright 2009-2025 Rocketgenius, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -209,6 +209,7 @@ add_filter( 'tiny_mce_before_init', array( 'GFForms', 'modify_tiny_mce_4' ), 20 
 add_filter( 'user_has_cap', array( 'RGForms', 'user_has_cap' ), 10, 4 );
 add_filter( 'plugin_auto_update_setting_html', array( 'GFForms', 'auto_update_message' ), 9, 3 );
 add_filter( 'plugin_auto_update_debug_string', array( 'GFForms', 'auto_update_debug_message' ), 10, 4 );
+add_filter( 'intermediate_image_sizes_advanced', array( 'GFForms', 'remove_image_sizes' ), 10, 2 );
 
 // Hooks for no-conflict functionality
 if ( is_admin() && ( GFForms::is_gravity_page() || GFForms::is_gravity_ajax_action() ) ) {
@@ -247,7 +248,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.2';
+	public static $version = '2.9.3';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -6788,14 +6789,13 @@ class GFForms {
 	}
 
 	/**
- 	 * Add Gravity Forms image sizes.
+	 * Retrieve a list of the image sizes to be registered.
 	 *
-	 * @since 2.9
-	 *
-	 * @return void
+	 * @since 2.9.2
+ 	 *
+ 	 * @return array $image_sizes The array of image sizes with their respective attributes.
 	 */
-	public static function register_image_sizes() {
-
+	public static function get_image_sizes() {
 		/**
 		 * Filters the Gravity Forms image sizes.
 		 *
@@ -6821,9 +6821,43 @@ class GFForms {
 			),
 		) );
 
+		return $image_sizes;
+	}
+
+	/**
+ 	 * Add Gravity Forms image sizes.
+	 *
+	 * @since 2.9
+	 *
+	 * @return void
+	 */
+	public static function register_image_sizes() {
+		$image_sizes = self::get_image_sizes();
+
 		foreach ( $image_sizes as $size => $attributes ) {
 			add_image_size( 'gform-' . $size, $attributes['width'], $attributes['height'], $attributes['crop'] );
 		}
+	}
+
+	/*
+	 * We registered image sizes, but we don't actually want to use these image
+	 * sizes unless a form has image choices, so we're going to remove them here
+	 * and put them back when we need them.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @param array $sizes The array of image sizes with their respective attributes.
+	 *
+	 * @return array $sizes The array of image sizes with their respective attributes.
+	 */
+	public static function remove_image_sizes( $sizes ) {
+		$gf_sizes = self::get_image_sizes();
+
+		foreach( $gf_sizes as $size => $attributes ) {
+			unset( $sizes[ 'gform-' . $size ] );
+		}
+
+		return $sizes;
 	}
 
 	/**

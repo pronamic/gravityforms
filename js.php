@@ -1554,6 +1554,8 @@ if ( ! class_exists( 'GFForms' ) ) {
 						replace:         '<?php _e( 'Replace', 'gravityforms' ); ?>',
 						delete:          '<?php _e( 'Delete', 'gravityforms' ); ?>',
 					},
+					uploadIcon: 'photograph',
+					uploadIconPrefix: 'gform-common-icon',
 				} ) + "'></div>";
 			}
 

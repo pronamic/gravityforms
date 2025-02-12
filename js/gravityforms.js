@@ -2204,8 +2204,14 @@ var GFCalc = function(formId, formulaFields){
                 jQuery(input).click(function(){
                     calcObj.bindCalcEvent(inputId, formulaField, formId, 0);
                 });
-            } else
-            if(input.is('select') || input.prop('type') == 'hidden') {
+                // Bind calc event to the image in an image choice field.
+                var imageChoice = input.closest('.gfield--type-image_choice .gchoice');
+                if ( imageChoice.length > 0 ) {
+                    jQuery(imageChoice).click(function(){
+                    	calcObj.bindCalcEvent(inputId, formulaField, formId, 0);
+                    });
+                }
+            } else if(input.is('select') || input.prop('type') == 'hidden') {
                 jQuery(input).change(function(){
                     calcObj.bindCalcEvent(inputId, formulaField, formId, 0);
                 });

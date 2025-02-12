@@ -7,7 +7,8 @@ if ( ! class_exists( 'GFForms' ) ) {
 
 class GF_Field_Total extends GF_Field {
 
-	public $type = 'total';
+	public $type         = 'total';
+	public $numberFormat = 'currency'; // This is used to property format the total during conditional logic evaluation.
 
 	function get_form_editor_field_settings() {
 		return array(

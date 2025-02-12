@@ -1451,6 +1451,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 					$columns = GFCommon::json_decode( stripslashes( $_POST['grid_columns'] ), true );
 					RGFormsModel::update_grid_column_meta( $form_id, $columns );
 					$this->_grid_columns = null;
+					$this->primary_column_name = null;
 					$this->set_columns();
 					break;
 

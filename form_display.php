@@ -397,7 +397,8 @@ class GFFormDisplay {
 		GFCommon::log_debug( "GFFormDisplay::upload_files(): Upload path {$form_upload_path}" );
 
 		//Creating temp folder if it does not exist
-		$target_path = $form_upload_path . '/tmp/';
+		$tmp_location  = GFFormsModel::get_tmp_upload_location( $form['id'] );
+		$target_path   = $tmp_location['path'];
 		if ( ! is_dir( $target_path ) && wp_mkdir_p( $target_path ) ) {
 			GFCommon::recursive_add_index_file( $target_path );
 		}
@@ -822,9 +823,7 @@ class GFFormDisplay {
 		// If form is legacy, return that early to avoid calculating orbital styles.
 		if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
 			$slug = 'legacy';
-		} elseif ( $is_wp_dashboard || GFCommon::is_preview() ) {
-			$slug = 'gravity-theme';
-		} elseif ( GFCommon::is_form_editor() ) {
+		} elseif ( $is_wp_dashboard || GFCommon::is_preview() || GFCommon::is_form_editor() ) {
 			$slug = 'orbital';
 		} elseif ( isset( $form['theme'] ) ) {
 			$slug = $form['theme'];
@@ -1021,6 +1020,9 @@ class GFFormDisplay {
 		if ( empty( $form_args['form_id'] ) ) {
 			return self::get_form_not_found_html( $form_id, $ajax );
 		}
+
+		$form_args['display_title']       = ! isset( $form_args['display_title'] ) || ! empty( $form_args['display_title'] );
+		$form_args['display_description'] = ! isset( $form_args['display_description'] ) || ! empty( $form_args['display_description'] );
 
 		// phpcs:ignore
 		extract( $form_args );
@@ -1734,10 +1736,12 @@ class GFFormDisplay {
 
 		$footer .= $previous_button . ' ' . $button_input . ' ' . $save_button;
 
-		$tabindex = (int) $tabindex;
+		$tabindex = intval( $tabindex );
 
 		// Make sure style settings are valid JSON.
-		$is_valid_json = empty( $style_settings ) ? null : json_decode( $style_settings );
+		$style_settings = self::validate_form_styles( $style_settings );
+		$style_settings = is_array( $style_settings ) ? json_encode( $style_settings ) : null;
+		$is_valid_json  = is_string( $style_settings );
 
 		if ( $ajax ) {
 			$ajax_value = self::prepare_ajax_input_value( $form_id, $display_title, $display_description, $tabindex, $theme, $is_valid_json ? $style_settings : null );
@@ -2014,19 +2018,19 @@ class GFFormDisplay {
 	 * @return false|void
 	 */
 	public static function clean_up_files( $form, $is_submission = true ) {
+		$tmp_location  = GFFormsModel::get_tmp_upload_location( $form['id'] );
+		$target_path   = $tmp_location['path'];
+
 		if ( $is_submission ) {
 			$unique_form_id = rgpost( 'gform_unique_id' );
 			if ( ! ctype_alnum( $unique_form_id ) ) {
 				return false;
 			}
-			$target_path = GFFormsModel::get_upload_path( $form['id'] ) . '/tmp/';
 			$filename    = $unique_form_id . '_input_*';
 			$files       = GFCommon::glob( $filename, $target_path );
 			if ( is_array( $files ) ) {
 				array_map( 'unlink', $files );
 			}
-		} else {
-			$target_path = GFFormsModel::get_upload_path( $form['id'] ) . '/tmp/';
 		}
 
 		// clean up files from abandoned submissions older than 48 hours (30 days if Save and Continue is enabled)
@@ -5137,7 +5141,7 @@ class GFFormDisplay {
 		$args['form_id']     = absint( $args['form_id'] );
 		$args['title']       = ! isset( $args['title'] ) || ! empty( $args['title'] );
 		$args['description'] = ! isset( $args['description'] ) || ! empty( $args['description'] );
-		$args['tabindex']    = isset( $args['tabindex'] ) ? absint( $args['tabindex'] ) : 0;
+		$args['tabindex']    = isset( $args['tabindex'] ) ? intval( $args['tabindex'] ) : 0;
 		$args['theme']       = isset( $args['theme'] ) ? sanitize_text_field( $args['theme'] ) : null;
 		$args['styles']      = isset( $args['styles'] ) ? GFCommon::strip_all_tags_from_json_string( $args['styles'] ) : null;
 
@@ -5379,11 +5383,11 @@ class GFFormDisplay {
 	 *
 	 * @param mixed $styles Array or JSON string of styles.
 	 *
-	 * @return array|bool $styles
+	 * @return array|bool|null $styles
 	 */
 	public static function validate_form_styles( $styles ) {
-		if ( $styles === false ) {
-			return false;
+		if ( $styles === false || is_null( $styles ) ) {
+			return $styles;
 		}
 
 		if ( ! is_array( $styles ) ) {

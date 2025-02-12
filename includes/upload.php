@@ -49,7 +49,8 @@ class GFAsyncUpload {
 			die();
 		}
 
-		$target_dir = GFFormsModel::get_upload_path( $form_id ) . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+		$tmp_location = GFFormsModel::get_tmp_upload_location( $form['id'] );
+		$target_dir   = $tmp_location['path'];
 
 		if ( ! is_dir( $target_dir ) ) {
 			if ( ! wp_mkdir_p( $target_dir ) ) {

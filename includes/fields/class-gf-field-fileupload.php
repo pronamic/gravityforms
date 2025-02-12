@@ -202,7 +202,9 @@ class GF_Field_FileUpload extends GF_Field {
 				}
 			}
 			$single_file_name = $_FILES[ $input_name ]['name'];
-			$file_names = array( array( 'uploaded_filename' => $single_file_name ) );
+			if ( ! empty( $single_file_name ) ) {
+				$file_names[] = array( 'uploaded_filename' => $single_file_name );
+			}
 		}
 
 		foreach ( $file_names as $file_name ) {
@@ -223,6 +225,21 @@ class GF_Field_FileUpload extends GF_Field {
 				}
 			}
 		}
+
+		if ( ( $this->multipleFiles && ! rgblank( $this->maxFiles ) ) || ( ! $this->multipleFiles && $this->type !== 'post_image' ) ) {
+			$limit = $this->multipleFiles ? absint( $this->maxFiles ) : 1;
+			$count = count( $file_names );
+			if ( ! empty( $value ) ) {
+				$entry_files   = is_array( $value ) ? $value : json_decode( $value, true );
+				$count       += is_array( $entry_files ) ? count( $entry_files ) : 1;
+			}
+
+			if ( $count && $count > $limit ) {
+				$this->failed_validation  = true;
+				$this->validation_message = empty( $this->errorMessage ) ? sprintf( esc_html__( 'Maximum number of files (%d) exceeded.', 'gravityforms' ), $limit ) : $this->errorMessage;
+			}
+		}
+
 		GFCommon::log_debug( __METHOD__ . '(): Validation complete.' );
 	}
 
@@ -467,7 +484,8 @@ class GF_Field_FileUpload extends GF_Field {
 
 	public function is_value_submission_empty( $form_id ) {
 		$input_name = 'input_' . $this->id;
-		$tmp_path   = GFFormsModel::get_upload_path( $form_id ) . '/tmp/';
+		$tmp_location = GFFormsModel::get_tmp_upload_location( $form_id );
+		$tmp_path     = $tmp_location['path'];
 
 		if ( $this->multipleFiles ) {
 			$uploaded_files = GFFormsModel::$uploaded_files[ $form_id ];
@@ -599,7 +617,8 @@ class GF_Field_FileUpload extends GF_Field {
 						continue;
 					}
 
-					$temp_filepath = GFFormsModel::get_upload_path( $form_id ) . '/tmp/' . wp_basename( $file_info['temp_filename'] );
+					$tmp_location  = GFFormsModel::get_tmp_upload_location( $form_id );
+					$temp_filepath = $tmp_location['path'] . wp_basename( $file_info['temp_filename'] );
 					if ( $file_info && file_exists( $temp_filepath ) ) {
 						$uploaded_files[ $i ] = $this->move_temp_file( $form_id, $file_info );
 					}
@@ -902,8 +921,10 @@ class GF_Field_FileUpload extends GF_Field {
 
 	public function move_temp_file( $form_id, $tempfile_info ) {
 
-		$target = GFFormsModel::get_file_upload_path( $form_id, $tempfile_info['uploaded_filename'] );
-		$source = GFFormsModel::get_upload_path( $form_id ) . '/tmp/' . wp_basename( $tempfile_info['temp_filename'] );
+		$target       = GFFormsModel::get_file_upload_path( $form_id, $tempfile_info['uploaded_filename'] );
+		$tmp_location = GFFormsModel::get_tmp_upload_location( $form_id );
+		$source       = $tmp_location['path'] . wp_basename( $tempfile_info['temp_filename'] );
+
 
 		GFCommon::log_debug( __METHOD__ . '(): Moving temp file from: ' . $source );
 
