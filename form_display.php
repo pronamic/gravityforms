@@ -2453,41 +2453,49 @@ class GFFormDisplay {
 			/**
 			 * Filter the value checked during duplicate value checks.
 			 *
-			 * @since TBD
+			 * @since 2.9.2
 			 *
 			 * @param string     $value   The value being checked against existing entries for duplicates.
 			 * @param \GF_Field  $field   The field being checked for duplicates.
 			 * @param int        $form_id The ID of the form being checked for duplicates.
 			 */
 			$value = apply_filters( 'gform_value_pre_duplicate_check', $value, $field, $form['id'] );
+
 			if ( GFFormsModel::is_duplicate( $form['id'], $field, $value ) ) {
-					// Invalid when the value has been used by an existing entry and duplicate values aren't allowed.
+				// Invalid when the value has been used by an existing entry and duplicate values aren't allowed.
 				$field->failed_validation = true;
+
 				switch ( $field->get_input_type() ) {
 					case 'date' :
-						$message = __( 'This date has already been taken. Please select a new date.', 'gravityforms' );
+						$message = esc_html__( 'This date has already been taken. Please select a new date.', 'gravityforms' );
 						break;
+
 					default:
-						$message = is_array( $value ) ? __( 'This field requires a unique entry and the values you entered have already been used.', 'gravityforms' ) :
-							sprintf( __( "This field requires a unique entry and '%s' has already been used", 'gravityforms' ), $value );
+						$message = is_array( $value ) ? esc_html__( 'This field requires a unique entry and the values you entered have already been used.', 'gravityforms' ) :
+							sprintf( esc_html__( "This field requires a unique entry and '%s' has already been used", 'gravityforms' ), $value );
 						break;
 				}
+
 				/**
 				 * Allows the no duplicate validation message to be customized.
-				 *
-				 * @since 1.5
-				 * @since 1.8.5 Added $field and $value params.
-				 * @since 2.7   Moved from GFFormDisplay::validate().
 				 *
 				 * @param string $message The no duplicate validation message.
 				 * @param array $form The form currently being validated.
 				 * @param GF_Field $field The field currently being validated.
 				 * @param mixed $value The value currently being validated.
+				 *
+				 * @since 1.8.5 Added $field and $value params.
+				 * @since 2.7   Moved from GFFormDisplay::validate().
+				 *
+				 * @since 1.5
 				 */
 				$field->validation_message = gf_apply_filters( array(
 					'gform_duplicate_message',
 					$form['id']
 				), $message, $form, $field, $value );
+			} else {
+				// Running the field type specific validation.
+				$field->validate( $value, $form );
 			}
 		} elseif ( self::failed_state_validation( $form['id'], $field, $value ) ) {
 			// Invalid when the field or state input values have been tampered with.
@@ -2497,7 +2505,7 @@ class GFFormDisplay {
 				'singleshipping',
 				'hiddenproduct',
 				'consent',
-			) ) ? __( 'Please enter a valid value.', 'gravityforms' ) : __( 'Invalid selection. Please select from the available choices.', 'gravityforms' );
+			) ) ? esc_html__( 'Please enter a valid value.', 'gravityforms' ) : esc_html__( 'Invalid selection. Please select from the available choices.', 'gravityforms' );
 		} else {
 			// Running the field type specific validation.
 			$field->validate( $value, $form );

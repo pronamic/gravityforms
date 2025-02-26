@@ -3,9 +3,9 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.3
-Requires at least: 4.0
-Requires PHP: 5.6
+Version: 2.9.4
+Requires at least: 6.5
+Requires PHP: 7.4
 Author: Gravity Forms
 Author URI: https://gravityforms.com
 License: GPL-2.0+
@@ -107,7 +107,7 @@ define( 'RG_CURRENT_VIEW', GFForms::get( 'view' ) );
  *
  * @var string GF_MIN_WP_VERSION Minimum version number.
  */
-define( 'GF_MIN_WP_VERSION', '4.0' );
+define( 'GF_MIN_WP_VERSION', '6.5' );
 
 /**
  * Checks if the current WordPress version is supported.
@@ -123,7 +123,16 @@ define( 'GF_SUPPORTED_WP_VERSION', version_compare( get_bloginfo( 'version' ), G
  *
  * @var string GF_MIN_WP_VERSION_SUPPORT_TERMS The version number
  */
-define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '6.5' );
+define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '6.6' );
+
+/**
+ * Defines the minimum version of PHP that is supported.
+ *
+ * @since 2.9.4
+ *
+ * @var string GF_MIN_PHP_VERSION The version number
+ */
+define( 'GF_MIN_PHP_VERSION', '7.4' );
 
 /**
  * The filesystem path of the directory that contains the plugin, includes trailing slash.
@@ -248,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.3';
+	public static $version = '2.9.4';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -5037,6 +5046,10 @@ class GFForms {
 	 */
 	public static function form_switcher( $title = '' ) {
 
+		if ( ! class_exists( 'GFFormSettings' ) ) {
+			require_once( GFCommon::get_base_path() . '/form_settings.php' );
+		}
+
 		/**
 		 * Get forms to be displayed in Form Switcher dropdown.
 		 *
@@ -5057,17 +5070,21 @@ class GFForms {
 				$results_page_forms[ $form->id ] = $results_slug;
 			}
 
+			$form_subviews = GFFormSettings::get_tabs( $form->id );
+			$subview_list  = array();
+			foreach( $form_subviews as $subview ) {
+				$subview_list[] = $subview['name'];
+			}
+			$subview_list[] = 'gf_theme_layers';
+
+			$form->subviews = $subview_list;
+
 			if ( '1' === $form->is_active ) {
 				$forms['active'][] = $form;
 			} elseif ( '0' === $form->is_active ) {
 				$forms['inactive'][] = $form;
 			}
 
-			if ( '1' === $form->is_active ) {
-				$forms['active'][] = $form;
-			} else if ( '0' === $form->is_active ) {
-				$forms['inactive'][] = $form;
-			}
 		}
 
 		?>
@@ -5112,13 +5129,14 @@ class GFForms {
 							printf(
 								'
 									<li class="gform-dropdown__item">
-										<button class="gform-dropdown__trigger" data-js="gform-dropdown-trigger" data-value="%1$d" data-results-slug="%2$s" >
-											<span class="gform-dropdown__trigger-text" data-value="%1$d">%3$s</span>
+										<button class="gform-dropdown__trigger" data-js="gform-dropdown-trigger" data-value="%1$d" data-results-slug="%2$s" data-subviews="%3$s">
+											<span class="gform-dropdown__trigger-text" data-value="%1$d">%4$s</span>
 										</button>
 									</li>
 									',
 								absint( $form_info->id ),
 								rgar( $results_page_forms, $form_info->id ),
+								esc_attr( json_encode( $form_info->subviews ) ),
 								esc_html( $form_info->title )
 							);
 						}
@@ -5191,14 +5209,19 @@ class GFForms {
 					new_query = GF_RemoveQuery('type', new_query);
 					new_query = GF_RemoveQuery('field_id', new_query);
 					new_query = GF_RemoveQuery('lid', new_query);
+					new_query = GF_RemoveQuery('fid', new_query);
+					new_query = GF_RemoveQuery('cid', new_query);
+					new_query = GF_RemoveQuery('nid', new_query);
 					new_query = GF_RemoveQuery('filter', new_query);
 					new_query = GF_RemoveQuery('pos', new_query);
 
-					//When switching forms within any form settings tab, go back to main form settings tab
-					var is_form_settings = new_query.indexOf('page=gf_edit_forms') >= 0 && new_query.indexOf('view=settings') >= 0;
-					if (is_form_settings) {
-						//going back to main form settings tab
-						new_query = 'page=gf_edit_forms&view=settings&id=' + id;
+					// if the query contains a subview that is not in the data attribute of available subviews, remove it
+					var subview = new URLSearchParams(new_query).get('subview');
+					if ( subview ) {
+						var available_subviews = jQuery('.gform-dropdown__trigger[data-value=' + id + ']').data('subviews');
+						if ( available_subviews && available_subviews.indexOf( subview ) === -1 ) {
+							new_query = GF_RemoveQuery('subview', new_query);
+						}
 					}
 
 					// Check if this is the results page of an add-on that supports results

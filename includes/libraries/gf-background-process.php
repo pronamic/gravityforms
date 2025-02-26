@@ -84,6 +84,15 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		protected $query_url;
 
 		/**
+		 * Null or the current batch.
+		 *
+		 * @since 2.9.4
+		 *
+		 * @var object|null
+		 */
+		protected $current_batch;
+
+		/**
 		 * Initiate new background process
 		 *
 		 * @since 2.2
@@ -412,6 +421,30 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		}
 
 		/**
+		 * Sets the current_batch property.
+		 *
+		 * @since 2.9.4
+		 *
+		 * @param object|null $batch Null or the batch currently being processed.
+		 *
+		 * @return void
+		 */
+		protected function set_current_batch( $batch = null ) {
+			$this->current_batch = $batch;
+		}
+
+		/**
+		 * Gets the batch currently being processed.
+		 *
+		 * @since 2.9.4
+		 *
+		 * @return object|null
+		 */
+		protected function get_current_batch() {
+			return $this->current_batch;
+		}
+
+		/**
 		 * Handle
 		 *
 		 * Pass each queue item to the task handler, while remaining
@@ -451,6 +484,9 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 
 				foreach ( $batch->data as $key => $value ) {
 					GFCommon::log_debug( sprintf( '%s(): Processing task %d.', __METHOD__, ++$task_num ) );
+
+					// Setting or refreshing the current batch before processing the task.
+					$this->set_current_batch( $batch );
 					$task = $this->task( $value );
 
 					if ( $task !== false ) {
@@ -477,6 +513,7 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 
 			GFCommon::log_debug( sprintf( '%s(): Batch completed for %s.', __METHOD__, $this->action ) );
 
+			$this->set_current_batch();
 			$this->unlock_process();
 
 			// Start next batch or complete process.

@@ -134,7 +134,7 @@ class GF_Block_Form extends GF_Block {
 
 		// Add Gravity Forms styling if CSS is enabled.
 		if ( ! GFCommon::is_frontend_default_css_disabled() ) {
-			$deps = array_merge( $deps, array( 'gform_basic', 'gforms_formsmain_css', 'gforms_ready_class_css', 'gforms_browsers_css', 'gform_theme' ) );
+			$deps = array_merge( $deps, array( 'gforms_reset_css', 'gform_basic', 'gforms_formsmain_css', 'gforms_ready_class_css', 'gforms_browsers_css', 'gform_theme' ) );
 
 			/**
 			 * Allows users to disable the main theme.css file from being loaded on the Front End.

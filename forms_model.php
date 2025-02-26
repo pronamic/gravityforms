@@ -1030,6 +1030,14 @@ class GFFormsModel {
 		// Ensure the next field ID is set correctly.
 		$form['nextFieldId'] = self::get_next_field_id( $form['fields'] );
 
+		// Ensure the form has a button property.
+		if ( rgempty( 'button', $form ) ) {
+			$form['button'] = array(
+				'type' => 'text',
+				'text' => __( 'Submit', 'gravityforms' ),
+			);
+		}
+
 		/**
 		 * Filters the Form object after the form meta is obtained
 		 *

@@ -100,9 +100,11 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 			$self->enqueue_form_styles( $form, $settings );
 		}, 1000 );
 
-		// Enqueue styles for the block editor.
-		add_action('enqueue_block_editor_assets', function() use ( $self ) {
-			$self->enqueue_form_styles();
+		// Enqueue styles for the site & block editor.
+		add_action( 'enqueue_block_assets', function() use ( $self ) {
+			if ( is_admin() ) {
+				$self->enqueue_form_styles();
+			}
 		}, 1000 );
 
 		// Enqueue styles in form preview.

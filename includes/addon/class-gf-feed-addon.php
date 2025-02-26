@@ -312,23 +312,29 @@ abstract class GFFeedAddOn extends GFAddOn {
 	/**
 	 * Determines what feeds need to be processed for the provided entry.
 	 *
+	 * @since  1.7.7
+	 * @since  2.9.4 Updated to save the processing status for each feed of compatible add-ons.
+	 *
 	 * @access public
+	 *
 	 * @param array $entry The Entry Object currently being processed.
-	 * @param array $form The Form Object currently being processed.
+	 * @param array $form  The Form Object currently being processed.
 	 *
 	 * @return array $entry
 	 */
 	public function maybe_process_feed( $entry, $form ) {
+		$entry_id = (int) rgar( $entry, 'id' );
 
-		if ( 'spam' === $entry['status'] ) {
-			$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Entry #{$entry['id']} is marked as spam; not processing feeds for {$this->get_slug()}." );
+		if ( 'spam' === rgar( $entry, 'status' ) ) {
+			$this->log_debug( __METHOD__ . "(): Entry #{$entry_id} is marked as spam; not processing feeds." );
 
 			return $entry;
 		}
 
-		$this->log_debug( __METHOD__ . "(): Checking for feeds to process for entry #{$entry['id']} for {$this->get_slug()}." );
+		$this->log_debug( __METHOD__ . "(): Checking for feeds to process for entry #{$entry_id}." );
 
-		$feeds = false;
+		$form_id = (int) rgar( $form, 'id' );
+		$feeds   = false;
 
 		// If this is a single submission feed, get the first feed. Otherwise, get all feeds.
 		if ( $this->_single_feed_submission ) {
@@ -337,7 +343,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 				$feeds = array( $feed );
 			}
 		} else {
-			$feeds = $this->get_feeds( $form['id'] );
+			$feeds = $this->get_feeds( $form_id );
 		}
 
 		// Run filters before processing feeds.
@@ -345,7 +351,8 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		// If there are no feeds to process, return.
 		if ( empty( $feeds ) ) {
-			$this->log_debug( __METHOD__ . "(): No feeds to process for entry #{$entry['id']}." );
+			$this->log_debug( __METHOD__ . "(): No feeds to process for entry #{$entry_id}." );
+
 			return $entry;
 		}
 
@@ -360,16 +367,17 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 			// Get the feed name.
 			$feed_name = rgempty( 'feed_name', $feed['meta'] ) ? rgar( $feed['meta'], 'feedName' ) : rgar( $feed['meta'], 'feed_name' );
+			$feed_id   = (int) rgar( $feed, 'id' );
 
 			// If this feed is inactive, log that it's not being processed and skip it.
 			if ( ! $feed['is_active'] ) {
-				$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Feed is inactive, not processing feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']}." );
+				$this->log_debug( __METHOD__ . "(): Feed is inactive, not processing feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
 				continue;
 			}
 
 			// If this feed's condition is not met, log that it's not being processed and skip it.
 			if ( ! $this->is_feed_condition_met( $feed, $form, $entry ) ) {
-				$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Feed condition not met, not processing feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']}." );
+				$this->log_debug( __METHOD__ . "(): Feed condition not met, not processing feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
 				continue;
 			}
 
@@ -380,15 +388,15 @@ abstract class GFFeedAddOn extends GFAddOn {
 				if ( $this->is_asynchronous( $feed, $entry, $form ) ) {
 
 					// Log that feed processing is being delayed.
-					$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Adding feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']} for {$this->get_slug()} to the processing queue." );
+					$this->log_debug( __METHOD__ . "(): Adding feed (#{$feed_id} - {$feed_name}) to the processing queue for entry #{$entry_id}." );
 
 					// Add feed to processing queue.
 					gf_feed_processor()->push_to_queue(
 						array(
-							'addon' => get_class( $this ),
-							'feed'  => $feed,
-							'entry_id' => $entry['id'],
-							'form_id'  => $form['id'],
+							'addon'    => get_class( $this ),
+							'feed'     => $feed,
+							'entry_id' => $entry_id,
+							'form_id'  => $form_id,
 						)
 					);
 					$this->delay_feed( $feed, $entry, $form );
@@ -396,39 +404,26 @@ abstract class GFFeedAddOn extends GFAddOn {
 				} else {
 
 					// All requirements are met; process feed.
-					$this->log_debug( "GFFeedAddOn::maybe_process_feed(): Starting to process feed (#{$feed['id']} - {$feed_name}) for entry #{$entry['id']} for {$this->get_slug()}" );
-					$returned_entry = $this->process_feed( $feed, $entry, $form );
+					$this->log_debug( __METHOD__ . "(): Starting to process feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
+					$result = $this->process_feed( $feed, $entry, $form );
+					$this->save_entry_feed_status( $result, $entry_id, $feed_id, $form_id );
 
 					// If returned value from the process feed call is an array containing an id, set the entry to its value.
-					if ( is_array( $returned_entry ) && rgar( $returned_entry, 'id' ) ) {
-						$entry = $returned_entry;
+					if ( (int) rgar( $result, 'id' ) === $entry_id ) {
+						$entry = $result;
 					}
 
-					/**
-					 * Perform a custom action when a feed has been processed.
-					 *
-					 * @param array $feed The feed which was processed.
-					 * @param array $entry The current entry object, which may have been modified by the processed feed.
-					 * @param array $form The current form object.
-					 * @param GFAddOn $addon The current instance of the GFAddOn object which extends GFFeedAddOn or GFPaymentAddOn (i.e. GFCoupons, GF_User_Registration, GFStripe).
-					 *
-					 * @since 2.0
-					 */
-					do_action( 'gform_post_process_feed', $feed, $entry, $form, $this );
-					do_action( "gform_{$this->get_slug()}_post_process_feed", $feed, $entry, $form, $this );
-
-					// Log that Add-On has been fulfilled.
-					$this->log_debug( 'GFFeedAddOn::maybe_process_feed(): Marking entry #' . $entry['id'] . ' as fulfilled for ' . $this->get_slug() );
-					gform_update_meta( $entry['id'], "{$this->get_slug()}_is_fulfilled", true );
+					$this->post_process_feed( $feed, $entry, $form );
+					$this->fulfill_entry( $entry_id, $form_id );
 
 					// Adding this feed to the list of processed feeds
-					$processed_feeds[] = (int) $feed['id'];
+					$processed_feeds[] = $feed_id;
 				}
 
 			} else {
 
 				// Log that feed processing is being delayed.
-				$this->log_debug( 'GFFeedAddOn::maybe_process_feed(): Feed processing is delayed, not processing feed for entry #' . $entry['id'] . ' for ' . $this->get_slug() );
+				$this->log_debug( __METHOD__ . "(): Feed processing is delayed, not processing feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
 
 				// Delay feed.
 				$this->delay_feed( $feed, $entry, $form );
@@ -438,12 +433,110 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		// If any feeds were processed, save the processed feed IDs.
 		if ( ! empty( $processed_feeds ) ) {
-			GFAPI::update_processed_feeds_meta( $entry['id'], $this->get_slug(), $processed_feeds, rgar( $form, 'id' ) );
+			GFAPI::update_processed_feeds_meta( $entry_id, $this->get_slug(), $processed_feeds, $form_id );
 		}
 
 		// Return the entry object.
 		return $entry;
 
+	}
+
+	/**
+	 * Saves the status of the given feed to the "feed_{$feed_id}_status" entry meta.
+	 *
+	 * @since 2.9.4
+	 *
+	 * @param null|bool|array|WP_Error|Exception $result   The value returned by `process_feed()`.
+	 * @param int                                $entry_id The ID of the entry the feed was processed for.
+	 * @param int                                $feed_id  The ID of the feed that was processed.
+	 * @param int                                $form_id  The ID of the form the entry and feed belong to.
+	 *
+	 * @return void
+	 */
+	public function save_entry_feed_status( $result, $entry_id, $feed_id, $form_id ) {
+		if ( is_null( $result ) ) {
+			return;
+		}
+
+		$status = array(
+			'timestamp' => time(),
+			'status'    => 'failed',
+			'code'      => '',
+			'message'   => '',
+			'data'      => '',
+		);
+
+		if ( $result === true || is_array( $result ) ) {
+			$status['status'] = 'success';
+		} elseif ( $result instanceof Exception ) {
+			$status['code']    = $result->getCode();
+			$status['message'] = $result->getMessage();
+		} elseif ( is_wp_error( $result ) ) {
+			$status['code']    = $result->get_error_code();
+			$status['message'] = $result->get_error_message();
+			$status['data']    = $result->get_error_data();
+		}
+
+		GFAPI::update_entry_feed_status( $entry_id, $feed_id, $status, $form_id );
+	}
+
+	/**
+	 * Triggers the post_process_feed hooks.
+	 *
+	 * @since 2.9.4
+	 *
+	 * @param array $feed  The feed which was processed.
+	 * @param array $entry The entry the feed was processed for.
+	 * @param array $form  The form the entry and feed belong to.
+	 *
+	 * @return void
+	 */
+	public function post_process_feed( $feed, $entry, $form ) {
+		$has_action = array();
+		if ( has_action( 'gform_post_process_feed' ) ) {
+			$has_action[] = 'gform_post_process_feed';
+		}
+
+		$gform_slug_post_process_feed = "gform_{$this->get_slug()}_post_process_feed";
+		if ( has_action( $gform_slug_post_process_feed ) ) {
+			$has_action[] = $gform_slug_post_process_feed;
+		}
+
+		if ( empty( $has_action ) ) {
+			return;
+		}
+
+		$addon = $this;
+		$this->log_debug( __METHOD__ . sprintf( '(): Executing functions hooked to %s for feed #%d and entry #%d.', implode( ' and ', $has_action ), rgar( $feed, 'id' ), rgar( $entry, 'id' ) ) );
+
+		/**
+		 * Perform a custom action when a feed has been processed.
+		 *
+		 * @since 2.0
+		 *
+		 * @param array       $feed  The feed which was processed.
+		 * @param array       $entry The current entry object, which may have been modified by the processed feed.
+		 * @param array       $form  The current form object.
+		 * @param GFFeedAddOn $addon The current instance of the add-on.
+		 */
+		do_action( 'gform_post_process_feed', $feed, $entry, $form, $addon );
+		do_action( $gform_slug_post_process_feed, $feed, $entry, $form, $addon );
+	}
+
+	/**
+	 * Sets the "{slug}_is_fulfilled" entry meta.
+	 *
+	 * @since 2.9.4
+	 *
+	 * @param int $entry_id The entry ID.
+	 * @param int $form_id  The form ID.
+	 *
+	 * @return void
+	 */
+	public function fulfill_entry( $entry_id, $form_id ) {
+		if ( gform_update_meta( $entry_id, "{$this->get_slug()}_is_fulfilled", true, $form_id ) ) {
+			$this->log_debug( __METHOD__ . '(): Entry #' . $entry_id . ' marked as fulfilled.' );
+		}
 	}
 
 	/**
@@ -543,13 +636,18 @@ abstract class GFFeedAddOn extends GFAddOn {
 	 * Processes feed action.
 	 *
 	 * @since  Unknown
+	 * @since  2.9.4 Documented the supported return types for saving the feed status.
+	 *
 	 * @access public
 	 *
-	 * @param array  $feed  The Feed Object currently being processed.
-	 * @param array  $entry The Entry Object currently being processed.
-	 * @param array  $form  The Form Object currently being processed.
+	 * @param array $feed  The Feed Object currently being processed.
+	 * @param array $entry The Entry Object currently being processed.
+	 * @param array $form  The Form Object currently being processed.
 	 *
-	 * @return array|null Returns a modified entry object or null.
+	 * @return void|null|bool|WP_Error|array The returned value determines if the feed status is saved to the "feed_{$feed_id}_status" entry meta.
+	 *                                       - void or null when the feed status should not be saved.
+	 *                                       - false or a WP_Error when a failed status should be saved.
+	 *                                       - true or the entry array when a success status should be saved.
 	 */
 	public function process_feed( $feed, $entry, $form ) {
 
@@ -890,23 +988,42 @@ abstract class GFFeedAddOn extends GFAddOn {
 		return false;
 	}
 
+	/**
+	 * Allows the feeds to be filtered before they are processed.
+	 *
+	 * @since 2.0
+	 *
+	 * @param false|array $feeds False or an array of feeds for the current form.
+	 * @param array       $entry The entry being processed.
+	 * @param array       $form  The form the entry and feeds belong to.
+	 *
+	 * @return false|array
+	 */
 	public function pre_process_feeds( $feeds, $entry, $form ) {
+		$count   = is_array( $feeds ) ? count( $feeds ) : 0;
+		$form_id = (int) rgar( $form, 'id' );
+		$this->log_debug( __METHOD__ . "(): Found {$count} feeds for form #{$form_id}." );
 
 		/**
 		 * Modify feeds before they are processed.
 		 *
-		 * @param array $feeds An array of $feed objects
-		 * @param array $entry Current entry for which feeds will be processed
-		 * @param array $form Current form object.
-		 *
 		 * @since 2.0
+		 *
+		 * @param false|array $feeds An array of $feed objects
+		 * @param array       $entry Current entry for which feeds will be processed
+		 * @param array       $form  Current form object.
 		 *
 		 * @return array An array of $feeds
 		 */
 		$feeds = apply_filters( 'gform_addon_pre_process_feeds', $feeds, $entry, $form );
-		$feeds = apply_filters( "gform_addon_pre_process_feeds_{$form['id']}", $feeds, $entry, $form );
+		$feeds = apply_filters( "gform_addon_pre_process_feeds_{$form_id}", $feeds, $entry, $form );
 		$feeds = apply_filters( "gform_{$this->get_slug()}_pre_process_feeds", $feeds, $entry, $form );
-		$feeds = apply_filters( "gform_{$this->get_slug()}_pre_process_feeds_{$form['id']}", $feeds, $entry, $form );
+		$feeds = apply_filters( "gform_{$this->get_slug()}_pre_process_feeds_{$form_id}", $feeds, $entry, $form );
+
+		$filtered_count = is_array( $feeds ) ? count( $feeds ) : 0;
+		if ( $filtered_count !== $count ) {
+			$this->log_debug( __METHOD__ . "(): {$filtered_count} feeds for form #{$form_id} after filters." );
+		}
 
 		return $feeds;
 	}
@@ -1521,12 +1638,21 @@ abstract class GFFeedAddOn extends GFAddOn {
 						$script .= sprintf( 'var entry_meta = %s;', wp_json_encode( $entry_meta ) );
 					}
 
-					return sprintf( '
-						<input type="hidden" name="gf_feed_id" value="%d" />
-						%s',
+					$before_fields = sprintf(
+					'<input type="hidden" name="gf_feed_id" value="%d" />%s',
 						(int) $this->get_current_feed_id(),
 						GFCommon::get_inline_script_tag( $script, false )
 					);
+
+					/*
+					 * Filters the content to be displayed before the feed settings fields.
+					 *
+					 * @since 2.9.5
+					 *
+					 * @param string $before_fields The content to be displayed before the feed settings fields.
+					 * @param array  $form          The form associated with the feed.
+					 */
+					return gf_apply_filters( array( 'gform_feed_settings_before_fields', $form['id'] ), $before_fields, $form );
 				},
 			)
 		);

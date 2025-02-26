@@ -543,8 +543,8 @@ class GF_System_Report {
 								'value'              => esc_html( phpversion() ),
 								'type'               => 'version_check',
 								'version_compare'    => '>=',
-								'minimum_version'    => '7.3',
-								'validation_message' => esc_html__( 'Recommended: PHP 7.3 or higher.', 'gravityforms' ),
+								'minimum_version'    => GF_MIN_PHP_VERSION,
+								'validation_message' => sprintf( esc_html__( 'Recommended: PHP %s or higher.', 'gravityforms' ), GF_MIN_PHP_VERSION ),
 							),
 							array(
 								'label'        => esc_html__( 'Memory Limit', 'gravityforms' ) . ' (memory_limit)',

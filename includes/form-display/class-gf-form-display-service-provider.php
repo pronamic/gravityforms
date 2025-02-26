@@ -121,7 +121,7 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 
 		add_action( 'gform_enqueue_scripts', array( $this, 'register_theme_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_theme_styles' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'register_theme_styles' ) );
+		add_action( 'enqueue_block_assets', array( $this, 'register_theme_styles' ) );
 	}
 
 	public function register_theme_styles() {

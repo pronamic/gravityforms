@@ -1,3 +1,20 @@
+### 2.9.4 | 2025-02-25
+- Added the [`gform_feed_settings_before_fields`](http://docs.gravityforms.com/gform_feed_settings_before_fields/) filter to allow developers to change the content that is displayed before the feed settings.
+- Fixed an issue where field-specific validation was no longer running when No Duplicates setting was enabled.
+- Fixed an issue that prevents the form editor from working properly when the form doesn't have a submit button configured.
+- Fixed a styling issue with the generic field map setting where the merge tag link overlaps the input.
+- Fixed an issue where the Gravity Forms block is not rendering or working correctly in the site editor (iframed block editor).
+- Updated the form switcher so that it stays on the same settings page when switching forms.
+- Updated the minimum WordPress version to 6.5.
+- Updated the minimum PHP version to 7.4.
+- Updated the minimum WordPress version (for support) on the System Status page to 6.6.
+- API: Added GFAPI::update_entry_feed_status(), GFAPI::get_entry_feed_status(), and GFAPI::get_entry_feed_status_key().
+- AF: Added GFFeedAddOn::save_entry_feed_status(), GFFeedAddOn::post_process_feed(), and GFFeedAddOn::fulfill_entry().
+- AF: Updated GFFeedAddOn::maybe_process_feed() to support saving the feed processing result for compatible add-ons. This is dependent on the value returned by the add-ons process_feed() method:
+  + `void` or `null` when the feed status should not be saved.
+  + `false` or a `WP_Error` when a failed status should be saved. The `code`, `message`, and `data` properties from the `WP_Error` will also be saved.
+  + `true` or the `$entry` when a success status should be saved.
+
 ### 2.9.3 | 2025-02-11
 - Added the [`gform_file_upload_tmp_dir`](http://docs.gravityforms.com/gform_file_upload_tmp_dir/) filter to allow developers to change the temporary directory used for file uploads.
 - Fixed an issue with conditional logic for numbers formatted as date or time.

@@ -167,6 +167,8 @@ class GF_Field_Submit extends GF_Field {
 			$submit = GFFormDisplay::get_form_button( $form_id, "gform_submit_button_{$form_id}", $button, $default_text, $class, $default_text, 0 );
 			return gf_apply_filters( array( 'gform_submit_button', $form_id ), $submit, $form );
 		}
+
+		return '';
 	}
 
 	/**
