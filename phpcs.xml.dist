@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<ruleset>
+	<arg name="basepath" value="." />
+	<arg name="extensions" value="php" />
+	<arg name="severity" value="4" />
+	<arg name="tab-width" value="4" />
+	<arg name="parallel" value="80" />
+	<arg name="colors" />
+
+	<!-- Ignore warnings, show progress of the run and show sniff names -->
+	<arg value="nps" />
+
+	<config name="minimum_supported_wp_version" value="4.0" />
+	<config name="testVersion" value="5.6-"/>
+
+	<ini name="memory_limit" value="512M"/>
+
+	<file>.</file>
+
+	<!-- Exclude files -->
+	<exclude-pattern>*vendor/</exclude-pattern>
+	<exclude-pattern>*tests/*</exclude-pattern>
+	<exclude-pattern>*tmp/*</exclude-pattern>
+	<exclude-pattern>*dist/*</exclude-pattern>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="gravityforms"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- Include the full RocketGenius coding standard -->
+	<rule ref="RocketGenius"/>
+
+</ruleset>

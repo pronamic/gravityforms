@@ -79,10 +79,14 @@ class Generic_Map extends Base {
 	 *
 	 * @since 2.5
 	 *
-	 * @param array                                $props    Field properties.
-	 * @param \Gravity_Forms\Gravity_Forms\Settings\Settings $settings Settings instance.
+	 * @param array                                          $props    Field properties.
+	 * @param \Gravity_Forms\Gravity_Forms\Settings\Settings $settings Settings framework instance.
 	 */
 	public function __construct( $props, $settings ) {
+
+		// Enqueue React dependencies.
+		wp_enqueue_script( 'wp-element' );
+		wp_enqueue_script( 'wp-i18n' );
 
 		// Set Settings framework instance.
 		$this->settings = $settings;
@@ -208,31 +212,6 @@ class Generic_Map extends Base {
 		return $is_filtered_choice_defined ? $passed_choices[ $key ] : $passed_choices;
 	}
 
-	/**
-	 * Register scripts to enqueue when displaying field.
-	 *
-	 * @since 2.5
-	 *
-	 * @return array
-	 */
-	public function scripts() {
-
-		$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
-		$dev_min = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
-
-		return array(
-			array(
-				'handle'  => 'gform_settings_field_map',
-				'src'     => GFCommon::get_base_url() . "/assets/js/dist/field-map{$dev_min}.js",
-				'version' => defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? filemtime( GFCommon::get_base_path() . "/assets/js/dist/field-map{$dev_min}.js" ) : GFForms::$version,
-				'deps'    => array( 'wp-element', 'wp-i18n' ),
-			),
-		);
-
-	}
-
-
-
 
 
 	// # RENDER METHODS ------------------------------------------------------------------------------------------------
@@ -275,7 +254,7 @@ class Generic_Map extends Base {
 			'valueField'      => $value_field,
 			'limit'           => $this->limit,
 			'invalidChoices'  => $this->invalid_choices,
-			'mergeTagSupport' => property_exists( $this, 'merge_tags' ) ? $this->merge_tags : false,
+			'mergeTagSupport' => ! ( $this->merge_tags === false ),
 		);
 
 		// Prepare markup.
@@ -285,7 +264,7 @@ class Generic_Map extends Base {
 		$html .= sprintf(
 			'<span class="%1$s"><input type="hidden" name="%2$s" id="%2$s" value=\'%3$s\' />
 				<div id="%4$s" class="gform-settings-field-map__container"></div>%5$s</span>
-				<script type="text/javascript">initializeFieldMap( \'%4$s\', %6$s );</script></span>',
+				<script type="text/javascript">document.addEventListener( "gform/admin/scripts_loaded", function() { window.gform.initializeFieldMap( \'%4$s\', %6$s ); } );</script></span>',
 			esc_attr( $this->get_container_classes() ),
 			$input_name, // Input name
 			esc_attr( wp_json_encode( $this->get_value() ? $this->get_value() : array() ) ), // Input value

@@ -1582,7 +1582,9 @@ AND ( meta_key REGEXP '^[0-9|.]+$'
 				}
 				$results[] = $joined_entries;
 			} elseif ( count( $entry_id ) == 1 ) {
-				if ( ! isset( $entries[ $entry_id[0] ] ) ) {
+				// Fix for Implicit Conversion from float to Int warning in PHP 8.1+
+				$entry_key = is_numeric( $entry_id[0] ) ? (int) $entry_id[0] : $entry_id[0];
+				if ( ! isset( $entries[ $entry_key ] ) ) {
 					continue;
 				}
 				$results[] = &$entries[ $entry_id[0] ];

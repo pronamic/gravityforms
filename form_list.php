@@ -556,8 +556,10 @@ class GF_Form_List_Table extends WP_List_Table {
 		 * @param array $form_count The form count by filter name.
 		 */
 		$form_count = apply_filters( 'gform_form_list_count', $form_count );
+  
+		$imported_forms = rgget( 'id' ) ? array_map( 'intval' ,explode( ',', rgget( 'id' )) ) : [];
 
-		$all_class = ( $this->filter == '' ) ? 'current' : '';
+		$all_class = $imported_forms ? '' : ( $this->filter == '' ? 'current' : '' );
 
 		$active_class = ( $this->filter == 'active' ) ? 'current' : '';
 
@@ -571,6 +573,7 @@ class GF_Form_List_Table extends WP_List_Table {
 			'inactive' => '<a class="' . $inactive_class . '" href="?page=gf_edit_forms&filter=inactive">' . esc_html( _x( 'Inactive', 'Form List', 'gravityforms' ) ) . ' <span class="count">(<span id="inactive_count">' . $form_count['inactive'] . '</span>)</span></a>',
 			'trash' => '<a class="' . $trash_class . '" href="?page=gf_edit_forms&filter=trash">' . esc_html( _x( 'Trash', 'Form List', 'gravityforms' ) ) . ' <span class="count">(<span id="trash_count">' . $form_count['trash'] . '</span>)</span></a>',
 		);
+  
 		return $views;
 	}
 
@@ -587,6 +590,10 @@ class GF_Form_List_Table extends WP_List_Table {
 
 		$sort_direction = empty( $_GET['order'] ) ? $sort_options['sort_order'] : strtoupper( $_GET['order'] );
 		$sort_direction = $sort_direction == 'ASC' ? 'ASC' : 'DESC';
+		// Retrieve IDs from Query Parameters
+		$imported_forms = rgget( 'id' ) ? explode( ',', rgget( 'id' ) ) : [];
+		$ids            = array_map( 'intval', $imported_forms );
+
 		$search_query   = rgget( 's' );
 		$trash = false;
 		switch ( $this->filter ) {
@@ -609,6 +616,13 @@ class GF_Form_List_Table extends WP_List_Table {
 			$forms = GFFormsModel::get_forms( $active, $sort_column, $sort_direction, $trash );
 		} else {
 			$forms = GFFormsModel::search_forms( $search_query, $active, $sort_column, $sort_direction, $trash );
+		}
+
+		// Filter imported forms by IDs if there is any.
+		if ( ! rgempty( $ids ) ) {
+			$forms = array_filter( $forms, function ($form) use ($ids) {
+				return in_array( $form->id, $ids );
+			});
 		}
 
 		/**

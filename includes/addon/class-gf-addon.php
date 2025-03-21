@@ -6636,7 +6636,7 @@ abstract class GFAddOn {
 	 */
 	public function get_slug() {
 		if ( empty( $this->_slug ) ) {
-			$this->_slug = plugin_basename( dirname( $this->_full_path ) );
+			$this->_slug = plugin_basename( dirname( (string) $this->_full_path ) );
 		}
 		return $this->_slug;
 	}

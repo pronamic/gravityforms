@@ -1,3 +1,18 @@
+### 2.9.5 | 2025-03-20
+- Fixed an issue where a javascript error is thrown when using multiple forms on the same page with conditional logic.
+- Fixed a bug that causes a PHP error when you try to duplicate a duplicate of a form. Credit: The GravityKit Team.
+- Fixed a JavaScript error that occurs when the selected option is not found in the pricing fields meta retrieved post render.
+- Fixed an issue where the total is not updated when the form is embedded using the shortcode, and the selected option field choices are being modified via a form filter based on a query argument.
+- Fixed various issues with the new Ajax submission functionality to make sure that hooks and filters are run and validation messages are displayed correctly.
+- Fixed a PHP notice that occurs on post or page display when the embedded form has been deleted.
+- Updated the form import confirmation message to display the count of both failed and successful forms and to include a link to the list of imported forms.
+- Removed hidden fields that provide instructions in the form templates.
+- AF: Fixed a PHP notice that occurs when creating or editing a coupon.
+- API: Updated the generic map setting field to support using textareas when mapping to a custom value.
+- API: Added a new User Select field to the Settings API.
+- API: Updated the submission process to support submission method changes via the [gform/submission/pre_submission](https://docs.gravityforms.com/gform-submission-pre_submission/) filter.
+- API: Removed support for the SUBMISSION_METHOD_CUSTOM submission method.
+
 ### 2.9.4 | 2025-02-25
 - Added the [`gform_feed_settings_before_fields`](http://docs.gravityforms.com/gform_feed_settings_before_fields/) filter to allow developers to change the content that is displayed before the feed settings.
 - Fixed an issue where field-specific validation was no longer running when No Duplicates setting was enabled.

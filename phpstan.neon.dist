@@ -1,0 +1,23 @@
+includes:
+	- phpstan-baseline.neon
+
+parameters:
+	level: 1
+	paths:
+		- **/*.php
+	excludePaths:
+		- tmp/*
+		- vendor/*
+		- tests/*
+
+	ignoreErrors:
+		- '#^Function akismet_http_post not found.$#'
+		- '#Call to static method http_post\(\) on an unknown class Akismet.#'
+		- '#^Function mcrypt_get_iv_size not found.$#'
+		- '#Function remove_action invoked with [4] parameters, 2-3 required.#'
+		- '#Constant [a-zA-Z0-9_]+ not found.#'
+
+	checkAlwaysTrueStrictComparison: true
+
+	# Unfortunately, DocBlocks can't be relied upon in WordPress.
+	treatPhpDocTypesAsCertain: false

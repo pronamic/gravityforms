@@ -61,9 +61,18 @@ class GF_Config_Collection {
 			wp_send_json_error( esc_html__( 'Unable to verify nonce. Please refresh the page and try again.', 'gravityforms' ) );
 		}
 
-		$args        = json_decode( rgpost( 'args' ), true );
-		$config_path = rgpost( 'config_path' );
-		$configs     = $this->get_configs_by_path( $config_path, $args );
+		$args         = json_decode( rgpost( 'args' ), true );
+		$config_path  = rgpost( 'config_path' );
+		$query_string = rgpost( 'query_string' );
+
+		// Making the query string available for use with form filters.
+		if ( ! empty( $query_string ) && is_string( $query_string ) ) {
+			parse_str( $query_string, $query );
+			unset( $query['gf_page'] ); // Removing so it doesn't conflict with gf_ajax_page=preview.
+			$_GET = array_merge( $_GET, $query );
+		}
+
+		$configs = $this->get_configs_by_path( $config_path, $args );
 
 		if ( ! $configs ) {
 			wp_send_json_error( sprintf( esc_html__( 'Unable to find config: %s', 'gravityforms' ), $config_path ) );

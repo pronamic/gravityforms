@@ -2731,4 +2731,35 @@ class Settings {
 		return ! rgempty( 'gform-settings-save' );
 
 	}
+
+	/**
+	 * Remove the "has published posts" query from the REST user query.
+	 *
+	 * This will make sure that the User Select field can find all users, not just users with published posts.
+	 *
+	 * @since 2.9.5
+	 *
+	 * @param $prepared_args
+	 * @param $request
+	 *
+	 * @return mixed
+	 */
+	public function remove_has_published_posts_from_api_user_query( $prepared_args, $request ) {
+		// check the referer and make an array of the query params
+		$referer = wp_parse_url( wp_get_referer() );
+
+		if( ! rgar( $referer, 'query' ) ) {
+			return $prepared_args;
+		}
+
+		$query_params = array();
+		parse_str( $referer['query'], $query_params );
+		if( 'gf_edit_forms' !== rgar( $query_params, 'page' ) && 'settings' !== rgar( $query_params, 'view' ) ) {
+			return $prepared_args;
+		}
+
+		unset( $prepared_args['has_published_posts'] );
+
+		return $prepared_args;
+	}
 }

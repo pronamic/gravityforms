@@ -105,7 +105,7 @@ class GF_Field_Website extends GF_Field {
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
-		$safe_value = esc_url( $value );
+		$safe_value = esc_url( (string) $value );
 		return GFCommon::is_valid_url( $value ) && $format == 'html' ? "<a href='$safe_value' target='_blank'>$safe_value</a>" : $safe_value;
 	}
 

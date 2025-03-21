@@ -329,7 +329,7 @@ class GFCommon {
 		if ( rgblank( $number ) ) {
 			return $number;
 		}
-
+		
 		$decimal_char = '';
 		if ( $number_format == 'decimal_dot' ) {
 			$decimal_char = '.';
@@ -354,9 +354,20 @@ class GFCommon {
 				$is_negative = true;
 			}
 		}
-
+		
 		//Removing thousands separators but keeping decimal point
 		$array = str_split( $clean_number );
+
+		/**
+		 * PHP 8.2 changed the return value of str_split() when an empty string 
+		 * is passed. Before it would return a single element array with an 
+		 * empty string, now it returns an empty array. This `if` makes the
+		 * array consistant in all PHP Versions.
+		 */
+		if ( empty( $array ) ) {
+			$array[] = '';
+		}
+		
 		for ( $i = 0, $count = sizeof( $array ); $i < $count; $i ++ ) {
 			$char = $array[ $i ];
 			if ( $char >= '0' && $char <= '9' ) {
@@ -388,7 +399,7 @@ class GFCommon {
 	}
 
 	public static function json_decode( $str, $is_assoc = true ) {
-		return json_decode( $str, $is_assoc );
+		return json_decode( (string) $str, $is_assoc );
 	}
 
 	/**
@@ -605,7 +616,7 @@ class GFCommon {
 	 * @return bool True if valid. False otherwise.
 	 */
 	public static function is_valid_url( $url ) {
-		$url = trim( $url );
+		$url = trim( (string) $url );
 
 		/***
 		 * Enables and disables RFC URL validation. Defaults to true.
@@ -1289,7 +1300,7 @@ class GFCommon {
 		$text = str_replace( '{form_id}', $url_encode ? urlencode( rgar( $form, 'id' ) ) : rgar( $form, 'id' ), $text );
 
 		// Entry ID.
-		$text = str_replace( '{entry_id}', $url_encode ? urlencode( rgar( $lead, 'id' ) ) : rgar( $lead, 'id' ), $text );
+		$text = str_replace( '{entry_id}', $url_encode ? urlencode( rgar( $lead, 'id', '' ) ) : rgar( $lead, 'id', '' ), $text );
 
 		if ( false !== strpos( $text, '{entry_url}' ) ) {
 			// Entry URL.
@@ -1311,7 +1322,7 @@ class GFCommon {
 		}
 
 		// Post ID.
-		$text = str_replace( '{post_id}', $url_encode ? urlencode( rgar( $lead, 'post_id' ) ) : rgar( $lead, 'post_id' ), $text );
+		$text = str_replace( '{post_id}', $url_encode ? urlencode( rgar( $lead, 'post_id', '' ) ) : rgar( $lead, 'post_id', '' ), $text );
 
 		// Admin email.
 		if ( false !== strpos( $text, '{admin_email}' ) ) {
@@ -3506,7 +3517,7 @@ Content-Type: text/html;
 			return $return_keys_on_empty ? $date_info : array();
 		}
 
-		$position = substr( $format, 0, 3 );
+		$position = substr( (string) $format, 0, 3 );
 
 		if ( is_array( $date ) ) {
 
@@ -7107,7 +7118,7 @@ Content-Type: text/html;
 	public static function encode_shortcodes( $string ) {
 		$find    = array( '[', ']' );
 		$replace = array( '&#91;', '&#93;' );
-		$string  = str_replace( $find, $replace, $string );
+		$string  = str_replace( $find, $replace, (string) $string );
 
 		return $string;
 	}

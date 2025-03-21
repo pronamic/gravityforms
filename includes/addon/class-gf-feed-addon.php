@@ -1652,7 +1652,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 					 * @param string $before_fields The content to be displayed before the feed settings fields.
 					 * @param array  $form          The form associated with the feed.
 					 */
-					return gf_apply_filters( array( 'gform_feed_settings_before_fields', $form['id'] ), $before_fields, $form );
+					return gf_apply_filters( array( 'gform_feed_settings_before_fields', rgar( $form, 'id' ) ), $before_fields, $form );
 				},
 			)
 		);

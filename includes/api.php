@@ -404,7 +404,7 @@ class GFAPI {
 	 *
 	 * @return array|WP_Error Either an array of new form IDs or a WP_Error instance.
 	 */
-	public static function add_forms( $forms ) {
+	public static function add_forms( $forms, $continue_on_error = false ) {
 
 		if ( gf_upgrade()->get_submissions_block() ) {
 			return new WP_Error( 'submissions_blocked', __( 'Submissions are currently blocked due to an upgrade in progress', 'gravityforms' ) );
@@ -414,15 +414,35 @@ class GFAPI {
 			return new WP_Error( 'invalid', __( 'Invalid form objects', 'gravityforms' ) );
 		}
 		$form_ids = array();
+		$failed_forms = array();
+		
 		foreach ( $forms as $form ) {
 			$result = self::add_form( $form );
 			if ( is_wp_error( $result ) ) {
-				return $result;
+				// If continue_on_error is true on the call, add the failed form details to the failed_forms array and return it else it will return the WP_Error.
+				if ( $continue_on_error ) {
+					$failed_forms[] = array(
+						'form_id' => $form['id'] ?? null,
+						'error'   => $result
+					);
+				} else {
+					return $result;
+				}
+				
+			} else {
+				$form_ids[] = $result;
 			}
-			$form_ids[] = $result;
+			
 		}
-
+		if ( $continue_on_error ) {
+			return array(
+				'form_ids'     => $form_ids,
+				'failed_forms' => $failed_forms
+			);
+		}
+		
 		return $form_ids;
+		
 	}
 
 	/**

@@ -235,7 +235,7 @@ class GF_Field_Text extends GF_Field {
 		}
 
 		if ( $format === 'html' ) {
-			$value = nl2br( $value );
+			$value = nl2br( (string) $value );
 
 			$allowable_tags = $this->get_allowable_tags();
 

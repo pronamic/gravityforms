@@ -9,6 +9,8 @@ use Gravity_Forms\Gravity_Forms\Settings\Config\GF_Settings_Config_I18N;
 use Gravity_Forms\Gravity_Forms\GF_Service_Container;
 use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
 
+use GFCommon;
+
 /**
  * Class GF_Settings_Service_Provider
  *
@@ -17,6 +19,8 @@ use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
  * @package Gravity_Forms\Gravity_Forms\Settings;
  */
 class GF_Settings_Service_Provider extends GF_Service_Provider {
+
+	const SETTINGS = 'settings';
 
 	// Configs
 	const SETTINGS_CONFIG_I18N  = 'settings_config_i18n';
@@ -45,6 +49,14 @@ class GF_Settings_Service_Provider extends GF_Service_Provider {
 	 * @param GF_Service_Container $container
 	 */
 	public function register( GF_Service_Container $container ) {
+		// Settings class
+		if ( ! GFCommon::is_form_editor() ) { // Loading the settings API in the form editor causes some unwanted filters to run.
+			require_once( plugin_dir_path( __FILE__ ) . '/class-settings.php' );
+			$container->add( self::SETTINGS, function() {
+
+				return new Settings();
+			} );
+		}
 
 		// Encryption utils
 		require_once( plugin_dir_path( __FILE__ ) . '/class-gf-settings-encryption.php' );
@@ -58,6 +70,21 @@ class GF_Settings_Service_Provider extends GF_Service_Provider {
 		require_once( plugin_dir_path( __FILE__ ) . '/config/class-gf-settings-config-admin.php' );
 
 		$this->add_configs( $container );
+	}
+
+	/**
+	 * Initialize any actions or hooks.
+	 *
+	 * @since 2.9.5
+	 *
+	 * @param GF_Service_Container $container
+	 *
+	 * @return void
+	 */
+	public function init( GF_Service_Container $container ) {
+		add_filter( 'rest_user_query', function ( $prepared_args, $request ) use ( $container ) {
+			return $container->get( self::SETTINGS )->remove_has_published_posts_from_api_user_query( $prepared_args, $request );
+		}, 10, 2 );
 	}
 
 	/**

@@ -180,7 +180,7 @@ if ( ! class_exists( 'GFResults' ) ) {
 			}
 		}
 
-		public function results_page( $form_id, $page_title, $gf_page, $gf_view ) {
+		public function results_page($form_id, $page_title, $gf_page, $gf_view ) {
 			$form_id = absint( $form_id );
 			if ( empty( $form_id ) ) {
 				$forms = RGFormsModel::get_forms();

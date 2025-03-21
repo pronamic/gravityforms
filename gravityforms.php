@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.4
+Version: 2.9.5
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.4';
+	public static $version = '2.9.5';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -882,8 +882,8 @@ class GFForms {
 	public static function maybe_process_form() {
 		require_once( GFCommon::get_base_path() . '/form_display.php' );
 
-		// If this is an AJAX or CUSTOM form submission, we don't want to process the form here.
-		if ( in_array( GFFormDisplay::get_submission_method(), array( GFFormDisplay::SUBMISSION_METHOD_AJAX, GFFormDisplay::SUBMISSION_METHOD_CUSTOM ) ) ) {
+		// If this is an AJAX form submission, we don't want to process the form here.
+		if ( GFFormDisplay::get_submission_method() === GFFormDisplay::SUBMISSION_METHOD_AJAX ) {
 			return;
 		}
 
@@ -2126,6 +2126,11 @@ class GFForms {
 			case 'import_form':
 				/* Translators: Import form page title. 1: Admin title. */
 				$admin_title = sprintf( __( 'Import Forms &lsaquo; %1$s', 'gravityforms' ), esc_html( $admin_title ) );
+				break;
+
+			case 'imported_forms_list':
+				/* Translators: Imported forms page title. 1: Admin title. */
+				$admin_title = sprintf( __( 'Imported Forms &lsaquo; %1$s', 'gravityforms' ), esc_html( $admin_title ) );
 				break;
 
 			case 'export_entry':
@@ -3549,6 +3554,10 @@ class GFForms {
 
 		if ( $page == 'gf_edit_forms' && ! rgget( 'id' ) ) {
 			return 'form_list';
+		}
+
+		if ( $page == 'gf_edit_forms' && count( explode(',', rgget( 'id' ) ) ) > 1 ) {
+			return 'imported_forms_list';
 		}
 
 		if ( $page == 'gf_edit_forms' && ! rgget( 'view' ) ) {
@@ -7324,7 +7333,7 @@ if ( ! function_exists( 'rgexplode' ) ) {
 	 * @return array $ary The exploded array
 	 */
 	function rgexplode( $sep, $string, $count ) {
-		$ary = explode( $sep, $string );
+		$ary = explode( (string) $sep, (string) $string );
 		while ( count( $ary ) < $count ) {
 			$ary[] = '';
 		}

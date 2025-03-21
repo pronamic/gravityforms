@@ -23,7 +23,6 @@ class GFFormDisplay {
 	const SUBMISSION_METHOD_POSTBACK = 'postback';
 	const SUBMISSION_METHOD_AJAX     = 'ajax';
 	const SUBMISSION_METHOD_IFRAME   = 'iframe';
-	const SUBMISSION_METHOD_CUSTOM   = 'custom';
 
 	/**
 	 * Starting point for the form submission process. Handles the following tasks: Form validation, save for later logic, entry creation, notification and confirmation.
@@ -927,9 +926,7 @@ class GFFormDisplay {
 	                return;
 	            }
 	            postRenderFired = true;
-	            jQuery( document ).trigger( \'gform_post_render\', [' . $form_id . ', ' . $current_page . '] );
-	            gform.utils.trigger( { event: \'gform/postRender\', native: false, data: { formId: ' . $form_id . ', currentPage: ' . $current_page . ' } } );
-	            gform.utils.trigger( { event: \'gform/post_render\', native: false, data: { formId: ' . $form_id . ', currentPage: ' . $current_page . ' } } );
+	            gform.core.triggerPostRenderEvents( ' . $form_id . ', ' . $current_page . ' );
 	            if ( visibilityTestDiv ) {
 	                visibilityTestDiv.parentNode.removeChild( visibilityTestDiv );
 	            }
@@ -1009,7 +1006,7 @@ class GFFormDisplay {
 		$form_args = apply_filters( 'gform_form_args', compact( 'form_id', 'display_title', 'display_description', 'force_display', 'field_values', 'ajax', 'tabindex' ) );
 
 		// The submission_method property can be set in the gform_form_args filter to specify how the form should be submitted.
-		// Supported values are: self::SUBMISSION_METHOD_AJAX (for true ajax submission), self::SUBMISSION_METHOD_POSTBACK (for standard form submission), self::SUBMISSION_METHOD_IFRAME (for the legacy iframe-based ajax submission ) or self::SUBMISSION_METHOD_CUSTOM (for submissions that will be triggered by third party code. i.e. Stripe Add-On).
+		// Supported values are: self::SUBMISSION_METHOD_AJAX (for true ajax submission), self::SUBMISSION_METHOD_POSTBACK (for standard form submission) or self::SUBMISSION_METHOD_IFRAME (for the legacy iframe-based ajax submission ).
 		// It is optional, but if set, will override the $ajax property.
 		if ( isset( $form_args['submission_method'] ) ) {
 			$form_args['ajax'] = $form_args['submission_method'] == self::SUBMISSION_METHOD_IFRAME;
@@ -1384,11 +1381,7 @@ class GFFormDisplay {
 
 			//add first page if this form has any page fields
 			if ( $has_pages ) {
-				$style         = self::is_page_active( $form_id, 1 ) ? '' : "style='display:none;'";
-				$class         = ' ' . rgar( $form, 'firstPageCssClass', '' );
-				$class         = esc_attr( $class );
-				$form_string .= "<div id='gform_page_{$form_id}_1' class='gform_page{$class}' data-js='page-field-id-0' {$style}>
-                                    <div class='gform_page_fields'>";
+				$form_string .= self::get_first_page_header( $form );
 			}
 
 			$tag = GFCommon::is_legacy_markup_enabled( $form ) ? 'ul' : 'div';
@@ -1400,48 +1393,14 @@ class GFFormDisplay {
 				$honeypot_handler = GFForms::get_service_container()->get( Gravity_Forms\Gravity_Forms\Honeypot\GF_Honeypot_Service_Provider::GF_HONEYPOT_HANDLER );
 				$form             = $honeypot_handler->maybe_add_honeypot_field( $form );
 
-				foreach ( $form['fields'] as $field ) {
-					$field->set_context_property( 'rendering_form', true );
-					/* @var GF_Field $field */
-					$field->conditionalLogicFields = self::get_conditional_logic_fields( $form, $field->id );
-
-					if ( is_array( $submitted_values ) ) {
-						$field_value = rgar( $submitted_values, $field->id );
-
-						if ( $field->type === 'consent'
-						     && ( $field_value[ $field->id . '.3' ] != GFFormsModel::get_latest_form_revisions_id( $form['id'] )
-						          || $field_value[ $field->id . '.2' ] != $field->checkboxLabel ) ) {
-							$field_value = GFFormsModel::get_field_value( $field, $field_values );
-						}
-					} else {
-						$field_value = GFFormsModel::get_field_value( $field, $field_values );
-					}
-
-					$form_string .= self::get_field( $field, $field_value, false, $form, $field_values );
-
-					$form_string .= self::get_row_spacer( $field, $form );
-
-				}
+				$form_string .= self::get_fields( $form, $field_values, $submitted_values );
 			}
 			$form_string .= "</{$tag}>";
 
 			$label_placement = rgar( $form, 'labelPlacement', 'top_label' );
 
 			if ( $has_pages ) {
-				$last_page_button = rgar( $form, 'lastPageButton', array() );
-				$previous_button_alt = rgar( $last_page_button, 'imageAlt', __( 'Previous Page', 'gravityforms' ) );
-				$previous_button = self::get_form_button( $form['id'], "gform_previous_button_{$form['id']}", $last_page_button, __( 'Previous', 'gravityforms' ), 'gform_previous_button gform-theme-button gform-theme-button--secondary', $previous_button_alt, self::get_current_page( $form_id ) - 1 );
-
-				/**
-				 * Filter through the form previous button when paged
-				 *
-				 * @param int $form_id The Form ID to filter through
-				 * @param string $previous_button The HTML rendered button (rendered with the form ID and the function get_form_button)
-				 * @param array $form The Form object to filter through
-				 */
-				$previous_button = gf_apply_filters( array( 'gform_previous_button', $form_id ), $previous_button, $form );
-				$form_string .= '</div>' . self::gform_footer( $form, 'gform-page-footer gform_page_footer ' . $label_placement, $ajax, $field_values, $previous_button, $display_title, $display_description, $tabindex, $form_theme, $style_settings, $submission_method ) . '
-                        </div>'; //closes gform_page
+				$form_string .= self::get_last_page_footer( $form, $label_placement, $ajax, $field_values, $display_title, $display_description, $tabindex, $form_theme, $style_settings, $submission_method );
 			}
 
 			$form_string .= '</div>'; //closes gform_body
@@ -1603,6 +1562,128 @@ class GFFormDisplay {
 			return self::get_confirmation_markup( $form, $confirmation_message, $ajax, $style_settings, $form_theme );
 		}
 	}
+
+
+	/**
+	 * Get the markup for a specific page in a multipage form.
+	 *
+	 * @since 2.9.5
+	 *
+	 * @param int    $form_id            The form ID.
+	 * @param int    $page_number        The page number to render.
+	 * @param array  $field_values       An array of field values to populate the form with.
+	 * @param string $theme              The current form theme (i.e. orbital or gravity).
+	 * @param array  $style_settings     An array of block or shortcode style settings.
+	 * @param string $submission_method  The submission method (i.e. ajax or postback).
+	 *
+	 * @return string Returns the markup for the specified page of a multipage form.
+	 */
+	public static function get_page( $form_id, $page_number, $field_values, $theme, $style_settings, $submission_method ) {
+
+		// Getting form and filtering it through gform_pre_render.
+		$form = GFAPI::get_form( $form_id );
+		$form = self::gform_pre_render( $form, 'form_display', false, $field_values );
+
+		// Maybe adding review page.
+		self::maybe_add_review_page( $form );
+
+		//TODO: research all the hooks / filters that need to be fired here.
+
+		$markup = '';
+
+		// If rendering the first page of the form, add the first page's header.
+		$is_first_page = $page_number === 1;
+		$tag           = GFCommon::is_legacy_markup_enabled( $form ) ? 'ul' : 'div';
+		if ( $is_first_page ) {
+			// Getting the page header for the first page of the form.
+			$markup .= self::get_first_page_header( $form );
+
+			// Getting the field container header if this is the first page of the form.
+			$markup .= "<{$tag} id='gform_fields_{$form_id}' class='" . GFCommon::get_ul_classes( $form ) . "'>"; // Opening field container for first page.
+		}
+
+		// Adding the fields for the target page.
+		$markup .= self::get_fields( $form, $field_values, false, $page_number );
+
+		// If this is the last page of the form, add the last page's footer.
+		$is_last_page = $page_number === self::get_max_page_number( $form );
+		if ( $is_last_page ) {
+
+			// Closing the field container on the last page of the form.
+			$markup .= "</{$tag}>";
+
+			// Adding the footer for the last page of the form.
+			$markup .= self::get_last_page_footer( $form, rgar( $form, 'labelPlacement', 'top_label' ), false, $field_values, false, false, '', $theme, $style_settings, $submission_method );
+		}
+
+		return $markup;
+	}
+
+	/**
+	 * Get the markup for a colletion of fields in a form. If $page_number is specified, only the markup for the fields on that page will be returned. Otherwise, the markup for all fields in the form will be returned.
+	 *
+	 * @since 2.9.5
+	 *
+	 * @param array $form             The current form object.
+	 * @param array $field_values     The array of field values to populate the form with.
+	 * @param array $submitted_values The array of submitted values if the form has been submitted.
+	 * @param int   $page_number      The current page number to get fields for. Or 0 to get all fields.
+	 *
+	 * @return string Returns the markup for the specified page of a multipage form, or all fields in the form if no page number is specified.
+	 */
+	public static function get_fields( $form, $field_values, $submitted_values, $page_number = 0 ) {
+
+		$fields = $page_number == 0 ? $form['fields'] : self::get_fields_by_page( $form, $page_number );
+
+		$markup = '';
+		foreach ( $fields as $field ) {
+
+			$field->set_context_property( 'rendering_form', true );
+			$field->conditionalLogicFields = self::get_conditional_logic_fields( $form, $field->id );
+
+			if ( is_array( $submitted_values ) ) {
+				$field_value = rgar( $submitted_values, $field->id );
+
+				if ( $field->type === 'consent'
+					&& ( $field_value[ $field->id . '.3' ] != GFFormsModel::get_latest_form_revisions_id( $form['id'] )
+						|| $field_value[ $field->id . '.2' ] != $field->checkboxLabel ) ) {
+					$field_value = GFFormsModel::get_field_value( $field, $field_values );
+				}
+			} else {
+				$field_value = GFFormsModel::get_field_value( $field, $field_values );
+			}
+
+			$markup .= self::get_field( $field, $field_value, false, $form, $field_values, $page_number );
+
+			$markup .= self::get_row_spacer( $field, $form );
+		}
+		return $markup;
+	}
+
+	/**
+	 * Gets the fields for a specific page in a form.
+	 *
+	 * since 2.9.5
+	 *
+	 * @param array $form        The form object.
+	 * @param int   $page_number The page number to get fields for.
+	 *
+	 * @return array Returns an array of fields belonging to the specified page.
+	 */
+	public static function get_fields_by_page( $form, $page_number ) {
+
+		$fields = array();
+		foreach ( $form['fields'] as $field ) {
+			$belongs_to_page  = $field->pageNumber == $page_number;
+			$is_page_footer   = $field->type == 'page' && $field->pageNumber == $page_number + 1;
+
+			if ( $belongs_to_page || $is_page_footer ) {
+				$fields[] = $field;
+			}
+		}
+		return $fields;
+	}
+
 
 	public static function footer_init_scripts( $form_id ) {
 		global $_init_forms;
@@ -2769,12 +2850,13 @@ class GFFormDisplay {
 			if ( ! empty( $found_forms ) ) {
 				foreach ( $found_forms as $form_id => $attributes ) {
 					$form = GFAPI::get_form( $form_id );
-					$ajax  = $attributes['ajax'];
-					$form['theme'] = ! rgempty( 'theme', $attributes ) ? $attributes['theme'] : GFForms::get_default_theme();
-					unset( $attributes['theme'] ); // removing theme from styles for consistency. $form['theme'] should be used instead.
-					$form['styles'] = self::get_form_styles( $attributes );
 
 					if ( $form && $form['is_active'] && ! $form['is_trash'] ) {
+						$ajax          = $attributes['ajax'];
+						$form['theme'] = ! rgempty( 'theme', $attributes ) ? $attributes['theme'] : GFForms::get_default_theme();
+						unset( $attributes['theme'] ); // removing theme from styles for consistency. $form['theme'] should be used instead.
+						$form['styles'] = self::get_form_styles( $attributes );
+
 						self::enqueue_form_scripts( $form, $ajax, $form['theme'] );
 					}
 				}
@@ -4163,15 +4245,20 @@ class GFFormDisplay {
 	}
 
 	/**
-	 * @param GF_Field $field
-	 * @param string   $value
-	 * @param bool     $force_frontend_label
-	 * @param null     $form
-	 * @param null     $field_values
+	 * Gets the markup for a given field.
 	 *
-	 * @return string|string[]|void
+	 * @since 2.9.5 Added the optional $page_number parameter.
+	 *
+	 * @param GF_Field $field                The field object.
+	 * @param string   $value                The field value to be pre-populated into the field.
+	 * @param bool     $force_frontend_label Forces the frontend label to be displayed in the admin even if an admin label is configured. Defaults to false.
+	 * @param array    $form                 The form object.
+	 * @param array    $field_values         The array of field values used to pre-populate the form.
+	 * @param int      $page_number          A non-zero value indicates that only that page should be rendered. This affects how page fields are rendered. Defaults to 0.
+	 *
+	 * @return string|null Returns the markup for the specified field.
 	 */
-	public static function get_field( $field, $value = '', $force_frontend_label = false, $form = null, $field_values = null ) {
+	public static function get_field( $field, $value = '', $force_frontend_label = false, $form = null, $field_values = null, $page_number = 0 ) {
 		$is_form_editor  = GFCommon::is_form_editor();
 		$is_entry_detail = GFCommon::is_entry_detail();
 		$is_admin        = $is_form_editor || $is_entry_detail;
@@ -4206,19 +4293,30 @@ class GFFormDisplay {
 				$save_button = apply_filters( 'gform_savecontinue_link', $save_button, $form );
 				$save_button = apply_filters( "gform_savecontinue_link_{$form_id}", $save_button, $form );
 
-				$style           = self::is_page_active( $form_id, $field->pageNumber ) ? '' : "style='display:none;'";
-				$custom_class    = ! empty( $custom_class ) ? " {$custom_class}" : '';
-				$label_placement = rgar( $form, 'labelPlacement', 'top_label' );
-				$tag             = GFCommon::is_legacy_markup_enabled( $form ) ? 'ul' : 'div';
-				$html            = "</{$tag}>
+				$style            = self::is_page_active( $form_id, $field->pageNumber ) ? '' : "style='display:none;'";
+				$custom_class     = ! empty( $custom_class ) ? " {$custom_class}" : '';
+				$label_placement  = rgar( $form, 'labelPlacement', 'top_label' );
+				$tag              = GFCommon::is_legacy_markup_enabled( $form ) ? 'ul' : 'div';
+				$page_footer_html = "</{$tag}>
                     </div>
                     <div class='gform-page-footer gform_page_footer {$label_placement}'>
                         {$previous_button} {$next_button} {$save_button}
                     </div>
-                </div>
+                </div>";
+
+                $page_header_html = "
                 <div id='gform_page_{$form['id']}_{$field->pageNumber}' class='gform_page{$custom_class}' data-js='page-field-id-{$field->id}' {$style}>
                     <div class='gform_page_fields'>
                         <{$tag} id='gform_fields_{$form['id']}_{$field->pageNumber}' class='" . GFCommon::get_ul_classes( $form ) . "'>";
+
+				// When displaying a specific page, the footer for the current page will be displayed by the next page field.
+				$display_footer = $page_number == 0 || $field->pageNumber == $page_number + 1;
+
+				// Display current page header if rendering a specific page.
+				$display_header = $page_number == 0 || $field->pageNumber == $page_number;
+
+				$html  = $display_footer ? $page_footer_html : '';
+				$html .= $display_header ? $page_header_html : '';
 
 				return $html;
 			}
@@ -5088,7 +5186,6 @@ class GFFormDisplay {
 			self::SUBMISSION_METHOD_POSTBACK,
 			self::SUBMISSION_METHOD_IFRAME,
 			self::SUBMISSION_METHOD_AJAX,
-			self::SUBMISSION_METHOD_CUSTOM,
 		) );
 	}
 
@@ -5544,7 +5641,8 @@ class GFFormDisplay {
 	 * @return array Returns the form object after being filtered by the gform_pre_render filter.
 	 */
 	public static function gform_pre_render( $form, $context, $ajax = null, $field_values = null ) {
-		$cache_key = $form['id'] . '_' . $context;
+		$form_id   = rgar( $form, 'id' );
+		$cache_key = $form_id . '_' . $context;
 
 		if ( ! isset( self::$cached_forms[ $cache_key ] ) ) {
 
@@ -5558,7 +5656,7 @@ class GFFormDisplay {
 			 * @param array|null $field_values  The field values to be used to populate the form. Only used when $context is 'form_display'.
 			 * @param string     $context       The context that the method is being called in. Possible values are 'form_display' and 'form_config'.
 			 */
-			self::$cached_forms[ $cache_key ] = gf_apply_filters( array( 'gform_pre_render', $form['id'] ), $form, $ajax, $field_values, $context );
+			self::$cached_forms[ $cache_key ] = gf_apply_filters( array( 'gform_pre_render', $form_id ), $form, $ajax, $field_values, $context );
 		}
 
 		return self::$cached_forms[ $cache_key ];
@@ -5646,5 +5744,59 @@ class GFFormDisplay {
 
 		GFCommon::log_debug(__METHOD__ . sprintf('(): Preparing form (#%d) confirmation completed in %F seconds.', $form['id'], GFCommon::timer_end(__METHOD__)));
 		return $confirmation_markup;
+	}
+
+
+	/**
+	 * Gets the last page's footer markup in a multipage form.
+	 *
+	 * @since 2.9.5
+	 *
+	 * @param array  $form                The current form object.
+	 * @param string $label_placement     The label placement setting for the form.
+	 * @param bool   $ajax                Indicates if AJAX is enabled for the current form.
+	 * @param array  $field_values        The field values to be used to populate the form.
+	 * @param bool   $display_title       Indicates if the form title should be displayed.
+	 * @param bool   $display_description Indicates if the form description should be displayed.
+	 * @param int    $tabindex            The starting tabindex.
+	 * @param string $form_theme          The theme selected for the form.
+	 * @param string $style_settings      The styles for the form.
+	 * @param string $submission_method   The submission method for the form.
+	 *
+	 * @return string Returns the markup for the last page's footer.
+	 */
+	public static function get_last_page_footer( $form, $label_placement, $ajax, $field_values, $display_title, $display_description, $tabindex, $form_theme, $style_settings, $submission_method ) {
+		$last_page_button = rgar($form, 'lastPageButton', array());
+		$previous_button_alt = rgar($last_page_button, 'imageAlt', __('Previous Page', 'gravityforms'));
+		$previous_button = self::get_form_button( $form['id'], "gform_previous_button_{$form['id']}", $last_page_button, __('Previous', 'gravityforms'), 'gform_previous_button gform-theme-button gform-theme-button--secondary', $previous_button_alt, self::get_current_page( $form['id'] ) - 1);
+
+		/**
+		 * Filter through the form previous button when paged
+		 *
+		 * @param int $form_id The Form ID to filter through
+		 * @param string $previous_button The HTML rendered button (rendered with the form ID and the function get_form_button)
+		 * @param array $form The Form object to filter through
+		 */
+		$previous_button = gf_apply_filters( array( 'gform_previous_button', $form['id'] ), $previous_button, $form );
+		return '</div>' . self::gform_footer( $form, 'gform-page-footer gform_page_footer ' . $label_placement, $ajax, $field_values, $previous_button, $display_title, $display_description, $tabindex, $form_theme, $style_settings, $submission_method ) . '
+             </div>'; //closes gform_page
+	}
+
+	/**
+	 * Gets the first page's header markup in a multipage form.
+	 *
+	 * @since 2.9.5
+	 *
+	 * @param array $form The current form object.
+	 *
+	 * @return string Returns the markup for the first page's header.
+	 */
+	public static function get_first_page_header( $form ) {
+		$style         = self::is_page_active( $form['id'], 1 ) ? '' : "style='display:none;'";
+		$class         = ' ' . rgar( $form, 'firstPageCssClass', '' );
+		$class         = esc_attr( $class );
+
+		return "<div id='gform_page_{$form['id']}_1' class='gform_page{$class}' data-js='page-field-id-0' {$style}>
+					<div class='gform_page_fields'>";
 	}
 }

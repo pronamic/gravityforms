@@ -1192,7 +1192,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		}
 
 		if ( $format === 'html' ) {
-			$value = nl2br( $value );
+			$value = nl2br( (string) $value );
 
 			$allowable_tags = $this->get_allowable_tags();
 

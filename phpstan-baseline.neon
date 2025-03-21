@@ -1,0 +1,1371 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^@param string \\$error does not accept actual type of parameter\\: WP_Error\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^@param string \\$headers does not accept actual type of parameter\\: array\\{From\\: non\\-falsy\\-string, Reply\\-To\\?\\: non\\-falsy\\-string, Bcc\\?\\: non\\-falsy\\-string, Cc\\?\\: non\\-falsy\\-string, Content\\-type\\: non\\-falsy\\-string\\}\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Expected 4 @param tags, found 3\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Function mcrypt_create_iv not found\\.$#"
+			count: 2
+			path: common.php
+
+		-
+			message: "#^Function mcrypt_decrypt not found\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Function mcrypt_encrypt not found\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Instantiated class ReallySimpleCaptcha not found\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Method GFCommon\\:\\:compare_floats\\(\\) should return bool but return statement is missing\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Method GFCommon\\:\\:get_dismissed_message_db_key\\(\\) should return string but return statement is missing\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Method GFCommon\\:\\:gf_global\\(\\) should return array\\|string but return statement is missing\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Method GFCommon\\:\\:is_message_dismissed\\(\\) should return bool but return statement is missing\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Method GFCommon\\:\\:output_svg\\(\\) should return string but return statement is missing\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 5
+			path: common.php
+
+		-
+			message: "#^Variable \\$array in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^Variable \\$src might not be defined\\.$#"
+			count: 1
+			path: common.php
+
+		-
+			message: "#^is_wp_error\\(bool\\) will always evaluate to false\\.$#"
+			count: 2
+			path: common.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: currency.php
+
+		-
+			message: "#^@param string \\$result does not accept actual type of parameter\\: bool\\.$#"
+			count: 1
+			path: entry_detail.php
+
+		-
+			message: "#^Expected 2 @param tags, found 1\\.$#"
+			count: 1
+			path: entry_detail.php
+
+		-
+			message: "#^Expected 3 @param tags, found 2\\.$#"
+			count: 1
+			path: entry_detail.php
+
+		-
+			message: "#^Expected 3 @param tags, found 4\\.$#"
+			count: 1
+			path: entry_detail.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: entry_detail.php
+
+		-
+			message: "#^is_wp_error\\(bool\\) will always evaluate to false\\.$#"
+			count: 2
+			path: entry_detail.php
+
+		-
+			message: "#^@param array \\$entry does not accept actual type of parameter\\: object\\.$#"
+			count: 3
+			path: entry_list.php
+
+		-
+			message: "#^@param int \\$field_id does not accept actual type of parameter\\: string\\.$#"
+			count: 3
+			path: entry_list.php
+
+		-
+			message: "#^Expected 3 @param tags, found 1\\.$#"
+			count: 1
+			path: entry_list.php
+
+		-
+			message: "#^Expected 4 @param tags, found 3\\.$#"
+			count: 1
+			path: entry_list.php
+
+		-
+			message: "#^Function esc_attr invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: entry_list.php
+
+		-
+			message: "#^Variable \\$message_class might not be defined\\.$#"
+			count: 1
+			path: entry_list.php
+
+		-
+			message: "#^Expected 0 @param tags, found 1\\.$#"
+			count: 1
+			path: export.php
+
+		-
+			message: "#^Function esc_html invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: export.php
+
+		-
+			message: "#^Result of function wp_nonce_field \\(void\\) is used\\.$#"
+			count: 1
+			path: export.php
+
+		-
+			message: "#^Variable \\$result might not be defined\\.$#"
+			count: 1
+			path: export.php
+
+		-
+			message: "#^is_wp_error\\(int\\<0, max\\>\\) will always evaluate to false\\.$#"
+			count: 1
+			path: export.php
+
+		-
+			message: "#^Array has 2 duplicate keys with value 'fields' \\('fields', 'fields'\\)\\.$#"
+			count: 1
+			path: form_detail.php
+
+		-
+			message: "#^Array has 2 duplicate keys with value 'selected' \\('selected', 'selected'\\)\\.$#"
+			count: 1
+			path: form_detail.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 3
+			path: form_detail.php
+
+		-
+			message: "#^Variable \\$fixed_menu_items might not be defined\\.$#"
+			count: 1
+			path: form_detail.php
+
+		-
+			message: "#^Variable \\$my_parent might not be defined\\.$#"
+			count: 1
+			path: form_detail.php
+
+		-
+			message: "#^Variable \\$script_str in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: form_detail.php
+
+		-
+			message: "#^Class GFCommon referenced with incorrect case\\: GFcommon\\.$#"
+			count: 1
+			path: form_display.php
+
+		-
+			message: "#^Method GFFormDisplay\\:\\:get_limit_period_dates\\(\\) should return array but return statement is missing\\.$#"
+			count: 1
+			path: form_display.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 4
+			path: form_display.php
+
+		-
+			message: "#^Undefined variable\\: \\$gf_global_script$#"
+			count: 1
+			path: form_display.php
+
+		-
+			message: "#^Variable \\$gf_global_script in isset\\(\\) is never defined\\.$#"
+			count: 1
+			path: form_display.php
+
+		-
+			message: "#^Variable \\$incomplete_submission_info might not be defined\\.$#"
+			count: 1
+			path: form_display.php
+
+		-
+			message: "#^Variable \\$submission_method might not be defined\\.$#"
+			count: 2
+			path: form_display.php
+
+		-
+			message: "#^Function esc_attr invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: form_list.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: form_list.php
+
+		-
+			message: "#^Static method GFFormList\\:\\:get_screen_option_dropdown\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 2
+			path: form_list.php
+
+		-
+			message: "#^Variable \\$active might not be defined\\.$#"
+			count: 3
+			path: form_list.php
+
+		-
+			message: "#^Expected 0 @param tags, found 1\\.$#"
+			count: 1
+			path: form_settings.php
+
+		-
+			message: "#^Function esc_html invoked with 2 parameters, 1 required\\.$#"
+			count: 2
+			path: form_settings.php
+
+		-
+			message: "#^Result of static method GFSettings\\:\\:page_footer\\(\\) \\(void\\) is used\\.$#"
+			count: 1
+			path: form_settings.php
+
+		-
+			message: "#^Variable \\$script_str in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: form_settings.php
+
+		-
+			message: "#^@param string \\$sub_type does not accept actual type of parameter\\: null\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^Call to function compact\\(\\) contains undefined variable \\$is_default\\.$#"
+			count: 2
+			path: forms_model.php
+
+		-
+			message: "#^Expected 3 @param tags, found 2\\.$#"
+			count: 2
+			path: forms_model.php
+
+		-
+			message: "#^Expected 3 @param tags, found 4\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^Function get_magic_quotes_gpc not found\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 4
+			path: forms_model.php
+
+		-
+			message: "#^Variable \\$charset_collate might not be defined\\.$#"
+			count: 2
+			path: forms_model.php
+
+		-
+			message: "#^Variable \\$form_id might not be defined\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^Variable \\$is_default might not be defined\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^Variable \\$payment_status might not be defined\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^Variable \\$read might not be defined\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^Variable \\$search might not be defined\\.$#"
+			count: 2
+			path: forms_model.php
+
+		-
+			message: "#^Variable \\$star might not be defined\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^Variable \\$status might not be defined\\.$#"
+			count: 3
+			path: forms_model.php
+
+		-
+			message: "#^is_wp_error\\(int\\<0, max\\>\\) will always evaluate to false\\.$#"
+			count: 1
+			path: forms_model.php
+
+		-
+			message: "#^@param string \\$content does not accept actual type of parameter\\: null\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^@param string \\$form_id does not accept actual type of parameter\\: int\\<0, max\\>\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Call to an undefined static method GFFormDetail\\:\\:delete_field\\(\\)\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Callback expects 1 parameter, \\$accepted_args is set to 2\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Filter callback return statement is missing\\.$#"
+			count: 2
+			path: gravityforms.php
+
+		-
+			message: "#^Function members_register_cap not found\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Function members_register_cap_group not found\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Static method GFExport\\:\\:start_export\\(\\) invoked with 0 parameters, 1\\-3 required\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Static method GFFormSettings\\:\\:delete_confirmation\\(\\) invoked with 0 parameters, 2 required\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Static method GFFormSettings\\:\\:form_settings_page\\(\\) invoked with 1 parameter, 0 required\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Variable \\$fixed_menu_items might not be defined\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Variable \\$lead might not be defined\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^Variable \\$parent might not be defined\\.$#"
+			count: 1
+			path: gravityforms.php
+
+		-
+			message: "#^@param int \\$menu_position does not accept actual type of parameter\\: lowercase\\-string&non\\-falsy\\-string&numeric\\-string&uppercase\\-string\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Action callback returns mixed but should not return anything\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Function members_register_cap not found\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Function members_register_cap_group not found\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Variable \\$class might not be defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Variable \\$description might not be defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Variable \\$field_type in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Variable \\$id might not be defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Variable \\$style might not be defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Variable \\$title might not be defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Variable \\$tooltip might not be defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Variable \\$tooltip_class might not be defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-addon.php
+
+		-
+			message: "#^Function esc_html invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: includes/addon/class-gf-auto-upgrade.php
+
+		-
+			message: "#^@param tag must not be named \\$this\\. Choose a descriptive alias, for example \\$instance\\.$#"
+			count: 1
+			path: includes/addon/class-gf-feed-addon.php
+
+		-
+			message: "#^Call to method add_post_payment_actions\\(\\) on an unknown class GFPayPal\\.$#"
+			count: 1
+			path: includes/addon/class-gf-feed-addon.php
+
+		-
+			message: "#^Class GFPayPal not found\\.$#"
+			count: 1
+			path: includes/addon/class-gf-feed-addon.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: includes/addon/class-gf-feed-addon.php
+
+		-
+			message: "#^Variable \\$charset_collate might not be defined\\.$#"
+			count: 2
+			path: includes/addon/class-gf-feed-addon.php
+
+		-
+			message: "#^Variable \\$value might not be defined\\.$#"
+			count: 2
+			path: includes/addon/class-gf-feed-addon.php
+
+		-
+			message: "#^Method GF_Feed_Processor\\:\\:custom_error_handler\\(\\) should return false but return statement is missing\\.$#"
+			count: 1
+			path: includes/addon/class-gf-feed-processor.php
+
+		-
+			message: "#^Access to an undefined property GFPaymentStatsTable\\:\\:\\$_pagination\\.$#"
+			count: 1
+			path: includes/addon/class-gf-payment-addon.php
+
+		-
+			message: "#^Expected 7 @param tags, found 6\\.$#"
+			count: 1
+			path: includes/addon/class-gf-payment-addon.php
+
+		-
+			message: "#^Filter callback return statement is missing\\.$#"
+			count: 1
+			path: includes/addon/class-gf-payment-addon.php
+
+		-
+			message: "#^Method GFPaymentAddOn\\:\\:authorize\\(\\) should return array but return statement is missing\\.$#"
+			count: 1
+			path: includes/addon/class-gf-payment-addon.php
+
+		-
+			message: "#^Method GFPaymentAddOn\\:\\:capture\\(\\) should return array but return statement is missing\\.$#"
+			count: 1
+			path: includes/addon/class-gf-payment-addon.php
+
+		-
+			message: "#^Method GFPaymentAddOn\\:\\:subscribe\\(\\) should return array but return statement is missing\\.$#"
+			count: 1
+			path: includes/addon/class-gf-payment-addon.php
+
+		-
+			message: "#^Variable \\$display_result might not be defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-payment-addon.php
+
+		-
+			message: "#^Variable \\$infinite_scroll in empty\\(\\) is never defined\\.$#"
+			count: 1
+			path: includes/addon/class-gf-payment-addon.php
+
+		-
+			message: "#^Call to static method get_field_score\\(\\) on an unknown class GFSurvey\\.$#"
+			count: 1
+			path: includes/addon/class-gf-results.php
+
+		-
+			message: "#^Call to static method get_likert_row_score\\(\\) on an unknown class GFSurvey\\.$#"
+			count: 1
+			path: includes/addon/class-gf-results.php
+
+		-
+			message: "#^Class GFAddOn referenced with incorrect case\\: GFAddon\\.$#"
+			count: 1
+			path: includes/api.php
+
+		-
+			message: "#^Variable \\$_POST in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: includes/api.php
+
+		-
+			message: "#^Variable \\$result might not be defined\\.$#"
+			count: 1
+			path: includes/api.php
+
+		-
+			message: "#^Call to an undefined method GF_Block_Form\\:\\:get_forms\\(\\)\\.$#"
+			count: 1
+			path: includes/blocks/class-gf-block-form.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: includes/blocks/class-gf-block-form.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$container\\.$#"
+			count: 1
+			path: includes/blocks/class-gf-blocks-service-provider.php
+
+		-
+			message: "#^@param int \\$confirmation_id does not accept actual type of parameter\\: string\\.$#"
+			count: 1
+			path: includes/class-confirmation.php
+
+		-
+			message: "#^@param int \\$field_id does not accept actual type of parameter\\: string\\.$#"
+			count: 1
+			path: includes/class-gf-download.php
+
+		-
+			message: "#^@param int \\$form_id does not accept actual type of parameter\\: non\\-falsy\\-string\\.$#"
+			count: 1
+			path: includes/class-gf-download.php
+
+		-
+			message: "#^@param int \\$version does not accept actual type of parameter\\: string\\.$#"
+			count: 1
+			path: includes/class-gf-upgrade.php
+
+		-
+			message: "#^Undefined variable\\: \\$site_secret$#"
+			count: 1
+			path: includes/class-gravity-api.php
+
+		-
+			message: "#^Variable \\$form_conditions in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/class-personal-data.php
+
+		-
+			message: "#^Constructor of class Gravity_Forms\\\\Gravity_Forms\\\\TranslationsPress_Updater has an unused parameter \\$deprecated\\.$#"
+			count: 1
+			path: includes/class-translationspress-updater.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$container\\.$#"
+			count: 1
+			path: includes/config/class-gf-config-service-provider.php
+
+		-
+			message: "#^Callback expects 1 parameter, \\$accepted_args is set to 2\\.$#"
+			count: 1
+			path: includes/config/class-gf-config-service-provider.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: includes/config/items/class-gf-config-legacy-check-multi.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$container\\.$#"
+			count: 2
+			path: includes/embed-form/class-gf-embed-service-provider.php
+
+		-
+			message: "#^@param tag must not be named \\$this\\. Choose a descriptive alias, for example \\$instance\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-address.php
+
+		-
+			message: "#^Expected 2 @param tags, found 1\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-address.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 2
+			path: includes/fields/class-gf-field-address.php
+
+		-
+			message: "#^Filter callback return statement is missing\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-captcha.php
+
+		-
+			message: "#^Instantiated class ReallySimpleCaptcha not found\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-captcha.php
+
+		-
+			message: "#^Variable \\$secure_token in empty\\(\\) is never defined\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-captcha.php
+
+		-
+			message: "#^@param tag must not be named \\$this\\. Choose a descriptive alias, for example \\$instance\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-fileupload.php
+
+		-
+			message: "#^Function wp_create_nonce invoked with 2 parameters, 0\\-1 required\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-fileupload.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-fileupload.php
+
+		-
+			message: "#^Variable \\$rules_messages in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-fileupload.php
+
+		-
+			message: "#^Variable \\$value in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-fileupload.php
+
+		-
+			message: "#^Callback expects 1 parameter, \\$accepted_args is set to 2\\.$#"
+			count: 2
+			path: includes/fields/class-gf-field-image-choice.php
+
+		-
+			message: "#^Variable \\$list in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-list.php
+
+		-
+			message: "#^Variable \\$first_aria_attributes might not be defined\\.$#"
+			count: 4
+			path: includes/fields/class-gf-field-name.php
+
+		-
+			message: "#^Variable \\$last_aria_attributes might not be defined\\.$#"
+			count: 4
+			path: includes/fields/class-gf-field-name.php
+
+		-
+			message: "#^Variable \\$middle_aria_attributes might not be defined\\.$#"
+			count: 2
+			path: includes/fields/class-gf-field-name.php
+
+		-
+			message: "#^Variable \\$suffix_aria_attributes might not be defined\\.$#"
+			count: 2
+			path: includes/fields/class-gf-field-name.php
+
+		-
+			message: "#^@param tag must not be named \\$this\\. Choose a descriptive alias, for example \\$instance\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-number.php
+
+		-
+			message: "#^Static method GFCommon\\:\\:clean_number\\(\\) invoked with 3 parameters, 1\\-2 required\\.$#"
+			count: 2
+			path: includes/fields/class-gf-field-number.php
+
+		-
+			message: "#^Expected 3 @param tags, found 2\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-password.php
+
+		-
+			message: "#^Class GF_Field_FileUpload referenced with incorrect case\\: GF_Field_Fileupload\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-post-image.php
+
+		-
+			message: "#^Variable \\$is_any_selected might not be defined\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-radio.php
+
+		-
+			message: "#^@param tag must not be named \\$this\\. Choose a descriptive alias, for example \\$instance\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-textarea.php
+
+		-
+			message: "#^Variable \\$value in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field-time.php
+
+		-
+			message: "#^@param tag must not be named \\$this\\. Choose a descriptive alias, for example \\$instance\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field.php
+
+		-
+			message: "#^Function esc_attr invoked with 2 parameters, 1 required\\.$#"
+			count: 2
+			path: includes/fields/class-gf-field.php
+
+		-
+			message: "#^Function esc_html invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field.php
+
+		-
+			message: "#^Method GF_Field\\:\\:get_conditional_logic_event\\(\\) should return string but return statement is missing\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field.php
+
+		-
+			message: "#^Method GF_Field\\:\\:get_input_value_submission\\(\\) should return array\\|string but return statement is missing\\.$#"
+			count: 1
+			path: includes/fields/class-gf-field.php
+
+		-
+			message: "#^Call to an undefined method GF_Field_Decorator_Choice_Checkbox_Markup\\:\\:get_input_id_from_choice_key\\(\\)\\.$#"
+			count: 1
+			path: includes/fields/field-decorator-choice/class-gf-field-decorator-choice-checkbox-markup.php
+
+		-
+			message: "#^Call to an undefined method GF_Field_Decorator_Choice_Checkbox_Markup\\:\\:get_limit_message\\(\\)\\.$#"
+			count: 1
+			path: includes/fields/field-decorator-choice/class-gf-field-decorator-choice-checkbox-markup.php
+
+		-
+			message: "#^Call to an undefined method GF_Field_Decorator_Choice_Radio_Markup\\:\\:add_aria_description\\(\\)\\.$#"
+			count: 1
+			path: includes/fields/field-decorator-choice/class-gf-field-decorator-choice-radio-markup.php
+
+		-
+			message: "#^Call to an undefined method GF_Field_Decorator_Choice_Radio_Markup\\:\\:get_aria_describedby\\(\\)\\.$#"
+			count: 1
+			path: includes/fields/field-decorator-choice/class-gf-field-decorator-choice-radio-markup.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: includes/form-display/block-styles/block-styles-handler.php
+
+		-
+			message: "#^Variable \\$products in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/form-display/config/class-gf-product-meta-config.php
+
+		-
+			message: "#^@param string \\$form_for_display does not accept actual type of parameter\\: null\\.$#"
+			count: 1
+			path: includes/form-display/full-screen/class-full-screen-handler.php
+
+		-
+			message: "#^Class Gravity_Forms\\\\Gravity_Forms\\\\Honeypot\\\\GF_Honeypot_Handler does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: includes/honeypot/class-gf-honeypot-service-provider.php
+
+		-
+			message: "#^Call to an undefined static method GF_Forms_Model_Legacy\\:\\:prepare_date\\(\\)\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Call to function compact\\(\\) contains undefined variable \\$end_date\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Call to function compact\\(\\) contains undefined variable \\$is_default\\.$#"
+			count: 2
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Call to function compact\\(\\) contains undefined variable \\$start_date\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Expected 3 @param tags, found 4\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Static method GF_Forms_Model_Legacy\\:\\:delete_physical_file\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$form might not be defined\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$form_id might not be defined\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$is_default might not be defined\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$lead_ids might not be defined\\.$#"
+			count: 2
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$payment_status might not be defined\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$read might not be defined\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$search might not be defined\\.$#"
+			count: 2
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$star might not be defined\\.$#"
+			count: 1
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Variable \\$status might not be defined\\.$#"
+			count: 3
+			path: includes/legacy/forms_model_legacy.php
+
+		-
+			message: "#^Method Gravity_Forms\\\\Gravity_Forms\\\\Libraries\\\\Dom_Parser\\:\\:is_amp_regex\\(\\) should return bool but return statement is missing\\.$#"
+			count: 1
+			path: includes/libraries/class-dom-parser.php
+
+		-
+			message: "#^Undefined variable\\: \\$content$#"
+			count: 2
+			path: includes/libraries/class-dom-parser.php
+
+		-
+			message: "#^is_wp_error\\(Gravity_Forms\\\\Gravity_Forms\\\\External_API\\\\GF_API_Response\\) will always evaluate to false\\.$#"
+			count: 1
+			path: includes/license/class-gf-license-api-connector.php
+
+		-
+			message: "#^@param string \\$message_type does not accept actual type of parameter\\: int\\.$#"
+			count: 1
+			path: includes/logging/logging.php
+
+		-
+			message: "#^Call to sprintf contains 0 placeholders, 1 value given\\.$#"
+			count: 1
+			path: includes/logging/logging.php
+
+		-
+			message: "#^Class KLogger constructor invoked with 4 parameters, 2\\-3 required\\.$#"
+			count: 1
+			path: includes/logging/logging.php
+
+		-
+			message: "#^Constructor of class Gravity_Forms\\\\Gravity_Forms\\\\Orders\\\\Exporters\\\\GF_Order_Exporter has an unused parameter \\$config\\.$#"
+			count: 1
+			path: includes/orders/exporters/class-gf-order-exporter.php
+
+		-
+			message: "#^Access to an undefined property Gravity_Forms\\\\Gravity_Forms\\\\Orders\\\\Items\\\\GF_Form_Product_Item\\:\\:\\$currency\\.$#"
+			count: 2
+			path: includes/orders/items/class-gf-form-product-order-item.php
+
+		-
+			message: "#^Access to an undefined property Gravity_Forms\\\\Gravity_Forms\\\\Orders\\\\Items\\\\GF_Form_Product_Item\\:\\:\\$options\\.$#"
+			count: 1
+			path: includes/orders/items/class-gf-form-product-order-item.php
+
+		-
+			message: "#^Access to an undefined property Gravity_Forms\\\\Gravity_Forms\\\\Orders\\\\Items\\\\GF_Form_Product_Item\\:\\:\\$price\\.$#"
+			count: 2
+			path: includes/orders/items/class-gf-form-product-order-item.php
+
+		-
+			message: "#^Access to an undefined property Gravity_Forms\\\\Gravity_Forms\\\\Orders\\\\Items\\\\GF_Order_Item\\:\\:\\$currency\\.$#"
+			count: 2
+			path: includes/orders/items/class-gf-order-item.php
+
+		-
+			message: "#^Access to an undefined property Gravity_Forms\\\\Gravity_Forms\\\\Orders\\\\Items\\\\GF_Order_Item\\:\\:\\$price\\.$#"
+			count: 2
+			path: includes/orders/items/class-gf-order-item.php
+
+		-
+			message: "#^Access to an undefined property Gravity_Forms\\\\Gravity_Forms\\\\Orders\\\\Items\\\\GF_Order_Item\\:\\:\\$quantity\\.$#"
+			count: 2
+			path: includes/orders/items/class-gf-order-item.php
+
+		-
+			message: "#^Access to an undefined property Gravity_Forms\\\\Gravity_Forms\\\\Orders\\\\Items\\\\GF_Order_Item\\:\\:\\$sub_total\\.$#"
+			count: 1
+			path: includes/orders/items/class-gf-order-item.php
+
+		-
+			message: "#^Variable \\$order_summary might not be defined\\.$#"
+			count: 9
+			path: includes/orders/summaries/views/view-order-summary.php
+
+		-
+			message: "#^Variable \\$order_summary might not be defined\\.$#"
+			count: 9
+			path: includes/orders/summaries/views/view-pricing-fields-html.php
+
+		-
+			message: "#^Variable \\$order_summary might not be defined\\.$#"
+			count: 5
+			path: includes/orders/summaries/views/view-pricing-fields-text.php
+
+		-
+			message: "#^Access to an undefined static property QRtools\\:\\:\\$frames\\.$#"
+			count: 1
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Class qrstr referenced with incorrect case\\: QRstr\\.$#"
+			count: 7
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Instantiated class QRbitrtream not found\\.$#"
+			count: 1
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Method QRmask\\:\\:generateMaskNo\\(\\) invoked with 4 parameters, 3 required\\.$#"
+			count: 2
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Method QRsplit\\:\\:identifyMode\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Static call to instance method QRinput\\:\\:estimateBitsModeKanji\\(\\)\\.$#"
+			count: 1
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Undefined variable\\: \\$ret$#"
+			count: 1
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Undefined variable\\: \\$run$#"
+			count: 1
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Variable \\$hint might not be defined\\.$#"
+			count: 1
+			path: includes/phpqrcode/phpqrcode.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Call\\:\\:\\$function_name\\.$#"
+			count: 3
+			path: includes/query/class-gf-query-call.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Call\\:\\:\\$parameters\\.$#"
+			count: 3
+			path: includes/query/class-gf-query-call.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Column\\:\\:\\$alias\\.$#"
+			count: 2
+			path: includes/query/class-gf-query-column.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Column\\:\\:\\$field_id\\.$#"
+			count: 4
+			path: includes/query/class-gf-query-column.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Column\\:\\:\\$source\\.$#"
+			count: 2
+			path: includes/query/class-gf-query-column.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Condition\\:\\:\\$left\\.$#"
+			count: 4
+			path: includes/query/class-gf-query-condition.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Condition\\:\\:\\$operator\\.$#"
+			count: 4
+			path: includes/query/class-gf-query-condition.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Condition\\:\\:\\$right\\.$#"
+			count: 6
+			path: includes/query/class-gf-query-condition.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_JSON_Literal\\:\\:\\$value\\.$#"
+			count: 1
+			path: includes/query/class-gf-query-json-literal.php
+
+		-
+			message: "#^Access to an undefined property GF_Query_Literal\\:\\:\\$value\\.$#"
+			count: 1
+			path: includes/query/class-gf-query-literal.php
+
+		-
+			message: "#^Variable \\$end_date in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/query/class-gf-query.php
+
+		-
+			message: "#^Variable \\$entry_meta might not be defined\\.$#"
+			count: 1
+			path: includes/query/class-gf-query.php
+
+		-
+			message: "#^Class Gravity_Forms\\\\Gravity_Forms\\\\Save_Form\\\\GF_Form_CRUD_Handler referenced with incorrect case\\: Gravity_Forms\\\\Gravity_Forms\\\\Save_Form\\\\GF_Form_CRUD_handler\\.$#"
+			count: 1
+			path: includes/save-form/class-gf-save-form-service-provider.php
+
+		-
+			message: "#^Call to static method get_support_url\\(\\) on an unknown class Gravity_Forms\\\\Gravity_Forms\\\\Save_Form\\\\Endpoints\\\\GFCommon\\.$#"
+			count: 1
+			path: includes/save-form/endpoints/class-gf-save-form-endpoint-admin.php
+
+		-
+			message: "#^@param tag must not be named \\$this\\. Choose a descriptive alias, for example \\$instance\\.$#"
+			count: 1
+			path: includes/settings/class-settings.php
+
+		-
+			message: "#^is_wp_error\\(Gravity_Forms\\\\Gravity_Forms\\\\Settings\\\\Fields\\\\Base\\) will always evaluate to false\\.$#"
+			count: 1
+			path: includes/settings/class-settings.php
+
+		-
+			message: "#^Expected 2 @param tags, found 1\\.$#"
+			count: 1
+			path: includes/settings/fields/class-base.php
+
+		-
+			message: "#^Variable \\$matches in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/settings/fields/class-base.php
+
+		-
+			message: "#^Variable \\$icon_class in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/settings/fields/class-card.php
+
+		-
+			message: "#^Method Gravity_Forms\\\\Gravity_Forms\\\\Settings\\\\Fields\\\\Base\\:\\:get_value\\(\\) invoked with 2 parameters, 0 required\\.$#"
+			count: 1
+			path: includes/settings/fields/class-checkbox.php
+
+		-
+			message: "#^@param array\\|null \\$field_type does not accept actual type of parameter\\: string\\.$#"
+			count: 2
+			path: includes/settings/fields/class-generic-map.php
+
+		-
+			message: "#^Variable \\$field might not be defined\\.$#"
+			count: 2
+			path: includes/settings/fields/class-generic-map.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 14
+			path: includes/splash-page/gf_splash.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$container\\.$#"
+			count: 1
+			path: includes/system-status/class-gf-system-report-service-provider.php
+
+		-
+			message: "#^Expected 0 @param tags, found 1\\.$#"
+			count: 1
+			path: includes/system-status/class-gf-system-status.php
+
+		-
+			message: "#^Used function tad\\\\WPBrowser\\\\debug not found\\.$#"
+			count: 1
+			path: includes/telemetry/class-gf-telemetry-processor.php
+
+		-
+			message: "#^is_wp_error\\(array\\|Gravity_Forms\\\\Gravity_Forms\\\\Telemetry\\\\WP_Error\\) will always evaluate to false\\.$#"
+			count: 1
+			path: includes/telemetry/class-gf-telemetry-processor.php
+
+		-
+			message: "#^is_wp_error\\(array\\) will always evaluate to false\\.$#"
+			count: 1
+			path: includes/telemetry/class-gf-telemetry-snapshot-data.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$container\\.$#"
+			count: 1
+			path: includes/template-library/class-gf-template-library-service-provider.php
+
+		-
+			message: "#^Caught class Unirest\\\\Exception not found\\.$#"
+			count: 1
+			path: includes/template-library/templates/class-gf-template-library-file-store.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$container\\.$#"
+			count: 1
+			path: includes/theme-layers/class-gf-theme-layers-provider.php
+
+		-
+			message: "#^Callback expects 2 parameters, \\$accepted_args is set to 4\\.$#"
+			count: 1
+			path: includes/theme-layers/framework/engines/output-engines/class-asset-enqueue-output-engine.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$container\\.$#"
+			count: 1
+			path: includes/updates/class-gf-updates-service-provider.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: includes/upload.php
+
+		-
+			message: "#^Variable \\$contentType might not be defined\\.$#"
+			count: 1
+			path: includes/upload.php
+
+		-
+			message: "#^Call to an undefined method GF_API_Keys_Table\\:\\:delete_api_key\\(\\)\\.$#"
+			count: 1
+			path: includes/webapi/includes/class-gf-api-keys-table.php
+
+		-
+			message: "#^Call to static method get_field_score\\(\\) on an unknown class GFSurvey\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/class-results-cache.php
+
+		-
+			message: "#^Call to static method get_likert_row_score\\(\\) on an unknown class GFSurvey\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/class-results-cache.php
+
+		-
+			message: "#^Callback expects 1 parameter, \\$accepted_args is set to 2\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/class-results-cache.php
+
+		-
+			message: "#^Callback expects 3 parameters, \\$accepted_args is set to 4\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/class-results-cache.php
+
+		-
+			message: "#^Class GF_Field_Likert not found\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/class-results-cache.php
+
+		-
+			message: "#^Variable \\$state in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/class-results-cache.php
+
+		-
+			message: "#^is_wp_error\\(array\\|bool\\) will always evaluate to false\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/controllers/class-controller-entry-notes.php
+
+		-
+			message: "#^is_wp_error\\(bool\\) will always evaluate to false\\.$#"
+			count: 2
+			path: includes/webapi/v2/includes/controllers/class-controller-entry-properties.php
+
+		-
+			message: "#^is_wp_error\\(array\\|\\(ArrayAccess&WP_Error\\)\\) will always evaluate to false\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/controllers/class-controller-notes.php
+
+		-
+			message: "#^is_wp_error\\(array\\|bool\\) will always evaluate to false\\.$#"
+			count: 1
+			path: includes/webapi/v2/includes/controllers/class-controller-notes.php
+
+		-
+			message: "#^Callback expects 1 parameter, \\$accepted_args is set to 2\\.$#"
+			count: 1
+			path: includes/webapi/webapi.php
+
+		-
+			message: "#^Method GFWebAPI\\:\\:post_forms\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: includes/webapi/webapi.php
+
+		-
+			message: "#^Method GFWebAPI\\:\\:put_forms\\(\\) invoked with 3 parameters, 1\\-2 required\\.$#"
+			count: 1
+			path: includes/webapi/webapi.php
+
+		-
+			message: "#^Variable \\$result might not be defined\\.$#"
+			count: 2
+			path: includes/webapi/webapi.php
+
+		-
+			message: "#^Variable \\$results in isset\\(\\) is never defined\\.$#"
+			count: 1
+			path: includes/webapi/webapi.php
+
+		-
+			message: "#^Variable \\$state in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: includes/webapi/webapi.php
+
+		-
+			message: "#^is_wp_error\\(bool\\) will always evaluate to false\\.$#"
+			count: 2
+			path: includes/webapi/webapi.php
+
+		-
+			message: "#^@param int \\$notification_id does not accept actual type of parameter\\: string\\.$#"
+			count: 1
+			path: notification.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 2
+			path: notification.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: print-entry.php
+
+		-
+			message: "#^Expected 0 @param tags, found 1\\.$#"
+			count: 1
+			path: settings.php
+
+		-
+			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
+			count: 1
+			path: settings.php
+
+		-
+			message: "#^Undefined variable\\: \\$tab_label$#"
+			count: 1
+			path: settings.php
+
+		-
+			message: "#^Variable \\$tab_label in isset\\(\\) is never defined\\.$#"
+			count: 1
+			path: settings.php
+
+		-
+			message: "#^Function gform_tooltip\\(\\) should return string but return statement is missing\\.$#"
+			count: 1
+			path: tooltips.php
+
+		-
+			message: "#^Variable \\$after_title might not be defined\\.$#"
+			count: 1
+			path: widget.php
+
+		-
+			message: "#^Variable \\$after_widget might not be defined\\.$#"
+			count: 1
+			path: widget.php
+
+		-
+			message: "#^Variable \\$before_title might not be defined\\.$#"
+			count: 1
+			path: widget.php
+
+		-
+			message: "#^Variable \\$before_widget might not be defined\\.$#"
+			count: 1
+			path: widget.php

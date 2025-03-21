@@ -1186,6 +1186,7 @@ function gformInitPriceFields(){
 }
 
 function bindProductChangeEvent() {
+	// For backwards compatibility, fire jQuery gform_price_change event.
 	document.addEventListener( 'gform/products/product_field_changed', function( event ) {
 		const productIds = { formId : event.detail.formId, productFieldId : event.detail.productFieldId }
 

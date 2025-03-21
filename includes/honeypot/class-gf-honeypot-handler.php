@@ -98,6 +98,9 @@ class GF_Honeypot_Handler {
 	 * @return array Returns a form object with the new honeypot field appended to the fields array.
 	 */
 	public function maybe_add_honeypot_field( $form ) {
+		if ( ! is_array( $form['fields'] ) ) {
+			return $form;
+		}
 
 		if ( rgar( $form, 'enableHoneypot' ) ) {
 			$form['fields'][] = $this->get_honeypot_field( $form );
