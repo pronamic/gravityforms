@@ -1,3 +1,19 @@
+### 2.9.6.1
+- Fixed a PHP fatal error that occurs when the gform_form_switcher_forms filter returns an invalid value, or when a deleted form remains in the current users recent forms list.
+
+### 2.9.6 | 2025-04-08
+- Added a performance improvement by making the form switcher only show the most recent 10 forms.
+- Updated the [`gform_form_switcher_forms`](https://docs.gravityforms.com/gform_form_switcher_forms/) filter to allow developers to also filter the forms that show up in the form switcher search results.
+- Updated dropdowns in the admin to be more consistent.
+- Fixed an issue where `save_callback` is not called for fields located in tabs.
+- Fixed an issue where the submit button is replaced with a next button on the last page of a multi-page form when that page is hidden by conditional logic and fails validation.
+- Fixed an issue where the field map setting is not working when no conflict mode is enabled.
+- Fixed an issue where the form submits or the next page is displayed if the previous button does not include the `gform_previous_button` class when clicked. Note: When using filters like `gform_submit_button`, `gform_next_button`, or `gform_previous_button` to replace the input elements with button elements, make sure to keep the attributes from the original elements. [Example code](https://docs.gravityforms.com/gform_submit_button/#h-1-change-input-to-button).
+- Fixed an issue where a javascript error occurs if a calculation is attempted and the calculation field does not have an input.
+- API: Added inline documentation for the Foundation layer of the Theme Framework.
+- API: Added temporary blocking mechanism when version.php API calls return server errors (5xx) to prevent excessive failed requests.
+- API: Updated the generic map setting field to support using textareas when mapping to a custom value.
+
 ### 2.9.5 | 2025-03-20
 - Fixed an issue where a javascript error is thrown when using multiple forms on the same page with conditional logic.
 - Fixed a bug that causes a PHP error when you try to duplicate a duplicate of a form. Credit: The GravityKit Team.
@@ -8,7 +24,6 @@
 - Updated the form import confirmation message to display the count of both failed and successful forms and to include a link to the list of imported forms.
 - Removed hidden fields that provide instructions in the form templates.
 - AF: Fixed a PHP notice that occurs when creating or editing a coupon.
-- API: Updated the generic map setting field to support using textareas when mapping to a custom value.
 - API: Added a new User Select field to the Settings API.
 - API: Updated the submission process to support submission method changes via the [gform/submission/pre_submission](https://docs.gravityforms.com/gform-submission-pre_submission/) filter.
 - API: Removed support for the SUBMISSION_METHOD_CUSTOM submission method.

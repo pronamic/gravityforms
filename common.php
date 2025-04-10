@@ -6113,9 +6113,7 @@ Content-Type: text/html;
 			return;
 		}
 
-		$hooks_javascript = self::get_hooks_javascript_code();
-
-		echo '<script type="text/javascript">' . $hooks_javascript . '</script>';
+		echo self::get_inline_script_tag( self::get_hooks_javascript_code(), false );
 	}
 
 	/**

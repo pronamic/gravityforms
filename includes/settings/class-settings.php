@@ -1626,7 +1626,7 @@ class Settings {
 
 			// Validate nested fields.
 			if ( rgar( $item, 'fields' ) ) {
-				$values = $this->filter_group_values( $values, array( $item ) );
+				$values = $this->filter_group_values( $values, $item );
 			}
 
 		}

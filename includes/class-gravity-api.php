@@ -264,9 +264,17 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 
 			$nocache = $cache ? '' : 'nocache=1'; //disabling server side caching
 
-			// Store the raw_response for this page load. This will keep us from hitting the api multiple times per pageload.
-			if ( is_null( self::$raw_response ) ) {
-				self::$raw_response = GFCommon::post_to_manager( 'version.php', $nocache, $options );
+			// Check if API is currently blocked due to previous 500 errors.
+			$api_blocked = get_transient( 'gf_api_version_blocked' );
+			if ( $api_blocked ) {
+				GFCommon::log_debug( __METHOD__ . '(): API calls to version.php are temporarily blocked due to previous server errors.' );
+				// Use a WP_Error to indicate API is temporarily blocked
+				self::$raw_response = new WP_Error( 'api_blocked', 'API temporarily blocked due to previous server errors' );
+			} else {
+				// Store the raw_response for this page load. This will keep us from hitting the api multiple times per pageload.
+				if ( is_null( self::$raw_response ) ) {
+					self::$raw_response = GFCommon::post_to_manager( 'version.php', $nocache, $options );
+				}
 			}
 
 			$raw_response = self::$raw_response;;
@@ -278,6 +286,13 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 			);
 
 			if ( is_wp_error( $raw_response ) || rgars( $raw_response, 'response/code' ) != 200 ) {
+				// Check if this is a 5xx server error and set a transient to block future requests for 30 minutes.
+				$response_code = rgars( $raw_response, 'response/code' );
+				if ( $response_code >= 500 && $response_code < 600 ) {
+					set_transient( 'gf_api_version_blocked', true, 30 * MINUTE_IN_SECONDS );
+					GFCommon::log_error( __METHOD__ . "(): {$response_code} error received from version.php API. Blocking further calls for 30 minutes." );
+				}
+
 				$version_info['timestamp'] = time();
 
 				return $version_info;
@@ -320,7 +335,21 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 
 			$nocache = 'nocache=1'; //disabling server side caching
 
-			GFCommon::post_to_manager( 'version.php', $nocache, $options );
+			// Check if API is currently blocked due to previous 500 errors.
+			$api_blocked = get_transient( 'gf_api_version_blocked' );
+			if ( $api_blocked ) {
+				GFCommon::log_debug( __METHOD__ . '(): API calls to version.php are temporarily blocked due to previous server errors.' );
+				return;
+			}
+
+			$response = GFCommon::post_to_manager( 'version.php', $nocache, $options );
+
+			// Check if this is a 5xx server error
+			$response_code = rgars( $response, 'response/code' );
+			if ( $response_code >= 500 && $response_code < 600 ) {
+				set_transient( 'gf_api_version_blocked', true, 30 * MINUTE_IN_SECONDS );
+				GFCommon::log_error( __METHOD__ . "(): {$response_code} error received from version.php API. Blocking further calls for 30 minutes." );
+			}
 		}
 
 		public function send_email_to_hubspot( $email ) {

@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.5
+Version: 2.9.6.1
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.5';
+	public static $version = '2.9.6.1';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -345,6 +345,7 @@ class GFForms {
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Async\GF_Background_Process_Service_Provider() );
 		$container->add_provider( new \GF_System_Report_Service_Provider() );
 		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Telemetry\GF_Telemetry_Service_Provider() );
+		$container->add_provider( new \Gravity_Forms\Gravity_Forms\Form_Switcher\GF_Form_Switcher_Service_Provider() );
 	}
 
 	/**
@@ -381,6 +382,7 @@ class GFForms {
 		require_once GF_PLUGIN_DIR_PATH . 'includes/system-status/class-gf-system-report-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/updates/class-gf-updates-service-provider.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/telemetry/class-gf-telemetry-service-provider.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/form-switcher/class-gf-form-switcher-service-provider.php';
 
 		if ( ! empty( self::$container ) ) {
 			return self::$container;
@@ -1154,7 +1156,7 @@ class GFForms {
 			'jquery-color',
 			'utils',
 			'svg-painter',
-			'mce-view' // added in 2.5.13 to support Media Uploads in no-conflict mode
+			'mce-view', // added in 2.5.13 to support Media Uploads in no-conflict mode
 		);
 
 		$gf_required_scripts = array(
@@ -1198,6 +1200,8 @@ class GFForms {
 				'gform_selectwoo',
 			),
 			'gf_edit_forms_settings' => array(
+				'wp-element',
+				'wp-i18n',
 				'editor',
 				'word-count',
 				'quicktags',
@@ -1262,7 +1266,8 @@ class GFForms {
 			'gf_system_status'           => array(
 				'gform_system_report_clipboard',
 				'thickbox',
-				'gform_placeholder'),
+				'gform_placeholder',
+			),
 		);
 
 		$load_scripts_globally = apply_filters( 'gform_load_admin_scripts_globally', true );
@@ -3204,7 +3209,7 @@ class GFForms {
 			return $form_string;
 		}
 
-		return '<script type="text/javascript">' . $scripts . '</script>' . $form_string;
+		return GFCommon::get_inline_script_tag( $scripts, false ) . $form_string;
 	}
 
 	/**
@@ -5048,52 +5053,41 @@ class GFForms {
 	/**
 	 * Displays the form switcher dropdown.
 	 *
-	 * @param string $title The form title
+	 *  @since  Unknown
+	 *  @since  2.9.6   Updated to list only the recent forms.
 	 *
-	 * @since  Unknown
-	 * @access public
+	 * @param string $title   The form title.
+	 * @param string $form_id The form ID.
 	 */
-	public static function form_switcher( $title = '' ) {
+	public static function form_switcher( $title = '', $form_id = '' ) {
 
-		if ( ! class_exists( 'GFFormSettings' ) ) {
-			require_once( GFCommon::get_base_path() . '/form_settings.php' );
+		$recent_forms = GFFormsModel::get_recent_forms();
+		$forms        = array();
+		foreach( $recent_forms as $recent_form_id ) {
+			$form = GFFormsModel::get_form( $recent_form_id );
+			if ( $form ) {
+				$forms[] = $form;
+			}
 		}
 
 		/**
-		 * Get forms to be displayed in Form Switcher dropdown.
+		 * Filter forms to be displayed in Form Switcher dropdown.
 		 *
 		 * @since 2.4.16
+ 		 * @since 2.9.6 Default to only showing 10 forms initially instead of all forms.
 		 *
-		 * @param array $all_forms All available Form objects, sorted by title.
+		 * @param array $forms The ten forms most recently edited by the current user.
 		 */
-		$all_forms = apply_filters( 'gform_form_switcher_forms', GFFormsModel::get_forms( null, 'title' ) );
+		$forms = (array) apply_filters( 'gform_form_switcher_forms', $forms );
 
-		// Sort forms by active state.
-		$forms              = array( 'active' => array(), 'inactive' => array(), );
-		$results_page_forms = array();
-
-		foreach ( $all_forms as $form ) {
-
-			$results_slug = self::get_form_switcher_results_page_slug( $form );
-			if ( $results_slug ) {
-				$results_page_forms[ $form->id ] = $results_slug;
+		foreach ( $forms as $key => $form ) {
+			if ( ! is_object( $form ) ) {
+				unset( $forms[ $key ] );
+				continue;
 			}
 
-			$form_subviews = GFFormSettings::get_tabs( $form->id );
-			$subview_list  = array();
-			foreach( $form_subviews as $subview ) {
-				$subview_list[] = $subview['name'];
-			}
-			$subview_list[] = 'gf_theme_layers';
-
-			$form->subviews = $subview_list;
-
-			if ( '1' === $form->is_active ) {
-				$forms['active'][] = $form;
-			} elseif ( '0' === $form->is_active ) {
-				$forms['inactive'][] = $form;
-			}
-
+			$form->results_attr = self::get_form_switcher_results_page_attr( $form->id );
+			$form->subview_attr = self::get_form_switcher_subview_attr( $form->id );
 		}
 
 		?>
@@ -5102,16 +5096,20 @@ class GFForms {
 			<span
 				class="gform-visually-hidden"
 				id="gform-form-switcher-label"
-			><?php esc_attr_e( 'Select a different form', 'gravityforms' ) ?></span>
+			><?php esc_attr_e( 'Select a different form', 'gravityforms' ); ?></span>
 			<button
+			    type="button"
 				aria-expanded="false"
 				aria-haspopup="listbox"
 				aria-labelledby="gform-form-switcher-label gform-form-switcher-control"
 				class="gform-dropdown__control"
 				data-js="gform-dropdown-control"
 				id="gform-form-switcher-control"
+				data-value="<?php esc_attr_e( $form_id ); ?>"
 			>
-				<span class="gform-dropdown__control-text" data-js="gform-dropdown-control-text"><?php echo esc_html( $title ); ?></span>
+				<span class="gform-dropdown__control-text" data-js="gform-dropdown-control-text">
+				    <?php echo esc_html( $title ); ?>
+				</span>
 				<i class="gform-spinner gform-dropdown__spinner"></i>
 				<i class="gform-icon gform-icon--chevron gform-dropdown__chevron"></i>
 			</button>
@@ -5119,33 +5117,34 @@ class GFForms {
 				aria-labelledby="gform-form-switcher-label"
 				class="gform-dropdown__container"
 				role="listbox"
+				data-js="gform-dropdown-container"
 				tabindex="-1"
 			>
 				<div class="gform-dropdown__search">
-					<label for="gform-form-switcher-search" class="gform-visually-hidden"><?php esc_attr_e( 'Search forms', 'gravityforms' ) ?></label>
+					<label for="gform-form-switcher-search" class="gform-visually-hidden"><?php esc_attr_e( 'Search forms', 'gravityforms' ); ?></label>
 					<input
 						id="gform-form-switcher-search"
 						type="text" class="gform-input gform-dropdown__search-input"
-						placeholder="<?php esc_attr_e( 'Search for form', 'gravityforms' ) ?>"
+						placeholder="<?php esc_attr_e( 'Search for form', 'gravityforms' ); ?>"
 						data-js="gform-dropdown-search"
 					/>
 					<i class="gform-icon gform-icon--search gform-dropdown__search-icon"></i>
 				</div>
 				<div class="gform-dropdown__list-container" data-simplebar<?php echo is_rtl() ? ' data-simplebar-direction="rtl"' : ''; ?>>
-					<ul class="gform-dropdown__list">
+					<ul class="gform-dropdown__list" data-js="gform-dropdown-list">
 					<?php
-						foreach ( $all_forms as $form_info ) {
+						foreach ( $forms as $form_info ) {
 							printf(
 								'
 									<li class="gform-dropdown__item">
-										<button class="gform-dropdown__trigger" data-js="gform-dropdown-trigger" data-value="%1$d" data-results-slug="%2$s" data-subviews="%3$s">
+										<button type="button" class="gform-dropdown__trigger" data-js="gform-dropdown-trigger" data-value="%1$d" %2$s %3$s>
 											<span class="gform-dropdown__trigger-text" data-value="%1$d">%4$s</span>
 										</button>
 									</li>
 									',
 								absint( $form_info->id ),
-								rgar( $results_page_forms, $form_info->id ),
-								esc_attr( json_encode( $form_info->subviews ) ),
+								esc_attr( $form_info->results_attr ),
+								esc_attr( $form_info->subview_attr ),
 								esc_html( $form_info->title )
 							);
 						}
@@ -5153,124 +5152,14 @@ class GFForms {
 					</ul>
 				</div>
 			</div>
+			<input type="hidden" data-js="gf-form-switcher-input" name="_gform_form_switcher" value=""/>
 		</article>
 
 		<script type="text/javascript">
 
-			function GF_ReplaceQuery(key, newValue) {
-				var new_query = "";
-				var query = document.location.search.substring(1);
-				var ary = query.split("&");
-				var has_key = false;
-				for (i = 0; i < ary.length; i++) {
-					var key_value = ary[i].split("=");
-
-					if (key_value[0] == key) {
-						new_query += key + "=" + newValue + "&";
-						has_key = true;
-					}
-					else if (key_value[0] != "display_settings") {
-						new_query += key_value[0] + "=" + key_value[1] + "&";
-					}
-				}
-
-				if (new_query.length > 0)
-					new_query = new_query.substring(0, new_query.length - 1);
-
-				if (!has_key)
-					new_query += new_query.length > 0 ? "&" + key + "=" + newValue : "?" + key + "=" + newValue;
-
-				return new_query;
-			}
-
-			function GF_RemoveQuery(key, query) {
-				var new_query = "";
-				if (query == "") {
-					query = document.location.search.substring(1);
-				}
-				var ary = query.split("&");
-				for (i = 0; i < ary.length; i++) {
-					var key_value = ary[i].split("=");
-
-					if (key_value[0] != key) {
-						new_query += key_value[0] + "=" + key_value[1] + "&";
-					}
-				}
-
-				if (new_query.length > 0)
-					new_query = new_query.substring(0, new_query.length - 1);
-
-				return new_query;
-			}
-
-			function GF_SwitchForm(id) {
-				if (id.length > 0) {
-					id = parseInt(id);
-					var query = GF_ReplaceQuery('id', id);
-
-					//remove paging from querystring when changing forms
-					var new_query = GF_RemoveQuery('paged', query);
-					new_query = new_query.replace('gf_new_form', 'gf_edit_forms');
-
-					//remove filter vars from querystring when changing forms
-					new_query = GF_RemoveQuery('s', new_query);
-					new_query = GF_RemoveQuery('operator', new_query);
-					new_query = GF_RemoveQuery('type', new_query);
-					new_query = GF_RemoveQuery('field_id', new_query);
-					new_query = GF_RemoveQuery('lid', new_query);
-					new_query = GF_RemoveQuery('fid', new_query);
-					new_query = GF_RemoveQuery('cid', new_query);
-					new_query = GF_RemoveQuery('nid', new_query);
-					new_query = GF_RemoveQuery('filter', new_query);
-					new_query = GF_RemoveQuery('pos', new_query);
-
-					// if the query contains a subview that is not in the data attribute of available subviews, remove it
-					var subview = new URLSearchParams(new_query).get('subview');
-					if ( subview ) {
-						var available_subviews = jQuery('.gform-dropdown__trigger[data-value=' + id + ']').data('subviews');
-						if ( available_subviews && available_subviews.indexOf( subview ) === -1 ) {
-							new_query = GF_RemoveQuery('subview', new_query);
-						}
-					}
-
-					// Check if this is the results page of an add-on that supports results
-					var is_results_page =  new_query.indexOf( 'gf_results_' ) >= 0;
-					var is_form_entries = ( new_query.indexOf('page=gf_entries') >= 0 ) && ! is_results_page;
-					//When switching forms within any form entries tab, go back to main form entries tab, if it is not aa results page.
-					if ( is_form_entries ) {
-						//going back to main form settings tab
-						new_query = 'page=gf_entries&id='+ id;
-					}
-
-					// If this is a results/sales page, we need to decide if the form the user is being redirected to also has a results/sales page/
-					if ( is_results_page ) {
-						// Get the clicked item.
-						var $clicked_item = jQuery( '.gform-dropdown__trigger[data-value=' + id + ']' );
-						// If the clicked item has the data-results-slug with a value then this form has a results/sales page
-						// this attribute is added while rendering the view, check GF_Form_Switcher::render()
-						if ( $clicked_item &&  ( $clicked_item.data( 'results-slug') ) !== '' && ( $clicked_item.data( 'results-slug') ) !== undefined ) {
-							new_query = 'page=gf_entries&view=gf_results_' + $clicked_item.data( 'results-slug')  + '&id=' + id;
-						} else {
-							// No results/sales redirect to entries list.
-							new_query = 'page=gf_entries&id=' + id;
-						}
-					}
-
-					document.location = '?' + new_query;
-				}
-			}
-
 			function ToggleFormSettings() {
 				FieldClick(jQuery('#gform_heading')[0]);
 			}
-
-			gform.instances.formSwitcher = new gform.components.admin.html.elements.Dropdown( {
-				detectTitleLength: true,
-				onItemSelect: GF_SwitchForm,
-				reveal: 'hover',
-				selector: 'gform-form-switcher',
-				showSpinner: true,
-			} );
 
 			jQuery(document).ready(function () {
 				if (document.location.search.indexOf("display_settings") > 0)
@@ -5281,7 +5170,6 @@ class GFForms {
 				});
 			});
 
-
 		</script>
 		<?php
 	}
@@ -5290,26 +5178,23 @@ class GFForms {
 	 * Checks if the form has a results/sales page and returns the slug of the add-on that implements the page.
 	 *
 	 * @since 2.5.13
+ 	 * @since 2.9.6 Param changed from (object) $form to (int) $form_id.
 	 *
-	 * @param Object|array $form The form object
+	 * @param int $form_id The form id
 	 *
 	 * @return string|int  The slug string if found, 0 if not found
 	 */
-	protected static function get_form_switcher_results_page_slug( $form ) {
+	protected static function get_form_switcher_results_page_slug( $form_id ) {
 
 		// can't store boolean in cache.
 		$results_addon_slug = 0;
 
-		if ( is_a( $form,'stdClass') ) {
-			$form = (array) $form;
-		}
-
-		$cached_result =  GFCache::get( 'has_results_page_' . $form['id'] );
+		$cached_result =  GFCache::get( 'has_results_page_' . $form_id );
 		if ( $cached_result !== false ) {
 			return $cached_result;
 		}
 
-		$form = GFAPI::get_form( rgar( $form, 'id' ) );
+		$form = GFAPI::get_form( $form_id );
 
 		if ( rgar( $form, 'id' ) && rgar( $form, 'fields' ) ) {
 
@@ -5333,6 +5218,46 @@ class GFForms {
 
 		return $results_addon_slug;
 
+	}
+
+	/*
+	 * Returns the results page attribute to be used in the form switcher.
+	 *
+	 * @since 2.9.6
+	 *
+	 * @param int $form_id The form ID.
+	 * @return string The results page attribute.
+	 */
+	public static function get_form_switcher_results_page_attr( $form_id ) {
+		$results_addon_slug = self::get_form_switcher_results_page_slug( $form_id );
+		if ( $results_addon_slug ) {
+			return 'data-results-slug=' . $results_addon_slug;
+		}
+		return '';
+	}
+
+	/**
+	 * Returns the subview attribute to be used in the form switcher.
+	 *
+	 * @since 2.9.6
+	 *
+	 * @param int $form_id The form ID.
+	 * @return string The subview attribute.
+	 */
+	public static function get_form_switcher_subview_attr( $form_id ) {
+
+		if ( ! class_exists( 'GFFormSettings' ) ) {
+			require_once( GFCommon::get_base_path() . '/form_settings.php' );
+		}
+
+		$form_subviews = GFFormSettings::get_tabs( $form_id );
+		$subview_list  = [];
+		foreach( $form_subviews as $subview ) {
+			$subview_list[] = $subview['name'];
+		}
+		$subview_list[] = 'gf_theme_layers';
+
+		return 'data-subviews=' . json_encode( $subview_list );
 	}
 
 	/**
@@ -5485,7 +5410,7 @@ class GFForms {
 			<div class="gform-form-toolbar__container">
 
 				<div class="gform-form-toolbar__form-title">
-					<?php self::form_switcher( $form['title'] ); ?>
+					<?php self::form_switcher( $form['title'], $id ); ?>
 				</div>
 
 				<ul id="gform-form-toolbar__menu" class="gform-form-toolbar__menu">

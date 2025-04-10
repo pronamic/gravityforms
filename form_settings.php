@@ -986,7 +986,6 @@ class GFFormSettings {
 	 * @uses    SCRIPT_DEBUG
 	 * @uses    GFFormsModel::get_form_meta()
 	 * @uses    GFFormSettings::get_tabs()
-	 * @uses    GFCommon::form_page_title()
 	 * @uses    GFCommon::display_dismissible_message()
 	 * @uses    GFCommon::display_admin_message()
 	 * @uses    GFForms::top_toolbar()

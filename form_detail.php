@@ -193,7 +193,7 @@ class GFFormDetail {
 			</div>
 
 			<div class="gform-form-toolbar__form-title gform-form-toolbar__form-title--form-editor" data-js-reload="gforms-form-switcher">
-				<?php GFForms::form_switcher( $form['title'] ); ?>
+				<?php GFForms::form_switcher( $form['title'], $id ); ?>
 			</div>
 
 			<ul id="gform-form-toolbar__menu" class="gform-form-toolbar__menu">

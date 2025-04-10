@@ -125,8 +125,8 @@ class Dom_Parser {
 		$insert_position  = $this->get_insert_position();
 		$hooks_javascript = \GFCommon::get_hooks_javascript_code();
 
-		$content = str_replace( $hooks_javascript, '', $this->content );
-		$string  = \GFCommon::get_inline_script_tag( $hooks_javascript );
+		$string = \GFCommon::get_inline_script_tag( $hooks_javascript, false );
+		$content = str_replace( $string, '', $this->content );
 		$pieces  = preg_split( "/\r\n|\n|\r/", $content );
 
 		if ( count( $pieces ) > 1 && $insert_position > 0 ) {
