@@ -1,5 +1,13 @@
-### 2.9.6.1
-- Fixed a PHP fatal error that occurs when the gform_form_switcher_forms filter returns an invalid value, or when a deleted form remains in the current users recent forms list.
+### 2.9.7 | 2025-04-22
+- Added the autocomplete attribute setting to Website field.
+- Fixed spacing and margin issues in the admin and help sections in RTL languages.
+- Fixed a PHP fatal error that occurs when the [`gform_form_switcher_forms`](https://docs.gravityforms.com/gform_form_switcher_forms/) filter returns an invalid value, or when a deleted form remains in the current users recent forms list.
+- Updated the minimum WordPress version (for support) on the System Status page to 6.7.
+- Removed trailing spaces from some translatable strings to improve translation.
+- AF: Fixed an issue where the placeholder attribute isn't rendered for text input fields in add-on feed settings. Credit: GravityKit team
+- AF: Updated the background processor to pause when a task encounters an error (e.g. external API rate limit), and resume later on the fallback cron job.
+- API: Added the submission type ("submission_type" property) to the result returned by an AJAX submission.
+- API: Fixed an issue where the conditional logic setting instructions property could not be overridden. Credit: GravityKit team
 
 ### 2.9.6 | 2025-04-08
 - Added a performance improvement by making the form switcher only show the most recent 10 forms.

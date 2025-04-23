@@ -58,8 +58,8 @@ if ( ! class_exists( 'WP_Async_Request' ) ) {
 		public function __construct() {
 			$this->identifier = $this->prefix . '_' . $this->action;
 
-			add_action( 'wp_ajax_' . $this->identifier, array( $this, 'maybe_handle' ) );
-			add_action( 'wp_ajax_nopriv_' . $this->identifier, array( $this, 'maybe_handle' ) );
+			add_action( 'wp_ajax_' . $this->identifier, array( $this, 'maybe_handle' ) ); // @phpstan-ignore-line
+			add_action( 'wp_ajax_nopriv_' . $this->identifier, array( $this, 'maybe_handle' ) ); // @phpstan-ignore-line
 		}
 
 		/**
@@ -97,10 +97,19 @@ if ( ! class_exists( 'WP_Async_Request' ) ) {
 				return $this->query_args;
 			}
 
-			return array(
+			$args = array(
 				'action' => $this->identifier,
 				'nonce'  => wp_create_nonce( $this->identifier ),
 			);
+
+			/**
+			 * Filters the query arguments used during an async request.
+			 *
+			 * @since 2.9.7
+			 *
+			 * @param array $args
+			 */
+			return apply_filters( $this->identifier . '_query_args', $args );
 		}
 
 		/**
@@ -113,7 +122,16 @@ if ( ! class_exists( 'WP_Async_Request' ) ) {
 				return $this->query_url;
 			}
 
-			return admin_url( 'admin-ajax.php' );
+			$url = admin_url( 'admin-ajax.php' );
+
+			/**
+			 * Filters the query URL used during an async request.
+			 *
+			 * @since 2.9.7
+			 *
+			 * @param string $url
+			 */
+			return apply_filters( $this->identifier . '_query_url', $url );
 		}
 
 		/**
@@ -126,19 +144,30 @@ if ( ! class_exists( 'WP_Async_Request' ) ) {
 				return $this->post_args;
 			}
 
-			return array(
-				'timeout'   => 0.01,
+			$args = array(
+				'timeout'   => 5,
 				'blocking'  => false,
 				'body'      => $this->data,
-				'cookies'   => $_COOKIE,
-				'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+				'cookies'   => $_COOKIE, // Passing cookies ensures request is performed as initiating user.
+				'sslverify' => apply_filters( 'https_local_ssl_verify', false ), // Local requests, fine to pass false.
 			);
+
+			/**
+			 * Filters the post arguments used during an async request.
+			 *
+			 * @since 2.9.7
+			 *
+			 * @param array $args
+			 */
+			return apply_filters( $this->identifier . '_post_args', $args );
 		}
 
 		/**
 		 * Maybe handle
 		 *
 		 * Check for correct nonce and pass to handler.
+		 *
+		 * @return void|mixed
 		 */
 		public function maybe_handle() {
 			// Don't lock up other requests while processing
@@ -148,7 +177,29 @@ if ( ! class_exists( 'WP_Async_Request' ) ) {
 
 			$this->handle();
 
-			wp_die();
+			return $this->maybe_wp_die();
+		}
+
+		/**
+		 * Should the process exit with wp_die?
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param mixed $return What to return if filter says don't die, default is null.
+		 *
+		 * @return void|mixed
+		 */
+		protected function maybe_wp_die( $return = null ) {
+			/**
+			 * Should wp_die be used?
+			 *
+			 * @return bool
+			 */
+			if ( apply_filters( $this->identifier . '_wp_die', true ) ) {
+				wp_die();
+			}
+
+			return $return;
 		}
 
 		/**

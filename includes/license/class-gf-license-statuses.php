@@ -65,26 +65,26 @@ class GF_License_Statuses {
 				'<a href="https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=account-link-expired&utm_campaign=license-enforcement" target="_blank">',
 				'</a>'
 			),
-			self::NO_LICENSE_KEY        => sprintf( 
+			self::NO_LICENSE_KEY        => sprintf(
 				/* translators: %1$s admin link tag markup, %2$s closing markup, %3$s Gravity Forms link tag markup, %4$s closing markup  */
-				__( '%1$sRegister%2$s your copy of Gravity Forms to receive access to automatic upgrades and support. Need a license key? %3$sPurchase one now%4$s. ', 'gravityforms' ), 
+				__( '%1$sRegister%2$s your copy of Gravity Forms to receive access to automatic upgrades and support. Need a license key? %3$sPurchase one now%4$s. ', 'gravityforms' ),
 				'<a href="' . admin_url() . 'admin.php?page=gf_settings">',
-				'</a>', 
-				'<a href="https://www.gravityforms.com" target="_blank">', 
-				'</a>' 
+				'</a>',
+				'<a href="https://www.gravityforms.com" target="_blank">',
+				'</a>'
 			),
 			self::REQUEST_FAILED        => sprintf(
 				/* translators: %1s and %2s are link tag markup */
-				__( 'There was an error while validating your license key; please try again later. If the problem persists, please %1$scontact support%2$s. ', 'gravityforms' ),
+				__( 'There was an error while validating your license key; please try again later. If the problem persists, please %1$scontact support%2$s.', 'gravityforms' ),
 				'<a href="https://www.gravityforms.com/support/" target="_blank">',
 				'</a>'
-			) . $error_message,
+			) . '&nbsp;' . $error_message,
 			self::REQUEST_BLOCKED       => sprintf(
 				/* translators: %1s and %2s are link tag markup */
-				__( 'Your IP has been blocked by Gravity for exceeding our API rate limits. If you think this is a mistake, please %1$scontact support%2$s. ', 'gravityforms' ),
+				__( 'Your IP has been blocked by Gravity for exceeding our API rate limits. If you think this is a mistake, please %1$scontact support%2$s.', 'gravityforms' ),
 				'<a href="https://www.gravityforms.com/support/" target="_blank">',
 				'</a>'
-			) . $error_message,
+			) . '&nbsp;' . $error_message,
 
 			self::SITE_UNREGISTERED     => $general_invalid_message,
 			self::INVALID_LICENSE_KEY   => $general_invalid_message,

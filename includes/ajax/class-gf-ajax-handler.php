@@ -131,6 +131,8 @@ class GF_Ajax_Handler {
 			$result['page_markup'] = \GFFormDisplay::get_page( $form_id, $page_number, $field_values, $theme, $style, $submission_method );
 		}
 
+		$result['submission_type'] = $this->get_submission_type( $target_page, $source_page );
+
 		/**
 		 * Filters the ajax form submission result.
 		 *
@@ -148,6 +150,29 @@ class GF_Ajax_Handler {
 		wp_send_json_success( $result );
 	}
 
+	/**
+	 * Returns the submission type based on the target and source page numbers.
+	 *
+	 * @since 2.9.7
+	 *
+	 * @param int $target_page The target page number.
+	 * @param int $source_page The source page number.
+	 *
+	 * @return string The submission type. Possible values are SUBMISSION_TYPE_SUBMIT, SUBMISSION_TYPE_NEXT, SUBMISSION_TYPE_PREVIOUS, and SUBMISSION_TYPE_SAVE_AND_CONTINUE.
+	 */
+	public function get_submission_type( $target_page, $source_page ) {
+		if ( isset( $_POST['gform_send_resume_link'] ) ) {
+			return \GFFormDisplay::SUBMISSION_TYPE_SEND_LINK;
+		} elseif ( rgpost( 'gform_save') ) {
+			return \GFFormDisplay::SUBMISSION_TYPE_SAVE_AND_CONTINUE;
+		} elseif ( $target_page === 0 ) {
+			return \GFFormDisplay::SUBMISSION_TYPE_SUBMIT;
+		} elseif ( $target_page > $source_page ) {
+			return \GFFormDisplay::SUBMISSION_TYPE_NEXT;
+		} else {
+			return \GFFormDisplay::SUBMISSION_TYPE_PREVIOUS;
+		}
+	}
 
 	/**
 	 * Handles the save link submission. Uses the $_POST array and sends the save link result as a JSON response.
@@ -169,6 +194,7 @@ class GF_Ajax_Handler {
 				'confirmation_type'    => 'message',
 				'confirmation_message' => $confirmation,
 				'confirmation_markup'  => $confirmation,
+				'submission_type'      => \GFFormDisplay::SUBMISSION_TYPE_SEND_LINK,
 			)
 		);
 	}

@@ -24,6 +24,12 @@ class GFFormDisplay {
 	const SUBMISSION_METHOD_AJAX     = 'ajax';
 	const SUBMISSION_METHOD_IFRAME   = 'iframe';
 
+	const SUBMISSION_TYPE_SAVE_AND_CONTINUE = 'save-continue';
+	const SUBMISSION_TYPE_SEND_LINK         = 'send-link';
+	const SUBMISSION_TYPE_SUBMIT            = 'submit';
+	const SUBMISSION_TYPE_NEXT              = 'next';
+	const SUBMISSION_TYPE_PREVIOUS          = 'previous';
+
 	/**
 	 * Starting point for the form submission process. Handles the following tasks: Form validation, save for later logic, entry creation, notification and confirmation.
 	 *

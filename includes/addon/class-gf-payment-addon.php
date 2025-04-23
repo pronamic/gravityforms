@@ -3857,7 +3857,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		// adding cancel subscription button and script to entry info section
 		$cancelsub_button = '';
-		if ( $entry['transaction_type'] == '2' && $entry['payment_status'] <> 'Cancelled' && $this->is_payment_gateway( $entry['id'] ) ) {
+		if ( $entry['transaction_type'] == '2' && $entry['payment_status'] <> 'Cancelled' && $entry['payment_status'] <> 'Failed' && $this->is_payment_gateway( $entry['id'] ) ) {
 			?>
 			<input id="cancelsub" type="button" name="cancelsub"
 			       value="<?php esc_html_e( 'Cancel Subscription', 'gravityforms' ) ?>" class="button"

@@ -329,7 +329,7 @@ class GFCommon {
 		if ( rgblank( $number ) ) {
 			return $number;
 		}
-		
+
 		$decimal_char = '';
 		if ( $number_format == 'decimal_dot' ) {
 			$decimal_char = '.';
@@ -354,20 +354,20 @@ class GFCommon {
 				$is_negative = true;
 			}
 		}
-		
+
 		//Removing thousands separators but keeping decimal point
 		$array = str_split( $clean_number );
 
 		/**
-		 * PHP 8.2 changed the return value of str_split() when an empty string 
-		 * is passed. Before it would return a single element array with an 
+		 * PHP 8.2 changed the return value of str_split() when an empty string
+		 * is passed. Before it would return a single element array with an
 		 * empty string, now it returns an empty array. This `if` makes the
 		 * array consistant in all PHP Versions.
 		 */
 		if ( empty( $array ) ) {
 			$array[] = '';
 		}
-		
+
 		for ( $i = 0, $count = sizeof( $array ); $i < $count; $i ++ ) {
 			$char = $array[ $i ];
 			if ( $char >= '0' && $char <= '9' ) {
@@ -4083,11 +4083,11 @@ Content-Type: text/html;
 
 		$preview_link = sprintf(
 			'
-				<a 
-					aria-label="%s" 
-					href="%s" 
-					class="%s gform-button--icon-leading" 
-					target="%s" 
+				<a
+					aria-label="%s"
+					href="%s"
+					class="%s gform-button--icon-leading"
+					target="%s"
 					rel="noopener"
 				><i class="gform-button__icon gform-common-icon gform-common-icon--eye"></i>%s</a>
 				',
@@ -5308,7 +5308,7 @@ Content-Type: text/html;
 
 		return $number;
 	}
-	
+
 	/**
 	 * Gets the calculation value for a specific field.
 	 *
@@ -5700,7 +5700,7 @@ Content-Type: text/html;
 		$gf_vars['DeleteForm']         = esc_html__("You are about to move this form to the trash. 'Cancel' to abort. 'OK' to delete.", 'gravityforms');
         $gf_vars['DeleteCustomChoice'] = esc_html__("Delete this custom choice list? 'Cancel' to abort. 'OK' to delete.", 'gravityforms');
 
-		$gf_vars['FieldAdded'] = esc_html__( ' field added to form', 'gravityforms' );
+		$gf_vars['FieldAdded'] = '&nbsp;' . esc_html__( 'field added to form', 'gravityforms' ); // Added field to form
 
         if ( ( is_admin() && rgget( 'id' ) ) || ( self::is_form_editor() && rgpost( 'form_id' ) ) ) {
 

@@ -248,9 +248,10 @@ if ( ! class_exists( 'GFForms' ) ) {
 		var field_str, autocomplete, inputName, inputId, id, input;
 
 		if ( ! field["inputs"] ) {
+			const autoCompleteAttribute = field["autocompleteAttribute"] || ( SetDefaultValues( field ), field["autocompleteAttribute"] );
 			field_str = "<label for='field_autocomplete_attribute' class='inline'>" + <?php echo json_encode( esc_html__( 'Autocomplete Attribute:', 'gravityforms' ) ); ?> + "&nbsp;</label>";
-			field_str += "<input type='text' value='" + field["autocompleteAttribute"] + "' id='field_autocomplete_attribute' class='field_autocomplete_attribute' />";
-			SetFieldProperty( 'autocompleteAttribute', field["autocompleteAttribute"] );
+			field_str += "<input type='text' value='" + autoCompleteAttribute + "' id='field_autocomplete_attribute' class='field_autocomplete_attribute' />";
+			SetFieldProperty( 'autocompleteAttribute', autoCompleteAttribute );
 		} else {
 			field_str = "<fieldset class='input_autocomplete'><legend class='screen-reader-text'>" + <?php echo json_encode( esc_html__( 'Autocomplete Attributes', 'gravityforms' ) ); ?> + "</legend><div class='gform-sidebar-setting-grid-wrapper gform-sidebar-setting-grid-wrapper__two-column'><div class='gform-sidebar-setting-grid-header'><span>" + <?php echo json_encode( esc_html__( 'Field', 'gravityforms' ) ); ?> + "</span><span>" + <?php echo json_encode( esc_html__( 'Attribute', 'gravityforms' ) ); ?> + "</span></div>";
 			for ( var i = 0; i < field["inputs"].length; i++ ) {
@@ -898,6 +899,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 				break;
 			case "website" :
 				field.inputs = null;
+				field.autocompleteAttribute = 'url';
 				if (!field.label)
 					field.label = <?php echo json_encode( esc_html__( 'Website', 'gravityforms' ) ); ?>;
 				if (!field.placeholder)

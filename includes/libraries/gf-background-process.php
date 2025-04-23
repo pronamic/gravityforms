@@ -30,6 +30,22 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 	abstract class GF_Background_Process extends WP_Async_Request {
 
 		/**
+		 * The default query arg name used for passing the chain ID to new processes.
+		 *
+		 * @since 2.9.7
+		 */
+		const CHAIN_ID_ARG_NAME = 'chain_id';
+
+		/**
+		 * Unique background process chain ID.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @var string
+		 */
+		private $chain_id;
+
+		/**
 		 * Action
 		 *
 		 * @since 2.2
@@ -74,14 +90,13 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		protected $cron_interval_identifier;
 
 		/**
-		 * Query_url
+		 * Restrict object instantiation when using unserialize.
 		 *
-		 * @since 2.3
+		 * @since 2.9.7
 		 *
-		 * @var string
-		 * @access protected
+		 * @var bool|array
 		 */
-		protected $query_url;
+		protected $allowed_batch_data_classes = true;
 
 		/**
 		 * Null or the current batch.
@@ -93,19 +108,56 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		protected $current_batch;
 
 		/**
+		 * The status set when process is cancelling.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @var int
+		 */
+		const STATUS_CANCELLED = 1;
+
+		/**
+		 * The status set when process is paused or pausing.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @var int
+		 */
+		const STATUS_PAUSED = 2;
+
+		/**
 		 * Initiate new background process
 		 *
 		 * @since 2.2
+		 *
+		 * @param bool|array $allowed_batch_data_classes Optional. Array of class names that can be unserialized. Default true (any class).
 		 */
-		public function __construct() {
+		public function __construct( $allowed_batch_data_classes = true ) {
 			parent::__construct();
 
-			$this->query_url                = admin_url( 'admin-ajax.php' );
+			if ( empty( $allowed_batch_data_classes ) && false !== $allowed_batch_data_classes ) {
+				$allowed_batch_data_classes = true;
+			}
+
+			if ( ! is_bool( $allowed_batch_data_classes ) && ! is_array( $allowed_batch_data_classes ) ) {
+				$allowed_batch_data_classes = true;
+			}
+
+			// If allowed_batch_data_classes property set in subclass,
+			// only apply override if not allowing any class.
+			if ( true === $this->allowed_batch_data_classes || true !== $allowed_batch_data_classes ) {
+				$this->allowed_batch_data_classes = $allowed_batch_data_classes;
+			}
+
 			$this->cron_hook_identifier     = $this->identifier . '_cron';
 			$this->cron_interval_identifier = $this->identifier . '_cron_interval';
 
 			add_action( $this->cron_hook_identifier, array( $this, 'handle_cron_healthcheck' ) );
 			add_filter( 'cron_schedules', array( $this, 'schedule_cron_healthcheck' ) );
+
+			// Ensure dispatch query args included extra data.
+			add_filter( $this->identifier . '_query_args', array( $this, 'filter_dispatch_query_args' ) );
+
 			add_action( 'wp_delete_site', array( $this, 'delete_site_batches' ) );
 			add_action( 'make_spam_blog', array( $this, 'delete_site_batches' ) );
 			add_action( 'archive_blog', array( $this, 'delete_site_batches' ) );
@@ -119,44 +171,50 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 *
 		 * @access public
 		 *
-		 * @return array|WP_Error
+		 * @return array|WP_Error|false HTTP Response array, WP_Error on failure, or false if not attempted.
 		 */
 		public function dispatch() {
-			GFCommon::log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
 
-			if ( $this->is_queue_empty() ) {
-				$this->clear_scheduled_event();
-
-				$dispatched = new WP_Error( 'queue_empty', 'Nothing left to process' );
-			} else {
-				// Schedule the cron healthcheck.
-				$this->schedule_event();
-
-				// Perform remote post.
-				$dispatched = parent::dispatch();
+			if ( $this->is_processing() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Already processing for %s.', __METHOD__, $this->action ) );
+				// Process already running.
+				return false;
 			}
 
+			if ( $this->is_queue_empty() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Queue is empty for %s.', __METHOD__, $this->action ) );
+
+				return false;
+			}
+
+			/**
+			 * Filter fired before background process dispatches its next process.
+			 *
+			 * @since 2.9.7
+			 *
+			 * @param bool   $cancel   Should the dispatch be cancelled? Default false.
+			 * @param string $chain_id The background process chain ID.
+			 */
+			$cancel = apply_filters( $this->identifier . '_pre_dispatch', false, $this->get_chain_id() );
+
+			if ( $cancel ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Cancelled using the %s_pre_dispatch filter for %s.', __METHOD__, $this->identifier, $this->action ) );
+
+				return false;
+			}
+
+			// Schedule the cron healthcheck.
+			$this->schedule_event();
+
+			// Perform remote post.
+			$dispatched = parent::dispatch();
+
 			if ( is_wp_error( $dispatched ) ) {
-				GFCommon::log_debug( sprintf( '%s(): Unable to dispatch tasks to Admin Ajax: %s', __METHOD__, $dispatched->get_error_message() ) );
+				$this->log_debug( sprintf( '%s(): Unable to dispatch tasks to Admin Ajax: %s', __METHOD__, $dispatched->get_error_message() ) );
 			}
 
 			return $dispatched;
-		}
-
-		/**
-		 * Get the dispatch request arguments.
-		 *
-		 * @since 2.3-rc-2
-		 *
-		 * @return array
-		 */
-		protected function get_post_args() {
-			$post_args = parent::get_post_args();
-
-			// Blocking prevents some issues such as cURL connection errors being reported.
-			unset( $post_args['blocking'] );
-
-			return $post_args;
 		}
 
 		/**
@@ -178,6 +236,7 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * Save queue
 		 *
 		 * @since 2.2
+		 * @since 2.9.7 Added timestamps to the data array.
 		 *
 		 * @return $this
 		 */
@@ -185,13 +244,20 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 			$key = $this->generate_key();
 
 			if ( ! empty( $this->data ) ) {
-				GFCommon::log_debug( sprintf( '%s(): Saving batch %s. Tasks: %d.', __METHOD__, $key, count( $this->data ) ) );
+				$this->log_debug( sprintf( '%s(): Saving batch %s. Tasks: %d.', __METHOD__, $key, count( $this->data ) ) );
+
+				$time = microtime( true );
 				$data = array(
-					'blog_id' => get_current_blog_id(),
-					'data'    => $this->data,
+					'blog_id'           => get_current_blog_id(),
+					'data'              => $this->data,
+					'timestamp_created' => $time,
+					'timestamp_updated' => $time,
 				);
 				update_site_option( $key, $data );
 			}
+
+			// Clean out data so that new data isn't prepended with closed session's data.
+			$this->data = array();
 
 			return $this;
 		}
@@ -200,6 +266,7 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * Update queue
 		 *
 		 * @since 2.2
+		 * @since 2.9.7 Added timestamps to the data array.
 		 *
 		 * @param string $key Key.
 		 * @param array  $data Data.
@@ -210,10 +277,12 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 			if ( ! empty( $data ) ) {
 				$old_value = get_site_option( $key );
 				if ( $old_value ) {
-					GFCommon::log_debug( sprintf( '%s(): Updating batch %s. Tasks remaining: %d.', __METHOD__, $key, count( $data ) ) );
+					$this->log_debug( sprintf( '%s(): Updating batch %s. Tasks remaining: %d.', __METHOD__, $key, count( $data ) ) );
 					$data = array(
-						'blog_id' => get_current_blog_id(),
-						'data'    => $data,
+						'blog_id'           => get_current_blog_id(),
+						'data'              => $data,
+						'timestamp_created' => rgar( $old_value, 'timestamp_created' ),
+						'timestamp_updated' => microtime( true ),
 					);
 					update_site_option( $key, $data );
 				}
@@ -230,10 +299,142 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * @return $this
 		 */
 		public function delete( $key ) {
-			GFCommon::log_debug( sprintf( '%s(): Deleting batch %s.', __METHOD__, $key ) );
+			$this->log_debug( sprintf( '%s(): Deleting batch %s.', __METHOD__, $key ) );
 			delete_site_option( $key );
 
 			return $this;
+		}
+
+		/**
+		 * Delete entire job queue.
+		 *
+		 * @since 2.9.7
+		 */
+		public function delete_all() {
+			$this->delete_batches();
+
+			delete_site_option( $this->get_status_key() );
+
+			$this->cancelled();
+		}
+
+		/**
+		 * Cancel job on next batch.
+		 *
+		 * @since 2.9.7
+		 */
+		public function cancel() {
+			update_site_option( $this->get_status_key(), self::STATUS_CANCELLED );
+
+			// Just in case the job was paused at the time.
+			$this->dispatch();
+		}
+
+		/**
+		 * Has the process been cancelled?
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return bool
+		 */
+		public function is_cancelled() {
+			return $this->get_status() === self::STATUS_CANCELLED;
+		}
+
+		/**
+		 * Called when background process has been cancelled.
+		 *
+		 * @since 2.9.7
+		 */
+		protected function cancelled() {
+			do_action( $this->identifier . '_cancelled', $this->get_chain_id() );
+		}
+
+		/**
+		 * Pause job on next batch.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param bool $set_timestamp Indicates of the timestamp option should be set, so it can be used by the cron healthcheck to automatically resume processing.
+		 */
+		public function pause( $set_timestamp = false ) {
+			$this->log_debug( sprintf( '%s(): Pausing processing for %s.', __METHOD__, $this->action ) );
+			update_site_option( $this->get_status_key(), self::STATUS_PAUSED );
+			if ( $set_timestamp ) {
+				update_site_option( $this->get_identifier() . '_pause_timestamp', microtime( true ) );
+			}
+		}
+
+		/**
+		 * Has the process been paused?
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return bool
+		 */
+		public function is_paused() {
+			return $this->get_status() === self::STATUS_PAUSED;
+		}
+
+		/**
+		 * Called when background process has been paused.
+		 *
+		 * @since 2.9.7
+		 */
+		protected function paused() {
+			do_action( $this->identifier . '_paused', $this->get_chain_id() );
+		}
+
+		/**
+		 * Resume job.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param bool $dispatch Indicates if the Ajax request to trigger processing of the queue should be sent.
+		 */
+		public function resume( $dispatch = true ) {
+			$this->log_debug( sprintf( '%s(): Resuming processing for %s.', __METHOD__, $this->action ) );
+			delete_site_option( $this->get_status_key() );
+			delete_site_option( $this->get_identifier() . '_pause_timestamp' );
+
+			if ( $dispatch ) {
+				// dispatch() handles calling schedule_event().
+				//$this->schedule_event();
+				$this->dispatch();
+			}
+
+			$this->resumed();
+		}
+
+		/**
+		 * Called when background process has been resumed.
+		 *
+		 * @since 2.9.7
+		 */
+		protected function resumed() {
+			do_action( $this->identifier . '_resumed', $this->get_chain_id() );
+		}
+
+		/**
+		 * Is queued?
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return bool
+		 */
+		public function is_queued() {
+			return ! $this->is_queue_empty();
+		}
+
+		/**
+		 * Is the tool currently active, e.g. starting, working, paused or cleaning up?
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return bool
+		 */
+		public function is_active() {
+			return $this->is_queued() || $this->is_processing() || $this->is_paused() || $this->is_cancelled();
 		}
 
 		/**
@@ -243,16 +444,59 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * given a unique key so that they can be merged upon save.
 		 *
 		 * @since 2.2
+		 * @since 2.9.7 Added the $key param.
 		 *
-		 * @param int $length Length.
+		 * @param int    $length Optional max length to trim key to, defaults to 64 characters.
+		 * @param string $key    Optional string to append to identifier before hash, defaults to "batch".
 		 *
 		 * @return string
 		 */
-		protected function generate_key( $length = 64 ) {
-			$unique  = md5( microtime() . rand() );
-			$prepend = $this->identifier . '_batch_blog_id_' . get_current_blog_id() . '_';
+		protected function generate_key( $length = 64, $key = 'batch' ) {
+			$unique  = md5( microtime() . wp_rand() );
+			$prepend = $this->identifier . '_' . $key . '_blog_id_' . get_current_blog_id() . '_';
 
 			return substr( $prepend . $unique, 0, $length );
+		}
+
+		/**
+		 * Get the status key.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return string
+		 */
+		protected function get_status_key() {
+			return $this->identifier . '_status';
+		}
+
+		/**
+		 * Get the status value for the process.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return int
+		 */
+		protected function get_status() {
+			global $wpdb;
+
+			if ( is_multisite() ) {
+				$status = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d LIMIT 1",
+						$this->get_status_key(),
+						get_current_network_id()
+					)
+				);
+			} else {
+				$status = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1",
+						$this->get_status_key()
+					)
+				);
+			}
+
+			return absint( $status );
 		}
 
 		/**
@@ -262,57 +506,65 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * the process is not already running.
 		 *
 		 * @since 2.2
+		 *
+		 * @return void|mixed
 		 */
 		public function maybe_handle() {
-			GFCommon::log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
 
 			// Don't lock up other requests while processing
 			session_write_close();
 
-			if ( $this->is_process_running() ) {
-				// Background process already running.
-				wp_die();
-			}
-
-			if ( $this->is_queue_empty() ) {
-				// No data to process.
-				wp_die();
-			}
-
 			check_ajax_referer( $this->identifier, 'nonce' );
+
+			// Background process already running.
+			if ( $this->is_processing() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Already processing for %s.', __METHOD__, $this->action ) );
+
+				return $this->maybe_wp_die();
+			}
+
+			// Cancel requested.
+			if ( $this->is_cancelled() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Processing has been cancelled for %s.', __METHOD__, $this->action ) );
+				$this->clear_scheduled_event();
+				$this->delete_all();
+
+				return $this->maybe_wp_die();
+			}
+
+			// Pause requested.
+			if ( $this->is_paused() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Processing is paused for %s.', __METHOD__, $this->action ) );
+				// Not clearing; we use it to resume when the pause duration has expired.
+				//$this->clear_scheduled_event();
+				$this->paused();
+
+				return $this->maybe_wp_die();
+			}
+
+			// No data to process.
+			if ( $this->is_queue_empty() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Queue is empty for %s.', __METHOD__, $this->action ) );
+
+				return $this->maybe_wp_die();
+			}
 
 			$this->handle();
 
-			wp_die();
+			return $this->maybe_wp_die();
 		}
 
 		/**
 		 * Is queue empty
 		 *
 		 * @since 2.2
+		 * @since 2.9.7 Updated to use get_batch().
 		 *
 		 * @return bool
 		 */
 		protected function is_queue_empty() {
-			global $wpdb;
-
-			$table  = $wpdb->options;
-			$column = 'option_name';
-
-			if ( is_multisite() ) {
-				$table  = $wpdb->sitemeta;
-				$column = 'meta_key';
-			}
-
-			$key = $wpdb->esc_like( $this->identifier . '_batch_' ) . '%';
-
-			$count = $wpdb->get_var( $wpdb->prepare( "
-			SELECT COUNT(*)
-			FROM {$table}
-			WHERE {$column} LIKE %s
-		", $key ) );
-
-			return ( $count > 0 ) ? false : true;
+			return empty( $this->get_batch() );
 		}
 
 		/**
@@ -322,23 +574,28 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * in a background process.
 		 *
 		 * @since 2.2
+		 *
+		 * @deprecated 2.9.7 Superseded.
+		 * @see        is_processing()
 		 */
 		protected function is_process_running() {
-			$running = false;
-			$lock_timestamp = get_site_option( $this->identifier . '_process_lock' );
-			if ( $lock_timestamp ) {
+			return $this->is_processing();
+		}
 
-				$lock_duration = ( property_exists( $this, 'queue_lock_time' ) ) ? $this->queue_lock_time : 60; // 1 minute
-				$lock_duration = apply_filters( $this->identifier . '_queue_lock_time', $lock_duration );
-
-				if ( microtime( true ) - $lock_timestamp > $lock_duration ) {
-					$this->unlock_process();
-				} else {
-					$running = true;
-				}
+		/**
+		 * Is the background process currently running?
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return bool
+		 */
+		public function is_processing() {
+			if ( get_site_transient( $this->identifier . '_process_lock' ) ) {
+				// Process already running.
+				return true;
 			}
 
-			return $running;
+			return false;
 		}
 
 		/**
@@ -349,11 +606,40 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * defined in the time_exceeded() method.
 		 *
 		 * @since 2.2
+		 *
+		 * @param bool $reset_start_time Optional, default true.
 		 */
-		protected function lock_process() {
-			$this->start_time = time(); // Set start time of current process.
+		public function lock_process( $reset_start_time = true ) {
+			if ( $reset_start_time ) {
+				$this->start_time = time(); // Set start time of current process.
+			}
 
-			update_site_option( $this->identifier . '_process_lock', microtime( true ) );
+			$lock_duration = ( property_exists( $this, 'queue_lock_time' ) ) ? $this->queue_lock_time : 60; // 1 minute
+			$lock_duration = apply_filters( $this->identifier . '_queue_lock_time', $lock_duration );
+
+			$microtime = microtime();
+			$locked    = set_site_transient( $this->identifier . '_process_lock', $microtime, $lock_duration );
+
+			/**
+			 * Action to note whether the background process managed to create its lock.
+			 *
+			 * The lock is used to signify that a process is running a task and no other
+			 * process should be allowed to run the same task until the lock is released.
+			 *
+			 * @since 2.9.7
+			 *
+			 * @param bool   $locked        Whether the lock was successfully created.
+			 * @param string $microtime     Microtime string value used for the lock.
+			 * @param int    $lock_duration Max number of seconds that the lock will live for.
+			 * @param string $chain_id      Current background process chain ID.
+			 */
+			do_action(
+				$this->identifier . '_process_locked',
+				$locked,
+				$microtime,
+				$lock_duration,
+				$this->get_chain_id()
+			);
 		}
 
 		/**
@@ -366,7 +652,20 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * @return $this
 		 */
 		public function unlock_process() {
-			delete_site_option( $this->identifier . '_process_lock' );
+			$unlocked = delete_site_transient( $this->identifier . '_process_lock' );
+
+			/**
+			 * Action to note whether the background process managed to release its lock.
+			 *
+			 * The lock is used to signify that a process is running a task and no other
+			 * process should be allowed to run the same task until the lock is released.
+			 *
+			 * @since 2.9.7
+			 *
+			 * @param bool   $unlocked Whether the lock was released.
+			 * @param string $chain_id Current background process chain ID.
+			 */
+			do_action( $this->identifier . '_process_unlocked', $unlocked, $this->get_chain_id() );
 
 			return $this;
 		}
@@ -375,11 +674,35 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * Get batch
 		 *
 		 * @since 2.2
+		 * @since 2.9.7 Updated to use get_batches().
 		 *
 		 * @return stdClass Return the first batch from the queue
 		 */
 		protected function get_batch() {
+			return array_reduce(
+				$this->get_batches( 1 ),
+				static function ( $carry, $batch ) {
+					return $batch;
+				},
+				array()
+			);
+		}
+
+		/**
+		 * Get batches.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param int $limit Number of batches to return, defaults to all.
+		 *
+		 * @return array of stdClass
+		 */
+		public function get_batches( $limit = 0 ) {
 			global $wpdb;
+
+			if ( empty( $limit ) || ! is_int( $limit ) ) {
+				$limit = 0;
+			}
 
 			$table        = $wpdb->options;
 			$column       = 'option_name';
@@ -393,31 +716,77 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 				$value_column = 'meta_value';
 			}
 
-			$key = $wpdb->esc_like( $this->identifier . '_batch_blog_id_' . get_current_blog_id() . '_' ) . '%';
+			$key   = $this->identifier . '_batch_blog_id_' . get_current_blog_id() . '_';
+			$items = $this->get_batches_results( $table, $column, $key_column, $limit, $key );
 
-			$sql = "
-					SELECT *
-					FROM {$table}
-					WHERE {$column} LIKE %s
-					ORDER BY {$key_column} ASC
-					LIMIT 1
-				";
-
-			$query = $wpdb->get_row( $wpdb->prepare( $sql, $key ) );
-
-			if ( empty( $query ) ) {
-				// No more batches for this blog ID. Get the next one in the queue regardless of the blog ID.
-				$key = $wpdb->esc_like( $this->identifier . '_batch_' ) . '%';
-				$query = $wpdb->get_row( $wpdb->prepare( $sql, $key ) );
+			// No more batches for this blog ID. Get the next in the queue regardless of the blog ID.
+			if ( empty( $items ) && is_multisite() ) {
+				$items = $this->get_batches_results( $table, $column, $key_column, $limit, $this->identifier . '_batch_' );
 			}
 
-			$batch       = new stdClass();
-			$batch->key  = $query->$column;
-			$value = maybe_unserialize( $query->$value_column );
-			$batch->data = $value['data'];
-			$batch->blog_id = $value['blog_id'];
+			$batches = array();
 
-			return $batch;
+			if ( ! empty( $items ) ) {
+				$allowed_classes = $this->allowed_batch_data_classes;
+
+				$batches = array_map(
+					static function ( $item ) use ( $column, $value_column, $allowed_classes ) {
+						$batch                    = new stdClass();
+						$batch->key               = $item->{$column};
+						$value                    = static::maybe_unserialize( $item->{$value_column}, $allowed_classes );
+						$batch->data              = rgar( $value, 'data' );
+						$batch->blog_id           = rgar( $value, 'blog_id' );
+						$batch->timestamp_created = rgar( $value, 'timestamp_created' );
+						$batch->timestamp_updated = rgar( $value, 'timestamp_updated' );
+
+						return $batch;
+					},
+					$items
+				);
+			}
+
+			return $batches;
+		}
+
+		/**
+		 * Performs the database query to get the batches.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param string $table      The name of the table containing the batches.
+		 * @param string $column     The name of column containing the batch key.
+		 * @param string $key_column The name of the column containing the record ID.
+		 * @param int    $limit      Number of batches to return.
+		 * @param string $key        The prefix used by the batch key.
+		 *
+		 * @return array|object|stdClass[]|null
+		 */
+		protected function get_batches_results( $table, $column, $key_column, $limit, $key ) {
+			global $wpdb;
+
+			$key = $wpdb->esc_like( $key ) . '%';
+
+			$sql = '
+					SELECT *
+					FROM ' . $table . '
+					WHERE ' . $column . ' LIKE %s
+					ORDER BY ' . $key_column . ' ASC
+					';
+
+			$args = array( $key );
+
+			if ( ! empty( $limit ) ) {
+				$sql .= ' LIMIT %d';
+
+				$args[] = $limit;
+			}
+
+			return $wpdb->get_results(
+				$wpdb->prepare(
+					$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$args
+				)
+			);
 		}
 
 		/**
@@ -451,9 +820,38 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * within server memory and time limit constraints.
 		 *
 		 * @since 2.2
+		 *
+		 * @return void|mixed
 		 */
 		protected function handle() {
+			$is_cron = false;
+			if ( wp_doing_ajax() ) {
+				$method = ' via Ajax request';
+			} elseif ( wp_doing_cron() ) {
+				$method  = ' via cron request';
+				$is_cron = true;
+			} else {
+				$method = '';
+			}
+
+			$this->log_debug( sprintf( '%s(): Running%s for %s.', __METHOD__, $method, $this->action ) );
 			$this->lock_process();
+
+			/**
+			 * Number of seconds to sleep between batches. Defaults to 0 seconds, minimum 0.
+			 *
+			 * @param int $seconds
+			 */
+			$throttle_seconds = max(
+				0,
+				apply_filters(
+					$this->identifier . '_seconds_between_batches',
+					apply_filters(
+						$this->prefix . '_seconds_between_batches',
+						0
+					)
+				)
+			);
 
 			do {
 				$batch = $this->get_batch();
@@ -462,73 +860,102 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 					$current_blog_id = get_current_blog_id();
 					if ( $current_blog_id !== $batch->blog_id ) {
 						if ( ! $this->is_valid_blog( $batch->blog_id ) ) {
-							GFCommon::log_debug( sprintf( '%s(): Blog #%s is no longer valid for batch %s.', __METHOD__, $batch->blog_id, $batch->key ) );
+							$this->log_debug( sprintf( '%s(): Blog #%s is no longer valid for batch %s.', __METHOD__, $batch->blog_id, $batch->key ) );
 							$this->delete_batches( $batch->blog_id );
 							continue;
 						}
 
 						$this->spawn_multisite_child_process( $batch->blog_id );
-						if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+						if ( $is_cron ) {
 							// Switch back to the current blog and return so the other tasks queued in this process can be run.
 							switch_to_blog( $current_blog_id );
 							return;
 						} else {
-							wp_die();
+							return $this->maybe_wp_die();
 						}
 					}
 				}
 
-				GFCommon::log_debug( sprintf( '%s(): Processing batch %s; Tasks: %d.', __METHOD__, $batch->key, count( $batch->data ) ) );
+				if ( $this->has_batch_been_updated( $batch ) ) {
+					$this->log_debug( sprintf( '%s(): Processing batch %s; Tasks: %d; Created: %s; Last update: %s.', __METHOD__, $batch->key, count( $batch->data ), wp_date( 'Y-m-d H:i:s', $batch->timestamp_created ), wp_date( 'Y-m-d H:i:s', $batch->timestamp_updated ) ) );
+				} else {
+					$this->log_debug( sprintf( '%s(): Processing batch %s; Tasks: %d.', __METHOD__, $batch->key, count( $batch->data ) ) );
+				}
 
 				$task_num = 0;
 
 				foreach ( $batch->data as $key => $value ) {
-					GFCommon::log_debug( sprintf( '%s(): Processing task %d.', __METHOD__, ++$task_num ) );
+					$this->log_debug( sprintf( '%s(): Processing task %d.', __METHOD__, ++$task_num ) );
 
 					// Setting or refreshing the current batch before processing the task.
 					$this->set_current_batch( $batch );
 					$task = $this->task( $value );
 
 					if ( $task !== false ) {
-						GFCommon::log_debug( sprintf( '%s(): Keeping task %d in batch.', __METHOD__, $task_num ) );
+						$this->log_debug( sprintf( '%s(): Keeping task %d in batch.', __METHOD__, $task_num ) );
 						$batch->data[ $key ] = $task;
+						// Pausing, so the task is not retried immediately.
+						$this->pause( true );
 					} else {
-						GFCommon::log_debug( sprintf( '%s(): Removing task %d from batch.', __METHOD__, $task_num ) );
+						$this->log_debug( sprintf( '%s(): Removing task %d from batch.', __METHOD__, $task_num ) );
 						unset( $batch->data[ $key ] );
 					}
 
-					if ( $task !== false || $this->time_exceeded() || $this->memory_exceeded() ) {
-						// Batch limits reached or task not complete.
+					// Keep the batch up to date while processing it.
+					if ( ! empty( $batch->data ) ) {
+						$this->update( $batch->key, $batch->data );
+					}
+
+					// Let the server breathe a little.
+					sleep( $throttle_seconds );
+
+					// Batch limits reached, or pause or cancel requested.
+					if ( ! $this->should_continue() ) {
 						break;
 					}
 				}
 
-				// Update or delete current batch.
-				if ( ! empty( $batch->data ) ) {
-					$this->update( $batch->key, $batch->data );
-				} else {
+				$this->log_debug( sprintf( '%s(): Batch completed for %s.', __METHOD__, $this->action ) );
+
+				// Delete current batch if fully processed.
+				if ( empty( $batch->data ) ) {
 					$this->delete( $batch->key );
 				}
-			} while ( ! $this->time_exceeded() && ! $this->memory_exceeded() && ! $this->is_queue_empty() );
-
-			GFCommon::log_debug( sprintf( '%s(): Batch completed for %s.', __METHOD__, $this->action ) );
+			} while ( ! $this->is_queue_empty() && $this->should_continue() );
 
 			$this->set_current_batch();
 			$this->unlock_process();
 
 			// Start next batch or complete process.
-			if ( ! $this->is_queue_empty() ) {
+			if ( $this->is_paused() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Processing is paused for %s.', __METHOD__, $this->action ) );
+				$this->paused();
+			} elseif ( ! $this->is_queue_empty() ) {
+				$this->log_debug( sprintf( '%s(): Batches remain in the queue for %s.', __METHOD__, $this->action ) );
 				$this->dispatch();
 			} else {
+				$this->log_debug( sprintf( '%s(): All batches completed for %s.', __METHOD__, $this->action ) );
 				$this->complete();
 			}
 
-			if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
-				// Return so the other tasks queued in this process can be run.
-				return;
-			} else {
-				wp_die();
+			if ( $is_cron ) {
+				exit;
 			}
+
+			return $this->maybe_wp_die();
+		}
+
+		/**
+		 * Determines if a batch has been updated.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param stdClass $batch The batch object.
+		 *
+		 * @return bool
+		 */
+		protected function has_batch_been_updated( $batch ) {
+			return ! empty( $batch->timestamp_created ) && ! empty( $batch->timestamp_updated ) && ( $batch->timestamp_updated > $batch->timestamp_created );
 		}
 
 		/**
@@ -539,9 +966,8 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * @since 2.3
 		 */
 		protected function spawn_multisite_child_process( $blog_id ) {
-			GFCommon::log_debug( sprintf( '%s(): Running for blog #%s.', __METHOD__, $blog_id ) );
+			$this->log_debug( sprintf( '%s(): Running for blog #%s.', __METHOD__, $blog_id ) );
 			switch_to_blog( $blog_id );
-			$this->query_url = admin_url( 'admin-ajax.php' );
 			$this->unlock_process();
 			$this->dispatch();
 		}
@@ -585,40 +1011,10 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 
 			if ( ! $memory_limit || -1 === intval( $memory_limit ) ) {
 				// Unlimited, set to 32GB.
-				$memory_limit = '32G';
+				$memory_limit = '32000M';
 			}
 
-			return $this->convert_hr_to_bytes( $memory_limit );
-		}
-
-		/**
-		 * Converts a shorthand byte value to an integer byte value.
-		 *
-		 * @param string $value A (PHP ini) byte value, either shorthand or ordinary.
-		 *
-		 * @return int An integer byte value.
-		 */
-		protected function convert_hr_to_bytes( $value ) {
-
-			// Globally available in WordPress 4.6
-			if ( function_exists( 'wp_convert_hr_to_bytes' ) ) {
-				return wp_convert_hr_to_bytes( $value );
-			}
-
-			// Backwards compatible support for Wordpress 3.6 to 4.5
-			$value = strtolower( trim( $value ) );
-			$bytes = (int) $value;
-
-			if ( false !== strpos( $value, 'g' ) ) {
-				$bytes *= pow( 1024, 3 );
-			} elseif ( false !== strpos( $value, 'm' ) ) {
-				$bytes *= pow( 1024, 2 );
-			} elseif ( false !== strpos( $value, 'k' ) ) {
-				$bytes *= 1024;
-			}
-
-			// Deal with large (float) values which run into the maximum integer size.
-			return min( $bytes, PHP_INT_MAX );
+			return wp_convert_hr_to_bytes( $memory_limit );
 		}
 
 		/**
@@ -651,8 +1047,42 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * performed, or, call parent::complete().
 		 */
 		protected function complete() {
-			// Unschedule the cron healthcheck.
+			delete_site_option( $this->get_status_key() );
+
+			// Remove the cron healthcheck job from the cron schedule.
 			$this->clear_scheduled_event();
+
+			$this->completed();
+		}
+
+		/**
+		 * Called when background process has completed.
+		 *
+		 * @since 2.9.7
+		 */
+		protected function completed() {
+			do_action( $this->identifier . '_completed', $this->get_chain_id() );
+		}
+
+		/**
+		 * Get the cron healthcheck interval in minutes.
+		 *
+		 * Default is 5 minutes, minimum is 1 minute.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return int
+		 */
+		public function get_cron_interval() {
+			$interval = 5;
+
+			if ( property_exists( $this, 'cron_interval' ) ) {
+				$interval = $this->cron_interval;
+			}
+
+			$interval = apply_filters( $this->cron_interval_identifier, $interval );
+
+			return is_int( $interval ) && 0 < $interval ? $interval : 5;
 		}
 
 		/**
@@ -661,20 +1091,24 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * @since 2.2
 		 *
 		 * @access public
+		 *
 		 * @param mixed $schedules Schedules.
+		 *
 		 * @return mixed
 		 */
 		public function schedule_cron_healthcheck( $schedules ) {
-			$interval = apply_filters( $this->identifier . '_cron_interval', 5 );
+			$interval = $this->get_cron_interval();
 
-			if ( property_exists( $this, 'cron_interval' ) ) {
-				$interval = apply_filters( $this->identifier . '_cron_interval', $this->cron_interval_identifier );
+			if ( 1 === $interval ) {
+				$display = __( 'Every Minute', 'gravityforms' );
+			} else {
+				$display = sprintf( __( 'Every %d Minutes', 'gravityforms' ), $interval );
 			}
 
-			// Adds every 5 minutes to the existing schedules.
-			$schedules[ $this->identifier . '_cron_interval' ] = array(
+			// Adds an "Every NNN Minute(s)" schedule to the existing cron schedules.
+			$schedules[ $this->cron_interval_identifier ] = array(
 				'interval' => MINUTE_IN_SECONDS * $interval,
-				'display'  => sprintf( __( 'Every %d Minutes', 'gravityforms' ), $interval ),
+				'display'  => $display,
 			);
 
 			return $schedules;
@@ -689,22 +1123,52 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * @since 2.2
 		 */
 		public function handle_cron_healthcheck() {
-			GFCommon::log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
 			GFCommon::record_cron_event( $this->cron_hook_identifier );
 
-			if ( $this->is_process_running() ) {
+			if ( $this->is_processing() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Already processing for %s.', __METHOD__, $this->action ) );
 				// Background process already running.
-				return;
+				exit;
 			}
-
 
 			if ( $this->is_queue_empty() ) {
+				$this->log_debug( sprintf( '%s(): Aborting. Queue is empty for %s.', __METHOD__, $this->action ) );
 				// No data to process.
 				$this->clear_scheduled_event();
-				return;
+				exit;
 			}
 
+			if ( $this->is_paused() ) {
+				if ( $this->is_pause_expired() ) {
+					$this->resume( false );
+				} else {
+					$this->log_debug( sprintf( '%s(): Aborting. Processing is paused for %s.', __METHOD__, $this->action ) );
+					exit;
+				}
+			}
+
+			// Calling handle() directly instead of dispatch() because the Ajax request most likely failed with a cURL error.
 			$this->handle();
+		}
+
+		/**
+		 * Determines if the queue can be resumed based on how long ago it was paused.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return bool
+		 */
+		protected function is_pause_expired() {
+			$pause_timestamp = get_site_option( $this->get_identifier() . '_pause_timestamp' );
+			if ( empty( $pause_timestamp ) ) {
+				return false;
+			}
+
+			$paused_duration = time() - $pause_timestamp;
+			$duration_limit  = ( $this->get_cron_interval() / 2 ) * MINUTE_IN_SECONDS;
+
+			return ( $paused_duration >= $duration_limit );
 		}
 
 		/**
@@ -714,8 +1178,12 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 */
 		protected function schedule_event() {
 			if ( ! wp_next_scheduled( $this->cron_hook_identifier ) ) {
-				GFCommon::log_debug( sprintf( '%s(): Scheduling cron event for %s.', __METHOD__, $this->action ) );
-				wp_schedule_event( time() + 10, $this->cron_interval_identifier, $this->cron_hook_identifier );
+				$this->log_debug( sprintf( '%s(): Scheduling cron event for %s.', __METHOD__, $this->action ) );
+				wp_schedule_event(
+					time() + ( $this->get_cron_interval() * MINUTE_IN_SECONDS ),
+					$this->cron_interval_identifier,
+					$this->cron_hook_identifier
+				);
 			}
 		}
 
@@ -728,7 +1196,7 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 			$timestamp = wp_next_scheduled( $this->cron_hook_identifier );
 
 			if ( $timestamp ) {
-				GFCommon::log_debug( sprintf( '%s(): Clearing cron event for %s.', __METHOD__, $this->action ) );
+				$this->log_debug( sprintf( '%s(): Clearing cron event for %s.', __METHOD__, $this->action ) );
 				wp_unschedule_event( $timestamp, $this->cron_hook_identifier );
 			}
 		}
@@ -750,13 +1218,7 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * @since 2.2
 		 */
 		public function cancel_process() {
-			if ( ! $this->is_queue_empty() ) {
-				$batch = $this->get_batch();
-
-				$this->delete( $batch->key );
-				$this->clear_scheduled_events();
-			}
-
+			$this->cancel();
 		}
 
 		/**
@@ -789,6 +1251,167 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 		 * @return mixed
 		 */
 		abstract protected function task( $item );
+
+		/**
+		 * Maybe unserialize data, but not if an object.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param mixed      $data            Data to be unserialized.
+		 * @param bool|array $allowed_classes Array of class names that can be unserialized.
+		 *
+		 * @return mixed
+		 */
+		protected static function maybe_unserialize( $data, $allowed_classes ) {
+			if ( is_serialized( $data ) ) {
+				$options = array();
+				if ( is_bool( $allowed_classes ) || is_array( $allowed_classes ) ) {
+					$options['allowed_classes'] = $allowed_classes;
+				}
+
+				return @unserialize( $data, $options ); // @phpcs:ignore
+			}
+
+			return $data;
+		}
+
+		/**
+		 * Should any processing continue?
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return bool
+		 */
+		public function should_continue() {
+			/**
+			 * Filter whether the current background process should continue running the task
+			 * if there is data to be processed.
+			 *
+			 * If the processing time or memory limits have been exceeded, the value will be false.
+			 * If pause or cancel have been requested, the value will be false.
+			 *
+			 * It is very unlikely that you would want to override a false value with true.
+			 *
+			 * If false is returned here, it does not necessarily mean background processing is
+			 * complete. If there is batch data still to be processed and pause or cancel have not
+			 * been requested, it simply means this background process should spawn a new process
+			 * for the chain to continue processing and then close itself down.
+			 *
+			 * @since 2.9.7
+			 *
+			 * @param bool   $continue Should the current process continue processing the task?
+			 * @param string $chain_id The current background process chain's ID.
+			 *
+			 * @return bool
+			 */
+			return apply_filters(
+				$this->identifier . '_should_continue',
+				! ( $this->time_exceeded() || $this->memory_exceeded() || $this->is_paused() || $this->is_cancelled() ),
+				$this->get_chain_id()
+			);
+		}
+
+		/**
+		 * Get the string used to identify this type of background process.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return string
+		 */
+		public function get_identifier() {
+			return $this->identifier;
+		}
+
+		/**
+		 * Return the current background process chain's ID.
+		 *
+		 * @since 2.9.7
+		 *
+		 * If the chain's ID hasn't been set before this function is first used,
+		 * and hasn't been passed as a query arg during dispatch,
+		 * the chain ID will be generated before being returned.
+		 *
+		 * @return string
+		 */
+		public function get_chain_id() {
+			if ( empty( $this->chain_id ) && wp_doing_ajax() ) {
+				check_ajax_referer( $this->identifier, 'nonce' );
+
+				if ( ! empty( $_GET[ $this->get_chain_id_arg_name() ] ) ) {
+					$chain_id = sanitize_key( $_GET[ $this->get_chain_id_arg_name() ] );
+
+					if ( wp_is_uuid( $chain_id ) ) {
+						$this->chain_id = $chain_id;
+
+						return $this->chain_id;
+					}
+				}
+			}
+
+			if ( empty( $this->chain_id ) ) {
+				$this->chain_id = wp_generate_uuid4();
+			}
+
+			return $this->chain_id;
+		}
+
+		/**
+		 * Filters the query arguments used during an async request.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param array $args Current query args.
+		 *
+		 * @return array
+		 */
+		public function filter_dispatch_query_args( $args ) {
+			$args[ $this->get_chain_id_arg_name() ] = $this->get_chain_id();
+
+			// Reducing timeout to help with form submission performance.
+			$args['timeout'] = 0.01;
+
+			// Blocking set to false prevents some issues such as cURL connection errors being reported, but can help with form submission performance, so only removing when debugging is enabled.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				unset( $args['blocking'] );
+			}
+
+			return $args;
+		}
+
+		/**
+		 * Get the query arg name used for passing the chain ID to new processes.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @return string
+		 */
+		private function get_chain_id_arg_name() {
+			static $chain_id_arg_name;
+
+			if ( ! empty( $chain_id_arg_name ) ) {
+				return $chain_id_arg_name;
+			}
+
+			/**
+			 * Filter the query arg name used for passing the chain ID to new processes.
+			 *
+			 * If you encounter problems with using the default query arg name, you can
+			 * change it with this filter.
+			 *
+			 * @since 2.9.7
+			 *
+			 * @param string $chain_id_arg_name Default "chain_id".
+			 *
+			 * @return string
+			 */
+			$chain_id_arg_name = apply_filters( $this->identifier . '_chain_id_arg_name', self::CHAIN_ID_ARG_NAME );
+
+			if ( ! is_string( $chain_id_arg_name ) || empty( $chain_id_arg_name ) ) {
+				$chain_id_arg_name = self::CHAIN_ID_ARG_NAME;
+			}
+
+			return $chain_id_arg_name;
+		}
 
 		/**
 		 * Allows filtering of the form before the task is processed.
@@ -873,9 +1496,22 @@ if ( ! class_exists( 'GF_Background_Process' ) ) {
 
 			$result = $wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE {$column} LIKE %s", $wpdb->esc_like( $key ) . '%' ) );
 
-			GFCommon::log_debug( sprintf( '%s(): %d batch(es) deleted with prefix %s.', __METHOD__, $result, $key ) );
+			$this->log_debug( sprintf( '%s(): %d batch(es) deleted with prefix %s.', __METHOD__, $result, $key ) );
 
 			return $result;
+		}
+
+		/**
+		 * Writes a message to the core log.
+		 *
+		 * @since 2.9.7
+		 *
+		 * @param string $message The message to be logged.
+		 *
+		 * @return void
+		 */
+		public function log_debug( $message ) {
+			GFCommon::log_debug( $message );
 		}
 
 	}
