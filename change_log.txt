@@ -1,3 +1,8 @@
+### 2.9.7.1
+- Fixed an accessibility issue where the consent field description does not get keyboard focus.
+- Added a setting to disable the dashboard widget.
+- Fixed an issue that causes the field properties to be overwritten by defaults.
+
 ### 2.9.7 | 2025-04-22
 - Added the autocomplete attribute setting to Website field.
 - Fixed spacing and margin issues in the admin and help sections in RTL languages.

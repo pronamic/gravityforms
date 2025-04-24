@@ -138,6 +138,23 @@ class GF_Field_Website extends GF_Field {
 		return $operators;
 	}
 
+	/**
+	 * Performs actions after the field has been converted to an object.
+	 *
+	 * Ensures the `autocompleteAttribute` property is set to 'url' if it is not already defined.
+	 *
+	 * @since 2.9.8
+	 *
+	 */
+	public function post_convert_field() {
+		parent::post_convert_field();
+
+		if ( $this->is_form_editor() && empty( $this->autocompleteAttribute ) ) {
+			$this->autocompleteAttribute = 'url';
+		}
+
+	}
+
 }
 
 GF_Fields::register( new GF_Field_Website() );

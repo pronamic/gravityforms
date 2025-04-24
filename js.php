@@ -248,7 +248,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 		var field_str, autocomplete, inputName, inputId, id, input;
 
 		if ( ! field["inputs"] ) {
-			const autoCompleteAttribute = field["autocompleteAttribute"] || ( SetDefaultValues( field ), field["autocompleteAttribute"] );
+			const autoCompleteAttribute = field?.autocompleteAttribute || ''
 			field_str = "<label for='field_autocomplete_attribute' class='inline'>" + <?php echo json_encode( esc_html__( 'Autocomplete Attribute:', 'gravityforms' ) ); ?> + "&nbsp;</label>";
 			field_str += "<input type='text' value='" + autoCompleteAttribute + "' id='field_autocomplete_attribute' class='field_autocomplete_attribute' />";
 			SetFieldProperty( 'autocompleteAttribute', autoCompleteAttribute );

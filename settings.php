@@ -211,6 +211,7 @@ class GFSettings {
 			delete_option( 'gform_api_count' );
 			delete_option( 'gform_email_count' );
 			delete_option( 'gform_enable_toolbar_menu' );
+			delete_option( 'gform_enable_dashboard_widget' );
 			delete_option( 'gform_enable_logging' );
 			delete_option( 'gform_pending_installation' );
 			delete_option( 'gform_enable_noconflict' );
@@ -609,6 +610,26 @@ class GFSettings {
 				),
         );
 
+		$fields['dashboard_widget'] = array(
+				'id'          => 'section_enable_dashboard_widget',
+				'title'       => esc_html__( 'Dashboard Widget', 'gravityforms' ),
+				'description' => esc_html__( 'Turn on to enable the Gravity Forms dashboard widget. The dashboard widget displays a list of forms and the number of entries each form has.', 'gravityforms' ),
+				'class'       => 'gform-settings-panel--half',
+				'fields'      => array(
+					array(
+						'name'          => 'enable_dashboard_widget',
+						'type'          => 'toggle',
+						'toggle_label'  => esc_html__( 'Enable Dashboard Widget', 'gravityforms' ),
+						'save_callback' => function( $field, $value ) {
+							update_option( 'gform_enable_dashboard_widget', $value );
+
+							return $value;
+						},
+						'default_value' => self::get_dashboard_widget_default_value(),
+					),
+				),
+		);
+
         $fields['background_updates'] = array(
 				'id'          => 'section_enable_background_updates',
 				'title'       => esc_html__( 'Automatic Background Updates', 'gravityforms' ),
@@ -918,6 +939,27 @@ class GFSettings {
 		}
 
 		$field->do_validation( $value );
+	}
+
+	/**
+	 * Returns the default value for the dashboard widget setting.
+	 *
+	 * Sometimes we get a false positive as the default value, so we need to explicitly check if it is set to '1'.
+	 *
+	 * @since 2.9.8
+	 *
+	 * @return bool
+	 */
+	private static function get_dashboard_widget_default_value() {
+		$saved_value = get_option( 'gform_enable_dashboard_widget' );
+
+		// get_option() returns false if there is no value set
+		if ( false === $saved_value ) {
+			return true;
+		}
+
+		// the saved value will be either '1' or ''
+		return $saved_value;
 	}
 
 	/**
