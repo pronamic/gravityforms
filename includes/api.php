@@ -1664,22 +1664,18 @@ class GFAPI {
 	 * 'resume_token' => string '045f941cc4c04d479556bab1db6d3495'
 	 *
 	 * @since  Unknown
-	 * @access public
+	 * @since  2.9.9 Added the optional $initiated_by param.
 	 *
-	 * @uses GFAPI::get_form()
-	 * @uses GFCommon::get_base_path()
-	 * @uses GFFormDisplay::process_form()
-	 * @uses GFFormDisplay::replace_save_variables()
-	 *
-	 * @param int $form_id The Form ID
-	 * @param array $input_values An array of values. Not $_POST, that will be automatically merged with the $input_values.
-	 * @param array $field_values Optional.
-	 * @param int $target_page Optional.
-	 * @param int $source_page Optional.
+	 * @param int      $form_id      The Form ID
+	 * @param array    $input_values An array of values. Not $_POST, that will be automatically merged with the $input_values.
+	 * @param array    $field_values Optional. An array of dynamic population parameter keys with their corresponding values used to populate the fields.
+	 * @param int      $target_page  Optional. For multi-page forms to indicate which page is to be loaded if the current page passes validation. Default is 0, indicating the last or only page is being submitted.
+	 * @param int      $source_page  Optional. For multi-page forms to indicate which page of the form was just submitted. Default is 1.
+	 * @param null|int $initiated_by Optional. The process that initiated the submission. Supported integers are 1 (aka GFFormDisplay::SUBMISSION_INITIATED_BY_WEBFORM) or 2 (aka GFFormDisplay::SUBMISSION_INITIATED_BY_API). Defaults to GFFormDisplay::SUBMISSION_INITIATED_BY_API.
 	 *
 	 * @return array|WP_Error An array containing the result of the submission.
 	 */
-	public static function submit_form( $form_id, $input_values, $field_values = array(), $target_page = 0, $source_page = 1 ) {
+	public static function submit_form( $form_id, $input_values, $field_values = array(), $target_page = 0, $source_page = 1, $initiated_by = null ) {
 
 		if ( gf_upgrade()->get_submissions_block() ) {
 			return new WP_Error( 'submissions_blocked', __( 'Submissions are currently blocked due to an upgrade in progress', 'gravityforms' ) );
@@ -1699,7 +1695,8 @@ class GFAPI {
 
 		try {
 			require_once GFCommon::get_base_path() . '/form_display.php';
-			GFFormDisplay::process_form( $form_id, GFFormDisplay::SUBMISSION_INITIATED_BY_API );
+			$initiated_by = GFCommon::whitelist( $initiated_by, array( GFFormDisplay::SUBMISSION_INITIATED_BY_API, GFFormDisplay::SUBMISSION_INITIATED_BY_WEBFORM ) );
+			GFFormDisplay::process_form( $form_id, $initiated_by );
 		} catch ( Exception $ex ) {
 			remove_filter( 'gform_suppress_confirmation_redirect', '__return_true' );
 			remove_filter( 'gform_pre_validation', array( 'GFAPI', 'submit_form_filter_gform_pre_validation' ), 50 );
@@ -1721,17 +1718,12 @@ class GFAPI {
 
 		$result = array();
 
-		$result['is_valid'] = $submission_details['is_valid'];
-
-		if ( $result['is_valid'] == false ) {
-			$result['validation_messages'] = self::get_field_validation_errors( $submission_details['form'] );
-		}
-
+		$result['is_valid']           = $submission_details['is_valid'];
 		$result['form']               = $submission_details['form'];
 		$result['page_number']        = $submission_details['page_number'];
 		$result['source_page_number'] = $submission_details['source_page_number'];
 
-		if ( $submission_details['is_valid'] ) {
+		if ( $result['is_valid'] || rgar( $submission_details, 'abort_with_confirmation' ) ) {
 			$confirmation_message = $submission_details['confirmation_message'];
 
 			if ( is_array( $confirmation_message ) ) {
@@ -1748,7 +1740,9 @@ class GFAPI {
 			}
 
 			$result['entry_id'] = rgars( $submission_details, 'lead/id' );
-			$result['is_spam']  = rgars( $submission_details, 'is_spam' );
+			$result['is_spam']  = rgar( $submission_details, 'is_spam' );
+		} else {
+			$result['validation_messages'] = self::get_field_validation_errors( $submission_details['form'] );
 		}
 
 		if ( isset( $submission_details['resume_token'] ) ) {

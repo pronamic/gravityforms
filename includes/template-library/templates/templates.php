@@ -261,6 +261,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -1228,6 +1229,7 @@ return array(
 			'schedulePendingMessage'     => '',
 			'scheduleMessage'            => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'markupVersion'              => 2,
 			'confirmations'              => array(
@@ -1613,6 +1615,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -2071,6 +2074,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -2929,6 +2933,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -3750,6 +3755,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -4594,6 +4600,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -5734,6 +5741,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -6811,6 +6819,7 @@ return array(
 			'schedulePendingMessage'     => '',
 			'scheduleMessage'            => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'markupVersion'              => 2,
 			'confirmations'              => array(
@@ -7582,6 +7591,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -7991,6 +8001,7 @@ return array(
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'validationSummary'          => '1',
 			'requiredIndicator'          => 'text',
@@ -8534,6 +8545,7 @@ return array(
 			'schedulePendingMessage'     => '',
 			'scheduleMessage'            => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'markupVersion'              => 2,
 			'confirmations'              => array(
@@ -9584,6 +9596,7 @@ return array(
 			'schedulePendingMessage'     => '',
 			'scheduleMessage'            => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'markupVersion'              => 2,
 			'confirmations'              => array(
@@ -9902,7 +9915,8 @@ return array(
 			'nextFieldId'                => 6,
 			'subLabelPlacement'          => 'above',
 			'cssClass'                   => '',
-			'enableHoneypot'             => true,
+			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'save'                       => array(
 				'enabled' => false,
@@ -10609,6 +10623,7 @@ return array(
 			'schedulePendingMessage'     => '',
 			'scheduleMessage'            => '',
 			'enableHoneypot'             => false,
+			'honeypotAction'             => 'spam',
 			'enableAnimation'            => false,
 			'feeds'                      => array(
 				'gravityformsadvancedpostcreation' => array(),

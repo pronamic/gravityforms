@@ -11,7 +11,6 @@ use Gravity_Forms\Gravity_Forms\GF_Service_Container;
 use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Telemetry\GF_Telemetry_Processor;
 use GFForms;
-use GF_Background_Process;
 use GF_Background_Upgrader;
 use GF_Feed_Processor;
 

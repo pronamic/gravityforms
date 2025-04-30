@@ -169,6 +169,7 @@ class GFFormDisplay {
 				// Display confirmation but doesn't process the form. Useful for spam filters.
 				$confirmation = self::handle_confirmation( $form, $lead, $ajax );
 				$is_valid     = false;
+				self::set_submission_if_null( $form_id, 'abort_with_confirmation', true );
 			} elseif ( ! $saving_for_later ) {
 
 				GFCommon::log_debug( 'GFFormDisplay::process_form(): Submission is valid. Moving forward.' );

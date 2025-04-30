@@ -97,6 +97,7 @@ class GFFormSettings {
 	 * Prepare form settings fields.
 	 *
 	 * @since 2.5
+	 * @since 2.9.8 Updated honeypotAction default to spam.
 	 *
 	 * @param array $form Form being edited.
 	 *
@@ -518,7 +519,7 @@ class GFFormSettings {
 					array(
 						'name'          => 'honeypotAction',
 						'type'          => 'radio',
-						'default_value' => 'abort',
+						'default_value' => 'spam',
 						'horizontal'    => true,
 						'label'         => esc_html__( 'If the honeypot flags a submission as spam:', 'gravityforms' ),
 						'dependency'    => array(
@@ -696,6 +697,7 @@ class GFFormSettings {
 	 * Initialize Plugin Settings fields renderer.
 	 *
 	 * @since 2.5
+	 * @since 2.9.8 Updated honeypotAction default to spam.
 	 */
 	public static function initialize_settings_renderer() {
 
@@ -761,7 +763,7 @@ class GFFormSettings {
 
 					// Form Options
 					$form['enableHoneypot']  = (bool) rgar( $values, 'enableHoneypot' );
-					$form['honeypotAction']  = GFCommon::whitelist( rgar( $values, 'honeypotAction' ), array( 'abort', 'spam' ) );
+					$form['honeypotAction']  = GFCommon::whitelist( rgar( $values, 'honeypotAction' ), array( 'spam', 'abort' ) );
 					$form['enableAnimation'] = (bool) rgar( $values, 'enableAnimation' );
 					$form['markupVersion']   = rgar( $values, 'markupVersion' ) ? 1 : 2;
 

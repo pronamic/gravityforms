@@ -52,9 +52,10 @@ class GF_Honeypot_Handler {
 	 * Target of the gform_abort_submission_with_confirmation filter. Aborts form submission early with a confirmation when honeypot fails and it is configured not to create an entry.
 	 *
 	 * @since 2.7
+	 * @since 2.9.8 Updated honeypotAction default to spam.
 	 *
 	 * @param bool  $do_abort Variable being filtered. True to abort submission, false to continue.
-	 * @param array $form Current form object.
+	 * @param array $form     Current form object.
 	 *
 	 * @return bool Returns true to abort form submission early and display confirmation. Returns false to let submission continue.
 	 */
@@ -66,12 +67,16 @@ class GF_Honeypot_Handler {
 		}
 
 		// Do not abort submission if Honeypot should be disabled or if honeypot action is set to create an entry.
-		if ( ! $this->is_honeypot_enabled( $form ) || rgar( $form, 'honeypotAction' ) == 'spam' ) {
+		if ( ! $this->is_honeypot_enabled( $form ) || rgar( $form, 'honeypotAction', 'spam' ) == 'spam' ) {
 			return false;
 		}
 
 		$do_abort = ! $this->validate_honeypot( $form );
 		\GFCommon::log_debug( __METHOD__ . '(): Result from Honeypot: ' . json_encode( $do_abort ) );
+
+		if ( $do_abort ) {
+			\GFFormDisplay::$submission[ (int) rgar( $form, 'id' ) ]['is_spam'] = true;
+		}
 
 		return $do_abort;
 	}

@@ -1,11 +1,13 @@
 <?php
 
+use Gravity_Forms\Gravity_Forms\Async\GF_Background_Process;
+
 if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
 
-if ( ! class_exists( 'GF_Background_Process' ) ) {
-	require_once GF_PLUGIN_DIR_PATH . 'includes/libraries/gf-background-process.php';
+if ( ! class_exists( 'Gravity_Forms\Gravity_Forms\Async\GF_Background_Process' ) ) {
+	require_once GF_PLUGIN_DIR_PATH . 'includes/async/class-gf-background-process.php';
 }
 
 /**
