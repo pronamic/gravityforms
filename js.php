@@ -3,7 +3,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
 ?>
-<script type="text/javascript" data-js-reload="editor-footer-js">
+<script type="text/javascript">
     var gforms_dragging = 0;
 	var gforms_original_json;
 

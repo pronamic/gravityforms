@@ -103,10 +103,13 @@ class GF_System_Report {
 				}
 
 				// Open section table.
-				echo '<table cellpadding="0" cellspacing="0" class="gform_system_report wp-list-table fixed striped feeds">';
+				echo '<table class="gform_system_report wp-list-table fixed striped feeds">';
 
-				// Add table header.
-				echo '<thead><tr><th colspan="2">' . rgar( $table, 'title' ) . '</th></tr></thead>';
+				// Add table caption.
+				echo '<caption>' . rgar( $table, 'title' ) . '</caption>';
+
+				// Add table headers (for screen readers and accessibility).
+				echo '<thead class="screen-reader-text"><tr><th scope="col">'. esc_html__( 'Setting', 'gravityforms' ) .'</th><th scope="col">'. esc_html__( 'Value', 'gravityforms' ) .'</th></tr></thead>';
 
 				// Open table body.
 				echo '<tbody id="the-list" data-wp-lists="list:feed">';
@@ -624,7 +627,7 @@ class GF_System_Report {
 								'type'               => 'version_check',
 								'version_compare'    => '>',
 								'minimum_version'    => ( GFCommon::get_dbms_type() === 'SQLite' ) ? '3.0.0' : '5.0.0',
-								// translators: %s is the database type (MySQL, MariaDB or SQLite).						
+								// translators: %s is the database type (MySQL, MariaDB or SQLite).
 								'validation_message' => sprintf( esc_html__( 'Gravity Forms requires %s or above.', 'gravityforms' ) , ( GFCommon::get_dbms_type() === 'SQLite' ) ? 'SQLite 3.0' : 'MySQL 5' ),
 							),
 							array(
@@ -721,7 +724,7 @@ class GF_System_Report {
 
 				// Display value based on valid version check.
 				if ( $valid_version ) {
-					return $is_export ? self::get_export( $item, 'value' ) . ' ✔' : $item['value'] . ' <mark class="yes"><span class="dashicons dashicons-yes"></span></mark>';
+					return $is_export ? self::get_export( $item, 'value' ) . ' ✔' : $item['value'] . ' <span class="yes"><span class="dashicons dashicons-yes"></span><span class="screen-reader-text">'. esc_html__( 'Passes', 'gravityforms' ) .'</span></span>';
 
 				} elseif ( $is_export ) {
 					$html = self::get_export( $item, 'value' ) . ' ✘ ' . self::get_export( $item, 'validation_message' );
@@ -729,7 +732,7 @@ class GF_System_Report {
 					return $html;
 
 				} else {
-					$html = $item['value'] . ' <mark class="error"><span class="dashicons dashicons-no"></span></mark>';
+					$html = $item['value'] . ' <span class="error"><span class="dashicons dashicons-no"></span><span class="screen-reader-text">'. esc_html__( 'Fails', 'gravityforms' ) .'</span></span>';
 					$html .= '<span class="error_message">' . rgar( $item, 'validation_message' ) . '</span>';
 
 					return $html;
@@ -743,7 +746,7 @@ class GF_System_Report {
 
 				// If minimum WordPress version for support passed, return valid state.
 				if ( $version_check_support ) {
-					return $is_export ? self::get_export( $item, 'value' ) . ' ✔' : $item['value'] . ' <mark class="yes"><span class="dashicons dashicons-yes"></span></mark>';
+					return $is_export ? self::get_export( $item, 'value' ) . ' ✔' : $item['value'] . ' <span class="yes"><span class="dashicons dashicons-yes"></span><span class="screen-reader-text">'. esc_html__( 'Passes', 'gravityforms' ) .'</span></span>';
 
 				} elseif ( $is_export ) {
 
@@ -755,7 +758,7 @@ class GF_System_Report {
 
 					$validation_message = $version_check_min ? $item['versions']['support']['validation_message'] : $item['versions']['minimum']['validation_message'];
 
-					$html = $item['value'] . ' <mark class="error"><span class="dashicons dashicons-no"></span></mark> ';
+					$html = $item['value'] . ' <span class="error"><span class="dashicons dashicons-no"></span><span class="screen-reader-text">'. esc_html__( 'Fails', 'gravityforms' ) .'</span></span> ';
 					$html .= '<span class="error_message">' . $validation_message . '</span>';
 
 					return $html;
@@ -767,14 +770,14 @@ class GF_System_Report {
 
 				if ( rgar( $item, 'is_valid' ) ) {
 
-					$value .= $is_export ? '  ✔' : '&nbsp;<mark class="yes"><span class="dashicons dashicons-yes"></span></mark>';
+					$value .= $is_export ? '  ✔' : '&nbsp;<span class="yes"><span class="dashicons dashicons-yes"></span><span class="screen-reader-text">'. esc_html__( 'Passes', 'gravityforms' ) .'</span></span>';
 
 					if ( ! rgempty( 'message', $item ) ) {
 						$value .= $is_export ? ' ' . self::get_export( $item, 'message' ) : '&nbsp;' . rgar( $item, 'message' );
 					}
 				} elseif ( rgar( $item, 'is_valid' ) === false ) {
 
-					$value .= $is_export ? ' ✘' : '&nbsp;<mark class="error"><span class="dashicons dashicons-no"></span></mark>';
+					$value .= $is_export ? ' ✘' : '&nbsp;<span class="error"><span class="dashicons dashicons-no"></span><span class="screen-reader-text">'. esc_html__( 'Fails', 'gravityforms' ) .'</span></span>';
 
 					if ( ! rgempty( 'validation_message', $item ) ) {
 						$value .= $is_export ? ' ' . self::get_export( $item, 'validation_message' ) : '&nbsp;<span class="error_message">' . rgar( $item, 'validation_message' ) . '</span>';
@@ -1594,7 +1597,7 @@ class GF_System_Report {
 
 		if ( $wpdb->last_error || ! isset( $results[0] ) ) {
 			return 0;
-		}	
+		}
 
 		$c = $results[0];
 

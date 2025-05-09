@@ -601,7 +601,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 			}
 		}
 		return sprintf(
-			'<%1$s id="%2$s" class="%3$s" %4$s%5$s%6$s%7$s%8$s%9$s data-js-reload="%10$s" %11$s>%12$s{FIELD_CONTENT}</%1$s>',
+			'<%1$s id="%2$s" class="%3$s" %4$s%5$s%6$s%7$s%8$s%9$s %10$s>%11$s{FIELD_CONTENT}</%1$s>',
 			$tag,
 			esc_attr( rgar( $atts, 'id' ) ),
 			esc_attr( rgar( $atts, 'class' ) ),
@@ -611,7 +611,6 @@ class GF_Field extends stdClass implements ArrayAccess {
 			rgar( $atts, 'aria-live' ) ? ' aria-live="' . esc_attr( $atts['aria-live'] ) . '"' : '',
 			rgar( $atts, 'data-field-class' ) ? ' data-field-class="' . esc_attr( $atts['data-field-class'] ) . '"' : '',
 			rgar( $atts, 'data-field-position' ) ? ' data-field-position="' . esc_attr( $atts['data-field-position'] ) . '"' : '',
-			$ajax_reload_id,
 			rgar( $atts, 'aria-invalid' ) ? ' aria-invalid="true"' : '',
 			empty( $sidebar_message_content ) ? '' : '<span class="field-sidebar-message-content field-sidebar-message-content--type-' . $sidebar_message_type . ' hidden">' . \GFCommon::maybe_wp_kses( $sidebar_message_content ) . '</span>'
 		);
@@ -1682,10 +1681,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 		if(  ! in_array( $this->type, $duplicate_disabled ) ) {
 			$duplicate_aria_action = __( 'duplicate this field', 'gravityforms' );
 			$duplicate_field_link = "
-				<button 
-					id='gfield_duplicate_{$this->id}' 
-					class='gfield-field-action gfield-duplicate' 
-					onclick='StartDuplicateField(this); return false;' 
+				<button
+					id='gfield_duplicate_{$this->id}'
+					class='gfield-field-action gfield-duplicate'
+					onclick='StartDuplicateField(this); return false;'
 					onkeypress='StartDuplicateField(this); return false;'
 					aria-label='" . esc_html( $this->get_field_action_aria_label( $duplicate_aria_action ) ) . "'
 				>
@@ -1709,10 +1708,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		$delete_aria_action = __( 'delete this field', 'gravityforms' );
 		$delete_field_link = "
-			<button 
-				id='gfield_delete_{$this->id}' 
-				class='gfield-field-action gfield-delete' 
-				onclick='DeleteField(this);' 
+			<button
+				id='gfield_delete_{$this->id}'
+				class='gfield-field-action gfield-delete'
+				onclick='DeleteField(this);'
 				onkeypress='DeleteField(this); return false;'
 				aria-label='" . esc_html( $this->get_field_action_aria_label( $delete_aria_action ) ) . "'
 			>
@@ -1733,10 +1732,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		$edit_aria_action = __( 'jump to this field\'s settings', 'gravityforms' );
 		$edit_field_link = "
-			<button 
-				id='gfield_edit_{$this->id}' 
+			<button
+				id='gfield_edit_{$this->id}'
 				class='gfield-field-action gfield-edit'
-				onclick='EditField(this);' 
+				onclick='EditField(this);'
 				onkeypress='EditField(this); return false;'
 				aria-label='" . esc_html( $this->get_field_action_aria_label( $edit_aria_action ) ) . "'
 			>

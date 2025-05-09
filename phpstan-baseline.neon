@@ -1151,11 +1151,6 @@ parameters:
 			path: includes/settings/fields/class-generic-map.php
 
 		-
-			message: "#^Variable \\$field might not be defined\\.$#"
-			count: 2
-			path: includes/settings/fields/class-generic-map.php
-
-		-
 			message: "#^Variable \\$this might not be defined\\.$#"
 			count: 14
 			path: includes/splash-page/gf_splash.php

@@ -1033,7 +1033,7 @@ class GFCommon {
 		$class    = 'gform_merge_tags';
 		?>
 
-		<select data-js-reload="gforms-calculation-variables" id="<?php echo esc_attr( $element_id ); ?>_variable_select" class="<?php echo esc_attr( $class ); ?>" onchange="<?php echo $onchange; ?>">
+		<select id="<?php echo esc_attr( $element_id ); ?>_variable_select" class="<?php echo esc_attr( $class ); ?>" onchange="<?php echo $onchange; ?>">
 			<option value=''><?php esc_html_e( 'Insert Merge Tag', 'gravityforms' ); ?></option>
 			<optgroup label="<?php esc_attr_e( 'Allowable form fields', 'gravityforms' ); ?>">
 				<?php foreach ( $fields as $field ) {

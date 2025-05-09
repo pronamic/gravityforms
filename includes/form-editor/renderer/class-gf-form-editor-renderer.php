@@ -27,6 +27,6 @@ class GF_Form_Editor_Renderer {
 			echo $editor;
 		}
 
-		return utf8_encode( $editor );
+		return mb_convert_encoding( $editor, 'UTF-8', 'ISO-8859-1' );
 	}
 }

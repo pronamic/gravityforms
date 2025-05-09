@@ -402,6 +402,12 @@ class Generic_Map extends Base {
 		$input_type = '';
 		$form_id    = isset( $form['id'] ) ? $form['id'] : 0;
 
+		// Add the first choice.
+		$choices[] = array(
+			'label' => esc_html__( 'Select a Value', 'gravityforms' ),
+			'value' => '',
+		);
+
 		// Force required, excluded types to arrays.
 		$required_types = is_array( $required_types ) ? $required_types : array();
 		$excluded_types = is_array( $excluded_types ) ? $excluded_types : array();
@@ -510,28 +516,6 @@ class Generic_Map extends Base {
 		}
 
 		if ( count( $form_field_choices ) ) {
-			// Add first choice.
-			if ( count( $required_types ) === 0 || count( $required_types ) > 1 ) {
-
-				$choices[] = array(
-					'label' => esc_html__( 'Select a Field', 'gravityforms' ),
-					'value' => '',
-					'type'  => $field['type'],
-				);
-
-			} else {
-
-				$choices[] = array(
-					'label' => sprintf(
-						esc_html__( 'Select a %s Field', 'gravityforms' ),
-						GF_Fields::get( $required_types[0] ) ? ucfirst( GF_Fields::get( $required_types[0] )->get_form_editor_field_title() ) : ''
-					),
-					'value' => '',
-					'type'  => $field['type'],
-				);
-
-			}
-
 			// Add Form Fields choice.
 			$choices['fields'] = array(
 				'label'   => esc_html__( 'Form Fields', 'gravityforms' ),
@@ -591,6 +575,20 @@ class Generic_Map extends Base {
 
 			}
 
+		}
+
+		if ( in_array( 'date', $required_types ) ) {
+			$choices[] = array(
+				'label' => esc_html__( 'Entry Date', 'gravityforms' ),
+				'value' => 'date_created',
+			);
+		}
+
+		if ( in_array( 'number', $required_types ) ) {
+			$choices[] = array(
+				'label' => esc_html__( 'Entry ID', 'gravityforms' ),
+				'value' => 'id',
+			);
 		}
 
 		/**

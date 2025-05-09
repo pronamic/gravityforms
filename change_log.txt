@@ -1,17 +1,21 @@
-### 2.9.7.2
-- API: Fixed an issue with the gform/post_render event being fired too early during an AJAX submission, which causes conflicts with certain add-ons.
-- Updated the default honeypot action from "Do not create an entry" to "Create an entry and mark it as spam".
-- Fixed an issue where the honeypot doesn't work with new Ajax.
-- API: Updated GFAPI::submit_form() to support an optional 6th param, $initiated_by, the process that initiated the submission. Supported integers are 1 (aka GFFormDisplay::SUBMISSION_INITIATED_BY_WEBFORM) or 2 (aka GFFormDisplay::SUBMISSION_INITIATED_BY_API). Defaults to GFFormDisplay::SUBMISSION_INITIATED_BY_API.
-- API: Updated the result returned by GFAPI::submit_form() to include the is_spam, confirmation_message, and confirmation_type properties when the form fails honeypot validation and it is configured to use the "Do not create an entry" action.
-- Fixed a PHP fatal error that occurs during background processing if another plugin includes an older version of WP_Async_Request that doesn't include maybe_wp_die().
-- Fixed a PHP fatal error that occurs in wp_date() for some PHP versions and timestamps during background processing if a batch has previously been attempted.
-- Fixed a 403 error that occurs when a background processor dispatch method is called during an admin-ajax.php request, such as the one used to process new Ajax enabled form submissions.
-
-### 2.9.7.1
-- Fixed an accessibility issue where the consent field description does not get keyboard focus.
+### 2.9.8 | 2025-05-08
 - Added a setting to disable the dashboard widget.
-- Fixed an issue that causes the field properties to be overwritten by defaults.
+- Fixed a PHP fatal error that occurs during background processing if another plugin includes an older version of `WP_Async_Request` that doesn't include `maybe_wp_die()`.
+- Fixed a PHP fatal error that occurs in `wp_date()` for some PHP versions and timestamps during background processing if a batch has previously been attempted.
+- Fixed a nonce validation error that occurs when a background processor dispatch method is called during an admin-ajax.php request, such as the one used to process new Ajax enabled form submissions.
+- Fixed an accessibility issue where the consent field description does not get keyboard focus.
+- Fixed an issue that causes the URL field properties to be overwritten by defaults in the form editor.
+- Fixed an issue where the honeypot doesn't work with new Ajax.
+- Fixed a deprecation notice for the `utf8_encoded()` PHP function.
+- Updated tables on the System Report page to improve accessibility.
+- Updated the default honeypot action from "Do not create an entry" to "Create an entry and mark it as spam".
+- Updated the flyout in the form editor to be more consistent.
+- Removed the unused `data-js-reload` attribute from field markup.
+- AF: Updated the generic map field to show Entry Date and Entry ID as options when the field types are date and number, respectively.
+- API: Fixed an issue with the `gform/post_render` event being fired too early during an AJAX submission, which causes conflicts with certain add-ons.
+- API: Updated `GFAPI::submit_form()` to support an optional 6th param, `$initiated_by`, the process that initiated the submission. Supported integers are 1 (aka `GFFormDisplay::SUBMISSION_INITIATED_BY_WEBFORM`) or 2 (aka `GFFormDisplay::SUBMISSION_INITIATED_BY_API`). Defaults to `GFFormDisplay::SUBMISSION_INITIATED_BY_API`.
+- API: Updated the result returned by `GFAPI::submit_form()` to include the `is_spam`, `confirmation_message`, and `confirmation_type` properties when the form fails honeypot validation and it is configured to use the "Do not create an entry" action.
+
 
 ### 2.9.7 | 2025-04-22
 - Added the autocomplete attribute setting to Website field.

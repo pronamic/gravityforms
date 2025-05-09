@@ -269,21 +269,6 @@ function initLayoutEditor( $ ) {
 		initElement( $( '#field_' + fieldId ) );
 	} );
 
-		gform.addAction( 'gform_form_saving_action_element_after_reload', function( form, event, newElement, elementReloadId, existingElement ) {
-			if ( $( newElement ).hasClass( 'gfield' ) ) {
-				initElement( $( '[data-js-reload="' + elementReloadId + '"]' ) );
-			}
-
-			if ( $( newElement ).hasClass( 'editor-sidebar' ) ) {
-				initFieldButtons( $( fieldButtonsSelector ) );
-			}
-
-		} );
-
-		gform.addAction( 'gform_form_saving_action_editor_has_new_components', function( form, event, newElement, currentSidebar, newSidebar ) {
-			initFieldButtons( $( fieldButtonsSelector ) );
-		} );
-
 	gform.addAction( 'gform_before_get_field_markup', function( form, field, index ) {
 		addFieldPlaceholder( field, index );
 	} );

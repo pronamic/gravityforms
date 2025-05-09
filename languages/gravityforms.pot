@@ -2,16 +2,16 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.9.7.2\n"
+"Project-Id-Version: Gravity Forms 2.9.8\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-29T17:08:54+00:00\n"
+"POT-Creation-Date: 2025-05-08T16:07:58+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: gravityforms\n"
 
 #. Plugin Name of the plugin
@@ -20,7 +20,7 @@ msgstr ""
 #: gravityforms.php:1653
 #: gravityforms.php:2861
 #: includes/blocks/config/class-gf-blocks-config.php:127
-#: includes/system-status/class-gf-system-report.php:364
+#: includes/system-status/class-gf-system-report.php:367
 #: includes/system-status/class-gf-update.php:178
 msgid "Gravity Forms"
 msgstr ""
@@ -107,7 +107,7 @@ msgstr ""
 #: form_settings.php:115
 #: gravityforms.php:4966
 #: includes/addon/class-gf-addon.php:3171
-#: includes/settings/fields/class-generic-map.php:566
+#: includes/settings/fields/class-generic-map.php:550
 #: includes/template-library/config/class-gf-template-library-config.php:90
 #: js.php:1634
 #: tooltips.php:24
@@ -207,7 +207,7 @@ msgstr ""
 #: form_detail.php:1629
 #: form_display.php:3886
 #: includes/blocks/config/class-gf-blocks-config.php:139
-#: includes/fields/class-gf-field.php:2738
+#: includes/fields/class-gf-field.php:2737
 msgid "Medium"
 msgstr ""
 
@@ -227,7 +227,7 @@ msgstr ""
 #: form_detail.php:919
 #: form_detail.php:1629
 #: includes/blocks/config/class-gf-blocks-config.php:138
-#: includes/fields/class-gf-field.php:2739
+#: includes/fields/class-gf-field.php:2738
 msgid "Large"
 msgstr ""
 
@@ -932,7 +932,8 @@ msgstr ""
 
 #: common.php:6269
 #: includes/addon/class-gf-addon.php:3167
-#: includes/settings/fields/class-generic-map.php:550
+#: includes/settings/fields/class-generic-map.php:534
+#: includes/settings/fields/class-generic-map.php:589
 msgid "Entry ID"
 msgstr ""
 
@@ -940,7 +941,8 @@ msgstr ""
 #: export.php:1344
 #: forms_model.php:6783
 #: includes/addon/class-gf-addon.php:3168
-#: includes/settings/fields/class-generic-map.php:554
+#: includes/settings/fields/class-generic-map.php:538
+#: includes/settings/fields/class-generic-map.php:582
 #: select_columns.php:197
 msgid "Entry Date"
 msgstr ""
@@ -1288,7 +1290,7 @@ msgstr ""
 #: includes/addon/class-gf-feed-addon.php:2070
 #: includes/class-confirmation.php:1089
 #: includes/editor-button/config/class-gf-editor-config.php:56
-#: includes/fields/class-gf-field.php:1720
+#: includes/fields/class-gf-field.php:1719
 #: includes/settings/config/class-gf-settings-config-i18n.php:37
 #: includes/settings/config/class-gf-settings-config-i18n.php:61
 #: js.php:1557
@@ -1382,7 +1384,7 @@ msgstr ""
 #: export.php:1353
 #: forms_model.php:6780
 #: includes/addon/class-gf-addon.php:3169
-#: includes/settings/fields/class-generic-map.php:558
+#: includes/settings/fields/class-generic-map.php:542
 #: select_columns.php:198
 msgid "User IP"
 msgstr ""
@@ -1952,7 +1954,7 @@ msgstr ""
 #: export.php:1346
 #: forms_model.php:6786
 #: includes/addon/class-gf-addon.php:3170
-#: includes/settings/fields/class-generic-map.php:562
+#: includes/settings/fields/class-generic-map.php:546
 #: select_columns.php:199
 msgid "Source Url"
 msgstr ""
@@ -2615,7 +2617,7 @@ msgstr ""
 #: form_detail.php:917
 #: form_detail.php:1629
 #: includes/blocks/config/class-gf-blocks-config.php:155
-#: includes/fields/class-gf-field.php:2737
+#: includes/fields/class-gf-field.php:2736
 msgid "Small"
 msgstr ""
 
@@ -2987,6 +2989,7 @@ msgstr ""
 #: form_detail.php:1554
 #: form_detail.php:2424
 #: includes/settings/fields/class-generic-map.php:188
+#: includes/system-status/class-gf-system-report.php:112
 msgid "Value"
 msgstr ""
 
@@ -3797,7 +3800,7 @@ msgid "Number Format"
 msgstr ""
 
 #: form_detail.php:1847
-#: includes/system-status/class-gf-system-report.php:881
+#: includes/system-status/class-gf-system-report.php:884
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:20
 #: tooltips.php:157
 msgid "Currency"
@@ -4876,7 +4879,7 @@ msgstr ""
 #: includes/addon/class-gf-feed-addon.php:2069
 #: includes/class-confirmation.php:1088
 #: includes/editor-button/config/class-gf-editor-config.php:55
-#: includes/fields/class-gf-field.php:1699
+#: includes/fields/class-gf-field.php:1698
 #: notification.php:1539
 msgid "Duplicate"
 msgstr ""
@@ -5326,7 +5329,7 @@ msgstr ""
 #: includes/addon/class-gf-addon.php:5132
 #: includes/addon/class-gf-addon.php:5565
 #: includes/class-gf-osdxp.php:27
-#: includes/fields/class-gf-field.php:1744
+#: includes/fields/class-gf-field.php:1743
 #: includes/system-status/class-gf-update.php:81
 #: settings.php:1331
 msgid "Settings"
@@ -5344,7 +5347,7 @@ msgstr ""
 #: includes/class-gf-osdxp.php:29
 #: includes/class-gf-osdxp.php:264
 #: includes/class-gf-osdxp.php:265
-#: includes/system-status/class-gf-system-report.php:369
+#: includes/system-status/class-gf-system-report.php:372
 msgid "Add-Ons"
 msgstr ""
 
@@ -5923,14 +5926,12 @@ msgstr ""
 #: includes/addon/class-gf-addon.php:3152
 #: includes/settings/config/class-gf-settings-config-i18n.php:39
 #: includes/settings/fields/class-field-select.php:71
-#: includes/settings/fields/class-generic-map.php:517
 #: notification.php:216
 msgid "Select a Field"
 msgstr ""
 
 #: includes/addon/class-gf-addon.php:3159
 #: includes/settings/fields/class-field-select.php:82
-#: includes/settings/fields/class-generic-map.php:526
 msgid "Select a %s Field"
 msgstr ""
 
@@ -5938,13 +5939,13 @@ msgstr ""
 #: includes/addon/class-gf-addon.php:3215
 #: includes/addon/class-gf-addon.php:3235
 #: includes/settings/fields/class-field-select.php:237
-#: includes/settings/fields/class-generic-map.php:484
+#: includes/settings/fields/class-generic-map.php:490
 msgid "Full"
 msgstr ""
 
 #: includes/addon/class-gf-addon.php:3222
 #: includes/settings/fields/class-field-select.php:248
-#: includes/settings/fields/class-generic-map.php:461
+#: includes/settings/fields/class-generic-map.php:467
 msgid "Selected"
 msgstr ""
 
@@ -5959,7 +5960,7 @@ msgstr ""
 #: includes/fields/class-gf-field-repeater.php:610
 #: includes/fields/class-gf-field-singleproduct.php:57
 #: includes/fields/class-gf-field-website.php:69
-#: includes/fields/class-gf-field.php:909
+#: includes/fields/class-gf-field.php:908
 #: includes/settings/fields/class-base.php:793
 msgid "This field is required."
 msgstr ""
@@ -9990,7 +9991,7 @@ msgstr ""
 
 #: includes/fields/class-gf-field-quantity.php:29
 #: includes/fields/class-gf-field-singleproduct.php:133
-#: includes/fields/class-gf-field.php:2862
+#: includes/fields/class-gf-field.php:2861
 #: includes/template-library/templates/templates.php:2172
 #: includes/template-library/templates/templates.php:2233
 #: includes/template-library/templates/templates.php:3041
@@ -10116,35 +10117,35 @@ msgid "Please enter a valid Website URL (e.g. https://gravityforms.com)."
 msgstr ""
 
 #. Translators: comma-separated list of the labels of missing fields.
-#: includes/fields/class-gf-field.php:965
+#: includes/fields/class-gf-field.php:964
 msgid "Please complete the following fields: %s."
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1683
+#: includes/fields/class-gf-field.php:1682
 msgid "duplicate this field"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1710
+#: includes/fields/class-gf-field.php:1709
 msgid "delete this field"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1734
+#: includes/fields/class-gf-field.php:1733
 msgid "jump to this field's settings"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1757
+#: includes/fields/class-gf-field.php:1756
 msgid "Move"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1766
+#: includes/fields/class-gf-field.php:1765
 msgid "ID: %s"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1783
+#: includes/fields/class-gf-field.php:1782
 msgid "This field has an issue"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1824
+#: includes/fields/class-gf-field.php:1823
 msgid "This field is hidden when viewing the form"
 msgstr ""
 
@@ -10646,23 +10647,27 @@ msgstr ""
 msgid "No mapping fields are available."
 msgstr ""
 
-#: includes/settings/fields/class-generic-map.php:441
+#: includes/settings/fields/class-generic-map.php:407
+msgid "Select a Value"
+msgstr ""
+
+#: includes/settings/fields/class-generic-map.php:447
 msgid "Full Address"
 msgstr ""
 
-#: includes/settings/fields/class-generic-map.php:451
+#: includes/settings/fields/class-generic-map.php:457
 msgid "Full Name"
 msgstr ""
 
-#: includes/settings/fields/class-generic-map.php:537
+#: includes/settings/fields/class-generic-map.php:521
 msgid "Form Fields"
 msgstr ""
 
-#: includes/settings/fields/class-generic-map.php:547
+#: includes/settings/fields/class-generic-map.php:531
 msgid "Entry Properties"
 msgstr ""
 
-#: includes/settings/fields/class-generic-map.php:588
+#: includes/settings/fields/class-generic-map.php:572
 msgid "Entry Meta"
 msgstr ""
 
@@ -11112,455 +11117,471 @@ msgstr ""
 msgid "The following is a system report containing useful technical information for troubleshooting issues. If you need further help after viewing the report, click on the \"Copy System Report\" button below to copy the report and paste it in your message to support."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:243
+#: includes/system-status/class-gf-system-report.php:112
+msgid "Setting"
+msgstr ""
+
+#: includes/system-status/class-gf-system-report.php:246
 msgid "complete."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:247
+#: includes/system-status/class-gf-system-report.php:250
 msgid "Current status: %s"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:260
+#: includes/system-status/class-gf-system-report.php:263
 msgid "Upgrading Gravity Forms"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:262
+#: includes/system-status/class-gf-system-report.php:265
 msgid "Do not close or navigate away from this page until the upgrade is 100% complete."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:347
+#: includes/system-status/class-gf-system-report.php:350
 msgid "Unexpected content in the response."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:349
+#: includes/system-status/class-gf-system-report.php:352
 msgid "Response code: %s"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:360
+#: includes/system-status/class-gf-system-report.php:363
 msgid "Gravity Forms Environment"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:374
+#: includes/system-status/class-gf-system-report.php:377
 msgid "Database"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:379
+#: includes/system-status/class-gf-system-report.php:382
 msgid "Translations"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:384
+#: includes/system-status/class-gf-system-report.php:387
 msgid "Log Files"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:389
+#: includes/system-status/class-gf-system-report.php:392
 msgid "Scheduled (Cron) Events Log"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:396
+#: includes/system-status/class-gf-system-report.php:399
 msgid "WordPress Environment"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:400
+#: includes/system-status/class-gf-system-report.php:403
 #: notification.php:981
 #: notification.php:1596
 msgid "WordPress"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:404
+#: includes/system-status/class-gf-system-report.php:407
 msgid "Home URL"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:409
+#: includes/system-status/class-gf-system-report.php:412
 msgid "Site URL"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:414
+#: includes/system-status/class-gf-system-report.php:417
 msgid "REST API Base URL"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:419
+#: includes/system-status/class-gf-system-report.php:422
 msgid "WordPress Version"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:428
+#: includes/system-status/class-gf-system-report.php:431
 msgid "The Gravity Forms support agreement requires WordPress %s or greater. This site must be upgraded in order to be eligible for support."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:436
+#: includes/system-status/class-gf-system-report.php:439
 msgid "Gravity Forms requires WordPress %s or greater. You must upgrade WordPress in order to use Gravity Forms."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:443
+#: includes/system-status/class-gf-system-report.php:446
 msgid "WordPress Multisite"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:445
-#: includes/system-status/class-gf-system-report.php:456
-#: includes/system-status/class-gf-system-report.php:462
-#: includes/system-status/class-gf-system-report.php:468
-#: includes/system-status/class-gf-system-report.php:474
-#: includes/system-status/class-gf-system-report.php:480
-#: includes/system-status/class-gf-system-report.php:487
-#: includes/system-status/class-gf-system-report.php:582
-#: includes/system-status/class-gf-system-report.php:594
-#: includes/system-status/class-gf-system-report.php:600
-#: includes/system-status/class-gf-system-report.php:866
-#: includes/system-status/class-gf-system-report.php:877
-#: includes/system-status/class-gf-system-report.php:888
-#: includes/system-status/class-gf-system-report.php:894
+#: includes/system-status/class-gf-system-report.php:448
+#: includes/system-status/class-gf-system-report.php:459
+#: includes/system-status/class-gf-system-report.php:465
+#: includes/system-status/class-gf-system-report.php:471
+#: includes/system-status/class-gf-system-report.php:477
+#: includes/system-status/class-gf-system-report.php:483
+#: includes/system-status/class-gf-system-report.php:490
+#: includes/system-status/class-gf-system-report.php:585
+#: includes/system-status/class-gf-system-report.php:597
+#: includes/system-status/class-gf-system-report.php:603
+#: includes/system-status/class-gf-system-report.php:869
+#: includes/system-status/class-gf-system-report.php:880
+#: includes/system-status/class-gf-system-report.php:891
+#: includes/system-status/class-gf-system-report.php:897
 #: includes/template-library/templates/templates.php:9078
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:71
 msgid "Yes"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:445
-#: includes/system-status/class-gf-system-report.php:456
-#: includes/system-status/class-gf-system-report.php:462
-#: includes/system-status/class-gf-system-report.php:468
-#: includes/system-status/class-gf-system-report.php:474
-#: includes/system-status/class-gf-system-report.php:480
-#: includes/system-status/class-gf-system-report.php:487
-#: includes/system-status/class-gf-system-report.php:582
-#: includes/system-status/class-gf-system-report.php:588
-#: includes/system-status/class-gf-system-report.php:594
-#: includes/system-status/class-gf-system-report.php:600
-#: includes/system-status/class-gf-system-report.php:866
-#: includes/system-status/class-gf-system-report.php:877
-#: includes/system-status/class-gf-system-report.php:888
-#: includes/system-status/class-gf-system-report.php:894
+#: includes/system-status/class-gf-system-report.php:448
+#: includes/system-status/class-gf-system-report.php:459
+#: includes/system-status/class-gf-system-report.php:465
+#: includes/system-status/class-gf-system-report.php:471
+#: includes/system-status/class-gf-system-report.php:477
+#: includes/system-status/class-gf-system-report.php:483
+#: includes/system-status/class-gf-system-report.php:490
+#: includes/system-status/class-gf-system-report.php:585
+#: includes/system-status/class-gf-system-report.php:591
+#: includes/system-status/class-gf-system-report.php:597
+#: includes/system-status/class-gf-system-report.php:603
+#: includes/system-status/class-gf-system-report.php:869
+#: includes/system-status/class-gf-system-report.php:880
+#: includes/system-status/class-gf-system-report.php:891
+#: includes/system-status/class-gf-system-report.php:897
 #: includes/template-library/templates/templates.php:9084
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:72
 msgid "No"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:449
+#: includes/system-status/class-gf-system-report.php:452
 msgid "WordPress Memory Limit"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:454
+#: includes/system-status/class-gf-system-report.php:457
 msgid "WordPress Debug Mode"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:460
+#: includes/system-status/class-gf-system-report.php:463
 msgid "WordPress Debug Log"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:466
+#: includes/system-status/class-gf-system-report.php:469
 msgid "WordPress Script Debug Mode"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:472
+#: includes/system-status/class-gf-system-report.php:475
 msgid "WordPress Cron"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:478
+#: includes/system-status/class-gf-system-report.php:481
 msgid "WordPress Alternate Cron"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:484
+#: includes/system-status/class-gf-system-report.php:487
 msgid "Background tasks"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:495
+#: includes/system-status/class-gf-system-report.php:498
 msgid "Active Theme"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:500
+#: includes/system-status/class-gf-system-report.php:503
 msgid "Active Plugins"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:505
+#: includes/system-status/class-gf-system-report.php:508
 msgid "Network Active Plugins"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:512
+#: includes/system-status/class-gf-system-report.php:515
 msgid "Server Environment"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:516
+#: includes/system-status/class-gf-system-report.php:519
 msgid "Web Server"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:520
+#: includes/system-status/class-gf-system-report.php:523
 msgid "Software"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:525
+#: includes/system-status/class-gf-system-report.php:528
 msgid "Port"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:530
+#: includes/system-status/class-gf-system-report.php:533
 msgid "Document Root"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:537
+#: includes/system-status/class-gf-system-report.php:540
 msgid "PHP"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:541
-#: includes/system-status/class-gf-system-report.php:621
-#: includes/system-status/class-gf-system-report.php:839
+#: includes/system-status/class-gf-system-report.php:544
+#: includes/system-status/class-gf-system-report.php:624
+#: includes/system-status/class-gf-system-report.php:842
 msgid "Version"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:547
+#: includes/system-status/class-gf-system-report.php:550
 msgid "Recommended: PHP %s or higher."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:550
+#: includes/system-status/class-gf-system-report.php:553
 msgid "Memory Limit"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:555
+#: includes/system-status/class-gf-system-report.php:558
 msgid "Maximum Execution Time"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:560
+#: includes/system-status/class-gf-system-report.php:563
 msgid "Maximum File Upload Size"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:565
+#: includes/system-status/class-gf-system-report.php:568
 msgid "Maximum File Uploads"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:570
+#: includes/system-status/class-gf-system-report.php:573
 msgid "Maximum Post Size"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:575
+#: includes/system-status/class-gf-system-report.php:578
 msgid "Maximum Input Variables"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:580
+#: includes/system-status/class-gf-system-report.php:583
 msgid "cURL Enabled"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:582
-#: includes/system-status/class-gf-system-report.php:583
+#: includes/system-status/class-gf-system-report.php:585
+#: includes/system-status/class-gf-system-report.php:586
 msgid "version"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:586
+#: includes/system-status/class-gf-system-report.php:589
 msgid "OpenSSL"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:592
+#: includes/system-status/class-gf-system-report.php:595
 msgid "Mcrypt Enabled"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:598
+#: includes/system-status/class-gf-system-report.php:601
 msgid "Mbstring Enabled"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:604
+#: includes/system-status/class-gf-system-report.php:607
 msgid "Loaded Extensions"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:612
+#: includes/system-status/class-gf-system-report.php:615
 msgid "Database Server"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:616
+#: includes/system-status/class-gf-system-report.php:619
 msgid "Database Management System"
 msgstr ""
 
 #. translators: %s is the database type (MySQL, MariaDB or SQLite).
-#: includes/system-status/class-gf-system-report.php:628
+#: includes/system-status/class-gf-system-report.php:631
 msgid "Gravity Forms requires %s or above."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:631
+#: includes/system-status/class-gf-system-report.php:634
 msgid "Database Character Set"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:636
+#: includes/system-status/class-gf-system-report.php:639
 msgid "Database Collation"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:643
+#: includes/system-status/class-gf-system-report.php:646
 msgid "Date and Time"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:647
+#: includes/system-status/class-gf-system-report.php:650
 msgid "WordPress (Local) Timezone"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:652
+#: includes/system-status/class-gf-system-report.php:655
 msgid "MySQL - Universal time (UTC)"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:657
+#: includes/system-status/class-gf-system-report.php:660
 msgid "MySQL - Local time"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:662
+#: includes/system-status/class-gf-system-report.php:665
 msgid "PHP - Universal time (UTC)"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:667
+#: includes/system-status/class-gf-system-report.php:670
 msgid "PHP - Local time"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:846
-#: includes/system-status/class-gf-system-report.php:1234
+#: includes/system-status/class-gf-system-report.php:727
+#: includes/system-status/class-gf-system-report.php:749
+#: includes/system-status/class-gf-system-report.php:773
+msgid "Passes"
+msgstr ""
+
+#: includes/system-status/class-gf-system-report.php:735
+#: includes/system-status/class-gf-system-report.php:761
+#: includes/system-status/class-gf-system-report.php:780
+msgid "Fails"
+msgstr ""
+
+#: includes/system-status/class-gf-system-report.php:849
+#: includes/system-status/class-gf-system-report.php:1237
 msgid "New version %s available."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:851
+#: includes/system-status/class-gf-system-report.php:854
 msgid "Upload folder"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:856
+#: includes/system-status/class-gf-system-report.php:859
 msgid "Upload folder permissions"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:858
+#: includes/system-status/class-gf-system-report.php:861
 msgid "Writable"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:858
+#: includes/system-status/class-gf-system-report.php:861
 msgid "Not writable"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:861
+#: includes/system-status/class-gf-system-report.php:864
 msgid "File uploads, entry exports, and logging will not function properly."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:864
+#: includes/system-status/class-gf-system-report.php:867
 #: tooltips.php:151
 msgid "Output CSS"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:870
+#: includes/system-status/class-gf-system-report.php:873
 msgid "Default Theme"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:875
+#: includes/system-status/class-gf-system-report.php:878
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:44
 #: tooltips.php:153
 msgid "No-Conflict Mode"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:886
+#: includes/system-status/class-gf-system-report.php:889
 msgid "Background updates"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:892
+#: includes/system-status/class-gf-system-report.php:895
 msgid "REST API v2"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:898
+#: includes/system-status/class-gf-system-report.php:901
 msgid "Orbital Style Filter"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:933
-#: includes/system-status/class-gf-system-report.php:1030
+#: includes/system-status/class-gf-system-report.php:936
+#: includes/system-status/class-gf-system-report.php:1033
 msgid "Database Version"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:977
+#: includes/system-status/class-gf-system-report.php:980
 msgid "Table does not exist"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:983
+#: includes/system-status/class-gf-system-report.php:986
 msgid "Table has incorrect auto-increment settings."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:989
+#: includes/system-status/class-gf-system-report.php:992
 msgid "Table has not been upgraded successfully."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1005
+#: includes/system-status/class-gf-system-report.php:1008
 msgid "WARNING! Re-running the upgrade process is only recommended if you are currently experiencing issues with your database. This process may take several minutes to complete. 'OK' to upgrade. 'Cancel' to abort."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1012
+#: includes/system-status/class-gf-system-report.php:1015
 msgid "Current Status: %s"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1014
+#: includes/system-status/class-gf-system-report.php:1017
 msgid "%s%% complete."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1017
+#: includes/system-status/class-gf-system-report.php:1020
 msgid "Automatic background migration is disabled but the database needs to be upgraded to version %s. %s"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1018
+#: includes/system-status/class-gf-system-report.php:1021
 msgid "Force the migration manually"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1020
+#: includes/system-status/class-gf-system-report.php:1023
 msgid "The database is currently being upgraded to version %s. %s"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1022
+#: includes/system-status/class-gf-system-report.php:1025
 msgid "As this site doesn't support background tasks the upgrade process will take longer than usual and the status will change infrequently."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1024
+#: includes/system-status/class-gf-system-report.php:1027
 msgid "Force the upgrade"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1046
+#: includes/system-status/class-gf-system-report.php:1049
 msgid "Upgrade database"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1051
+#: includes/system-status/class-gf-system-report.php:1054
 msgid "Your database version is out of date."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1063
-#: includes/system-status/class-gf-system-report.php:1079
+#: includes/system-status/class-gf-system-report.php:1066
+#: includes/system-status/class-gf-system-report.php:1082
 msgid "Re-run database upgrade"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1068
+#: includes/system-status/class-gf-system-report.php:1071
 msgid "Database upgrade failed."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1068
+#: includes/system-status/class-gf-system-report.php:1071
 msgid "There are issues with your database."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1084
+#: includes/system-status/class-gf-system-report.php:1087
 msgid "Database upgraded successfully."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1084
+#: includes/system-status/class-gf-system-report.php:1087
 msgid "Your database is up-to-date."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1084
+#: includes/system-status/class-gf-system-report.php:1087
 msgid "Warning: downgrading Gravity Forms is not recommended."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1240
+#: includes/system-status/class-gf-system-report.php:1243
 msgid "Your system does not meet the minimum requirements for this Add-On (%d errors)."
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1260
-#: includes/system-status/class-gf-system-report.php:1267
-#: includes/system-status/class-gf-system-report.php:1280
-#: includes/system-status/class-gf-system-report.php:1343
-#: includes/system-status/class-gf-system-report.php:1351
-#: includes/system-status/class-gf-system-report.php:1525
-#: includes/system-status/class-gf-system-report.php:1526
-#: includes/system-status/class-gf-system-report.php:1541
-#: includes/system-status/class-gf-system-report.php:1542
+#: includes/system-status/class-gf-system-report.php:1263
+#: includes/system-status/class-gf-system-report.php:1270
+#: includes/system-status/class-gf-system-report.php:1283
+#: includes/system-status/class-gf-system-report.php:1346
+#: includes/system-status/class-gf-system-report.php:1354
+#: includes/system-status/class-gf-system-report.php:1528
+#: includes/system-status/class-gf-system-report.php:1529
+#: includes/system-status/class-gf-system-report.php:1544
+#: includes/system-status/class-gf-system-report.php:1545
 msgid "by"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1539
+#: includes/system-status/class-gf-system-report.php:1542
 msgid "Parent"
 msgstr ""
 
-#: includes/system-status/class-gf-system-report.php:1676
+#: includes/system-status/class-gf-system-report.php:1679
 msgid "Site Locale"
 msgstr ""
 
 #. translators: %d: The ID of the currently logged in user.
-#: includes/system-status/class-gf-system-report.php:1685
+#: includes/system-status/class-gf-system-report.php:1688
 msgid "User (ID: %d) Locale"
 msgstr ""
 

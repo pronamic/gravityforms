@@ -151,7 +151,7 @@ class GFExport {
 					GFCommon::log_debug( __METHOD__ . '(): Import Failed => ' . print_r( $failed_form, 1 ) );
 				}
 			}
-   
+
 			foreach ( $form_ids as $key => $form_id ) {
 				$forms[ $key ] = GFAPI::get_form( $form_id );
 			}
@@ -506,14 +506,14 @@ class GFExport {
 		$total_forms  = 0; // Keep track of the total number of forms imported.
 		$forms_ids    = []; // Store the forms ids for the success message.
 		$forms_errors = []; //store the failed forms for the success message.
-		
+
 		// Loop through each result and store the form ids and failed forms.
 		foreach ( $all_results as $result ) {
 			$total_forms += count( $result['form_ids'] ) + count( $result['failed_forms'] );
 			$forms_ids    = array_merge( $forms_ids, $result['form_ids'] );
 			$forms_errors = array_merge( $forms_errors, $result['failed_forms'] );
 		}
-		
+
 		$failed_forms_count = $total_forms - $count;
 		$form_ids           = implode( ',', $forms_ids );
 
@@ -526,7 +526,7 @@ class GFExport {
 				$form_id = array_map( function( $form_id ) {
 					return $form_id['form_id'];
 				}, $forms_errors );
-				
+
 				$failed_errors = $failed_form_errors ? sprintf(
 					'<span>%s: %s</span>',
 					_n( 'Error', 'Errors', count( $failed_form_errors ), 'gravityforms' ),
@@ -1190,7 +1190,7 @@ class GFExport {
 			$remaining_entry_count -= $page_size;
 
 			if ( ! seems_utf8( $lines ) ) {
-				$lines = utf8_encode( $lines );
+				$lines = mb_convert_encoding( $lines, 'UTF-8', 'ISO-8859-1' );
 			}
 
 			$lines = apply_filters( 'gform_export_lines', $lines );
