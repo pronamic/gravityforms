@@ -366,7 +366,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		foreach ( $feeds as $feed ) {
 
 			// Get the feed name.
-			$feed_name = rgempty( 'feed_name', $feed['meta'] ) ? rgar( $feed['meta'], 'feedName' ) : rgar( $feed['meta'], 'feed_name' );
+			$feed_name = $this->get_feed_name( $feed );
 			$feed_id   = (int) rgar( $feed, 'id' );
 
 			// If this feed is inactive, log that it's not being processed and skip it.
@@ -439,6 +439,20 @@ abstract class GFFeedAddOn extends GFAddOn {
 		// Return the entry object.
 		return $entry;
 
+	}
+
+	/**
+	 * Retrieves the name of the given feed.
+	 *
+	 * @since 2.9.9
+	 *
+	 * @param array  $feed The feed.
+	 * @param string $key  Optional. The key used to store the name.
+	 *
+	 * @return string
+	 */
+	public function get_feed_name( $feed, $key = '' ) {
+		return GFAPI::get_feed_name( $feed, $key );
 	}
 
 	/**
@@ -1057,7 +1071,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			foreach ( $feeds_to_filter as $check ) {
 
 				// Get feed name and trim.
-				$name = rgars( $check, 'meta/feed_name' ) ? rgars( $check, 'meta/feed_name' ) : rgars( $check, 'meta/feedName' );
+				$name = $this->get_feed_name( $check );
 				$name = trim( $name );
 
 				// Prepare feed name pattern.
@@ -1095,7 +1109,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function is_unique_feed_name( $name, $form_id ) {
 		$feeds = $this->get_feeds( $form_id );
 		foreach ( $feeds as $feed ) {
-			$feed_name = rgars( $feed, 'meta/feed_name' ) ? rgars( $feed, 'meta/feed_name' ) : rgars( $feed, 'meta/feedName' );
+			$feed_name = $this->get_feed_name( $feed );
 			if ( strtolower( $feed_name ) === strtolower( $name ) ) {
 				return false;
 			}
@@ -1260,13 +1274,14 @@ abstract class GFFeedAddOn extends GFAddOn {
 		}
 
 		// Get feed name key.
-		$feed_name_key = rgars( $original_feed, 'meta/feed_name' ) ? 'feed_name' : 'feedName';
+		$feed_name_key      = rgars( $original_feed, 'meta/feed_name' ) ? 'feed_name' : 'feedName';
+		$original_feed_name = $this->get_feed_name( $original_feed, $feed_name_key );
 
 		// Make sure the new feed name is unique.
 		$count     = 2;
-		$feed_name = rgars( $original_feed, 'meta/' . $feed_name_key ) . ' - ' . esc_html__( 'Copy 1', 'gravityforms' );
+		$feed_name = $original_feed_name . ' - ' . esc_html__( 'Copy 1', 'gravityforms' );
 		while ( ! $this->is_unique_feed_name( $feed_name, $original_feed['form_id'] ) ) {
-			$feed_name = rgars( $original_feed, 'meta/' . $feed_name_key ) . ' - ' . sprintf( esc_html__( 'Copy %d', 'gravityforms' ), $count );
+			$feed_name = $original_feed_name . ' - ' . sprintf( esc_html__( 'Copy %d', 'gravityforms' ), $count );
 			$count++;
 		}
 
@@ -2427,8 +2442,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$this->log_error( $method . '(): ' . $error_message );
 
 		/* Prepend feed name to the error message. */
-		$feed_name          = rgars( $feed, 'meta/feed_name' ) ? rgars( $feed, 'meta/feed_name' ) : rgars( $feed, 'meta/feedName' );
-		$note_error_message = $feed_name . ': ' . $error_message;
+		$note_error_message = $this->get_feed_name( $feed ) . ': ' . $error_message;
 
 		/* Add error note to the entry. */
 		$this->add_note( $entry['id'], $note_error_message, 'error' );

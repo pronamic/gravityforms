@@ -561,6 +561,14 @@ class GF_Field_Repeater extends GF_Field {
 	 * @return mixed
 	 */
 	public function get_sub_field_input( $field, $form, $field_value, $entry, $index ) {
+		$target_page = rgpost( 'gform_target_page_number_' . $this->formId );
+		$source_page = rgpost( 'gform_source_page_number_' . $this->formId );
+		$validate    = $source_page == $field->pageNumber && rgpost( 'is_submit_' . $this->formId ) && ( $target_page == 0 || $target_page > $source_page );
+
+		if ( $validate ) {
+			$this-> validate_subfield( $field, $field_value, $form );
+		}
+
 		$field_content = $this->get_sub_field_content( $field, $field_value, $form, $entry );
 
 		// Adjust all the name attributes in the markup
@@ -599,34 +607,65 @@ class GF_Field_Repeater extends GF_Field {
 			}
 		}
 
-		$target_page = rgpost( 'gform_target_page_number_' . $this->formId );
-		$source_page = rgpost( 'gform_source_page_number_' . $this->formId );
-		$validate = $source_page == $field->pageNumber && rgpost( 'is_submit_' . $this->formId ) && ( $target_page == 0 || $target_page > $source_page );
+		if ( $field->failed_validation ) {
+			// Adjust all the area-describedby attributes in the markup
+			preg_match_all( "/(aria-describedby=\"validation_message_[^\[|'\s]*)\"/", $field_content, $matches, PREG_SET_ORDER );
 
-		if ( $validate ) {
-			$field->failed_validation = false;
-			if ( $field->isRequired && $field->is_value_empty( $field_value ) ) {
-				$field->failed_validation  = true;
-				$field->validation_message = empty( $field->errorMessage ) ? __( 'This field is required.', 'gravityforms' ) : $field->errorMessage;
+			$replaced = array();
+			foreach ( $matches as $match ) {
+				if ( ! in_array( $match[0], $replaced ) ) {
+					$input_id      = str_replace( $match[1], $match[1] . "-{$index}", $match[0] );
+					$field_content = str_replace( $match[0], $input_id, $field_content );
+					$replaced[]    = $match[0];
+				}
 			}
 
-			if ( ! $field->failed_validation ) {
-				$field->validate( $field_value, $form );
+			// Adjust all the validation message IDs in the markup
+			preg_match_all( "/(id='validation_message_[^\[|']*)((\[[0-9]*\])*)'/", $field_content, $matches, PREG_SET_ORDER );
+
+			$replaced = array();
+			foreach ( $matches as $match ) {
+				if ( ! in_array( $match[0], $replaced ) ) {
+					$input_id      = str_replace( $match[1], $match[1] . "-{$index}", $match[0] );
+					$field_content = str_replace( $match[0], $input_id, $field_content );
+					$replaced[]    = $match[0];
+				}
 			}
-			
-			$context = GFFormDisplay::get_submission_context();
-			$custom_validation_result = gf_apply_filters( array( 'gform_field_validation', $form['id'], $field->id ), array(
-				'is_valid' => $field->failed_validation ? false : true,
-				'message'  => $field->validation_message
-			), $field_value, $form, $field, $context );
-			$field->failed_validation  = rgar( $custom_validation_result, 'is_valid' ) ? false : true;
-			$field->validation_message = rgar( $custom_validation_result, 'message' );
-			
+		} else {
+			// we need to add a gfield_valid class to the field wrapper so we can over-ride styles
+			$field_content = str_replace( 'gfield ', 'gfield gfield_valid ', $field_content );
 		}
 
-		$validation_message = ( $field->failed_validation && ! empty( $field->validation_message ) ) ? sprintf( "<div class='gfield_description validation_message'>%s</div>", $field->validation_message ) : '';
+		return $field_content;
+	}
 
-		return $field_content . $validation_message;
+	/**
+	 * Validates the sub field.
+	 *
+	 * @since 2.9.10
+	 *
+	 * @param GF_Field $field
+	 * @param string   $field_value
+	 * @param array    $form
+	 */
+	public function validate_subfield( $field, $field_value, $form ) {
+		$field->failed_validation = false;
+		if ( $field->isRequired && $field->is_value_empty( $field_value ) ) {
+			$field->failed_validation  = true;
+			$field->validation_message = empty( $field->errorMessage ) ? __( 'This field is required.', 'gravityforms' ) : $field->errorMessage;
+		}
+
+		if ( ! $field->failed_validation ) {
+			$field->validate( $field_value, $form );
+		}
+
+		$context = GFFormDisplay::get_submission_context();
+		$custom_validation_result = gf_apply_filters( array( 'gform_field_validation', $form['id'], $field->id ), array(
+			'is_valid' => $field->failed_validation ? false : true,
+			'message'  => $field->validation_message
+		), $field_value, $form, $field, $context );
+		$field->failed_validation  = rgar( $custom_validation_result, 'is_valid' ) ? false : true;
+		$field->validation_message = rgar( $custom_validation_result, 'message' );
 	}
 
 	/**
@@ -645,11 +684,6 @@ class GF_Field_Repeater extends GF_Field {
 
 		$validation_status = $field->failed_validation;
 
-		if ( empty( $field->fields ) ) {
-			// Validation will be handled later inside GF_Field_Repeater::get_sub_field_input so temporarily set failed_validation to false.
-			$field->failed_validation = false;
-		}
-
 		if ( ! class_exists( 'GFFormDisplay' ) ) {
 			require_once( GFCommon::get_base_path() .'/form_display.php' );
 		}
@@ -659,8 +693,6 @@ class GF_Field_Repeater extends GF_Field {
 		} else {
 			$field_content = GFFormDisplay::get_field( $field, $value, true, $form );
 		}
-
-		$field->failed_validation = $validation_status;
 
 		return $field_content;
 	}

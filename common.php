@@ -5628,13 +5628,20 @@ Content-Type: text/html;
 		$gf_vars['confirmationDeleteField']          = __( "Deleting this field will also delete all entry data associated with it. 'Cancel' to abort. 'OK' to delete.", 'gravityforms' );
 		$gf_vars['confirmationDeleteDisplayField']   = __( "You're about to delete this field. 'Cancel' to stop. 'OK' to delete", 'gravityforms' );
 
-		$gf_vars['confirmationDeleteDisplayFieldTitle'] = __('Warning', 'gravityforms');
+		$gf_vars['confirmationDeleteDisplayFieldTitle'] = __( 'Warning', 'gravityforms' );
 
-		$gf_vars['conditionalLogicDependency']           = __( "This form contains conditional logic dependent upon this field. Deleting this field will deactivate those conditional logic rules and also delete all entry data associated with the field. 'Cancel' to abort. 'OK' to delete.", 'gravityforms' );
-		$gf_vars['conditionalLogicDependencyChoice']     = __( "This form contains conditional logic dependent upon this choice. Are you sure you want to delete this choice? 'Cancel' to abort. 'OK' to delete.", 'gravityforms' );
-		$gf_vars['conditionalLogicDependencyChoiceEdit'] = __( "This form contains conditional logic dependent upon this choice. Are you sure you want to modify this choice? 'Cancel' to abort. 'OK' to continue.", 'gravityforms' );
-		$gf_vars['conditionalLogicDependencyAdminOnly']  = __( "This form contains conditional logic dependent upon this field. Are you sure you want to mark this field as Administrative? 'Cancel' to abort. 'OK' to continue.", 'gravityforms' );
-		$gf_vars['conditionalLogicWarningTitle']         = __('Conditional Logic Warning', 'gravityforms');
+		$gf_vars['conditionalLogicDependency']            = __( "This form contains {type} conditional logic dependent upon this field. Deleting this field will deactivate those conditional logic rules and also delete all entry data associated with the field. 'Cancel' to abort. 'OK' to delete.", 'gravityforms' );
+		$gf_vars['conditionalLogicDependencyChoice']      = __( "This form contains {type} conditional logic dependent upon this choice. Are you sure you want to delete this choice? 'Cancel' to abort. 'OK' to delete.", 'gravityforms' );
+		$gf_vars['conditionalLogicDependencyChoiceEdit']  = __( "This form contains {type} conditional logic dependent upon this choice. Are you sure you want to modify this choice? 'Cancel' to abort. 'OK' to continue.", 'gravityforms' );
+		$gf_vars['conditionalLogicDependencyAdminOnly']   = __( "This form contains {type} conditional logic dependent upon this field. Are you sure you want to mark this field as Administrative? 'Cancel' to abort. 'OK' to continue.", 'gravityforms' );
+		$gf_vars['conditionalLogicRichTextEditorWarning'] = __( "This form contains conditional logic dependent upon this field. This will no longer work if the Rich Text Editor is enabled.  Are you sure you want to enable the Rich Text Editor?  'Cancel' to abort. 'OK' to continue.", 'gravityforms' );
+		$gf_vars['conditionalLogicTypeButton']            = __( 'button', 'gravityforms' );
+		$gf_vars['conditionalLogicTypeConfirmation']      = __( 'confirmation', 'gravityforms' );
+		$gf_vars['conditionalLogicTypeNotification']      = __( 'notification', 'gravityforms' );
+		$gf_vars['conditionalLogicTypeNoficationRouting'] = __( 'notification routing', 'gravityforms' );
+		$gf_vars['conditionalLogicTypeField']             = __( 'field', 'gravityforms' );
+		$gf_vars['conditionalLogicTypeFeed']              = __( 'feed', 'gravityforms' );
+		$gf_vars['conditionalLogicWarningTitle']          = __( 'Conditional Logic Warning', 'gravityforms' );
 
 
 		$gf_vars['mergeTagsText'] = esc_html__( 'Insert Merge Tags', 'gravityforms' );
@@ -5974,14 +5981,23 @@ Content-Type: text/html;
 	 * @since 2.5
 	 */
 	public static function gf_header() {
+		$header_buttons = apply_filters( 'gform_settings_header_buttons', '' );
+		if ( !empty( $header_buttons ) ) {
+			$header_button_class = 'gform-settings-header--has_buttons';
+		} else {
+			$header_button_class = '';
+		}
 		?>
-		<header class="gform-settings-header">
+		<header class="gform-settings-header <?php echo esc_attr( $header_button_class ); ?>">
 			<div class="gform-settings__wrapper">
-				<img src="<?php echo GFCommon::get_base_url(); ?>/images/logos/gravity-logo-white.svg" alt="Gravity Forms" width="266" />
+				<img src="<?php echo GFCommon::get_base_url(); ?>/images/logos/gravity-logo-dark.svg" alt="Gravity Forms" width="220" />
 
-				<div class="gform-settings-header_buttons">
-					<?php echo apply_filters( 'gform_settings_header_buttons', '' ); ?>
-				</div>
+				<?php
+				if ( !empty ( $header_buttons ) ) { ?>
+					<div class="gform-settings-header_buttons">
+						<?php echo $header_buttons; ?>
+					</div>
+				<?php } ?>
 			</div>
 		</header>
 		<?php

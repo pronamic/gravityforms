@@ -2468,6 +2468,24 @@ class GFAPI {
 		gform_update_meta( $entry_id, $key, $meta, $form_id );
 	}
 
+	/**
+	 * Retrieves the name of the given feed.
+	 *
+	 * @since 2.9.9
+	 *
+	 * @param array  $feed The feed.
+	 * @param string $key  Optional. The key used to store the name.
+	 *
+	 * @return string
+	 */
+	public static function get_feed_name( $feed, $key = '' ) {
+		if ( empty( $key ) ) {
+			$key = ! empty( $feed['meta']['feedName'] ) ? 'feedName' : 'feed_name';
+		}
+
+		return rgars( $feed, 'meta/' . $key, '' );
+	}
+
 	// NOTIFICATIONS ----------------------------------------------
 
 	/**

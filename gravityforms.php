@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.8
+Version: 2.9.9
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.8';
+	public static $version = '2.9.9';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -538,6 +538,7 @@ class GFForms {
 						add_action( 'wp_ajax_rg_duplicate_field', array( 'GFForms', 'duplicate_field' ) );
 						add_action( 'wp_ajax_rg_delete_field', array( 'GFForms', 'delete_field' ) );
 						add_action( 'wp_ajax_rg_delete_file', array( 'GFForms', 'delete_file' ) );
+						add_action( 'wp_ajax_rg_ajax_get_form', array( 'GFForms', 'ajax_get_form' ) );
 						add_action( 'wp_ajax_rg_select_export_form', array( 'GFForms', 'select_export_form' ) );
 						add_action( 'wp_ajax_rg_start_export', array( 'GFForms', 'start_export' ) );
 						add_action( 'wp_ajax_gf_upgrade_license', array( 'GFForms', 'upgrade_license' ) );
@@ -4731,6 +4732,21 @@ class GFForms {
 	public static function delete_field() {
 		require_once( GFCommon::get_base_path() . '/form_detail.php' );
 		GFFormDetail::delete_field();
+	}
+
+	/**
+	 * Retrieves the form with complete meta in the form editor.
+	 *
+	 * Called via AJAX.
+	 *
+	 * @since  2.9.9
+	 * @access public
+	 *
+	 * @uses   \GFFormDetail::ajax_get_form()
+	 */
+	public static function ajax_get_form() {
+		require_once( GFCommon::get_base_path() . '/form_detail.php' );
+		GFFormDetail::ajax_get_form();
 	}
 
 	/**

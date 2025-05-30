@@ -516,11 +516,6 @@ parameters:
 			path: includes/addon/class-gf-feed-addon.php
 
 		-
-			message: "#^Method GF_Feed_Processor\\:\\:custom_error_handler\\(\\) should return false but return statement is missing\\.$#"
-			count: 1
-			path: includes/addon/class-gf-feed-processor.php
-
-		-
 			message: "#^Access to an undefined property GFPaymentStatsTable\\:\\:\\$_pagination\\.$#"
 			count: 1
 			path: includes/addon/class-gf-payment-addon.php
@@ -1144,11 +1139,6 @@ parameters:
 			message: "#^Method Gravity_Forms\\\\Gravity_Forms\\\\Settings\\\\Fields\\\\Base\\:\\:get_value\\(\\) invoked with 2 parameters, 0 required\\.$#"
 			count: 1
 			path: includes/settings/fields/class-checkbox.php
-
-		-
-			message: "#^@param array\\|null \\$field_type does not accept actual type of parameter\\: string\\.$#"
-			count: 2
-			path: includes/settings/fields/class-generic-map.php
 
 		-
 			message: "#^Variable \\$this might not be defined\\.$#"

@@ -6170,14 +6170,14 @@ class GFFormsModel {
 	 * @param array      $search_criteria {
 	 * 		Array of search criteria.
 	 *
-	 * 		@type int    $id         Get the note with this ID.
-	 * 		@type int    $entry_id   Get notes associated with this entry ID.
-	 * 		@type int    $user_id    Get notes with this user ID.
-	 * 		@type string $user_name  Get notes with this user name.
-	 * 		@type string $note_type  Get notes with this note type.
-	 * 		@type string $sub_type   Get notes with this sub type.
-	 * 		@type string $start_date Get notes on or after this date.  Expects SQL datetime format.
-	 * 		@type string $end_date   Get notes on or before this date.  Expects SQL datetime format.
+	 * 		@type int       $id         Get the note with this ID.
+	 * 		@type int|array $entry_id   Get notes associated with this entry ID or array of IDs.
+	 * 		@type int       $user_id    Get notes with this user ID.
+	 * 		@type string    $user_name  Get notes with this user name.
+	 * 		@type string    $note_type  Get notes with this note type.
+	 * 		@type string    $sub_type   Get notes with this sub type.
+	 * 		@type string    $start_date Get notes on or after this date.  Expects SQL datetime format.
+	 * 		@type string    $end_date   Get notes on or before this date.  Expects SQL datetime format.
 	 * }
 	 * @param null|array $sorting {
 	 * 		Array of sort key and direction.
@@ -6196,7 +6196,12 @@ class GFFormsModel {
 			$where[] = $wpdb->prepare( 'n.id = %d', $search_criteria['id'] );
 		}
 
-		if ( rgar( $search_criteria, 'entry_id' ) ) {
+		$entry_criteria = rgar( $search_criteria, 'entry_id' );
+		if ( $entry_criteria && is_array( $search_criteria['entry_id'] ) ) {
+			$entry_ids    = array_map( 'intval', $search_criteria['entry_id'] );
+			$placeholders = implode( ', ', array_fill( 0, count( $entry_ids ), '%d' ) );
+			$where[]      = $wpdb->prepare( "entry_id IN ($placeholders)", $entry_ids );
+		} elseif( $entry_criteria ) {
 			$where[] = $wpdb->prepare( 'entry_id = %d', $search_criteria['entry_id'] );
 		}
 

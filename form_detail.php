@@ -3132,6 +3132,40 @@ class GFFormDetail {
 		die( $args_json );
 	}
 
+	/*
+	 * AJAX function to retrieve a form.
+	 *
+	 * Used by HasConditionalLogicDependencyLegwork in form_editor.js to check
+	 * conditional logic dependencies for fields, confirmations, notifications,
+	 * notification routing, and feeds.
+	 *
+	 * @since 2.9.9
+	 */
+	public static function ajax_get_form() {
+		check_ajax_referer( 'rg_ajax_get_form', 'rg_ajax_get_form' );
+
+		$form_id = absint( rgpost( 'form_id' ) );
+		$form    = GFFormsModel::get_form_meta( $form_id );
+
+		if ( empty( $form ) ) {
+			wp_send_json_error( esc_html__( 'No form found.', 'gravityforms' ) );
+		}
+
+		$feeds            = GFAPI::get_feeds( null, $form_id );
+		$feeds_conditions = array();
+		if( $feeds ) {
+			foreach( $feeds as $feed ) {
+				if( rgars( $feed, 'meta/feed_condition_conditional_logic_object' ) ) {
+					$feeds_conditions[] = $feed['meta']['feed_condition_conditional_logic_object'];
+				}
+			}
+		}
+
+		$form['feeds_conditions'] = $feeds_conditions;
+
+		wp_send_json_success( $form );
+	}
+
 	public static function change_input_type() {
 		check_ajax_referer( 'rg_change_input_type', 'rg_change_input_type' );
 

@@ -30,6 +30,15 @@ class GF_Notifications_Processor extends GF_Background_Process {
 	protected $action = 'gf_notifications_processor';
 
 	/**
+	 * Indicates if the task uses an array that supports the attempts key.
+	 *
+	 * @since 2.9.9
+	 *
+	 * @var bool
+	 */
+	protected $supports_attempts = true;
+
+	/**
 	 * Processes the task.
 	 *
 	 * @since 2.6.9

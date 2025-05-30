@@ -36,6 +36,15 @@ class GF_Feed_Processor extends GF_Background_Process {
 	protected $action = 'gf_feed_processor';
 
 	/**
+	 * Indicates if the task uses an array that supports the attempts key.
+	 *
+	 * @since 2.9.9
+	 *
+	 * @var bool
+	 */
+	protected $supports_attempts = true;
+
+	/**
 	 * Get instance of this class.
 	 *
 	 * @since  2.2
@@ -78,7 +87,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 
 		$addon     = $item['addon'];
 		$feed      = $item['feed'];
-		$feed_name = rgars( $feed, 'meta/feed_name' ) ? $feed['meta']['feed_name'] : rgars( $feed, 'meta/feedName' );
+		$feed_name = GFAPI::get_feed_name( $feed );
 
 		$callable = array( is_string( $addon ) ? $addon : get_class( $addon ), 'get_instance' );
 		if ( is_callable( $callable ) ) {
@@ -114,8 +123,6 @@ class GF_Feed_Processor extends GF_Background_Process {
 			return false;
 		}
 
-		$item = $this->increment_attempts( $item );
-
 		$max_attempts = 1;
 
 		/**
@@ -141,26 +148,14 @@ class GF_Feed_Processor extends GF_Background_Process {
 			return false;
 		}
 
-		$addon->log_debug( __METHOD__ . "(): Starting to process feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}. Attempt number: " . $item['attempts'] );
+		$addon->log_debug( __METHOD__ . "(): Starting to process feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}. Attempt number: {$item['attempts']}." );
 
+		// Keeping the try catch in case any third-party add-ons still throw exceptions.
 		try {
 
-			// Maybe convert PHP errors to exceptions so that they get caught.
-			// This will catch some fatal errors, but not all.
-			// Errors that are not caught will halt execution of subsequent feeds, but those will be
-			// executed during the next cron cycles, which happens every 5 minutes
-			set_error_handler( array( $this, 'custom_error_handler' ) );
-
-			// Process feed.
 			$result = $addon->process_feed( $feed, $entry, $form );
 
-			// Back to built-in error handler.
-			restore_error_handler();
-
 		} catch ( Exception $e ) {
-
-			// Back to built-in error handler.
-			restore_error_handler();
 
 			$addon->save_entry_feed_status( $e, $entry_id, $feed_id, $form_id );
 			$addon->log_error( __METHOD__ . "(): Aborting. Error occurred during processing of feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}: {$e->getMessage()}" );
@@ -202,6 +197,23 @@ class GF_Feed_Processor extends GF_Background_Process {
 
 		return false;
 
+	}
+
+	/**
+	 * Determines if the task can be processed based on its attempts property.
+	 *
+	 * Overridden, returning true, so the existing feed-specific filters are used instead during task().
+	 *
+	 * @since 2.9.9
+	 *
+	 * @param mixed  $task     The task about to be processed.
+	 * @param object $batch    The batch currently being processed.
+	 * @param int    $task_num The number that identifies the task in the logs.
+	 *
+	 * @return bool
+	 */
+	protected function can_process_task( $task, $batch, $task_num ) {
+		return true;
 	}
 
 	/**
@@ -259,44 +271,40 @@ class GF_Feed_Processor extends GF_Background_Process {
 	}
 
 	/**
-	 * Custom error handler to convert any errors to an exception.
+	 * Logs the error that occurred during feed processing.
 	 *
-	 * @since  2.2
-	 * @since  2.6.5 Removed the $context param.
-	 * @access public
+	 * @since 2.9.8
 	 *
-	 * @param int    $number  The level of error raised.
-	 * @param string $string  The error message, as a string.
-	 * @param string $file    The filename the error was raised in.
-	 * @param int    $line    The line number the error was raised at.
-	 * @param array  $context An array that points to the active symbol table at the point the error occurred.
+	 * @param array $error The error returned by error_get_last().
 	 *
-	 * @throws ErrorException
-	 *
-	 * @return false
+	 * @return void
 	 */
-	public function custom_error_handler( $number, $string, $file, $line ) {
+	protected function handle_error( $error ) {
+		parent::handle_error( $error );
 
-		// Determine if this error is one of the enabled ones in php config (php.ini, .htaccess, etc).
-		$error_is_enabled = (bool) ( $number & ini_get( 'error_reporting' ) );
-
-		// Throw an Error Exception, to be handled by whatever Exception handling logic is available in this context.
-		if ( in_array( $number, array( E_USER_ERROR, E_RECOVERABLE_ERROR ) ) && $error_is_enabled ) {
-
-			throw new ErrorException( $string, 0, $number, $file, $line );
-
-		} elseif ( $error_is_enabled ) {
-
-			// Log the error if it's enabled. Otherwise, just ignore it.
-			error_log( $string, 0 );
-
-			// Make sure this ends up in $php_errormsg, if appropriate.
-			return false;
+		$task = $this->get_current_task();
+		if ( empty( $task ) ) {
+			return;
 		}
+
+		$callable = array( $task['addon'], 'get_instance' );
+		if ( ! is_callable( $callable ) ) {
+			return;
+		}
+
+		$feed     = $task['feed'];
+		$feed_id  = (int) rgar( $feed, 'id' );
+		$entry_id = (int) rgar( $task, 'entry_id' );
+		$addon    = call_user_func( $callable );
+		$addon->log_error( __METHOD__ . "(): Aborting. Error occurred during processing of feed (#{$feed_id} - {$addon->get_feed_name( $feed )}) for entry #{$entry_id}: {$error['message']}" );
+		$addon->save_entry_feed_status( new WP_Error( $error['type'], $error['message'] ), $entry_id, $feed_id, (int) rgar( $task, 'form_id' ) );
 	}
 
 	/**
 	 * Increments the item attempts property and updates the batch in the database.
+	 *
+	 * @depecated 2.9.9
+	 * @remove-in 3.1
 	 *
 	 * @since 2.4
 	 * @since 2.9.4 Updated to use get_current_branch() instead of making a db request to get the batch.

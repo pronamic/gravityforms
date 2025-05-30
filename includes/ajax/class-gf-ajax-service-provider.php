@@ -64,10 +64,6 @@ class GF_Ajax_Service_Provider extends GF_Service_Provider {
 		// Register nonce lifespan hook.
 		add_filter( 'nonce_life', array( $ajax_handler, 'nonce_life' ), 10, 2 );
 
-		// Register AJAX validation.
-		add_action( 'wp_ajax_gform_validate_form', array( $ajax_handler, 'validate_form' ) );
-		add_action( 'wp_ajax_nopriv_gform_validate_form', array( $ajax_handler, 'validate_form' ) );
-
 		// Register AJAX submission.
 		add_action( 'wp_ajax_gform_submit_form', array( $ajax_handler, 'submit_form' ) );
 		add_action( 'wp_ajax_nopriv_gform_submit_form', array( $ajax_handler, 'submit_form' ) );

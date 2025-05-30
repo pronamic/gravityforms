@@ -15,12 +15,18 @@ namespace Gravity_Forms\Gravity_Forms\Ajax;
  */
 class GF_Ajax_Handler {
 
+
 	/**
 	 * Handles the form validation AJAX requests. Uses the global $_POST array and sends the form validation result as a JSON response.
 	 *
 	 * @since 2.9.0
+	 *
+	 * @deprecated 2.9.9 Use GFAPI::validate_form() instead.
+	 * @remove-in 3.1.0
 	 */
 	public function validate_form() {
+
+		_deprecated_function( __METHOD__, '2.9.9', 'GFAPI::validate_form()' );
 
 		// Check nonce.
 		$nonce_result = check_ajax_referer( 'gform_ajax_submission', 'gform_ajax_nonce', false );
@@ -62,6 +68,7 @@ class GF_Ajax_Handler {
 		wp_send_json_success( $result );
 	}
 
+
 	/**
 	 * Handles the form submission AJAX requests. Uses the global $_POST array and sends the form submission result as a JSON response.
 	 *
@@ -73,7 +80,7 @@ class GF_Ajax_Handler {
 		$nonce_result = check_ajax_referer( 'gform_ajax_submission', 'gform_ajax_nonce', false );
 
 		if ( ! $nonce_result ) {
-			wp_send_json_error( $this->nonce_validation_message() );
+			$this->send_json_error( $this->nonce_validation_message() );
 		}
 
 		$this->hydrate_get_from_current_page_url();
@@ -108,7 +115,7 @@ class GF_Ajax_Handler {
 		$result = \GFAPI::submit_form( $form_id, array(), $field_values, $target_page, $source_page, \GFFormDisplay::SUBMISSION_INITIATED_BY_WEBFORM );
 
 		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( $result->get_error_message() );
+			$this->send_json_error( $result->get_error_message() );
 		}
 
 		$form = $result['form'];
@@ -148,7 +155,64 @@ class GF_Ajax_Handler {
 		// Remove form from result.
 		unset( $result['form'] );
 
-		wp_send_json_success( $result );
+		$this->send_json_success( $result );
+	}
+
+	/**
+	 * Sends a success JSON response with a delimiter indicating the beginning and end of the JSON string.
+	 *
+	 * @since 2.9.9
+	 *
+	 * @param mixed $data The data to be sent in the JSON response.
+	 *
+	 * @return void
+	 */
+	public function send_json_success( $data ) {
+
+		$response = array( 'success' => true );
+
+		if ( isset( $data ) ) {
+			$response['data'] = $data;
+		}
+
+		$this->send_json( $response );
+	}
+
+	/**
+	 * Sends an error JSON response with a delimiter indicating the beginning and end of the JSON string.
+	 *
+	 * @since 2.9.9
+	 *
+	 * @param mixed $data The data to be sent in the JSON response.
+	 *
+	 * @return void
+	 */
+	public function send_json_error( $data ) {
+
+		$response = array( 'success' => false );
+
+		if ( isset( $data ) ) {
+			$response['data'] = $data;
+		}
+
+		$this->send_json( $response );
+	}
+
+	/**
+	 * Sends a JSON response with a delimiter indicating the beginning and end of the JSON string.
+	 *
+	 * @since 2.9.9
+	 *
+	 * @param array $response The response data to be sent in the JSON response.
+	 *
+	 * @return void
+	 */
+	public function send_json( $response ) {
+
+		// Outputting JSON content with delimiters.
+		echo '<!-- gf:json_start -->' . wp_json_encode( $response ) . '<!-- gf:json_end -->';
+
+		wp_die( '', '', array( 'response' => null ) );
 	}
 
 	/**
@@ -189,7 +253,7 @@ class GF_Ajax_Handler {
 
 		$confirmation = \GFFormDisplay::get_form( $form_id, false, false, false, rgpost( 'gform_field_values' ) );
 
-		wp_send_json_success(
+		$this->send_json_success(
 			array(
 				'is_valid'             => true,
 				'confirmation_type'    => 'message',
