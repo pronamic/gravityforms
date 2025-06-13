@@ -1369,7 +1369,7 @@ class GFAPI {
 	 * @param string $property The property of the Entry object to be updated.
 	 * @param mixed  $value    The value to which the property should be set.
 	 *
-	 * @return bool Whether the entry property was updated successfully.
+	 * @return int|false The number of rows updated, or false on error or if there is a submissions block.
 	 */
 	public static function update_entry_property( $entry_id, $property, $value ) {
 		if ( gf_upgrade()->get_submissions_block() ) {

@@ -128,7 +128,7 @@ class GF_Ajax_Handler {
 			$result = $this->add_validation_summary( $form, $result );
 
 			// Refresh the form markup if single page or multipage forms have validation errors.
-			$result['form_markup'] = \GFFormDisplay::get_form( $form_id, false, false, false, $field_values, false, 0, $theme, $style );
+			$result['form_markup'] = \GFFormDisplay::get_form( $form_id, (bool) rgpost( 'display_title' ), (bool) rgpost( 'display_description' ), false, $field_values, false, 0, $theme, $style );
 		} elseif ( $target_page > 0 ) {
 			// Getting the target page number taking page conditional logic into account.
 			$page_number = \GFFormDisplay::get_target_page( $form, $source_page, $field_values );

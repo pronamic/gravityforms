@@ -1246,7 +1246,7 @@ parameters:
 			path: includes/webapi/v2/includes/controllers/class-controller-entry-notes.php
 
 		-
-			message: "#^is_wp_error\\(bool\\) will always evaluate to false\\.$#"
+			message: "#^is_wp_error\\(int\\|false\\) will always evaluate to false\\.$#"
 			count: 2
 			path: includes/webapi/v2/includes/controllers/class-controller-entry-properties.php
 
@@ -1291,7 +1291,7 @@ parameters:
 			path: includes/webapi/webapi.php
 
 		-
-			message: "#^is_wp_error\\(bool\\) will always evaluate to false\\.$#"
+			message: "#^is_wp_error\\(int\\|false\\) will always evaluate to false\\.$#"
 			count: 2
 			path: includes/webapi/webapi.php
 

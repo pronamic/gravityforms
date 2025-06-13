@@ -915,9 +915,9 @@ class GFFormDisplay {
 	public static function post_render_script( $form_id, $current_page = 'current_page' ) {
 		$post_render_script = '
 			jQuery(document).trigger("gform_pre_post_render", [{ formId: "' . $form_id . '", currentPage: "' . $current_page . '", abort: function() { this.preventDefault(); } }]);
-	        
+
 	        if (event && event.defaultPrevented) {
-            	    return; 
+            	    return;
         	}
 	        const gformWrapperDiv = document.getElementById( "gform_wrapper_' . $form_id . '" );
 	        if ( gformWrapperDiv ) {
@@ -927,7 +927,7 @@ class GFFormDisplay {
 	        }
 	        const visibilityTestDiv = document.getElementById( "gform_visibility_test_' . $form_id . '" );
 	        let postRenderFired = false;
-	        
+
 	        function triggerPostRender() {
 	            if ( postRenderFired ) {
 	                return;
@@ -938,7 +938,7 @@ class GFFormDisplay {
 	                visibilityTestDiv.parentNode.removeChild( visibilityTestDiv );
 	            }
 	        }
-	
+
 	        function debounce( func, wait, immediate ) {
 	            var timeout;
 	            return function() {
@@ -953,11 +953,11 @@ class GFFormDisplay {
 	                if ( callNow ) func.apply( context, args );
 	            };
 	        }
-	
+
 	        const debouncedTriggerPostRender = debounce( function() {
 	            triggerPostRender();
 	        }, 200 );
-	
+
 	        if ( visibilityTestDiv && visibilityTestDiv.offsetParent === null ) {
 	            const observer = new MutationObserver( ( mutations ) => {
 	                mutations.forEach( ( mutation ) => {
@@ -1056,7 +1056,7 @@ class GFFormDisplay {
 		// Setting form style and theme
 		$form = self::set_form_styles( $form, $style_settings, $form_theme );
 
-		$action = remove_query_arg( 'gf_token' );
+		$action = wp_doing_ajax() ? remove_query_arg( 'gf_token', wp_get_referer() ) : remove_query_arg( 'gf_token' );
 
 		if ( rgpost( 'gform_send_resume_link' ) == $form_id ) {
 			$save_email_confirmation = self::handle_save_email_confirmation( $form, $ajax );

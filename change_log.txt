@@ -1,3 +1,11 @@
+### 2.9.10 | 2025-06-12
+- Fixed an issue where the background processing queue can become indefinitely paused if the theme or another plugin is using a WP option filter or action hook incorrectly.
+- Fixed an issue with the background processor AJAX request arguments, improving form submission performance for add-ons where feed processing takes a while.
+- Fixed an issue where the form title and description can be removed when the form fails validation using the new AJAX submission method.
+- Fixed an issue with new AJAX where form submissions can break if the form action attribute changes to the admin-ajax.php URL when form markup is updated.
+- AF: Improved support for WordPress plugin checks in `GFAddOn::minimum_requirements()`. Credit: The Gravity Wiz Team.
+- AF: Fixed a fatal error that occurs when validating a select type setting when the option to select multiple choices is enabled.
+
 ### 2.9.9 | 2025-05-29
 - Fixed a JavaScript error that occurs when a submit button located outside the form is clicked. Includes a browser console error statement that recommends checking the settings of fields in the form editor for invalid HTML.
 - Fixed an inconsistency in the Rich Text Editor content when using the new AJAX submission method.

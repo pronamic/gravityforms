@@ -133,13 +133,22 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	const STATUS_CANCELLED = 1;
 
 	/**
-	 * The status set when process is paused or pausing.
+	 * The status set when processing is paused using $this->pause( true ).
 	 *
 	 * @since 2.9.7
 	 *
 	 * @var int
 	 */
 	const STATUS_PAUSED = 2;
+
+	/**
+	 * The status set when processing is paused using $bp_object->pause() or $bp_object->pause( false ).
+	 *
+	 * @since 2.9.10
+	 *
+	 * @var int
+	 */
+	const STATUS_PAUSED_NO_TS = 3;
 
 	/**
 	 * Initiate new background process
@@ -172,7 +181,8 @@ abstract class GF_Background_Process extends WP_Async_Request {
 		add_filter( 'cron_schedules', array( $this, 'schedule_cron_healthcheck' ) );
 
 		// Ensure dispatch query args included extra data.
-		add_filter( $this->identifier . '_query_args', array( $this, 'filter_dispatch_query_args' ) );
+		add_filter( $this->identifier . '_query_args', array( $this, 'filter_dispatch_query_args' ), 1 );
+		add_filter( $this->identifier . '_post_args', array( $this, 'filter_dispatch_post_args' ), 1 );
 
 		add_action( 'wp_delete_site', array( $this, 'delete_site_batches' ) );
 		add_action( 'make_spam_blog', array( $this, 'delete_site_batches' ) );
@@ -415,7 +425,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 */
 	public function pause( $set_timestamp = false ) {
 		$this->log_debug( sprintf( '%s(): Pausing processing for %s.', __METHOD__, $this->action ) );
-		update_site_option( $this->get_status_key(), self::STATUS_PAUSED );
+		update_site_option( $this->get_status_key(), $set_timestamp ? self::STATUS_PAUSED : self::STATUS_PAUSED_NO_TS );
 		if ( $set_timestamp ) {
 			update_site_option( $this->get_identifier() . '_pause_timestamp', microtime( true ) );
 		}
@@ -429,7 +439,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 * @return bool
 	 */
 	public function is_paused() {
-		return $this->get_status() === self::STATUS_PAUSED;
+		return in_array( $this->get_status(), array( self::STATUS_PAUSED, self::STATUS_PAUSED_NO_TS ), true );
 	}
 
 	/**
@@ -1360,13 +1370,15 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 * @return bool
 	 */
 	protected function is_pause_expired() {
-		$pause_timestamp = get_site_option( $this->get_identifier() . '_pause_timestamp' );
-		if ( $pause_timestamp === false ) {
-			$this->log_debug( __METHOD__ . '(): Processing is paused and the expiry timestamp is not set.' );
+		if ( $this->get_status() === self::STATUS_PAUSED_NO_TS ) {
+			$this->log_debug( __METHOD__ . '(): Processing was paused by an external method and will remain paused until $bp_object->resume() is called.' );
 
 			return false;
-		} elseif ( empty( $pause_timestamp ) || ! is_numeric( $pause_timestamp ) ) {
-			$this->log_error( __METHOD__ . '(): Processing is paused and the expiry timestamp contains an invalid value: ' . var_export( $pause_timestamp, true ) );
+		}
+
+		$pause_timestamp = get_site_option( $this->get_identifier() . '_pause_timestamp' );
+		if ( empty( $pause_timestamp ) || ! is_numeric( $pause_timestamp ) ) {
+			$this->log_error( __METHOD__ . '(): Processing is paused and the expiry timestamp is not set or contains an invalid value: ' . var_export( $pause_timestamp, true ) );
 
 			return true;
 		}
@@ -1579,6 +1591,19 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	public function filter_dispatch_query_args( $args ) {
 		$args[ $this->get_chain_id_arg_name() ] = $this->get_chain_id();
 
+		return $args;
+	}
+
+	/**
+	 * Filters the post arguments used during an async request.
+	 *
+	 * @since 2.9.10
+	 *
+	 * @param array $args Current post args.
+	 *
+	 * @return array
+	 */
+	public function filter_dispatch_post_args( $args ) {
 		// Reducing timeout to help with form submission performance.
 		$args['timeout'] = 0.01;
 

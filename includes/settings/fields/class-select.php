@@ -111,7 +111,7 @@ class Select extends Base {
 			$select_input = sprintf(
 				'<select name="%s_%s" %s %s>%s</select>%s',
 				esc_attr( $this->settings->get_input_name_prefix() ),
-				esc_attr( $this->name ),
+				esc_attr( $this->name . ( ( $this->support_multiple() && ! str_ends_with( $this->name, '[]' ) ) ? '[]' : '' ) ),
 				$this->get_describer() ? sprintf( 'aria-describedby="%s"', $this->get_describer() ) : '',
 				implode( ' ', $attributes ),
 				self::get_options( $choices, $this->get_value() ),
