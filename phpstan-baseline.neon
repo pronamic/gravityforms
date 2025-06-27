@@ -186,11 +186,6 @@ parameters:
 			path: form_detail.php
 
 		-
-			message: "#^Variable \\$fixed_menu_items might not be defined\\.$#"
-			count: 1
-			path: form_detail.php
-
-		-
 			message: "#^Variable \\$my_parent might not be defined\\.$#"
 			count: 1
 			path: form_detail.php
@@ -402,11 +397,6 @@ parameters:
 
 		-
 			message: "#^Static method GFFormSettings\\:\\:form_settings_page\\(\\) invoked with 1 parameter, 0 required\\.$#"
-			count: 1
-			path: gravityforms.php
-
-		-
-			message: "#^Variable \\$fixed_menu_items might not be defined\\.$#"
 			count: 1
 			path: gravityforms.php
 

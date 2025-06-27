@@ -1918,27 +1918,25 @@ abstract class GFAddOn {
 	 */
 	public function prepare_settings_sections( $sections = array(), $type = 'plugin_settings' ) {
 
-		// If interface is tabbed, ignore.
-		foreach ( $sections as $section ) {
-			if ( array_key_exists( 'sections', $section ) ) {
-				return $sections;
-			}
-		}
-
 		// Get first section key.
 		$first_section = array_keys( $sections );
 		$first_section = array_shift( $first_section );
 
-		// Loop through sections, add full class.
 		foreach ( $sections as $s => &$section ) {
+			if ( array_key_exists( 'sections', $section ) ) {
+				foreach ( $section['sections'] as &$sub_section ) {
+					if ( isset( $sub_section['fields'] ) ) {
+						$sub_section['fields'] = $this->prepare_settings_fields( $sub_section['fields'] );
+					}
+				}
+			} else {
+				// If this is the first section, set title.
+				if ( $s === $first_section && in_array( $type, array( 'plugin_settings' ) ) && ! rgar( $section, 'title', false ) ) {
+					$section['title'] = sprintf( esc_html__( '%s Settings', 'gravityforms' ), $this->get_short_title() );
+				}
 
-			// If this is the first section, set title.
-			if ( $s === $first_section && in_array( $type, array( 'plugin_settings' ) ) && ! rgar( $section, 'title', false ) ) {
-				$section['title'] = sprintf( esc_html__( '%s Settings', 'gravityforms' ), $this->get_short_title() );
+				$this->prepare_settings_fields( $section['fields'] );
 			}
-
-			$this->prepare_settings_fields( $section['fields'] );
-
 		}
 
 		return $sections;

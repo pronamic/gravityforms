@@ -1,3 +1,13 @@
+### 2.9.11 | 2025-06-26
+- Added a h1 to all admin pages to improve accessibility.
+- Fixed undefined variable error when the filter [gform_toolbar_menu](https://docs.gravityforms.com/gform_toolbar_menu/) returns an empty array.
+- Fixed handling of notification addressing where comma-separation of merge tags includes spaces.
+- Updated links in the admin to indicate when they open in a new window for improved accessibility.
+- Updated messages around deprecated Ready Classes in the form editor.
+- API: Fixed a bug in the Settings API that prevents custom settings fields from being rendered in a tabbed interface.
+- API: Fixed a bug in the Settings API that prevents the description from being rendered in the Post Select field.
+- API: Fixed a bug in the Settings API that prevents the `after_input` parameter from being rendered in the Conditional Logic field.
+
 ### 2.9.10 | 2025-06-12
 - Fixed an issue where the background processing queue can become indefinitely paused if the theme or another plugin is using a WP option filter or action hook incorrectly.
 - Fixed an issue with the background processor AJAX request arguments, improving form submission performance for add-ons where feed processing takes a while.

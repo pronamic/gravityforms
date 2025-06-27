@@ -1154,7 +1154,7 @@ class GF_System_Report {
                 $url  = str_replace( $logs_dir_path, $logs_dir_url, $file );
 
                 $logs[] = array(
-                    'label'        => '<a href="' . $url . '">' . esc_html( $plugin_name ) . '</a>',
+                    'label'        => '<a href="' . $url . '" target="_blank">' . esc_html( $plugin_name ) . '<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>',
                     'label_export' => esc_html( $plugin_name ),
                     'value'        => gf_logging()->get_log_file_size( $file, true ) . ' (' . GFCommon::format_date( date( 'c', filemtime( $file ) ) ) . ')',
                     'value_export' => $url,

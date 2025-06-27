@@ -130,6 +130,8 @@ class Conditional_Logic extends Base {
 
 		$html .= $this->get_error_icon();
 
+		$html .= $this->after_input;
+
 		return $html;
 
 	}

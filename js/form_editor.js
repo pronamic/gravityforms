@@ -5088,7 +5088,7 @@ function setSidebarFieldMessage() {
 				jQuery( '#sidebar_field_message_container .gform-alert' ).addClass( 'gform-alert--' + ( type === 'warning' ? 'error' : type ) );
 				iconClasses.forEach(
 					( className ) => {
-						jQuery( '#sidebar_field_message_container .gform-icon' ).addClass( className );
+						jQuery( '#sidebar_field_message_container .gform-alert__icon' ).addClass( className );
 					}
 				);
 				// Add class to force this notice visible, as all field notices are reset when a field is selected.

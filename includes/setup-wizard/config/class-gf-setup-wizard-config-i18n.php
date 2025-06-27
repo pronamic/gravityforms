@@ -95,7 +95,11 @@ class GF_Setup_Wizard_Config_I18N extends GF_Config {
 						// Screen 04.
 						'help_improve_title'    => __( 'Help Make Gravity Forms Better!', 'gravityforms' ),
 						// translators: placeholders are markup to create a link.
-						'help_improve_copy'     => sprintf( __( 'We love improving the form building experience for everyone in our community. By enabling data collection, you can help us learn more about how our customers use Gravity Forms. %1$sLearn more...%2$s', 'gravityforms' ), '<a target="_blank" href="https://docs.gravityforms.com/about-additional-data-collection/">', '</a>' ),
+						'help_improve_copy' => sprintf(
+							esc_html__( 'We love improving the form building experience for everyone in our community. By enabling data collection, you can help us learn more about how our customers use Gravity Forms. %1$sLearn more...%2$s', 'gravityforms' ),
+							'<a target="_blank" href="https://docs.gravityforms.com/about-additional-data-collection/">',
+							'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+						),
 						'no_thanks_button'      => __( 'No, Thanks.' ),
 						'yes_button'            => __( 'Yes, Count Me In.' ),
 

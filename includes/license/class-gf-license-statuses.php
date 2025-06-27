@@ -45,7 +45,7 @@ class GF_License_Statuses {
 		/* translators: %1s and %2s are link tag markup */
 			__( 'The license key entered is incorrect; please visit the %1$sGravity Forms website%2$s to verify your license. ', 'gravityforms' ),
 			'<a href="https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=purchase-link&utm_campaign=license-enforcement" target="_blank">',
-			'</a>'
+			'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
 		);
 		$error_message = ! empty( $error_message ) ? ' ' . $error_message : '';
 
@@ -55,7 +55,7 @@ class GF_License_Statuses {
 				/* translators: %1s and %2s are link tag markup */
 				__( 'The license key entered has been revoked; please check its status in your %1$sGravity Forms account.%2$s ', 'gravityforms' ),
 				'<a href="https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=account-link-revoked&utm_campaign=license-enforcement" target="_blank">',
-				'</a>'
+				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
 			),
 			self::MAX_SITES_EXCEEDED    => __( 'The license key has already been activated on its maximum number of sites; please upgrade your license. ', 'gravityforms' ),
 			self::MULTISITE_NOT_ALLOWED => __( 'The license key does not support multisite installations. Please use a different license. ', 'gravityforms' ),
@@ -63,7 +63,7 @@ class GF_License_Statuses {
 				/* translators: %1s and %2s are link tag markup */
 				__( 'The license key has expired; please visit your %1$sGravity Forms account%2$s to manage your license. ', 'gravityforms' ),
 				'<a href="https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=account-link-expired&utm_campaign=license-enforcement" target="_blank">',
-				'</a>'
+				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
 			),
 			self::NO_LICENSE_KEY        => sprintf(
 				/* translators: %1$s admin link tag markup, %2$s closing markup, %3$s Gravity Forms link tag markup, %4$s closing markup  */
@@ -71,19 +71,19 @@ class GF_License_Statuses {
 				'<a href="' . admin_url() . 'admin.php?page=gf_settings">',
 				'</a>',
 				'<a href="https://www.gravityforms.com" target="_blank">',
-				'</a>'
+				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
 			),
 			self::REQUEST_FAILED        => sprintf(
 				/* translators: %1s and %2s are link tag markup */
 				__( 'There was an error while validating your license key; please try again later. If the problem persists, please %1$scontact support%2$s.', 'gravityforms' ),
 				'<a href="https://www.gravityforms.com/support/" target="_blank">',
-				'</a>'
+				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
 			) . '&nbsp;' . $error_message,
 			self::REQUEST_BLOCKED       => sprintf(
 				/* translators: %1s and %2s are link tag markup */
 				__( 'Your IP has been blocked by Gravity for exceeding our API rate limits. If you think this is a mistake, please %1$scontact support%2$s.', 'gravityforms' ),
 				'<a href="https://www.gravityforms.com/support/" target="_blank">',
-				'</a>'
+				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
 			) . '&nbsp;' . $error_message,
 
 			self::SITE_UNREGISTERED     => $general_invalid_message,

@@ -54,12 +54,12 @@ class Post_Select extends Select {
 			$post_singular = $post_type->labels->singular_name;
 			$post_plural   = $post_type->labels->name;
 
-			$html = sprintf(
+			$html .= sprintf(
 				'<article class="gform-dropdown" data-js="gform-settings-field-select" data-post-type="%1$s">
 				    <span class="gform-visually-hidden" id="gform-%2$s-label">
 						%3$s
 				    </span>
-				
+
 				    <button
 						type="button"
 						aria-expanded="false"
@@ -98,8 +98,8 @@ class Post_Select extends Select {
 							/>
 							<span class="gform-icon gform-icon--search gform-dropdown__search-icon"></span>
 						</div>
-				
-				      <div class="gform-dropdown__list-container">
+
+						<div class="gform-dropdown__list-container">
 				        <ul class="gform-dropdown__list" data-js="gform-dropdown-list"></ul>
 				      </div>
 				    </div>

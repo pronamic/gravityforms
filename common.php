@@ -2185,6 +2185,7 @@ class GFCommon {
 	 *
 	 * If an email field has multiple merge tags, and not all of the fields are
 	 * filled out, we can end up with extra commas that break the header.
+	 * This method also accounts for removal of surrounding spaces.
 	 *
 	 * @since 2.8.6
 	 *
@@ -2193,8 +2194,7 @@ class GFCommon {
 	 * @return string
 	 */
 	public static function remove_extra_commas( $email ) {
-		//return rtrim( preg_replace( '/,+/', ',', $email ), ',' );
-		return ltrim( rtrim( preg_replace( '/,+/', ',', $email ), ',' ), ',' );
+		return ltrim( rtrim( preg_replace( '/[,\s]+/', ',', $email ), ',' ), ',' );
 	}
 
 	public static function send_notifications( $notification_ids, $form, $lead, $do_conditional_logic = true, $event = 'form_submission', $data = array() ) {
@@ -4083,18 +4083,17 @@ Content-Type: text/html;
 
 		$preview_link = sprintf(
 			'
-				<a
-					aria-label="%s"
-					href="%s"
-					class="%s gform-button--icon-leading"
-					target="%s"
-					rel="noopener"
-				><i class="gform-button__icon gform-common-icon gform-common-icon--eye"></i>%s</a>
+			<a href="%s" class="%s gform-button--icon-leading" target="%s" rel="noopener">
+				<span class="screen-reader-text">%s</span>
+				<span class="screen-reader-text">%s</span>
+				<i class="gform-button__icon gform-common-icon gform-common-icon--eye"></i>%s
+			</a>
 				',
-			esc_html__( 'Preview this form', 'gravityforms' ),
 			esc_url( $options['url'] ),
 			esc_attr( $options['link_class'] ),
 			esc_attr( $options['target'] ),
+			esc_html__( 'Preview this form', 'gravityforms' ),
+			esc_html__( '(opens in a new tab)', 'gravityforms' ),
 			esc_html( $options['label'] )
 		);
 
@@ -5593,7 +5592,7 @@ Content-Type: text/html;
 		 */
 		$logic_a11y_warn                   = esc_html__( 'Adding conditional logic to the form submit button could cause usability problems for some users and negatively impact the accessibility of your form. Learn more about button conditional logic in our %1$sdocumentation%2$s.', 'gravityforms' );
 		$logic_a11y_warn_link1             = '<a href="https://docs.gravityforms.com/field-accessibility-warning/" target="_blank" rel="noopener">';
-		$logic_a11y_warn_link2             = '</a>';
+		$logic_a11y_warn_link2             = '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>';
 		$gf_vars['conditional_logic_a11y'] = sprintf( $logic_a11y_warn, $logic_a11y_warn_link1, $logic_a11y_warn_link2 );
 		$gf_vars['page']                   = esc_html__( 'Page', 'gravityforms' );
 		$gf_vars['next_button']            = esc_html__( 'Next Button', 'gravityforms' );
@@ -6004,6 +6003,23 @@ Content-Type: text/html;
 	}
 
 	/**
+	 * Outputs a visually hidden page header for screen readers.
+	 *
+	 * Retrieves the current admin page title, modifies it if needed,
+	 * and echoes it inside an \<h1\> with the "screen-reader-text" class for accessibility.
+	 *
+	 * @since 2.9.11
+	 * @return void
+	 */
+	public static function admin_screen_reader_title(){
+
+		$admin_title = get_admin_page_title();
+		$page_title = GFForms::modify_admin_title( $admin_title, '' );
+
+		echo '<h1 class="screen-reader-text">' . esc_html( $page_title ) . '</h1>';
+	}
+
+	/**
 	 * Display the wrapper for admin notifications.
 	 *
 	 * @since 2.5
@@ -6011,10 +6027,7 @@ Content-Type: text/html;
 	public static function notices_section() {
 		?>
 		<div id="gf-admin-notices-wrapper">
-
-			<!-- WP appends notices to the first H tag, so this is here to capture admin notices. -->
-			<h2 class="gf-notice-container"></h2>
-
+		<?php self::admin_screen_reader_title(); ?>
 		</div>
 		<?php
 

@@ -17,6 +17,7 @@
                         target="_blank"
                         class="gform-reviews__link"
                     >
+                        <span class="screen-reader-text"><?php echo esc_html__( '(opens in a new tab)', 'gravityforms' ); ?></span>
                         <img
                             src="<?php echo $this->img_dir . 'g2.svg'; ?>"
                             alt="<?php esc_attr_e( 'G2 logo', 'gravityforms' ); ?>"
@@ -39,6 +40,7 @@
                         class="gform-reviews__link"
                         target="_blank"
                     >
+                        <span class="screen-reader-text"><?php echo esc_html__( '(opens in a new tab)', 'gravityforms' ); ?></span>
                         <img
                             src="<?php echo $this->img_dir . 'trustpilot.svg'; ?>"
                             alt="<?php esc_attr_e( 'Trustpilot logo', 'gravityforms' ); ?>"
@@ -62,12 +64,16 @@
 
         <div class="gform-splash__sections">
             <?php
-            $text  = '<h3>' . __( 'Image Choice Field', 'gravityforms' ) . '</h3>
-                <p>' . __( 'A picture is worth a thousand words! The new Image Choice field lets you add stylish images straight from the media library to your choices. Easily create beautiful forms with eye-catching images that speak to your users.', 'gravityforms' ) . '</p>
-                <a href="https://docs.gravityforms.com/image-choice-field/" target="_blank" class="gform-button gform-button--size-height-xl gform-button--primary-new gform-button--width-auto" aria-label="' . __( 'Read more about the Image Choice field', 'gravityforms' ) . '" title="' . __( 'Read more about the Image Choice field', 'gravityforms' ) . '"><span class="gform-button__text gform-button__text--inactive gform-typography--size-text-sm">' . __( 'Read More', 'gravityforms' ) . '</span></a>';
+            $text  = '<h3>' . esc_html__( 'Image Choice Field', 'gravityforms' ) . '</h3>
+                <p>' . esc_html__( 'A picture is worth a thousand words! The new Image Choice field lets you add stylish images straight from the media library to your choices. Easily create beautiful forms with eye-catching images that speak to your users.', 'gravityforms' ) . '</p>
+                <a href="https://docs.gravityforms.com/image-choice-field/" target="_blank" class="gform-button gform-button--size-height-xl gform-button--primary-new gform-button--width-auto" title="' . esc_attr__( 'Read more about the Image Choice field', 'gravityforms' ) . '">
+                <span class="gform-button__text gform-button__text--inactive gform-typography--size-text-sm">' . esc_html__( 'Read More', 'gravityforms' ) . '</span>
+                <span class="screen-reader-text">' . esc_html__( 'About the Image Choice field', 'gravityforms' ) . '</span>
+				<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>
+				&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>';
             $image = array(
                 'src' => $this->img_dir . 'image-choice-field.png',
-                'alt' => __( 'Screenshot of the Image Choice field in Gravity Forms 2.9', 'gravityforms' ),
+                'alt' => esc_attr__( 'Screenshot of the Image Choice field in Gravity Forms 2.9', 'gravityforms' ),
             );
 
             echo wp_kses_post(
@@ -82,12 +88,16 @@
                 )
             );
 
-            $text  = '<h3>' . __( 'Multiple Choice Field', 'gravityforms' ) . '</h3>
-                <p>' . __( 'The Multiple Choice field is a new, flexible way to let users choose one or many options. Gather the information you need, while ensuring a high-end experience for those submitting the form.', 'gravityforms' ) . '</p>
-                <a href="https://docs.gravityforms.com/multiple-choice-field/" target="_blank" class="gform-button gform-button--size-height-xl gform-button--primary-new gform-button--width-auto" aria-label="' . __( 'Read more about the Multiple Choice field', 'gravityforms' ) . '" title="' . __( 'Read more about the Multiple Choice field', 'gravityforms' ) . '"><span class="gform-button__text gform-button__text--inactive gform-typography--size-text-sm">' . __( 'Read More', 'gravityforms' ) . '</span></a>';
+            $text  = '<h3>' . esc_html__( 'Multiple Choice Field', 'gravityforms' ) . '</h3>
+                <p>' . esc_html__( 'The Multiple Choice field is a new, flexible way to let users choose one or many options. Gather the information you need, while ensuring a high-end experience for those submitting the form.', 'gravityforms' ) . '</p>
+                <a href="https://docs.gravityforms.com/multiple-choice-field/" target="_blank" class="gform-button gform-button--size-height-xl gform-button--primary-new gform-button--width-auto" title="' . esc_attr__( 'Read more about the Multiple Choice field', 'gravityforms' ) . '">
+                <span class="gform-button__text gform-button__text--inactive gform-typography--size-text-sm">' . esc_html__( 'Read More', 'gravityforms' ) . '</span>
+                <span class="screen-reader-text">' . esc_html__( 'About the Multiple Choice field', 'gravityforms' ) . '</span>
+				<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>
+                &nbsp;<span class="gform-icon gform-icon--external-link"></span></a>';
             $image = array(
                 'src' => $this->img_dir . 'multiple-choice-field.png',
-                'alt' => __( 'Screenshot of the Multiple Choice field in Gravity Forms 2.9', 'gravityforms' ),
+                'alt' => esc_attr__( 'Screenshot of the Multiple Choice field in Gravity Forms 2.9', 'gravityforms' ),
             );
 
             echo wp_kses_post(
@@ -105,26 +115,26 @@
             $col1_icon = $style_icon = $this->tags->build_image_html(
                 array(
                     'src' => $this->img_dir . 'editor-design-improvements-icon.svg',
-                    'alt' => __( 'Icon of color swatches', 'gravityforms' ),
+                    'alt' => esc_attr__( 'Icon of color swatches', 'gravityforms' ),
                     'width' => '52px',
                     'height' => '52px',
                     'class' => 'image--width-auto',
                 )
             );
-            $col1 = $col1_icon . '<h4>' . __( 'Editor Design Improvements', 'gravityforms' ) . '</h4>
-                <p>' . __( 'We’ve brought our beautiful Orbital form theme into the form editor! With 2.9 you’ll find a more consistent and visually-pleasing form editing experience, closely mirroring how your form will look on the front end.', 'gravityforms' ) . ' <a href="https://docs.gravityforms.com/gravity-forms-2-9-key-features/" title="' . __( 'Read more about the Gravity Forms 2.9 editor design improvements', 'gravityforms' ) . '" target="_blank">' . __( 'Read More', 'gravityforms' ) . '</a></p>';
+            $col1 = $col1_icon . '<h4>' . esc_html__( 'Editor Design Improvements', 'gravityforms' ) . '</h4>
+                <p>' . esc_html__( 'We’ve brought our beautiful Orbital form theme into the form editor! With 2.9 you’ll find a more consistent and visually-pleasing form editing experience, closely mirroring how your form will look on the front end.', 'gravityforms' ) . ' <a href="https://docs.gravityforms.com/gravity-forms-2-9-key-features/" title="' . esc_attr__( 'Read more about the Gravity Forms 2.9 editor design improvements', 'gravityforms' ) . '" target="_blank">' . esc_html__( 'Read More', 'gravityforms' ) . '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a></p>';
 
             $col2_icon = $style_icon = $this->tags->build_image_html(
                 array(
                     'src' => $this->img_dir . 'editor-accessibility-improvements-icon.svg',
-                    'alt' => __( 'Icon of accessibility symbol', 'gravityforms' ),
+                    'alt' => esc_attr__( 'Icon of accessibility symbol', 'gravityforms' ),
                     'width' => '52px',
                     'height' => '52px',
                     'class' => 'image--width-auto',
                 )
             );
-            $col2 = $col2_icon . '<h4>' . __( 'Editor Accessibility Improvements', 'gravityforms' ) . '</h4>
-                <p>' . __( 'As part of our continuing commitment to make form building available to everyone, we have improved the accessibility of the form editor. If you rely on keyboard navigation or screen readers, you’ll now have an easier time navigating the field settings.', 'gravityforms' ) . ' <a href="https://docs.gravityforms.com/gravity-forms-2-9-key-features/" title="' . __( 'Read more about the Gravity Forms 2.9 editor accessibility improvements', 'gravityforms' ) . '" target="_blank">' . __( 'Read More', 'gravityforms' ) . '</a></p>';
+            $col2 = $col2_icon . '<h4>' . esc_html__( 'Editor Accessibility Improvements', 'gravityforms' ) . '</h4>
+                <p>' . esc_html__( 'As part of our continuing commitment to make form building available to everyone, we have improved the accessibility of the form editor. If you rely on keyboard navigation or screen readers, you’ll now have an easier time navigating the field settings.', 'gravityforms' ) . ' <a href="https://docs.gravityforms.com/gravity-forms-2-9-key-features/" title="' . esc_attr__( 'Read more about the Gravity Forms 2.9 editor accessibility improvements', 'gravityforms' ) . '" target="_blank">' . esc_html__( 'Read More', 'gravityforms' ) . '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a></p>';
 
             echo wp_kses_post(
                 $this->tags->equal_columns(

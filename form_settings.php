@@ -681,10 +681,12 @@ class GFFormSettings {
 		            class="gform-alert__cta gform-button gform-button--white gform-button--size-xs"
 			        href="https://docs.gravityforms.com/about-legacy-markup"
 			        target="_blank"
-			        aria-label="' . esc_html__( 'Learn more about form legacy markup', 'gravityforms' ) . '"
 			    >'
 			        . esc_html__( 'Learn More', 'gravityforms' ) .
-			    '</a>
+			   		'<span class="screen-reader-text">' . esc_html__('about form legacy markup', 'gravityforms') . '</span>
+					<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;
+					<span class="gform-icon gform-icon--external-link"></span>
+				</a>
 		    </div>
 		</div>';
 	}

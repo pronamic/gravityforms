@@ -203,7 +203,18 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 		}
 
 		// Displaying thumbnail (if file is an image) or an icon based on the extension.
-		return sprintf( '<a href="%s" target="_blank" aria-label="%s"><img src="%s" alt="%s"></a>', esc_url( $url ), esc_attr__( 'View the image', 'gravityforms' ), esc_url( GFEntryList::get_icon_url( $url ) ), esc_attr( $alt ) );
+		return sprintf(
+			'<a href="%s" target="_blank">'
+			.'<span class="screen-reader-text">%s</span>'
+			.'<span class="screen-reader-text">%s</span>'
+			.'<img src="%s" alt="%s">'
+			.'</a>',
+			esc_url( $url ),
+			esc_html__( 'View the image', 'gravityforms' ),
+			esc_html__( '(opens in a new tab)', 'gravityforms' ),
+			esc_url( GFEntryList::get_icon_url( $url ) ),
+			esc_attr( $alt )
+		);
 	}
 
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
@@ -227,7 +238,7 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 					break;
 
 				default :
-					$value  = sprintf( '<a href="%1$s" target="_blank" aria-label="%2$s"><img src="%1$s" width="100" alt="%3$s"></a>', esc_url( $url ), esc_attr__( 'View the image', 'gravityforms' ), esc_attr( $alt ) );
+					$value  = sprintf( '<a href="%1$s" target="_blank" aria-label="%2$s"><img src="%1$s" width="100" alt="%3$s"></a>', esc_url( $url ), esc_attr__( 'View the image (opens in a new tab)', 'gravityforms' ), esc_attr( $alt ) );
 					$format = '<div>%s: %s</div>';
 					$value  .= ! empty( $alt ) ? sprintf( $format, esc_html__( 'Alternative Text', 'gravityforms' ), esc_html( $alt ) ) : '';
 					$value  .= ! empty( $title ) ? sprintf( $format, esc_html__( 'Title', 'gravityforms' ), esc_html( $title ) ) : '';
