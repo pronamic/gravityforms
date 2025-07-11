@@ -1,5 +1,13 @@
+### 2.9.12 | 2025-07-10
+- Added merge tags on the "Send To: Enter Email" notification setting. Credit: The GravityKit Team.
+- Updated the legacy Akismet spam check during form submission to run via the [`gform_entry_is_spam`](https://docs.gravityforms.com/gform_entry_is_spam/) filter in preparation for version 1.1.0 of the Akismet add-on.
+- Fixed rendering of calculated product in form editor when quantity is disabled.
+- Fixed an issue where the recent forms list used by the form switcher is not updated when the admin toolbar menu is disabled.
+- Fixed an issue in reCAPTCHA that prevents the form from being submitted when the reCAPTCHA API keys are invalid on the settings page.
+- Removed the mock-data endpoint from production environments.
+
 ### 2.9.11 | 2025-06-26
-- Added a h1 to all admin pages to improve accessibility.
+- Added a top-level heading to all admin pages to improve accessibility.
 - Fixed undefined variable error when the filter [gform_toolbar_menu](https://docs.gravityforms.com/gform_toolbar_menu/) returns an empty array.
 - Fixed handling of notification addressing where comma-separation of merge tags includes spaces.
 - Updated links in the admin to indicate when they open in a new window for improved accessibility.

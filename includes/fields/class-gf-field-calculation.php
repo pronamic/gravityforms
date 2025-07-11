@@ -79,7 +79,7 @@ class GF_Field_Calculation extends GF_Field {
 
 		if ( $is_entry_detail || $is_form_editor  ) {
 			$style          = $this->disableQuantity ? "style='display:none;'" : '';
-			$quantity_field = " <label for='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity_label gform-field-label' {$style}>{$product_quantity_sub_label}</label> <input type='number' name='input_{$id}.3' value='{$quantity}' id='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity' size='10' min='0' {$disabled_text} />";
+			$quantity_field = " <label for='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity_label gform-field-label' {$style}>{$product_quantity_sub_label}</label> <input type='number' name='input_{$id}.3' value='{$quantity}' id='ginput_quantity_{$form_id}_{$this->id}' class='ginput_quantity' size='10' min='0' {$disabled_text} {$style} />";
 		} elseif ( ! $this->disableQuantity ) {
 			$tabindex                  = $this->get_tabindex();
 			$describedby_extra_id = array();

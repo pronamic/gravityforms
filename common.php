@@ -4577,30 +4577,25 @@ Content-Type: text/html;
 		self::timer_start( __METHOD__ );
 		$is_spam = false;
 
-		if ( self::akismet_enabled( $form_id ) ) {
-			$is_spam = self::is_akismet_spam( $form, $entry );
-			self::log_debug( __METHOD__ . '(): Result from Akismet: ' . json_encode( $is_spam ) );
-			if ( $is_spam ) {
-				self::set_spam_filter( $form_id, __( 'Akismet Spam Filter', 'gravityforms' ), '' );
-			}
+		$akismet_callback = array( __CLASS__, 'entry_is_spam_akismet' );
+		if ( has_filter( 'gform_entry_is_spam', $akismet_callback ) === false ) {
+			add_filter( 'gform_entry_is_spam', $akismet_callback, 90, 3 );
 		}
 
-		$gform_entry_is_spam_args = array( 'gform_entry_is_spam', $form_id );
-		if ( gf_has_filter( $gform_entry_is_spam_args ) ) {
-			GFCommon::log_debug( __METHOD__ . '(): Executing functions hooked to gform_entry_is_spam.' );
-			/**
-			 * Allows submissions to be flagged as spam by custom methods.
-			 *
-			 * @since 1.8.17
-			 * @since 2.4.17 Moved from GFFormDisplay::handle_submission().
-			 *
-			 * @param bool  $is_spam Indicates if the submission has been flagged as spam.
-			 * @param array $form    The form currently being processed.
-			 * @param array $entry   The entry currently being processed.
-			 */
-			$is_spam = gf_apply_filters( $gform_entry_is_spam_args, $is_spam, $form, $entry );
-			self::log_debug( __METHOD__ . '(): Result from gform_entry_is_spam filter: ' . json_encode( $is_spam ) );
-		}
+		GFCommon::log_debug( __METHOD__ . '(): Executing functions hooked to gform_entry_is_spam.' );
+
+		/**
+		 * Allows submissions to be flagged as spam by custom methods.
+		 *
+		 * @since 1.8.17
+		 * @since 2.4.17 Moved from GFFormDisplay::handle_submission().
+		 *
+		 * @param bool  $is_spam Indicates if the submission has been flagged as spam.
+		 * @param array $form    The form currently being processed.
+		 * @param array $entry   The entry currently being processed.
+		 */
+		$is_spam = gf_apply_filters( array( 'gform_entry_is_spam', $form_id ), $is_spam, $form, $entry );
+		self::log_debug( __METHOD__ . '(): Result from gform_entry_is_spam filter: ' . json_encode( $is_spam ) );
 
 		if ( $use_cache ) {
 			GFFormDisplay::$submission[ $form_id ]['is_spam'] = $is_spam;
@@ -4643,7 +4638,49 @@ Content-Type: text/html;
 		return $spam_enabled;
 	}
 
+	/**
+	 * Callback for gform_entry_is_spam; performs the Akimset spam check.
+	 *
+	 * @since 2.9.12 Moved to a filter callback from GFCommon::is_spam_entry().
+	 *
+	 * @param bool  $is_spam Indicates if the submission has been flagged as spam.
+	 * @param array $form    The form currently being processed.
+	 * @param array $entry   The entry currently being processed.
+	 *
+	 * @return bool
+	 */
+	public static function entry_is_spam_akismet( $is_spam, $form, $entry ) {
+		if ( $is_spam ) {
+			return $is_spam;
+		}
+
+		$form_id = (int) rgar( $form, 'id' );
+		if ( ! self::akismet_enabled( $form_id ) ) {
+			return $is_spam;
+		}
+
+		$is_spam = self::is_akismet_spam( $form, $entry );
+		self::log_debug( __METHOD__ . '(): Result from Akismet: ' . json_encode( $is_spam ) );
+		if ( $is_spam ) {
+			self::set_spam_filter( $form_id, __( 'Akismet Spam Filter', 'gravityforms' ), '' );
+		}
+
+		return $is_spam;
+	}
+
+	/**
+	 * Determines if the Akismet integration is available.
+	 *
+	 * @since unknown
+	 * @since 2.9.12 Disable the integration when the Akismet Add-On (that communicates directly with the Akismet API) is active.
+	 *
+	 * @return bool
+	 */
 	public static function has_akismet() {
+		if ( function_exists( 'gf_akismet' ) && method_exists( gf_akismet(), 'initalize_api' ) ) {
+			return false;
+		}
+
 		$akismet_exists = function_exists( 'akismet_http_post' ) || method_exists( 'Akismet', 'http_post' );
 
 		return $akismet_exists;

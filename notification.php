@@ -257,6 +257,7 @@ Class GFNotification {
 						'name'                => 'toEmail',
 						'label'               => esc_html__( 'Send To Email', 'gravityforms' ),
 						'type'                => 'text',
+						'class'               => 'merge-tag-support mt-position-right mt-hide_all_fields',
 						'required'            => true,
 						'default_value'       => '{admin_email}',
 						'dependency'          => array(

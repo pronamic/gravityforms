@@ -146,13 +146,16 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 		});
 
 		add_action( 'rest_api_init', function () use ( $container, $self ) {
-			register_rest_route( 'gravityforms/v2', '/tests/mock-data', array(
-				'methods'             => 'GET',
-				'callback'            => array( $self, 'config_mocks_endpoint' ),
-				'permission_callback' => function () {
-					return true;
-				},
-			) );
+			// check if we are in a test environment, if so register the mock data endpoint.
+			if ( defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ) {
+				register_rest_route( 'gravityforms/v2', '/tests/mock-data', array(
+					'methods'             => 'GET',
+					'callback'            => array( $self, 'config_mocks_endpoint' ),
+					'permission_callback' => function () {
+						return true;
+					},
+				) );
+			}
 		} );
 
 		// Add global config data to admin and theme.

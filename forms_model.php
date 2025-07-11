@@ -8197,15 +8197,12 @@ class GFFormsModel {
 	 * Update the recent forms list for the current user when a form is edited or trashed.
 	 *
 	 * @since 2.0.7.14
+	 * @since 2.9.12 Removed the dependency on the admin toolbar being enabled.
 	 *
 	 * @param int $form_id The ID of the current form.
 	 * @param bool $trashed Indicates if the form was trashed. Default is false, form was opened for editing.
 	 */
 	public static function update_recent_forms( $form_id, $trashed = false ) {
-		if ( ! get_option( 'gform_enable_toolbar_menu' ) ) {
-			return;
-		}
-
 		$current_user_id = get_current_user_id();
 		$recent_form_ids = self::get_recent_forms( $current_user_id );
 
