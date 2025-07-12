@@ -1,3 +1,7 @@
+### 2.9.13 | 2025-07-11
+- Updated the image choice file upload UI to account for file upload component updates.
+- Updated the help page to be more accessible.
+
 ### 2.9.12 | 2025-07-10
 - Added merge tags on the "Send To: Enter Email" notification setting. Credit: The GravityKit Team.
 - Updated the legacy Akismet spam check during form submission to run via the [`gform_entry_is_spam`](https://docs.gravityforms.com/gform_entry_is_spam/) filter in preparation for version 1.1.0 of the Akismet add-on.

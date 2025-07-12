@@ -46,7 +46,13 @@ class GFHelp {
 
             <form id="gf_help_page_search" action="https://docs.gravityforms.com" target="_blank">
                 <div class="search_box">
-                    <input type="text" name="s" placeholder="<?php esc_attr_e( 'Search Our Documentation', 'gravityforms' ) ?>"/>
+                    <label for="gf_help_search" class="screen-reader-text"><?php esc_html_e( 'Search Our Documentation', 'gravityforms' ) ?></label>
+                    <input type="text" id="gf_help_search" name="s" placeholder="<?php esc_attr_e( 'Search Our Documentation', 'gravityforms' ) ?>"/>
+                    <button class="gform-button gform-button--size-r gform-button--white gform-button--width-auto gform-button--active-type-loader gform-button--loader-after gform-button--icon-trailing button_focus">
+                        <span class="gform-button__text gform-button__text--inactive"><?php esc_html_e( 'Search', 'gravityforms' ) ?></span>
+                        <span class="screen-reader-text"><?php esc_html_e( '(opens in a new tab)', 'gravityforms' ) ?></span>
+                        <span class="gform-icon gform-icon--external-link gform-button__icon"></span>
+                    </button>
                 </div>
             </form>
 
@@ -184,9 +190,9 @@ class GFHelp {
                 </div>
             </div>
 		</div>
-		<img id="hexagons-bg-orange" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-orange.svg" />
-		<img id="hexagons-bg-dark-blue" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-dark-blue.svg" />
-		<img id="hexagons-bg-light-blue" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-light-blue.svg" />
+		<img id="hexagons-bg-orange" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-orange.svg" alt=""/>
+		<img id="hexagons-bg-dark-blue" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-dark-blue.svg" alt=""/>
+		<img id="hexagons-bg-light-blue" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-light-blue.svg" alt=""/>
 	<?php
 	}
 }

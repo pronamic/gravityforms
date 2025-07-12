@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.9.12\n"
+"Project-Id-Version: Gravity Forms 2.9.13\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-10T15:20:52+00:00\n"
+"POT-Creation-Date: 2025-07-11T15:38:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: gravityforms\n"
@@ -323,21 +323,22 @@ msgstr ""
 #: gravityforms.php:2702
 #: help.php:40
 #: help.php:42
-#: help.php:62
-#: help.php:69
-#: help.php:76
-#: help.php:83
-#: help.php:90
-#: help.php:106
-#: help.php:113
-#: help.php:120
-#: help.php:127
-#: help.php:134
-#: help.php:150
-#: help.php:157
-#: help.php:164
-#: help.php:171
-#: help.php:178
+#: help.php:53
+#: help.php:68
+#: help.php:75
+#: help.php:82
+#: help.php:89
+#: help.php:96
+#: help.php:112
+#: help.php:119
+#: help.php:126
+#: help.php:133
+#: help.php:140
+#: help.php:156
+#: help.php:163
+#: help.php:170
+#: help.php:177
+#: help.php:184
 #: includes/addon/class-gf-feed-addon.php:1328
 #: includes/blocks/config/class-gf-blocks-config.php:167
 #: includes/class-confirmation.php:521
@@ -1637,6 +1638,7 @@ msgid "Full Width"
 msgstr ""
 
 #: entry_list.php:337
+#: help.php:52
 msgid "Search"
 msgstr ""
 
@@ -5836,78 +5838,79 @@ msgid "Please review the %sdocumentation%s first. If you still can't find the an
 msgstr ""
 
 #: help.php:49
+#: help.php:50
 msgid "Search Our Documentation"
 msgstr ""
 
-#: help.php:57
+#: help.php:63
 msgid "User Documentation"
 msgstr ""
 
-#: help.php:61
+#: help.php:67
 msgid "Creating a Form"
 msgstr ""
 
-#: help.php:68
+#: help.php:74
 msgid "Embedding a Form"
 msgstr ""
 
-#: help.php:75
+#: help.php:81
 msgid "Reviewing Form Submissions"
 msgstr ""
 
-#: help.php:82
+#: help.php:88
 msgid "Configuring Confirmations"
 msgstr ""
 
-#: help.php:89
+#: help.php:95
 msgid "Configuring Notifications"
 msgstr ""
 
-#: help.php:101
+#: help.php:107
 msgid "Developer Documentation"
 msgstr ""
 
-#: help.php:105
+#: help.php:111
 msgid "Discover the Gravity Forms API"
 msgstr ""
 
-#: help.php:112
+#: help.php:118
 msgid "API Functions"
 msgstr ""
 
-#: help.php:119
+#: help.php:125
 msgid "REST API"
 msgstr ""
 
-#: help.php:126
+#: help.php:132
 msgid "Add-On Framework"
 msgstr ""
 
-#: help.php:133
+#: help.php:139
 msgid "GFAddOn"
 msgstr ""
 
-#: help.php:145
+#: help.php:151
 msgid "Designer Documentation"
 msgstr ""
 
-#: help.php:149
+#: help.php:155
 msgid "CSS Selectors"
 msgstr ""
 
-#: help.php:156
+#: help.php:162
 msgid "CSS Targeting Examples"
 msgstr ""
 
-#: help.php:163
+#: help.php:169
 msgid "CSS Ready Classes"
 msgstr ""
 
-#: help.php:170
+#: help.php:176
 msgid "gform_field_css_class"
 msgstr ""
 
-#: help.php:177
+#: help.php:183
 msgid "gform_noconflict_styles"
 msgstr ""
 
