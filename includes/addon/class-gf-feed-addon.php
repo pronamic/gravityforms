@@ -1680,8 +1680,12 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$sections = $this->prepare_settings_sections( $sections, 'feed_settings' );
 		$this->get_settings_renderer()->set_fields( $sections );
 
-		// Set validation message on redirect.
+		// Set save success message following new feed (fid=0) redirect to saved fid.
 		$this->get_settings_renderer()->set_postback_message_callback( function( $message ) use ( $renderer ) {
+
+			if ( ! empty( $_POST ) ) {
+				return $message;
+			}
 
 			// Get referrer.
 			$referrer = rgar( $_SERVER, 'HTTP_REFERER' );
@@ -1693,14 +1697,25 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 			// Parse URL, get feed ID.
 			$query_args = array();
-			$referrer = wp_parse_url( $referrer );
+			$referrer   = wp_parse_url( $referrer );
 			parse_str( rgar( $referrer, 'query' ), $query_args );
 
-			if ( rgar( $query_args, 'fid' ) == '0' && empty( $_POST ) ) {
-				return $renderer->get_save_success_message();
+			// Wasn't a new feed.
+			if ( rgar( $query_args, 'fid' ) !== '0' ) {
+				return $message;
 			}
 
-			return $message;
+			// Redirected from a different form (e.g. Flow Zapier step edit feed link).
+			if ( ! empty( $query_args['id'] ) && $query_args['id'] !== rgget( 'id' ) ) {
+				return $message;
+			}
+
+			// Redirected from a different add-on (e.g. Flow step edit feed link).
+			if ( ! empty( $query_args['subview'] ) && $query_args['subview'] !== $this->get_slug() ) {
+				return $message;
+			}
+
+			return $renderer->get_save_success_message();
 
 		} );
 

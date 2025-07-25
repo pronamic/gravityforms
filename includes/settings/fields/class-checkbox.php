@@ -259,11 +259,16 @@ class Checkbox extends Base {
 
 		// Prepare label markup.
 		if ( rgar( $choice, 'label' ) ) {
+			$sanitized_label = wp_kses( $choice['label'], array(
+				'a'    => array( 'href' => true, 'target' => true ),
+				'span' => array( 'class' => true ),
+			) );
+
 			$label_string = sprintf(
 				'<label for="%s"><span>%s%s%s</span></label>',
 				esc_attr( $choice['id'] ),
 				$icon_string,
-				esc_html( $choice['label'] ),
+				$sanitized_label,
 				$tooltip
 			);
 		}

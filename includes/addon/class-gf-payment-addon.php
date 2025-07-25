@@ -2215,8 +2215,10 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			$action['payment_status'] = 'Active';
 		}
 
-		// Set payment status back to active if a previous payment attempt failed.
-		if ( strtolower( $entry['payment_status'] ) != 'active' ) {
+		if ( strtolower( $entry['payment_status'] ) === 'processing' ) {
+			$this->start_subscription( $entry, $action );
+		} elseif ( strtolower( $entry['payment_status'] ) != 'active' ) {
+			// Set payment status back to active if a previous payment attempt failed.
 			$entry['payment_status'] = 'Active';
 			GFAPI::update_entry_property( $entry['id'], 'payment_status', 'Active' );
 		}

@@ -1,3 +1,14 @@
+### 2.9.14 | 2025-07-24
+- Added the constant [GF_ENABLE_NOTIFICATION_EMAIL_HEADER](https://docs.gravityforms.com/gf_enable_notification_email_header) and filter [gform_notification_email_header](https://docs.gravityforms.com/gform_notification_email_header) to allow enabling and setting of `X-Gravity-Forms-Source` email header.
+- Added alt attribute to the checked indicator image in the consent field for improved accessibility.
+- Fixed an issue where the "Subscription Created" notification is not sent in some situations.
+- Fixed setting of default value for email confirmation input when field has conditional logic enabled.
+- Fixed an issue where the "Select All" choice for Multiple Choice fields is rendered incorrectly.
+- Fixed an issue where forms can't be saved in the form editor when third-party add-ons introduce invalid JSON syntax to the form object.
+- AF: Fixed an issue where the save success message can be displayed when the edit feed page is redirected to from another add-on.
+- API: Updated `GF_Field::get_value_entry_detail()` to display an inline error message on the entry detail page when the field uses an array-based value and the add-on that includes the field is inactive or hasn't defined it's own `get_value_entry_detail` method.
+- API: Fixed a display issue with checkbox type setting choice labels.
+
 ### 2.9.13 | 2025-07-11
 - Updated the image choice file upload UI to account for file upload component updates.
 - Updated the help page to be more accessible.

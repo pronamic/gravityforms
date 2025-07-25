@@ -1761,7 +1761,9 @@ class GFCommon {
 						$field_value = false;
 					}
 
-					$field_value = self::encode_shortcodes( $field_value );
+					if ( $field_value !== false ) {
+						$field_value = self::encode_shortcodes( $field_value );
+					}
 
 					$field_value = apply_filters( 'gform_merge_tag_filter', $field_value, $merge_tag, $options, $field, $raw_field_value, $format );
 
@@ -2423,6 +2425,28 @@ class GFCommon {
 
 		$headers['Content-type'] = "Content-type: {$content_type}; charset=" . get_option( 'blog_charset' );
 
+		$source_header_enabled = defined( 'GF_ENABLE_NOTIFICATION_EMAIL_HEADER' ) && GF_ENABLE_NOTIFICATION_EMAIL_HEADER;
+		$source_header         = $source_header_enabled ? 'site=' . get_site_url() : '';
+
+		/**
+		 * Filters the notification email source header value.
+		 *
+		 * @since 2.9.14
+		 *
+		 * @param string $header       The source header value. Defaults to `site={site_url}`, if the `GF_ENABLE_NOTIFICATION_EMAIL_HEADER` constant is used.
+		 * @param array  $notification The current notification object.
+		 * @param array  $entry        The current entry object.
+		 */
+		$source_header = gf_apply_filters( array(
+			'gform_notification_email_header',
+			rgar( $entry, 'form_id' ),
+			rgar( $notification, 'id' ),
+		), $source_header, $notification, $entry );
+
+		if ( ! empty( $source_header ) ) {
+			$headers['X-Gravity-Forms-Source'] = 'X-Gravity-Forms-Source: ' . $source_header;
+		}
+
 		$abort_email = false;
 
 		/**
@@ -2497,7 +2521,7 @@ class GFCommon {
 		 * @param string $to             Recipient address
 		 * @param string $subject        Subject line
 		 * @param string $message        Message body
-		 * @param string $headers        Email headers
+		 * @param array  $headers        Email headers
 		 * @param string $attachments    Email attachments
 		 * @param string $message_format Format of the email.  Ex: text, html
 		 * @param string $from           Address of the sender

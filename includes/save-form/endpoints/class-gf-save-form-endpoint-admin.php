@@ -187,13 +187,14 @@ class GF_Save_Form_Endpoint_Admin {
 		$status = rgar( $result, 'status', GF_Form_CRUD_Handler::STATUS_FAILURE );
 
 		if ( $status === GF_Form_CRUD_Handler::STATUS_DUPLICATE_TITLE ) {
-			$result['error'] = esc_html_e( 'Please enter a unique form title, this title is used for an existing form.', 'gravityforms' );
+			$result['error'] = esc_html__( 'Please enter a unique form title, this title is used for an existing form.', 'gravityforms' );
 		} elseif ( $status === 0 || ! is_numeric( $status ) ) {
-			$result['error'] = esc_html__( 'There was an error while saving your form.', 'gravityforms' ) . sprintf(
-				esc_html__( 'Please %1$scontact our support team%2$s.', 'gravityforms' ),
-				'<a target="_blank" href="' . esc_attr( GFCommon::get_support_url() ) . '">',
+			$result['error'] = sprintf(
+				/* Translators: 1. Opening link tag, 2. Closing link tag. */
+				esc_html__( 'There was an error while saving your form. Please %1$scontact our support team%2$s.', 'gravityforms'),
+				'<a target="_blank" href="' . esc_attr( \GFCommon::get_support_url() ) . '">',
 				'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
-				);
+			);
 		}
 
 		return $this->wrap_json_response( $result );

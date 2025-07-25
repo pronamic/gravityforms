@@ -1175,19 +1175,40 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 *
 	 * Return a value that's safe to display for the context of the given $format.
 	 *
+	 * @since 1.9
+	 * @since 2.9.14 Updated to display an inline error message on the entry detail page for array-based values.
+	 *
 	 * @param string|array $value    The field value.
 	 * @param string       $currency The entry currency code.
 	 * @param bool|false   $use_text When processing choice based fields should the choice text be returned instead of the value.
 	 * @param string       $format   The format requested for the location the merge is being used. Possible values: html, text or url.
 	 * @param string       $media    The location where the value will be displayed. Possible values: screen or email.
 	 *
-	 * @return string
+	 * @return string|false
 	 */
 	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
 
 		if ( is_array( $value ) ) {
-			_doing_it_wrong( __METHOD__, 'Override this method to handle array values', '2.0' );
-			return $value;
+			if ( ! $this->is_entry_detail() ) {
+				// Returning false for {all_fields}, so the field is omitted from the output even when the empty modifier is used.
+				return $media === 'email' ? false : '';
+			}
+
+			$class = get_class( $this );
+			if ( $class === GF_Field::class ) {
+				$error_message = sprintf( esc_html__( 'Field value cannot be displayed. Please activate the add-on that includes the `%s` field type.', 'gravityforms' ), $this->type );
+			} else {
+				$error_message = sprintf( esc_html__( 'Field value cannot be displayed. If you are the developer of the `%s` field type, please implement `%s::get_value_entry_detail()` to define how the value is displayed.', 'gravityforms' ), $this->type, $class );
+			}
+
+			return '<div class="error-alert-container alert-container">
+						<div class="gform-alert gform-alert--error">
+							<span class="gform-alert__icon gform-icon gform-icon--circle-close" aria-hidden="true"></span>
+							<div class="gform-alert__message-wrap">
+								<p class="gform-alert__message">' . $error_message . '</p>
+							</div>
+						</div>
+					</div>';
 		}
 
 		if ( $format === 'html' ) {
