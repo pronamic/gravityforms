@@ -81,7 +81,7 @@ class GF_License_Statuses {
 			) . '&nbsp;' . $error_message,
 			self::REQUEST_BLOCKED       => sprintf(
 				/* translators: %1s and %2s are link tag markup */
-				__( 'Your IP has been blocked by Gravity for exceeding our API rate limits. If you think this is a mistake, please %1$scontact support%2$s.', 'gravityforms' ),
+				__( 'Your IP address has been temporarily blocked for exceeding our API rate limits. Please try again in a few minutes. If the issue persists, %1$scontact support%2$s.', 'gravityforms' ),
 				'<a href="https://www.gravityforms.com/support/" target="_blank">',
 				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
 			) . '&nbsp;' . $error_message,

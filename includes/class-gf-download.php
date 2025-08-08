@@ -111,7 +111,19 @@ class GF_Download {
 			$content_type        = self::get_content_type( $file_path );
 			$content_disposition = rgget( 'dl' ) ? 'attachment' : 'inline';
 
-			nocache_headers();
+			/**
+			 * Allows the nocache_headers() to be overridden.
+			 *
+			 * @since 2.9.15
+			 *
+			 * @param bool   $enable  If the nocache_headers() should be called. Default true.
+			 * @param int    $form_id The ID of the form used to download files.
+			 * @param string $file     The file to be downloaded.
+			 */
+			if ( apply_filters( 'gform_enable_download_nocache_headers', true, $form_id, $file ) ) {
+				nocache_headers();
+			}
+
 			header( 'X-Robots-Tag: noindex', true );
 			header( 'Content-Type: ' . $content_type );
 			header( 'Content-Description: File Transfer' );

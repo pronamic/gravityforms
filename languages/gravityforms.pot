@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.9.14\n"
+"Project-Id-Version: Gravity Forms 2.9.15\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-24T15:50:22+00:00\n"
+"POT-Creation-Date: 2025-08-07T17:08:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: gravityforms\n"
@@ -41,7 +41,7 @@ msgid "Insert Merge Tag"
 msgstr ""
 
 #: common.php:765
-#: js.php:1661
+#: js.php:1671
 msgid "All Submitted Fields"
 msgstr ""
 
@@ -51,7 +51,7 @@ msgstr ""
 
 #: common.php:847
 #: form_detail.php:3075
-#: js.php:1661
+#: js.php:1671
 msgid "User IP Address"
 msgstr ""
 
@@ -64,8 +64,8 @@ msgstr ""
 #: form_detail.php:3077
 #: includes/addon/class-gf-payment-addon.php:3176
 #: includes/fields/class-gf-field-date.php:13
-#: js.php:897
-#: js.php:1661
+#: js.php:907
+#: js.php:1671
 msgid "Date"
 msgstr ""
 
@@ -104,12 +104,12 @@ msgstr ""
 
 #: common.php:868
 #: form_list.php:42
-#: form_settings.php:115
+#: form_settings.php:144
 #: gravityforms.php:4982
 #: includes/addon/class-gf-addon.php:3194
 #: includes/settings/fields/class-generic-map.php:550
 #: includes/template-library/config/class-gf-template-library-config.php:90
-#: js.php:1661
+#: js.php:1671
 #: tooltips.php:24
 msgid "Form Title"
 msgstr ""
@@ -169,9 +169,9 @@ msgstr ""
 #: includes/setup-wizard/config/class-gf-setup-wizard-config.php:192
 #: includes/setup-wizard/config/class-gf-setup-wizard-config.php:242
 #: includes/setup-wizard/config/class-gf-setup-wizard-config.php:307
-#: includes/template-library/templates/templates.php:6486
-#: includes/template-library/templates/templates.php:10365
-#: includes/template-library/templates/templates.php:10478
+#: includes/template-library/templates/templates.php:6342
+#: includes/template-library/templates/templates.php:10043
+#: includes/template-library/templates/templates.php:10156
 msgid "Other"
 msgstr ""
 
@@ -318,8 +318,10 @@ msgstr ""
 #: form_detail.php:3393
 #: form_detail.php:3395
 #: form_detail.php:3440
-#: form_detail.php:3520
-#: form_settings.php:687
+#: form_detail.php:3522
+#: form_settings.php:129
+#: form_settings.php:717
+#: form_settings.php:759
 #: gravityforms.php:2702
 #: help.php:40
 #: help.php:42
@@ -367,11 +369,11 @@ msgstr ""
 #: includes/webapi/webapi.php:589
 #: js.php:254
 #: js.php:258
-#: js.php:449
-#: js.php:1703
-#: js.php:1707
-#: js.php:1752
-#: js.php:1756
+#: js.php:459
+#: js.php:1713
+#: js.php:1717
+#: js.php:1762
+#: js.php:1766
 #: notification.php:189
 #: settings.php:588
 #: settings.php:704
@@ -467,24 +469,24 @@ msgstr ""
 #: form_display.php:4287
 #: form_display.php:5785
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:51
-#: includes/template-library/templates/templates.php:2333
-#: includes/template-library/templates/templates.php:2529
-#: includes/template-library/templates/templates.php:2916
-#: includes/template-library/templates/templates.php:3162
-#: includes/template-library/templates/templates.php:3358
-#: includes/template-library/templates/templates.php:3738
-#: includes/template-library/templates/templates.php:3980
-#: includes/template-library/templates/templates.php:4176
-#: includes/template-library/templates/templates.php:4583
-#: includes/template-library/templates/templates.php:5125
-#: includes/template-library/templates/templates.php:5484
-#: includes/template-library/templates/templates.php:5724
-#: includes/template-library/templates/templates.php:6212
-#: includes/template-library/templates/templates.php:6543
-#: includes/template-library/templates/templates.php:6775
-#: includes/template-library/templates/templates.php:7385
-#: includes/template-library/templates/templates.php:7575
-#: js.php:678
+#: includes/template-library/templates/templates.php:2249
+#: includes/template-library/templates/templates.php:2445
+#: includes/template-library/templates/templates.php:2832
+#: includes/template-library/templates/templates.php:3066
+#: includes/template-library/templates/templates.php:3262
+#: includes/template-library/templates/templates.php:3642
+#: includes/template-library/templates/templates.php:3872
+#: includes/template-library/templates/templates.php:4068
+#: includes/template-library/templates/templates.php:4475
+#: includes/template-library/templates/templates.php:5005
+#: includes/template-library/templates/templates.php:5364
+#: includes/template-library/templates/templates.php:5604
+#: includes/template-library/templates/templates.php:6068
+#: includes/template-library/templates/templates.php:6399
+#: includes/template-library/templates/templates.php:6631
+#: includes/template-library/templates/templates.php:7217
+#: includes/template-library/templates/templates.php:7407
+#: js.php:688
 msgid "Previous"
 msgstr ""
 
@@ -507,7 +509,7 @@ msgstr ""
 #: includes/fields/class-gf-field-checkbox.php:204
 #: includes/fields/class-gf-field-checkbox.php:934
 #: includes/fields/class-gf-field-multiple-choice.php:69
-#: js.php:748
+#: js.php:758
 msgid "Select All"
 msgstr ""
 
@@ -521,7 +523,7 @@ msgid "Untitled Form"
 msgstr ""
 
 #: common.php:5632
-#: includes/template-library/templates/templates.php:364
+#: includes/template-library/templates/templates.php:340
 msgid "We would love to hear from you! Please fill out this form and we will get in touch with you shortly."
 msgstr ""
 
@@ -539,15 +541,15 @@ msgstr ""
 #: includes/fields/class-gf-field-submit.php:159
 #: includes/settings/fields/class-button.php:50
 #: includes/template-library/templates/templates.php:22
-#: includes/template-library/templates/templates.php:368
-#: includes/template-library/templates/templates.php:1704
-#: includes/template-library/templates/templates.php:2146
-#: includes/template-library/templates/templates.php:3012
-#: includes/template-library/templates/templates.php:3830
-#: includes/template-library/templates/templates.php:5835
-#: includes/template-library/templates/templates.php:8083
-#: includes/template-library/templates/templates.php:8593
-#: includes/template-library/templates/templates.php:9644
+#: includes/template-library/templates/templates.php:344
+#: includes/template-library/templates/templates.php:1632
+#: includes/template-library/templates/templates.php:2062
+#: includes/template-library/templates/templates.php:2916
+#: includes/template-library/templates/templates.php:3722
+#: includes/template-library/templates/templates.php:5691
+#: includes/template-library/templates/templates.php:7796
+#: includes/template-library/templates/templates.php:8294
+#: includes/template-library/templates/templates.php:9333
 msgid "Submit"
 msgstr ""
 
@@ -745,7 +747,7 @@ msgid "Are you sure you wish to delete this confirmation?"
 msgstr ""
 
 #: common.php:5681
-#: form_settings.php:1221
+#: form_settings.php:1303
 msgid "There was an issue deleting this confirmation."
 msgstr ""
 
@@ -1297,7 +1299,7 @@ msgid "Entry"
 msgstr ""
 
 #: entry_detail.php:52
-#: form_settings.php:1125
+#: form_settings.php:1207
 #: gravityforms.php:2098
 #: notification.php:111
 #: notification.php:231
@@ -1317,7 +1319,7 @@ msgstr ""
 
 #: entry_detail.php:68
 #: entry_detail.php:1116
-#: includes/template-library/templates/templates.php:6573
+#: includes/template-library/templates/templates.php:6429
 msgid "Payment Details"
 msgstr ""
 
@@ -1398,7 +1400,7 @@ msgstr ""
 #: includes/fields/class-gf-field.php:1740
 #: includes/settings/config/class-gf-settings-config-i18n.php:37
 #: includes/settings/config/class-gf-settings-config-i18n.php:61
-#: js.php:1584
+#: js.php:1594
 #: notification.php:1541
 msgid "Delete"
 msgstr ""
@@ -2156,7 +2158,7 @@ msgstr ""
 #: forms_model.php:6893
 #: forms_model.php:6901
 #: forms_model.php:6906
-#: form_settings.php:277
+#: form_settings.php:306
 msgid "(Required)"
 msgstr ""
 
@@ -2472,10 +2474,10 @@ msgstr ""
 #: includes/blocks/config/class-gf-blocks-config.php:159
 #: includes/class-confirmation.php:231
 #: includes/class-confirmation.php:1185
-#: includes/template-library/templates/templates.php:1545
-#: includes/template-library/templates/templates.php:5659
-#: includes/template-library/templates/templates.php:10533
-#: js.php:1066
+#: includes/template-library/templates/templates.php:1497
+#: includes/template-library/templates/templates.php:5539
+#: includes/template-library/templates/templates.php:10211
+#: js.php:1076
 msgid "Text"
 msgstr ""
 
@@ -2499,12 +2501,12 @@ msgstr ""
 #: includes/fields/class-gf-field-post-image.php:246
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:93
 #: includes/system-status/class-gf-update.php:53
-#: includes/template-library/templates/templates.php:1551
-#: includes/template-library/templates/templates.php:5665
-#: includes/template-library/templates/templates.php:10539
+#: includes/template-library/templates/templates.php:1503
+#: includes/template-library/templates/templates.php:5545
+#: includes/template-library/templates/templates.php:10217
 #: includes/webapi/includes/class-gf-api-keys-table.php:27
 #: includes/webapi/webapi.php:397
-#: js.php:1066
+#: js.php:1076
 msgid "Description"
 msgstr ""
 
@@ -2571,14 +2573,14 @@ msgstr ""
 #: includes/fields/class-gf-field-singleproduct.php:164
 #: includes/fields/class-gf-field-singleproduct.php:172
 #: includes/orders/summaries/class-gf-order-summary.php:65
-#: includes/template-library/templates/templates.php:2167
-#: includes/template-library/templates/templates.php:2228
-#: includes/template-library/templates/templates.php:3036
-#: includes/template-library/templates/templates.php:3099
-#: includes/template-library/templates/templates.php:3854
-#: includes/template-library/templates/templates.php:3917
-#: js.php:979
-#: js.php:1039
+#: includes/template-library/templates/templates.php:2083
+#: includes/template-library/templates/templates.php:2144
+#: includes/template-library/templates/templates.php:2940
+#: includes/template-library/templates/templates.php:3003
+#: includes/template-library/templates/templates.php:3746
+#: includes/template-library/templates/templates.php:3809
+#: js.php:989
+#: js.php:1049
 msgid "Price"
 msgstr ""
 
@@ -2598,7 +2600,7 @@ msgstr ""
 #: form_detail.php:865
 #: form_detail.php:1719
 #: includes/fields/class-gf-field-number.php:13
-#: js.php:877
+#: js.php:887
 msgid "Number"
 msgstr ""
 
@@ -2648,23 +2650,23 @@ msgstr ""
 
 #: form_detail.php:872
 #: includes/fields/class-gf-field-time.php:43
-#: js.php:902
+#: js.php:912
 msgid "Time"
 msgstr ""
 
 #: form_detail.php:873
 #: includes/fields/class-gf-field-phone.php:38
-#: includes/template-library/templates/templates.php:688
-#: includes/template-library/templates/templates.php:5437
-#: includes/template-library/templates/templates.php:6066
-#: js.php:886
+#: includes/template-library/templates/templates.php:664
+#: includes/template-library/templates/templates.php:5317
+#: includes/template-library/templates/templates.php:5922
+#: js.php:896
 msgid "Phone"
 msgstr ""
 
 #: form_detail.php:874
 #: includes/fields/class-gf-field-website.php:13
-#: includes/template-library/templates/templates.php:8812
-#: js.php:908
+#: includes/template-library/templates/templates.php:8513
+#: js.php:918
 msgid "Website"
 msgstr ""
 
@@ -2672,20 +2674,20 @@ msgstr ""
 #: includes/addon/class-gf-payment-addon.php:2881
 #: includes/fields/class-gf-field-email.php:13
 #: includes/template-library/templates/templates.php:157
-#: includes/template-library/templates/templates.php:684
-#: includes/template-library/templates/templates.php:1409
-#: includes/template-library/templates/templates.php:1834
-#: includes/template-library/templates/templates.php:2479
-#: includes/template-library/templates/templates.php:3308
-#: includes/template-library/templates/templates.php:4126
-#: includes/template-library/templates/templates.php:6009
-#: includes/template-library/templates/templates.php:7062
-#: includes/template-library/templates/templates.php:7881
-#: includes/template-library/templates/templates.php:8215
-#: includes/template-library/templates/templates.php:8724
-#: includes/template-library/templates/templates.php:9767
-#: includes/template-library/templates/templates.php:10117
-#: js.php:870
+#: includes/template-library/templates/templates.php:660
+#: includes/template-library/templates/templates.php:1361
+#: includes/template-library/templates/templates.php:1762
+#: includes/template-library/templates/templates.php:2395
+#: includes/template-library/templates/templates.php:3212
+#: includes/template-library/templates/templates.php:4018
+#: includes/template-library/templates/templates.php:5865
+#: includes/template-library/templates/templates.php:6894
+#: includes/template-library/templates/templates.php:7605
+#: includes/template-library/templates/templates.php:7928
+#: includes/template-library/templates/templates.php:8425
+#: includes/template-library/templates/templates.php:9456
+#: includes/template-library/templates/templates.php:9795
+#: js.php:880
 msgid "Email"
 msgstr ""
 
@@ -2696,7 +2698,7 @@ msgstr ""
 
 #: form_detail.php:877
 #: includes/fields/class-gf-field-list.php:36
-#: js.php:689
+#: js.php:699
 msgid "List"
 msgstr ""
 
@@ -2807,7 +2809,7 @@ msgid "Post Format"
 msgstr ""
 
 #: form_detail.php:1088
-#: js.php:658
+#: js.php:668
 #: tooltips.php:123
 #: tooltips.php:129
 msgid "Post Category"
@@ -2988,9 +2990,9 @@ msgstr ""
 #: form_detail.php:2223
 #: form_detail.php:2256
 #: form_detail.php:2267
-#: form_settings.php:202
-#: form_settings.php:219
-#: form_settings.php:235
+#: form_settings.php:231
+#: form_settings.php:248
+#: form_settings.php:264
 msgid "Below inputs"
 msgstr ""
 
@@ -2999,9 +3001,9 @@ msgstr ""
 #: form_detail.php:2224
 #: form_detail.php:2256
 #: form_detail.php:2268
-#: form_settings.php:206
-#: form_settings.php:223
-#: form_settings.php:239
+#: form_settings.php:235
+#: form_settings.php:252
+#: form_settings.php:268
 msgid "Above inputs"
 msgstr ""
 
@@ -3177,12 +3179,12 @@ msgid "South America"
 msgstr ""
 
 #: form_detail.php:1619
-#: includes/template-library/templates/templates.php:6285
+#: includes/template-library/templates/templates.php:6141
 msgid "Gender"
 msgstr ""
 
 #: form_detail.php:1620
-#: includes/template-library/templates/templates.php:6366
+#: includes/template-library/templates/templates.php:6222
 msgid "Age"
 msgstr ""
 
@@ -3195,22 +3197,22 @@ msgid "18-24"
 msgstr ""
 
 #: form_detail.php:1620
-#: includes/template-library/templates/templates.php:6381
+#: includes/template-library/templates/templates.php:6237
 msgid "25-34"
 msgstr ""
 
 #: form_detail.php:1620
-#: includes/template-library/templates/templates.php:6387
+#: includes/template-library/templates/templates.php:6243
 msgid "35-44"
 msgstr ""
 
 #: form_detail.php:1620
-#: includes/template-library/templates/templates.php:6393
+#: includes/template-library/templates/templates.php:6249
 msgid "45-54"
 msgstr ""
 
 #: form_detail.php:1620
-#: includes/template-library/templates/templates.php:6399
+#: includes/template-library/templates/templates.php:6255
 msgid "55-64"
 msgstr ""
 
@@ -3221,7 +3223,7 @@ msgstr ""
 #: form_detail.php:1620
 #: form_detail.php:1622
 #: form_detail.php:1625
-#: includes/template-library/templates/templates.php:6324
+#: includes/template-library/templates/templates.php:6180
 msgid "Prefer Not to Answer"
 msgstr ""
 
@@ -3386,7 +3388,7 @@ msgid "Energy/Utilities"
 msgstr ""
 
 #: form_detail.php:1624
-#: includes/template-library/templates/templates.php:5215
+#: includes/template-library/templates/templates.php:5095
 msgid "Engineering"
 msgstr ""
 
@@ -3439,8 +3441,8 @@ msgid "Manufacturing/Operations"
 msgstr ""
 
 #: form_detail.php:1624
-#: includes/template-library/templates/templates.php:5209
-#: includes/template-library/templates/templates.php:10341
+#: includes/template-library/templates/templates.php:5089
+#: includes/template-library/templates/templates.php:10019
 msgid "Marketing"
 msgstr ""
 
@@ -3469,12 +3471,12 @@ msgid "Restaurant/Food Service"
 msgstr ""
 
 #: form_detail.php:1624
-#: includes/template-library/templates/templates.php:10347
+#: includes/template-library/templates/templates.php:10025
 msgid "Retail"
 msgstr ""
 
 #: form_detail.php:1624
-#: includes/template-library/templates/templates.php:5203
+#: includes/template-library/templates/templates.php:5083
 msgid "Sales"
 msgstr ""
 
@@ -3487,7 +3489,7 @@ msgid "Skilled Labor"
 msgstr ""
 
 #: form_detail.php:1624
-#: includes/template-library/templates/templates.php:10359
+#: includes/template-library/templates/templates.php:10037
 msgid "Technology"
 msgstr ""
 
@@ -3501,7 +3503,7 @@ msgstr ""
 
 #: form_detail.php:1625
 #: includes/setup-wizard/config/class-gf-setup-wizard-config.php:234
-#: includes/template-library/templates/templates.php:10311
+#: includes/template-library/templates/templates.php:9989
 msgid "Education"
 msgstr ""
 
@@ -3534,27 +3536,27 @@ msgid "Sunday"
 msgstr ""
 
 #: form_detail.php:1626
-#: includes/template-library/templates/templates.php:5299
+#: includes/template-library/templates/templates.php:5179
 msgid "Monday"
 msgstr ""
 
 #: form_detail.php:1626
-#: includes/template-library/templates/templates.php:5305
+#: includes/template-library/templates/templates.php:5185
 msgid "Tuesday"
 msgstr ""
 
 #: form_detail.php:1626
-#: includes/template-library/templates/templates.php:5311
+#: includes/template-library/templates/templates.php:5191
 msgid "Wednesday"
 msgstr ""
 
 #: form_detail.php:1626
-#: includes/template-library/templates/templates.php:5317
+#: includes/template-library/templates/templates.php:5197
 msgid "Thursday"
 msgstr ""
 
 #: form_detail.php:1626
-#: includes/template-library/templates/templates.php:5323
+#: includes/template-library/templates/templates.php:5203
 msgid "Friday"
 msgstr ""
 
@@ -3692,8 +3694,8 @@ msgid "Satisfied"
 msgstr ""
 
 #: form_detail.php:1630
-#: includes/template-library/templates/templates.php:8880
-#: includes/template-library/templates/templates.php:9414
+#: includes/template-library/templates/templates.php:8581
+#: includes/template-library/templates/templates.php:9115
 msgid "Neutral"
 msgstr ""
 
@@ -3734,12 +3736,12 @@ msgid "Strongly Agree"
 msgstr ""
 
 #: form_detail.php:1632
-#: includes/template-library/templates/templates.php:9420
+#: includes/template-library/templates/templates.php:9121
 msgid "Agree"
 msgstr ""
 
 #: form_detail.php:1632
-#: includes/template-library/templates/templates.php:9408
+#: includes/template-library/templates/templates.php:9109
 msgid "Disagree"
 msgstr ""
 
@@ -4067,7 +4069,7 @@ msgid "No Duplicates"
 msgstr ""
 
 #: form_detail.php:2133
-#: form_settings.php:291
+#: form_settings.php:321
 #: tooltips.php:100
 msgid "CSS Class Name"
 msgstr ""
@@ -4083,17 +4085,17 @@ msgid "Placeholders"
 msgstr ""
 
 #: form_detail.php:2192
-#: form_settings.php:176
+#: form_settings.php:205
 msgid "Left aligned"
 msgstr ""
 
 #: form_detail.php:2195
-#: form_settings.php:180
+#: form_settings.php:209
 msgid "Right aligned"
 msgstr ""
 
 #: form_detail.php:2199
-#: form_settings.php:172
+#: form_settings.php:201
 msgid "Top aligned"
 msgstr ""
 
@@ -4106,7 +4108,7 @@ msgid "Visible (%s)"
 msgstr ""
 
 #: form_detail.php:2216
-#: form_settings.php:188
+#: form_settings.php:217
 #: tooltips.php:27
 #: tooltips.php:83
 msgid "Description Placement"
@@ -4134,7 +4136,7 @@ msgid "Choice Label Visibility"
 msgstr ""
 
 #: form_detail.php:2260
-#: form_settings.php:231
+#: form_settings.php:260
 #: tooltips.php:29
 #: tooltips.php:84
 msgid "Sub-Label Placement"
@@ -4580,8 +4582,6 @@ msgstr ""
 
 #: form_detail.php:3402
 #: form_detail.php:3403
-#: form_detail.php:3526
-#: form_detail.php:3527
 msgid "Dismiss notification"
 msgstr ""
 
@@ -4594,23 +4594,25 @@ msgid "Legacy markup will be removed from Gravity Forms in version 3.1.0, and th
 msgstr ""
 
 #: form_detail.php:3438
-#: form_detail.php:3519
-#: form_settings.php:685
+#: form_detail.php:3521
+#: form_settings.php:715
+#: form_settings.php:757
 msgid "Learn More"
 msgstr ""
 
 #: form_detail.php:3439
-#: form_settings.php:686
+#: form_settings.php:716
 msgid "about form legacy markup"
 msgstr ""
 
-#: form_detail.php:3511
-msgid "This form uses deprecated Ready Classes. These will be removed in Gravity Forms 3.1. Adding columns is easier than ever with the new Drag and Drop Layout Editor."
+#: form_detail.php:3513
+msgid "This form uses Ready Classes, which will be removed in Gravity Forms 3.1. You can now use settings or code snippets to achieve the same results."
 msgstr ""
 
-#: form_detail.php:3517
-#: js.php:449
-msgid "Working with Columns in the Form Editor in Gravity Forms 2.5"
+#: form_detail.php:3519
+#: form_settings.php:127
+#: js.php:459
+msgid "Deprecation of Ready Classes in Gravity Forms 3.1"
 msgstr ""
 
 #: form_display.php:341
@@ -4728,19 +4730,19 @@ msgstr ""
 
 #: form_display.php:4293
 #: includes/setup-wizard/config/class-gf-setup-wizard-config-i18n.php:50
-#: includes/template-library/templates/templates.php:2328
-#: includes/template-library/templates/templates.php:2524
-#: includes/template-library/templates/templates.php:3157
-#: includes/template-library/templates/templates.php:3353
-#: includes/template-library/templates/templates.php:3975
-#: includes/template-library/templates/templates.php:4171
-#: includes/template-library/templates/templates.php:5120
-#: includes/template-library/templates/templates.php:5479
-#: includes/template-library/templates/templates.php:6207
-#: includes/template-library/templates/templates.php:6538
-#: includes/template-library/templates/templates.php:7380
+#: includes/template-library/templates/templates.php:2244
+#: includes/template-library/templates/templates.php:2440
+#: includes/template-library/templates/templates.php:3061
+#: includes/template-library/templates/templates.php:3257
+#: includes/template-library/templates/templates.php:3867
+#: includes/template-library/templates/templates.php:4063
+#: includes/template-library/templates/templates.php:5000
+#: includes/template-library/templates/templates.php:5359
+#: includes/template-library/templates/templates.php:6063
+#: includes/template-library/templates/templates.php:6394
+#: includes/template-library/templates/templates.php:7212
 #: includes/wizard/steps/class-gf-installation-wizard-step.php:102
-#: js.php:676
+#: js.php:686
 msgid "Next"
 msgstr ""
 
@@ -4790,7 +4792,7 @@ msgid "Please review the fields below."
 msgstr ""
 
 #: form_list.php:49
-#: form_settings.php:155
+#: form_settings.php:184
 #: includes/template-library/config/class-gf-template-library-config.php:89
 #: tooltips.php:25
 msgid "Form Description"
@@ -4867,12 +4869,12 @@ msgid "There was an issue creating your form."
 msgstr ""
 
 #: form_list.php:223
-#: form_settings.php:1415
+#: form_settings.php:1497
 msgid "Please enter a form title."
 msgstr ""
 
 #: form_list.php:235
-#: form_settings.php:1419
+#: form_settings.php:1501
 #: includes/template-library/config/class-gf-template-library-config.php:99
 msgid "Please enter a unique form title."
 msgstr ""
@@ -5101,206 +5103,225 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: form_settings.php:44
-#: form_settings.php:1118
+#: form_settings.php:1200
 #: gravityforms.php:2031
 #: includes/class-confirmation.php:96
 #: includes/class-confirmation.php:210
 msgid "Confirmations"
 msgstr ""
 
-#: form_settings.php:110
+#: form_settings.php:125
+msgid "This form uses the \""
+msgstr ""
+
+#: form_settings.php:128
+#: js.php:459
+#: js.php:1712
+#: js.php:1761
+msgid "Learn more"
+msgstr ""
+
+#: form_settings.php:139
 msgid "Form Basics"
 msgstr ""
 
-#: form_settings.php:143
+#: form_settings.php:172
 msgid "The form title you have entered has already been used. Please enter a unique form title."
 msgstr ""
 
-#: form_settings.php:162
+#: form_settings.php:191
 msgid "Form Layout"
 msgstr ""
 
-#: form_settings.php:167
+#: form_settings.php:196
 msgid "Label Placement"
 msgstr ""
 
-#: form_settings.php:214
+#: form_settings.php:243
 #: tooltips.php:28
 msgid "Validation Message Placement"
 msgstr ""
 
-#: form_settings.php:247
+#: form_settings.php:276
 #: tooltips.php:171
 msgid "Validation Summary"
 msgstr ""
 
-#: form_settings.php:253
+#: form_settings.php:282
 msgid "Required Field Indicator"
 msgstr ""
 
-#: form_settings.php:260
+#: form_settings.php:289
 msgid "Text: (Required)"
 msgstr ""
 
-#: form_settings.php:264
+#: form_settings.php:293
 msgid "Asterisk: *"
 msgstr ""
 
-#: form_settings.php:268
+#: form_settings.php:297
 msgid "Custom:"
 msgstr ""
 
-#: form_settings.php:276
+#: form_settings.php:305
 msgid "Custom Required Indicator"
 msgstr ""
 
-#: form_settings.php:297
+#: form_settings.php:327
 msgid "Form Button"
 msgstr ""
 
-#: form_settings.php:302
+#: form_settings.php:332
 msgid "Form button settings are now located in the form editor! To edit the button settings, go to the form editor and click on the submit button."
 msgstr ""
 
-#: form_settings.php:307
+#: form_settings.php:337
 msgid "Save and Continue"
 msgstr ""
 
-#: form_settings.php:312
+#: form_settings.php:342
 msgid "Enable Save and Continue"
 msgstr ""
 
-#: form_settings.php:317
+#: form_settings.php:347
 msgid "Link Text"
 msgstr ""
 
-#: form_settings.php:318
+#: form_settings.php:348
 msgid "Save & Continue"
 msgstr ""
 
-#: form_settings.php:336
+#: form_settings.php:366
 msgid "Restrictions"
 msgstr ""
 
-#: form_settings.php:341
+#: form_settings.php:371
 msgid "Limit number of entries"
 msgstr ""
 
-#: form_settings.php:346
+#: form_settings.php:376
 msgid "Enable entry limit"
 msgstr ""
 
-#: form_settings.php:353
+#: form_settings.php:383
 msgid "Number of Entries"
 msgstr ""
 
-#: form_settings.php:371
+#: form_settings.php:401
 msgid "total entries"
 msgstr ""
 
-#: form_settings.php:375
+#: form_settings.php:405
 msgid "per day"
 msgstr ""
 
-#: form_settings.php:379
+#: form_settings.php:409
 msgid "per week"
 msgstr ""
 
-#: form_settings.php:383
+#: form_settings.php:413
 msgid "per month"
 msgstr ""
 
-#: form_settings.php:387
+#: form_settings.php:417
 msgid "per year"
 msgstr ""
 
-#: form_settings.php:397
+#: form_settings.php:427
 msgid "Entry Limit Reached Message"
 msgstr ""
 
-#: form_settings.php:413
-#: form_settings.php:418
+#: form_settings.php:443
+#: form_settings.php:448
 #: tooltips.php:20
 msgid "Schedule Form"
 msgstr ""
 
-#: form_settings.php:425
+#: form_settings.php:455
 msgid "Schedule Start Date/Time"
 msgstr ""
 
-#: form_settings.php:438
+#: form_settings.php:468
 msgid "Schedule Form End Date/Time"
 msgstr ""
 
-#: form_settings.php:451
+#: form_settings.php:481
 msgid "Form Pending Message"
 msgstr ""
 
-#: form_settings.php:465
+#: form_settings.php:495
 msgid "Form Expired Message"
 msgstr ""
 
-#: form_settings.php:482
-#: form_settings.php:487
+#: form_settings.php:512
+#: form_settings.php:517
 #: tooltips.php:111
 msgid "Require user to be logged in"
 msgstr ""
 
-#: form_settings.php:494
+#: form_settings.php:524
 #: tooltips.php:112
 msgid "Require Login Message"
 msgstr ""
 
-#: form_settings.php:511
+#: form_settings.php:541
 msgid "Form Options"
 msgstr ""
 
-#: form_settings.php:516
+#: form_settings.php:546
 msgid "Anti-spam honeypot"
 msgstr ""
 
-#: form_settings.php:524
+#: form_settings.php:554
 msgid "If the honeypot flags a submission as spam:"
 msgstr ""
 
-#: form_settings.php:535
+#: form_settings.php:565
 msgid "Do not create an entry"
 msgstr ""
 
-#: form_settings.php:539
+#: form_settings.php:569
 msgid "Create an entry and mark it as spam"
 msgstr ""
 
-#: form_settings.php:547
+#: form_settings.php:577
 msgid "Animated transitions"
 msgstr ""
 
-#: form_settings.php:558
+#: form_settings.php:588
 msgid "Enable legacy markup"
 msgstr ""
 
-#: form_settings.php:586
+#: form_settings.php:616
 #: includes/class-confirmation.php:385
 #: notification.php:551
 msgid "Legacy Settings"
 msgstr ""
 
-#: form_settings.php:678
+#: form_settings.php:708
 msgid "Legacy markup is incompatible with many new features, including the Orbital Theme."
 msgstr ""
 
-#: form_settings.php:679
+#: form_settings.php:709
 msgid "Legacy markup will be removed in Gravity Forms 3.1.0, and then all forms will use modern markup.  We recommend using modern markup on all forms."
 msgstr ""
 
-#: form_settings.php:966
-#: form_settings.php:1132
+#: form_settings.php:755
+msgid "This form uses a deprecated CSS Ready Class, which will be removed in Gravity Forms 3.1."
+msgstr ""
+
+#: form_settings.php:758
+msgid "about deprecated ready classes"
+msgstr ""
+
+#: form_settings.php:1048
+#: form_settings.php:1214
 #: includes/class-personal-data.php:176
 #: includes/class-personal-data.php:578
 msgid "Personal Data"
 msgstr ""
 
-#: form_settings.php:1111
+#: form_settings.php:1193
 #: includes/addon/class-gf-addon.php:1789
 #: includes/blocks/config/class-gf-blocks-config.php:123
 #: includes/class-gf-osdxp.php:245
@@ -5308,15 +5329,15 @@ msgstr ""
 msgid "Form Settings"
 msgstr ""
 
-#: form_settings.php:1219
+#: form_settings.php:1301
 msgid "Confirmation deleted."
 msgstr ""
 
-#: form_settings.php:1322
+#: form_settings.php:1404
 msgid "Save and Continue Email"
 msgstr ""
 
-#: form_settings.php:1327
+#: form_settings.php:1409
 msgid "Thank you for saving {form_title}. Please use the unique link below to return to the form from any computer. <br /><br /> {save_link} <br /><br /> Remember that the link will expire after 30 days so please return via the provided link to complete your form submission."
 msgstr ""
 
@@ -5647,13 +5668,13 @@ msgstr ""
 #: includes/orders/summaries/views/view-order-summary.php:60
 #: includes/orders/summaries/views/view-pricing-fields-html.php:61
 #: includes/orders/summaries/views/view-pricing-fields-text.php:25
-#: includes/template-library/templates/templates.php:2019
-#: includes/template-library/templates/templates.php:2808
-#: includes/template-library/templates/templates.php:3638
-#: includes/template-library/templates/templates.php:4456
-#: includes/template-library/templates/templates.php:6732
-#: includes/template-library/templates/templates.php:7524
-#: js.php:1002
+#: includes/template-library/templates/templates.php:1947
+#: includes/template-library/templates/templates.php:2724
+#: includes/template-library/templates/templates.php:3542
+#: includes/template-library/templates/templates.php:4348
+#: includes/template-library/templates/templates.php:6588
+#: includes/template-library/templates/templates.php:7356
+#: js.php:1012
 msgid "Total"
 msgstr ""
 
@@ -5829,7 +5850,7 @@ msgid "Once troubleshooting is complete, %1$sclick here to disable logging and p
 msgstr ""
 
 #: help.php:33
-#: includes/template-library/templates/templates.php:8462
+#: includes/template-library/templates/templates.php:8175
 msgid "How can we help you?"
 msgstr ""
 
@@ -6364,25 +6385,25 @@ msgstr ""
 #: includes/class-confirmation.php:867
 #: includes/fields/class-gf-field-name.php:58
 #: includes/template-library/templates/templates.php:33
-#: includes/template-library/templates/templates.php:1298
-#: includes/template-library/templates/templates.php:1711
-#: includes/template-library/templates/templates.php:2162
-#: includes/template-library/templates/templates.php:2223
-#: includes/template-library/templates/templates.php:2364
-#: includes/template-library/templates/templates.php:3031
-#: includes/template-library/templates/templates.php:3094
-#: includes/template-library/templates/templates.php:3193
-#: includes/template-library/templates/templates.php:3849
-#: includes/template-library/templates/templates.php:3912
-#: includes/template-library/templates/templates.php:4011
-#: includes/template-library/templates/templates.php:5886
-#: includes/template-library/templates/templates.php:7774
-#: includes/template-library/templates/templates.php:8091
-#: includes/template-library/templates/templates.php:8601
-#: includes/template-library/templates/templates.php:9652
-#: includes/template-library/templates/templates.php:10003
-#: js.php:697
-#: js.php:979
+#: includes/template-library/templates/templates.php:1250
+#: includes/template-library/templates/templates.php:1639
+#: includes/template-library/templates/templates.php:2078
+#: includes/template-library/templates/templates.php:2139
+#: includes/template-library/templates/templates.php:2280
+#: includes/template-library/templates/templates.php:2935
+#: includes/template-library/templates/templates.php:2998
+#: includes/template-library/templates/templates.php:3097
+#: includes/template-library/templates/templates.php:3741
+#: includes/template-library/templates/templates.php:3804
+#: includes/template-library/templates/templates.php:3903
+#: includes/template-library/templates/templates.php:5742
+#: includes/template-library/templates/templates.php:7498
+#: includes/template-library/templates/templates.php:7804
+#: includes/template-library/templates/templates.php:8302
+#: includes/template-library/templates/templates.php:9341
+#: includes/template-library/templates/templates.php:9681
+#: js.php:707
+#: js.php:989
 #: notification.php:235
 #: notification.php:1307
 msgid "Name"
@@ -6519,10 +6540,10 @@ msgstr ""
 #: includes/fields/class-gf-field-address.php:37
 #: includes/settings/fields/class-field-select.php:147
 #: includes/settings/fields/class-generic-map.php:323
-#: includes/template-library/templates/templates.php:4917
-#: includes/template-library/templates/templates.php:6110
-#: includes/template-library/templates/templates.php:8272
-#: js.php:815
+#: includes/template-library/templates/templates.php:4797
+#: includes/template-library/templates/templates.php:5966
+#: includes/template-library/templates/templates.php:7985
+#: js.php:825
 msgid "Address"
 msgstr ""
 
@@ -6536,18 +6557,18 @@ msgstr ""
 #: includes/fields/class-gf-field-address.php:211
 #: includes/settings/fields/class-field-select.php:149
 #: includes/settings/fields/class-generic-map.php:325
-#: includes/template-library/templates/templates.php:566
-#: includes/template-library/templates/templates.php:2589
-#: includes/template-library/templates/templates.php:2676
-#: includes/template-library/templates/templates.php:3418
-#: includes/template-library/templates/templates.php:3505
-#: includes/template-library/templates/templates.php:4236
-#: includes/template-library/templates/templates.php:4323
-#: includes/template-library/templates/templates.php:4939
-#: includes/template-library/templates/templates.php:6132
-#: includes/template-library/templates/templates.php:7299
-#: includes/template-library/templates/templates.php:8294
-#: js.php:830
+#: includes/template-library/templates/templates.php:542
+#: includes/template-library/templates/templates.php:2505
+#: includes/template-library/templates/templates.php:2592
+#: includes/template-library/templates/templates.php:3322
+#: includes/template-library/templates/templates.php:3409
+#: includes/template-library/templates/templates.php:4128
+#: includes/template-library/templates/templates.php:4215
+#: includes/template-library/templates/templates.php:4819
+#: includes/template-library/templates/templates.php:5988
+#: includes/template-library/templates/templates.php:7131
+#: includes/template-library/templates/templates.php:8007
+#: js.php:840
 msgid "City"
 msgstr ""
 
@@ -6561,18 +6582,18 @@ msgstr ""
 #: includes/fields/class-gf-field-address.php:215
 #: includes/settings/fields/class-field-select.php:152
 #: includes/settings/fields/class-generic-map.php:328
-#: includes/template-library/templates/templates.php:585
-#: includes/template-library/templates/templates.php:2607
-#: includes/template-library/templates/templates.php:2694
-#: includes/template-library/templates/templates.php:3436
-#: includes/template-library/templates/templates.php:3523
-#: includes/template-library/templates/templates.php:4254
-#: includes/template-library/templates/templates.php:4341
-#: includes/template-library/templates/templates.php:4957
-#: includes/template-library/templates/templates.php:6150
-#: includes/template-library/templates/templates.php:7314
-#: includes/template-library/templates/templates.php:8312
-#: js.php:845
+#: includes/template-library/templates/templates.php:561
+#: includes/template-library/templates/templates.php:2523
+#: includes/template-library/templates/templates.php:2610
+#: includes/template-library/templates/templates.php:3340
+#: includes/template-library/templates/templates.php:3427
+#: includes/template-library/templates/templates.php:4146
+#: includes/template-library/templates/templates.php:4233
+#: includes/template-library/templates/templates.php:4837
+#: includes/template-library/templates/templates.php:6006
+#: includes/template-library/templates/templates.php:7146
+#: includes/template-library/templates/templates.php:8025
+#: js.php:855
 msgid "Country"
 msgstr ""
 
@@ -6664,9 +6685,9 @@ msgstr ""
 #: includes/fields/class-gf-field-date.php:993
 #: includes/fields/class-gf-field-date.php:1147
 #: js.php:334
-#: js.php:1150
-#: js.php:1155
-#: js.php:1156
+#: js.php:1160
+#: js.php:1165
+#: js.php:1166
 msgid "Month"
 msgstr ""
 
@@ -6676,9 +6697,9 @@ msgstr ""
 #: includes/fields/class-gf-field-date.php:996
 #: includes/fields/class-gf-field-date.php:1152
 #: js.php:336
-#: js.php:1151
-#: js.php:1157
-#: js.php:1158
+#: js.php:1161
+#: js.php:1167
+#: js.php:1168
 msgid "Day"
 msgstr ""
 
@@ -6753,9 +6774,9 @@ msgid "Any"
 msgstr ""
 
 #: includes/addon/class-gf-payment-addon.php:3475
-#: includes/template-library/templates/templates.php:2851
-#: includes/template-library/templates/templates.php:4500
-#: includes/template-library/templates/templates.php:4534
+#: includes/template-library/templates/templates.php:2767
+#: includes/template-library/templates/templates.php:4392
+#: includes/template-library/templates/templates.php:4426
 msgid "Payment Method"
 msgstr ""
 
@@ -7923,34 +7944,34 @@ msgid "Zip Code"
 msgstr ""
 
 #: includes/fields/class-gf-field-address.php:205
-#: includes/template-library/templates/templates.php:554
-#: includes/template-library/templates/templates.php:2577
-#: includes/template-library/templates/templates.php:2664
-#: includes/template-library/templates/templates.php:3406
-#: includes/template-library/templates/templates.php:3493
-#: includes/template-library/templates/templates.php:4224
-#: includes/template-library/templates/templates.php:4311
-#: includes/template-library/templates/templates.php:4927
-#: includes/template-library/templates/templates.php:6120
-#: includes/template-library/templates/templates.php:7289
-#: includes/template-library/templates/templates.php:8282
-#: js.php:820
+#: includes/template-library/templates/templates.php:530
+#: includes/template-library/templates/templates.php:2493
+#: includes/template-library/templates/templates.php:2580
+#: includes/template-library/templates/templates.php:3310
+#: includes/template-library/templates/templates.php:3397
+#: includes/template-library/templates/templates.php:4116
+#: includes/template-library/templates/templates.php:4203
+#: includes/template-library/templates/templates.php:4807
+#: includes/template-library/templates/templates.php:5976
+#: includes/template-library/templates/templates.php:7121
+#: includes/template-library/templates/templates.php:7995
+#: js.php:830
 msgid "Street Address"
 msgstr ""
 
 #: includes/fields/class-gf-field-address.php:207
-#: includes/template-library/templates/templates.php:560
-#: includes/template-library/templates/templates.php:2583
-#: includes/template-library/templates/templates.php:2670
-#: includes/template-library/templates/templates.php:3412
-#: includes/template-library/templates/templates.php:3499
-#: includes/template-library/templates/templates.php:4230
-#: includes/template-library/templates/templates.php:4317
-#: includes/template-library/templates/templates.php:4933
-#: includes/template-library/templates/templates.php:6126
-#: includes/template-library/templates/templates.php:7294
-#: includes/template-library/templates/templates.php:8288
-#: js.php:825
+#: includes/template-library/templates/templates.php:536
+#: includes/template-library/templates/templates.php:2499
+#: includes/template-library/templates/templates.php:2586
+#: includes/template-library/templates/templates.php:3316
+#: includes/template-library/templates/templates.php:3403
+#: includes/template-library/templates/templates.php:4122
+#: includes/template-library/templates/templates.php:4209
+#: includes/template-library/templates/templates.php:4813
+#: includes/template-library/templates/templates.php:5982
+#: includes/template-library/templates/templates.php:7126
+#: includes/template-library/templates/templates.php:8001
+#: js.php:835
 msgid "Address Line 2"
 msgstr ""
 
@@ -7960,17 +7981,17 @@ msgid "International"
 msgstr ""
 
 #: includes/fields/class-gf-field-address.php:467
-#: includes/template-library/templates/templates.php:2601
-#: includes/template-library/templates/templates.php:2688
-#: includes/template-library/templates/templates.php:3430
-#: includes/template-library/templates/templates.php:3517
-#: includes/template-library/templates/templates.php:4248
-#: includes/template-library/templates/templates.php:4335
-#: includes/template-library/templates/templates.php:4951
-#: includes/template-library/templates/templates.php:6144
-#: includes/template-library/templates/templates.php:7309
-#: includes/template-library/templates/templates.php:8306
-#: js.php:840
+#: includes/template-library/templates/templates.php:2517
+#: includes/template-library/templates/templates.php:2604
+#: includes/template-library/templates/templates.php:3334
+#: includes/template-library/templates/templates.php:3421
+#: includes/template-library/templates/templates.php:4140
+#: includes/template-library/templates/templates.php:4227
+#: includes/template-library/templates/templates.php:4831
+#: includes/template-library/templates/templates.php:6000
+#: includes/template-library/templates/templates.php:7141
+#: includes/template-library/templates/templates.php:8019
+#: js.php:850
 msgid "ZIP / Postal Code"
 msgstr ""
 
@@ -9337,7 +9358,7 @@ msgid "Price: "
 msgstr ""
 
 #: includes/fields/class-gf-field-captcha.php:81
-#: js.php:961
+#: js.php:971
 msgid "CAPTCHA"
 msgstr ""
 
@@ -9422,11 +9443,11 @@ msgid "%d of %d items shown. Edit choices to view all."
 msgstr ""
 
 #: includes/fields/class-gf-field-consent.php:90
-#: includes/template-library/templates/templates.php:1540
-#: includes/template-library/templates/templates.php:5654
-#: includes/template-library/templates/templates.php:10528
-#: js.php:1065
-#: js.php:1066
+#: includes/template-library/templates/templates.php:1492
+#: includes/template-library/templates/templates.php:5534
+#: includes/template-library/templates/templates.php:10206
+#: js.php:1075
+#: js.php:1076
 msgid "Consent"
 msgstr ""
 
@@ -9436,10 +9457,10 @@ msgstr ""
 
 #: includes/fields/class-gf-field-consent.php:480
 #: includes/fields/class-gf-field-consent.php:551
-#: includes/template-library/templates/templates.php:1560
-#: includes/template-library/templates/templates.php:5674
-#: includes/template-library/templates/templates.php:10548
-#: js.php:1076
+#: includes/template-library/templates/templates.php:1512
+#: includes/template-library/templates/templates.php:5554
+#: includes/template-library/templates/templates.php:10226
+#: js.php:1086
 msgid "Checked"
 msgstr ""
 
@@ -9448,9 +9469,9 @@ msgid "Not Checked"
 msgstr ""
 
 #: includes/fields/class-gf-field-creditcard.php:13
-#: includes/template-library/templates/templates.php:2859
-#: includes/template-library/templates/templates.php:3682
-#: js.php:853
+#: includes/template-library/templates/templates.php:2775
+#: includes/template-library/templates/templates.php:3586
+#: js.php:863
 msgid "Credit Card"
 msgstr ""
 
@@ -9488,15 +9509,15 @@ msgid "Only digits are allowed"
 msgstr ""
 
 #: includes/fields/class-gf-field-creditcard.php:304
-#: includes/template-library/templates/templates.php:4509
-#: js.php:856
+#: includes/template-library/templates/templates.php:4401
+#: js.php:866
 msgid "Card Number"
 msgstr ""
 
 #: includes/fields/class-gf-field-creditcard.php:328
-#: includes/template-library/templates/templates.php:4514
-#: js.php:858
-#: js.php:1218
+#: includes/template-library/templates/templates.php:4406
+#: js.php:868
+#: js.php:1228
 msgid "Expiration Date"
 msgstr ""
 
@@ -9506,35 +9527,35 @@ msgstr ""
 #: includes/fields/class-gf-field-date.php:999
 #: includes/fields/class-gf-field-date.php:1157
 #: js.php:338
-#: js.php:1152
-#: js.php:1159
-#: js.php:1160
+#: js.php:1162
+#: js.php:1169
+#: js.php:1170
 msgid "Year"
 msgstr ""
 
 #: includes/fields/class-gf-field-creditcard.php:395
-#: includes/template-library/templates/templates.php:4519
-#: js.php:860
+#: includes/template-library/templates/templates.php:4411
+#: js.php:870
 msgid "Security Code"
 msgstr ""
 
 #: includes/fields/class-gf-field-creditcard.php:417
-#: includes/template-library/templates/templates.php:3701
-#: includes/template-library/templates/templates.php:4529
-#: js.php:862
-#: js.php:1222
+#: includes/template-library/templates/templates.php:3605
+#: includes/template-library/templates/templates.php:4421
+#: js.php:872
+#: js.php:1232
 msgid "Cardholder Name"
 msgstr ""
 
 #: includes/fields/class-gf-field-creditcard.php:611
-#: js.php:857
-#: js.php:1217
+#: js.php:867
+#: js.php:1227
 msgid "Expiration Month"
 msgstr ""
 
 #: includes/fields/class-gf-field-creditcard.php:616
-#: js.php:859
-#: js.php:1219
+#: js.php:869
+#: js.php:1229
 msgid "Expiration Year"
 msgstr ""
 
@@ -9626,46 +9647,50 @@ msgstr ""
 msgid "Allows users to enter a valid email address."
 msgstr ""
 
-#: includes/fields/class-gf-field-email.php:105
+#: includes/fields/class-gf-field-email.php:118
 msgid "The email address entered is invalid, please check the formatting (e.g. email@domain.com)."
 msgstr ""
 
-#: includes/fields/class-gf-field-email.php:110
+#: includes/fields/class-gf-field-email.php:122
+msgid "The email address entered is invalid."
+msgstr ""
+
+#: includes/fields/class-gf-field-email.php:127
 msgid "Your emails do not match."
 msgstr ""
 
-#: includes/fields/class-gf-field-email.php:149
+#: includes/fields/class-gf-field-email.php:217
 #: includes/template-library/templates/templates.php:164
-#: includes/template-library/templates/templates.php:736
-#: includes/template-library/templates/templates.php:1418
-#: includes/template-library/templates/templates.php:1843
-#: includes/template-library/templates/templates.php:4866
-#: includes/template-library/templates/templates.php:6018
-#: includes/template-library/templates/templates.php:7005
-#: includes/template-library/templates/templates.php:7223
-#: includes/template-library/templates/templates.php:7890
-#: includes/template-library/templates/templates.php:8224
-#: includes/template-library/templates/templates.php:9775
-#: includes/template-library/templates/templates.php:10126
-#: js.php:1190
+#: includes/template-library/templates/templates.php:712
+#: includes/template-library/templates/templates.php:1370
+#: includes/template-library/templates/templates.php:1771
+#: includes/template-library/templates/templates.php:4746
+#: includes/template-library/templates/templates.php:5874
+#: includes/template-library/templates/templates.php:6837
+#: includes/template-library/templates/templates.php:7055
+#: includes/template-library/templates/templates.php:7614
+#: includes/template-library/templates/templates.php:7937
+#: includes/template-library/templates/templates.php:9464
+#: includes/template-library/templates/templates.php:9804
+#: js.php:1200
 #: notification.php:212
 msgid "Enter Email"
 msgstr ""
 
-#: includes/fields/class-gf-field-email.php:151
+#: includes/fields/class-gf-field-email.php:219
 #: includes/template-library/templates/templates.php:170
-#: includes/template-library/templates/templates.php:744
-#: includes/template-library/templates/templates.php:1424
-#: includes/template-library/templates/templates.php:1849
-#: includes/template-library/templates/templates.php:4873
-#: includes/template-library/templates/templates.php:6024
-#: includes/template-library/templates/templates.php:7011
-#: includes/template-library/templates/templates.php:7228
-#: includes/template-library/templates/templates.php:7896
-#: includes/template-library/templates/templates.php:8230
-#: includes/template-library/templates/templates.php:9781
-#: includes/template-library/templates/templates.php:10133
-#: js.php:1195
+#: includes/template-library/templates/templates.php:720
+#: includes/template-library/templates/templates.php:1376
+#: includes/template-library/templates/templates.php:1777
+#: includes/template-library/templates/templates.php:4753
+#: includes/template-library/templates/templates.php:5880
+#: includes/template-library/templates/templates.php:6843
+#: includes/template-library/templates/templates.php:7060
+#: includes/template-library/templates/templates.php:7620
+#: includes/template-library/templates/templates.php:7943
+#: includes/template-library/templates/templates.php:9470
+#: includes/template-library/templates/templates.php:9811
+#: js.php:1205
 msgid "Confirm Email"
 msgstr ""
 
@@ -9836,108 +9861,108 @@ msgstr ""
 
 #: includes/fields/class-gf-field-name.php:274
 #: includes/template-library/templates/templates.php:37
-#: includes/template-library/templates/templates.php:427
-#: includes/template-library/templates/templates.php:1308
-#: includes/template-library/templates/templates.php:1721
-#: includes/template-library/templates/templates.php:2373
-#: includes/template-library/templates/templates.php:3202
-#: includes/template-library/templates/templates.php:4020
-#: includes/template-library/templates/templates.php:4741
-#: includes/template-library/templates/templates.php:5896
-#: includes/template-library/templates/templates.php:6897
-#: includes/template-library/templates/templates.php:7120
-#: includes/template-library/templates/templates.php:7784
-#: includes/template-library/templates/templates.php:8101
-#: includes/template-library/templates/templates.php:8611
-#: includes/template-library/templates/templates.php:9661
-#: includes/template-library/templates/templates.php:10013
-#: js.php:1100
+#: includes/template-library/templates/templates.php:403
+#: includes/template-library/templates/templates.php:1260
+#: includes/template-library/templates/templates.php:1649
+#: includes/template-library/templates/templates.php:2289
+#: includes/template-library/templates/templates.php:3106
+#: includes/template-library/templates/templates.php:3912
+#: includes/template-library/templates/templates.php:4621
+#: includes/template-library/templates/templates.php:5752
+#: includes/template-library/templates/templates.php:6729
+#: includes/template-library/templates/templates.php:6952
+#: includes/template-library/templates/templates.php:7508
+#: includes/template-library/templates/templates.php:7814
+#: includes/template-library/templates/templates.php:8312
+#: includes/template-library/templates/templates.php:9350
+#: includes/template-library/templates/templates.php:9691
+#: js.php:1110
 msgid "Prefix"
 msgstr ""
 
 #: includes/fields/class-gf-field-name.php:275
 #: includes/fields/class-gf-field-name.php:396
 #: includes/template-library/templates/templates.php:89
-#: includes/template-library/templates/templates.php:479
-#: includes/template-library/templates/templates.php:1346
-#: includes/template-library/templates/templates.php:1773
-#: includes/template-library/templates/templates.php:2425
-#: includes/template-library/templates/templates.php:3254
-#: includes/template-library/templates/templates.php:4072
-#: includes/template-library/templates/templates.php:4794
-#: includes/template-library/templates/templates.php:5948
-#: includes/template-library/templates/templates.php:6935
-#: includes/template-library/templates/templates.php:7157
-#: includes/template-library/templates/templates.php:7822
-#: includes/template-library/templates/templates.php:8153
-#: includes/template-library/templates/templates.php:8663
-#: includes/template-library/templates/templates.php:9713
-#: includes/template-library/templates/templates.php:10051
-#: js.php:1108
+#: includes/template-library/templates/templates.php:455
+#: includes/template-library/templates/templates.php:1298
+#: includes/template-library/templates/templates.php:1701
+#: includes/template-library/templates/templates.php:2341
+#: includes/template-library/templates/templates.php:3158
+#: includes/template-library/templates/templates.php:3964
+#: includes/template-library/templates/templates.php:4674
+#: includes/template-library/templates/templates.php:5804
+#: includes/template-library/templates/templates.php:6767
+#: includes/template-library/templates/templates.php:6989
+#: includes/template-library/templates/templates.php:7546
+#: includes/template-library/templates/templates.php:7866
+#: includes/template-library/templates/templates.php:8364
+#: includes/template-library/templates/templates.php:9402
+#: includes/template-library/templates/templates.php:9729
+#: js.php:1118
 msgid "First"
 msgstr ""
 
 #: includes/fields/class-gf-field-name.php:276
 #: includes/template-library/templates/templates.php:96
-#: includes/template-library/templates/templates.php:486
-#: includes/template-library/templates/templates.php:1352
-#: includes/template-library/templates/templates.php:1779
-#: includes/template-library/templates/templates.php:2431
-#: includes/template-library/templates/templates.php:3260
-#: includes/template-library/templates/templates.php:4078
-#: includes/template-library/templates/templates.php:4801
-#: includes/template-library/templates/templates.php:5954
-#: includes/template-library/templates/templates.php:6941
-#: includes/template-library/templates/templates.php:7162
-#: includes/template-library/templates/templates.php:7828
-#: includes/template-library/templates/templates.php:8159
-#: includes/template-library/templates/templates.php:8669
-#: includes/template-library/templates/templates.php:9719
-#: includes/template-library/templates/templates.php:10058
-#: js.php:1120
+#: includes/template-library/templates/templates.php:462
+#: includes/template-library/templates/templates.php:1304
+#: includes/template-library/templates/templates.php:1707
+#: includes/template-library/templates/templates.php:2347
+#: includes/template-library/templates/templates.php:3164
+#: includes/template-library/templates/templates.php:3970
+#: includes/template-library/templates/templates.php:4681
+#: includes/template-library/templates/templates.php:5810
+#: includes/template-library/templates/templates.php:6773
+#: includes/template-library/templates/templates.php:6994
+#: includes/template-library/templates/templates.php:7552
+#: includes/template-library/templates/templates.php:7872
+#: includes/template-library/templates/templates.php:8370
+#: includes/template-library/templates/templates.php:9408
+#: includes/template-library/templates/templates.php:9736
+#: js.php:1130
 msgid "Middle"
 msgstr ""
 
 #: includes/fields/class-gf-field-name.php:277
 #: includes/fields/class-gf-field-name.php:397
 #: includes/template-library/templates/templates.php:103
-#: includes/template-library/templates/templates.php:493
-#: includes/template-library/templates/templates.php:1359
-#: includes/template-library/templates/templates.php:1786
-#: includes/template-library/templates/templates.php:2438
-#: includes/template-library/templates/templates.php:3267
-#: includes/template-library/templates/templates.php:4085
-#: includes/template-library/templates/templates.php:4808
-#: includes/template-library/templates/templates.php:5961
-#: includes/template-library/templates/templates.php:6948
-#: includes/template-library/templates/templates.php:7168
-#: includes/template-library/templates/templates.php:7835
-#: includes/template-library/templates/templates.php:8166
-#: includes/template-library/templates/templates.php:8676
-#: includes/template-library/templates/templates.php:9726
-#: includes/template-library/templates/templates.php:10065
-#: js.php:1127
+#: includes/template-library/templates/templates.php:469
+#: includes/template-library/templates/templates.php:1311
+#: includes/template-library/templates/templates.php:1714
+#: includes/template-library/templates/templates.php:2354
+#: includes/template-library/templates/templates.php:3171
+#: includes/template-library/templates/templates.php:3977
+#: includes/template-library/templates/templates.php:4688
+#: includes/template-library/templates/templates.php:5817
+#: includes/template-library/templates/templates.php:6780
+#: includes/template-library/templates/templates.php:7000
+#: includes/template-library/templates/templates.php:7559
+#: includes/template-library/templates/templates.php:7879
+#: includes/template-library/templates/templates.php:8377
+#: includes/template-library/templates/templates.php:9415
+#: includes/template-library/templates/templates.php:9743
+#: js.php:1137
 msgid "Last"
 msgstr ""
 
 #: includes/fields/class-gf-field-name.php:278
 #: includes/template-library/templates/templates.php:110
-#: includes/template-library/templates/templates.php:500
-#: includes/template-library/templates/templates.php:1365
-#: includes/template-library/templates/templates.php:1792
-#: includes/template-library/templates/templates.php:2444
-#: includes/template-library/templates/templates.php:3273
-#: includes/template-library/templates/templates.php:4091
-#: includes/template-library/templates/templates.php:4815
-#: includes/template-library/templates/templates.php:5967
-#: includes/template-library/templates/templates.php:6954
-#: includes/template-library/templates/templates.php:7173
-#: includes/template-library/templates/templates.php:7841
-#: includes/template-library/templates/templates.php:8172
-#: includes/template-library/templates/templates.php:8682
-#: includes/template-library/templates/templates.php:9732
-#: includes/template-library/templates/templates.php:10072
-#: js.php:1132
+#: includes/template-library/templates/templates.php:476
+#: includes/template-library/templates/templates.php:1317
+#: includes/template-library/templates/templates.php:1720
+#: includes/template-library/templates/templates.php:2360
+#: includes/template-library/templates/templates.php:3177
+#: includes/template-library/templates/templates.php:3983
+#: includes/template-library/templates/templates.php:4695
+#: includes/template-library/templates/templates.php:5823
+#: includes/template-library/templates/templates.php:6786
+#: includes/template-library/templates/templates.php:7005
+#: includes/template-library/templates/templates.php:7565
+#: includes/template-library/templates/templates.php:7885
+#: includes/template-library/templates/templates.php:8383
+#: includes/template-library/templates/templates.php:9421
+#: includes/template-library/templates/templates.php:9750
+#: js.php:1142
 msgid "Suffix"
 msgstr ""
 
@@ -9966,7 +9991,7 @@ msgid "Please enter a valid number."
 msgstr ""
 
 #: includes/fields/class-gf-field-option.php:29
-#: js.php:1009
+#: js.php:1019
 msgid "Option"
 msgstr ""
 
@@ -9983,8 +10008,8 @@ msgid "Page Break"
 msgstr ""
 
 #: includes/fields/class-gf-field-password.php:14
-#: includes/template-library/templates/templates.php:9860
-#: js.php:916
+#: includes/template-library/templates/templates.php:9549
+#: js.php:926
 msgid "Password"
 msgstr ""
 
@@ -10001,14 +10026,14 @@ msgid "Your password does not meet the required strength. %sHint: To make it str
 msgstr ""
 
 #: includes/fields/class-gf-field-password.php:213
-#: includes/template-library/templates/templates.php:9868
-#: js.php:1206
+#: includes/template-library/templates/templates.php:9557
+#: js.php:1216
 msgid "Enter Password"
 msgstr ""
 
 #: includes/fields/class-gf-field-password.php:216
-#: includes/template-library/templates/templates.php:9873
-#: js.php:1207
+#: includes/template-library/templates/templates.php:9562
+#: js.php:1217
 msgid "Confirm Password"
 msgstr ""
 
@@ -10027,7 +10052,7 @@ msgid "Allows users to enter a phone number."
 msgstr ""
 
 #: includes/fields/class-gf-field-phone.php:180
-#: js.php:1652
+#: js.php:1662
 msgid "Phone format:"
 msgstr ""
 
@@ -10060,7 +10085,7 @@ msgid "Allows users to submit data that is then used as the excerpt of a post."
 msgstr ""
 
 #: includes/fields/class-gf-field-post-image.php:32
-#: js.php:953
+#: js.php:963
 msgid "Post Image"
 msgstr ""
 
@@ -10077,7 +10102,7 @@ msgid "delete"
 msgstr ""
 
 #: includes/fields/class-gf-field-post-image.php:132
-#: js.php:921
+#: js.php:931
 msgid "File"
 msgstr ""
 
@@ -10114,14 +10139,14 @@ msgstr ""
 #: includes/fields/class-gf-field-quantity.php:29
 #: includes/fields/class-gf-field-singleproduct.php:133
 #: includes/fields/class-gf-field.php:2882
-#: includes/template-library/templates/templates.php:2172
-#: includes/template-library/templates/templates.php:2233
-#: includes/template-library/templates/templates.php:3041
-#: includes/template-library/templates/templates.php:3104
-#: includes/template-library/templates/templates.php:3859
-#: includes/template-library/templates/templates.php:3922
-#: js.php:979
-#: js.php:1050
+#: includes/template-library/templates/templates.php:2088
+#: includes/template-library/templates/templates.php:2149
+#: includes/template-library/templates/templates.php:2945
+#: includes/template-library/templates/templates.php:3008
+#: includes/template-library/templates/templates.php:3751
+#: includes/template-library/templates/templates.php:3814
+#: js.php:989
+#: js.php:1060
 msgid "Quantity"
 msgstr ""
 
@@ -10156,10 +10181,10 @@ msgid "Adds a content separator to your form to help organize groups of fields. 
 msgstr ""
 
 #: includes/fields/class-gf-field-shipping.php:26
-#: includes/template-library/templates/templates.php:2743
-#: includes/template-library/templates/templates.php:3572
-#: includes/template-library/templates/templates.php:4390
-#: js.php:991
+#: includes/template-library/templates/templates.php:2659
+#: includes/template-library/templates/templates.php:3476
+#: includes/template-library/templates/templates.php:4282
+#: js.php:1001
 msgid "Shipping"
 msgstr ""
 
@@ -10214,7 +10239,7 @@ msgid "PM"
 msgstr ""
 
 #: includes/fields/class-gf-field-time.php:314
-#: js.php:1175
+#: js.php:1185
 msgid "AM/PM"
 msgstr ""
 
@@ -10435,7 +10460,7 @@ msgstr ""
 
 #. translators: %1s and %2s are link tag markup
 #: includes/license/class-gf-license-statuses.php:84
-msgid "Your IP has been blocked by Gravity for exceeding our API rate limits. If you think this is a mistake, please %1$scontact support%2$s."
+msgid "Your IP address has been temporarily blocked for exceeding our API rate limits. Please try again in a few minutes. If the issue persists, %1$scontact support%2$s."
 msgstr ""
 
 #: includes/locking/class-gf-locking.php:199
@@ -10660,12 +10685,12 @@ msgid "swatch"
 msgstr ""
 
 #: includes/settings/config/class-gf-settings-config-i18n.php:56
-#: js.php:1579
+#: js.php:1589
 msgid "Click to upload"
 msgstr ""
 
 #: includes/settings/config/class-gf-settings-config-i18n.php:57
-#: js.php:1580
+#: js.php:1590
 msgid "or drag and drop"
 msgstr ""
 
@@ -10674,12 +10699,12 @@ msgid "max."
 msgstr ""
 
 #: includes/settings/config/class-gf-settings-config-i18n.php:59
-#: js.php:1582
+#: js.php:1592
 msgid "or"
 msgstr ""
 
 #: includes/settings/config/class-gf-settings-config-i18n.php:60
-#: js.php:1583
+#: js.php:1593
 msgid "Replace"
 msgstr ""
 
@@ -11011,8 +11036,8 @@ msgid "Watch the video below to help you get started with Gravity Forms, or jump
 msgstr ""
 
 #: includes/setup-wizard/config/class-gf-setup-wizard-config.php:93
-#: includes/template-library/templates/templates.php:9173
-#: includes/template-library/templates/templates.php:9211
+#: includes/template-library/templates/templates.php:8874
+#: includes/template-library/templates/templates.php:8912
 msgid "Contact Form"
 msgstr ""
 
@@ -11025,8 +11050,8 @@ msgid "Survey"
 msgstr ""
 
 #: includes/setup-wizard/config/class-gf-setup-wizard-config.php:126
-#: includes/template-library/templates/templates.php:9158
-#: includes/template-library/templates/templates.php:9193
+#: includes/template-library/templates/templates.php:8859
+#: includes/template-library/templates/templates.php:8894
 msgid "Payment Form"
 msgstr ""
 
@@ -11035,10 +11060,10 @@ msgid "Subscription Form"
 msgstr ""
 
 #: includes/setup-wizard/config/class-gf-setup-wizard-config.php:148
-#: includes/template-library/templates/templates.php:1692
-#: includes/template-library/templates/templates.php:1698
-#: includes/template-library/templates/templates.php:9168
-#: includes/template-library/templates/templates.php:9205
+#: includes/template-library/templates/templates.php:1620
+#: includes/template-library/templates/templates.php:1626
+#: includes/template-library/templates/templates.php:8869
+#: includes/template-library/templates/templates.php:8906
 msgid "Donation Form"
 msgstr ""
 
@@ -11352,7 +11377,7 @@ msgstr ""
 #: includes/system-status/class-gf-system-report.php:880
 #: includes/system-status/class-gf-system-report.php:891
 #: includes/system-status/class-gf-system-report.php:897
-#: includes/template-library/templates/templates.php:9078
+#: includes/template-library/templates/templates.php:8779
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:71
 msgid "Yes"
 msgstr ""
@@ -11372,7 +11397,7 @@ msgstr ""
 #: includes/system-status/class-gf-system-report.php:880
 #: includes/system-status/class-gf-system-report.php:891
 #: includes/system-status/class-gf-system-report.php:897
-#: includes/template-library/templates/templates.php:9084
+#: includes/template-library/templates/templates.php:8785
 #: includes/wizard/steps/class-gf-installation-wizard-step-settings.php:72
 msgid "No"
 msgstr ""
@@ -11834,135 +11859,135 @@ msgid "Please get in contact using the form below..."
 msgstr ""
 
 #: includes/template-library/templates/templates.php:42
-#: includes/template-library/templates/templates.php:432
-#: includes/template-library/templates/templates.php:1321
-#: includes/template-library/templates/templates.php:1726
-#: includes/template-library/templates/templates.php:2378
-#: includes/template-library/templates/templates.php:3207
-#: includes/template-library/templates/templates.php:4025
-#: includes/template-library/templates/templates.php:4746
-#: includes/template-library/templates/templates.php:5901
-#: includes/template-library/templates/templates.php:6910
-#: includes/template-library/templates/templates.php:7132
-#: includes/template-library/templates/templates.php:7797
-#: includes/template-library/templates/templates.php:8106
-#: includes/template-library/templates/templates.php:8616
-#: includes/template-library/templates/templates.php:9666
-#: includes/template-library/templates/templates.php:10026
+#: includes/template-library/templates/templates.php:408
+#: includes/template-library/templates/templates.php:1273
+#: includes/template-library/templates/templates.php:1654
+#: includes/template-library/templates/templates.php:2294
+#: includes/template-library/templates/templates.php:3111
+#: includes/template-library/templates/templates.php:3917
+#: includes/template-library/templates/templates.php:4626
+#: includes/template-library/templates/templates.php:5757
+#: includes/template-library/templates/templates.php:6742
+#: includes/template-library/templates/templates.php:6964
+#: includes/template-library/templates/templates.php:7521
+#: includes/template-library/templates/templates.php:7819
+#: includes/template-library/templates/templates.php:8317
+#: includes/template-library/templates/templates.php:9355
+#: includes/template-library/templates/templates.php:9704
 msgid "Mr."
 msgstr ""
 
 #: includes/template-library/templates/templates.php:48
-#: includes/template-library/templates/templates.php:438
-#: includes/template-library/templates/templates.php:1325
-#: includes/template-library/templates/templates.php:1732
-#: includes/template-library/templates/templates.php:2384
-#: includes/template-library/templates/templates.php:3213
-#: includes/template-library/templates/templates.php:4031
-#: includes/template-library/templates/templates.php:4752
-#: includes/template-library/templates/templates.php:5907
-#: includes/template-library/templates/templates.php:6914
-#: includes/template-library/templates/templates.php:7136
-#: includes/template-library/templates/templates.php:7801
-#: includes/template-library/templates/templates.php:8112
-#: includes/template-library/templates/templates.php:8622
-#: includes/template-library/templates/templates.php:9672
-#: includes/template-library/templates/templates.php:10030
+#: includes/template-library/templates/templates.php:414
+#: includes/template-library/templates/templates.php:1277
+#: includes/template-library/templates/templates.php:1660
+#: includes/template-library/templates/templates.php:2300
+#: includes/template-library/templates/templates.php:3117
+#: includes/template-library/templates/templates.php:3923
+#: includes/template-library/templates/templates.php:4632
+#: includes/template-library/templates/templates.php:5763
+#: includes/template-library/templates/templates.php:6746
+#: includes/template-library/templates/templates.php:6968
+#: includes/template-library/templates/templates.php:7525
+#: includes/template-library/templates/templates.php:7825
+#: includes/template-library/templates/templates.php:8323
+#: includes/template-library/templates/templates.php:9361
+#: includes/template-library/templates/templates.php:9708
 msgid "Mrs."
 msgstr ""
 
 #: includes/template-library/templates/templates.php:54
-#: includes/template-library/templates/templates.php:444
-#: includes/template-library/templates/templates.php:1317
-#: includes/template-library/templates/templates.php:1738
-#: includes/template-library/templates/templates.php:2390
-#: includes/template-library/templates/templates.php:3219
-#: includes/template-library/templates/templates.php:4037
-#: includes/template-library/templates/templates.php:4758
-#: includes/template-library/templates/templates.php:5913
-#: includes/template-library/templates/templates.php:6906
-#: includes/template-library/templates/templates.php:7128
-#: includes/template-library/templates/templates.php:7793
-#: includes/template-library/templates/templates.php:8118
-#: includes/template-library/templates/templates.php:8628
-#: includes/template-library/templates/templates.php:9678
-#: includes/template-library/templates/templates.php:10022
+#: includes/template-library/templates/templates.php:420
+#: includes/template-library/templates/templates.php:1269
+#: includes/template-library/templates/templates.php:1666
+#: includes/template-library/templates/templates.php:2306
+#: includes/template-library/templates/templates.php:3123
+#: includes/template-library/templates/templates.php:3929
+#: includes/template-library/templates/templates.php:4638
+#: includes/template-library/templates/templates.php:5769
+#: includes/template-library/templates/templates.php:6738
+#: includes/template-library/templates/templates.php:6960
+#: includes/template-library/templates/templates.php:7517
+#: includes/template-library/templates/templates.php:7831
+#: includes/template-library/templates/templates.php:8329
+#: includes/template-library/templates/templates.php:9367
+#: includes/template-library/templates/templates.php:9700
 msgid "Miss"
 msgstr ""
 
 #: includes/template-library/templates/templates.php:60
-#: includes/template-library/templates/templates.php:450
-#: includes/template-library/templates/templates.php:1329
-#: includes/template-library/templates/templates.php:1744
-#: includes/template-library/templates/templates.php:2396
-#: includes/template-library/templates/templates.php:3225
-#: includes/template-library/templates/templates.php:4043
-#: includes/template-library/templates/templates.php:4764
-#: includes/template-library/templates/templates.php:5919
-#: includes/template-library/templates/templates.php:6918
-#: includes/template-library/templates/templates.php:7140
-#: includes/template-library/templates/templates.php:7805
-#: includes/template-library/templates/templates.php:8124
-#: includes/template-library/templates/templates.php:8634
-#: includes/template-library/templates/templates.php:9684
-#: includes/template-library/templates/templates.php:10034
+#: includes/template-library/templates/templates.php:426
+#: includes/template-library/templates/templates.php:1281
+#: includes/template-library/templates/templates.php:1672
+#: includes/template-library/templates/templates.php:2312
+#: includes/template-library/templates/templates.php:3129
+#: includes/template-library/templates/templates.php:3935
+#: includes/template-library/templates/templates.php:4644
+#: includes/template-library/templates/templates.php:5775
+#: includes/template-library/templates/templates.php:6750
+#: includes/template-library/templates/templates.php:6972
+#: includes/template-library/templates/templates.php:7529
+#: includes/template-library/templates/templates.php:7837
+#: includes/template-library/templates/templates.php:8335
+#: includes/template-library/templates/templates.php:9373
+#: includes/template-library/templates/templates.php:9712
 msgid "Ms."
 msgstr ""
 
 #: includes/template-library/templates/templates.php:66
-#: includes/template-library/templates/templates.php:456
-#: includes/template-library/templates/templates.php:1313
-#: includes/template-library/templates/templates.php:1750
-#: includes/template-library/templates/templates.php:2402
-#: includes/template-library/templates/templates.php:3231
-#: includes/template-library/templates/templates.php:4049
-#: includes/template-library/templates/templates.php:4770
-#: includes/template-library/templates/templates.php:5925
-#: includes/template-library/templates/templates.php:6902
-#: includes/template-library/templates/templates.php:7124
-#: includes/template-library/templates/templates.php:7789
-#: includes/template-library/templates/templates.php:8130
-#: includes/template-library/templates/templates.php:8640
-#: includes/template-library/templates/templates.php:9690
-#: includes/template-library/templates/templates.php:10018
+#: includes/template-library/templates/templates.php:432
+#: includes/template-library/templates/templates.php:1265
+#: includes/template-library/templates/templates.php:1678
+#: includes/template-library/templates/templates.php:2318
+#: includes/template-library/templates/templates.php:3135
+#: includes/template-library/templates/templates.php:3941
+#: includes/template-library/templates/templates.php:4650
+#: includes/template-library/templates/templates.php:5781
+#: includes/template-library/templates/templates.php:6734
+#: includes/template-library/templates/templates.php:6956
+#: includes/template-library/templates/templates.php:7513
+#: includes/template-library/templates/templates.php:7843
+#: includes/template-library/templates/templates.php:8341
+#: includes/template-library/templates/templates.php:9379
+#: includes/template-library/templates/templates.php:9696
 msgid "Dr."
 msgstr ""
 
 #: includes/template-library/templates/templates.php:72
-#: includes/template-library/templates/templates.php:462
-#: includes/template-library/templates/templates.php:1333
-#: includes/template-library/templates/templates.php:1756
-#: includes/template-library/templates/templates.php:2408
-#: includes/template-library/templates/templates.php:3237
-#: includes/template-library/templates/templates.php:4055
-#: includes/template-library/templates/templates.php:4776
-#: includes/template-library/templates/templates.php:5931
-#: includes/template-library/templates/templates.php:6922
-#: includes/template-library/templates/templates.php:7144
-#: includes/template-library/templates/templates.php:7809
-#: includes/template-library/templates/templates.php:8136
-#: includes/template-library/templates/templates.php:8646
-#: includes/template-library/templates/templates.php:9696
-#: includes/template-library/templates/templates.php:10038
+#: includes/template-library/templates/templates.php:438
+#: includes/template-library/templates/templates.php:1285
+#: includes/template-library/templates/templates.php:1684
+#: includes/template-library/templates/templates.php:2324
+#: includes/template-library/templates/templates.php:3141
+#: includes/template-library/templates/templates.php:3947
+#: includes/template-library/templates/templates.php:4656
+#: includes/template-library/templates/templates.php:5787
+#: includes/template-library/templates/templates.php:6754
+#: includes/template-library/templates/templates.php:6976
+#: includes/template-library/templates/templates.php:7533
+#: includes/template-library/templates/templates.php:7849
+#: includes/template-library/templates/templates.php:8347
+#: includes/template-library/templates/templates.php:9385
+#: includes/template-library/templates/templates.php:9716
 msgid "Prof."
 msgstr ""
 
 #: includes/template-library/templates/templates.php:78
-#: includes/template-library/templates/templates.php:468
-#: includes/template-library/templates/templates.php:1337
-#: includes/template-library/templates/templates.php:1762
-#: includes/template-library/templates/templates.php:2414
-#: includes/template-library/templates/templates.php:3243
-#: includes/template-library/templates/templates.php:4061
-#: includes/template-library/templates/templates.php:4782
-#: includes/template-library/templates/templates.php:5937
-#: includes/template-library/templates/templates.php:6926
-#: includes/template-library/templates/templates.php:7148
-#: includes/template-library/templates/templates.php:7813
-#: includes/template-library/templates/templates.php:8142
-#: includes/template-library/templates/templates.php:8652
-#: includes/template-library/templates/templates.php:9702
-#: includes/template-library/templates/templates.php:10042
+#: includes/template-library/templates/templates.php:444
+#: includes/template-library/templates/templates.php:1289
+#: includes/template-library/templates/templates.php:1690
+#: includes/template-library/templates/templates.php:2330
+#: includes/template-library/templates/templates.php:3147
+#: includes/template-library/templates/templates.php:3953
+#: includes/template-library/templates/templates.php:4662
+#: includes/template-library/templates/templates.php:5793
+#: includes/template-library/templates/templates.php:6758
+#: includes/template-library/templates/templates.php:6980
+#: includes/template-library/templates/templates.php:7537
+#: includes/template-library/templates/templates.php:7855
+#: includes/template-library/templates/templates.php:8353
+#: includes/template-library/templates/templates.php:9391
+#: includes/template-library/templates/templates.php:9720
 msgid "Rev."
 msgstr ""
 
@@ -11971,58 +11996,33 @@ msgid "Comments"
 msgstr ""
 
 #: includes/template-library/templates/templates.php:237
-#: includes/template-library/templates/templates.php:1096
+#: includes/template-library/templates/templates.php:1072
 msgid "Please let us know what's on your mind. Have a question for us? Ask away."
 msgstr ""
 
 #: includes/template-library/templates/templates.php:270
-#: includes/template-library/templates/templates.php:1211
-#: includes/template-library/templates/templates.php:1624
-#: includes/template-library/templates/templates.php:2083
-#: includes/template-library/templates/templates.php:2942
-#: includes/template-library/templates/templates.php:3764
-#: includes/template-library/templates/templates.php:4609
-#: includes/template-library/templates/templates.php:5750
-#: includes/template-library/templates/templates.php:6801
-#: includes/template-library/templates/templates.php:7600
-#: includes/template-library/templates/templates.php:8012
-#: includes/template-library/templates/templates.php:8527
-#: includes/template-library/templates/templates.php:9578
-#: includes/template-library/templates/templates.php:9925
-#: includes/template-library/templates/templates.php:10605
+#: includes/template-library/templates/templates.php:1187
+#: includes/template-library/templates/templates.php:1576
+#: includes/template-library/templates/templates.php:2011
+#: includes/template-library/templates/templates.php:2858
+#: includes/template-library/templates/templates.php:3668
+#: includes/template-library/templates/templates.php:4501
+#: includes/template-library/templates/templates.php:5630
+#: includes/template-library/templates/templates.php:6657
+#: includes/template-library/templates/templates.php:7432
+#: includes/template-library/templates/templates.php:7736
+#: includes/template-library/templates/templates.php:8240
+#: includes/template-library/templates/templates.php:9279
+#: includes/template-library/templates/templates.php:9614
+#: includes/template-library/templates/templates.php:10283
 msgid "Save and Continue Later"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:302
-#: includes/template-library/templates/templates.php:1253
-msgid "We have received your inquiry"
-msgstr ""
-
 #: includes/template-library/templates/templates.php:303
-#: includes/template-library/templates/templates.php:1254
-msgid "<p>Hi there {Name (First):1.3},</p><p>Thank you for getting in touch. We have received your inquiry and will get back to you within one business day.</p>"
-msgstr ""
-
-#: includes/template-library/templates/templates.php:314
-#: includes/template-library/templates/templates.php:1265
-#: includes/template-library/templates/templates.php:1664
-#: includes/template-library/templates/templates.php:2986
-#: includes/template-library/templates/templates.php:3805
-#: includes/template-library/templates/templates.php:4654
-#: includes/template-library/templates/templates.php:5810
-#: includes/template-library/templates/templates.php:6853
-#: tests/unit-tests/save-form/test-form-crud-handler.php:152
-#: tests/unit-tests/save-form/test-form-crud-handler.php:294
-#: tests/unit-tests/save-form/test-form-crud-handler.php:622
-#: tests/unit-tests/save-form/test-form-crud-handler.php:747
-msgid "New submission from {form_title}"
-msgstr ""
-
-#: includes/template-library/templates/templates.php:327
-#: includes/template-library/templates/templates.php:1243
-#: includes/template-library/templates/templates.php:6831
-#: includes/template-library/templates/templates.php:8557
-#: includes/template-library/templates/templates.php:9608
+#: includes/template-library/templates/templates.php:1219
+#: includes/template-library/templates/templates.php:6687
+#: includes/template-library/templates/templates.php:8270
+#: includes/template-library/templates/templates.php:9309
 #: tests/unit-tests/save-form/test-form-crud-handler.php:176
 #: tests/unit-tests/save-form/test-form-crud-handler.php:307
 #: tests/unit-tests/save-form/test-form-crud-handler.php:635
@@ -12033,1159 +12033,1122 @@ msgstr ""
 msgid "Thank you for contacting us! We will get in touch with you shortly."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:340
+#: includes/template-library/templates/templates.php:316
 msgid "Hi there {Name (First):1.3}. We received the following information from you and will respond to your inquiry as quickly as possible."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:351
+#: includes/template-library/templates/templates.php:327
 msgid "An advanced contact form."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:352
-#: includes/template-library/templates/templates.php:363
+#: includes/template-library/templates/templates.php:328
+#: includes/template-library/templates/templates.php:339
 msgid "Advanced Contact Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:379
+#: includes/template-library/templates/templates.php:355
 msgid "About You"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:423
-#: includes/template-library/templates/templates.php:4732
-#: includes/template-library/templates/templates.php:6887
+#: includes/template-library/templates/templates.php:399
+#: includes/template-library/templates/templates.php:4612
+#: includes/template-library/templates/templates.php:6719
 msgid "Your Name"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:548
+#: includes/template-library/templates/templates.php:524
 msgid "Your Address"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:572
-#: includes/template-library/templates/templates.php:2595
-#: includes/template-library/templates/templates.php:2682
-#: includes/template-library/templates/templates.php:3424
-#: includes/template-library/templates/templates.php:3511
-#: includes/template-library/templates/templates.php:4242
-#: includes/template-library/templates/templates.php:4329
-#: includes/template-library/templates/templates.php:4945
-#: includes/template-library/templates/templates.php:6138
-#: includes/template-library/templates/templates.php:7304
-#: includes/template-library/templates/templates.php:8300
-#: js.php:835
+#: includes/template-library/templates/templates.php:548
+#: includes/template-library/templates/templates.php:2511
+#: includes/template-library/templates/templates.php:2598
+#: includes/template-library/templates/templates.php:3328
+#: includes/template-library/templates/templates.php:3415
+#: includes/template-library/templates/templates.php:4134
+#: includes/template-library/templates/templates.php:4221
+#: includes/template-library/templates/templates.php:4825
+#: includes/template-library/templates/templates.php:5994
+#: includes/template-library/templates/templates.php:7136
+#: includes/template-library/templates/templates.php:8013
+#: js.php:845
 msgid "State / Province"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:579
+#: includes/template-library/templates/templates.php:555
 msgid "Zip / Postal Code"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:638
+#: includes/template-library/templates/templates.php:614
 msgid "We would love to chat with you. How can we get in touch?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:639
+#: includes/template-library/templates/templates.php:615
 msgid "How Can We Reach You?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:681
+#: includes/template-library/templates/templates.php:657
 msgid "Preferred Method of Contact"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:728
-#: includes/template-library/templates/templates.php:4858
+#: includes/template-library/templates/templates.php:704
+#: includes/template-library/templates/templates.php:4738
 msgid "Your Email Address"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:791
-#: includes/template-library/templates/templates.php:4996
+#: includes/template-library/templates/templates.php:767
+#: includes/template-library/templates/templates.php:4876
 msgid "Your Phone"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:844
+#: includes/template-library/templates/templates.php:820
 msgid "Best Time to Call You"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:848
+#: includes/template-library/templates/templates.php:824
 msgid "Select A Time"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:852
+#: includes/template-library/templates/templates.php:828
 msgid "12:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:856
+#: includes/template-library/templates/templates.php:832
 msgid "12:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:860
+#: includes/template-library/templates/templates.php:836
 msgid "1:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:864
+#: includes/template-library/templates/templates.php:840
 msgid "1:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:868
+#: includes/template-library/templates/templates.php:844
 msgid "2:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:872
+#: includes/template-library/templates/templates.php:848
 msgid "2:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:876
+#: includes/template-library/templates/templates.php:852
 msgid "3:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:880
+#: includes/template-library/templates/templates.php:856
 msgid "3:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:884
+#: includes/template-library/templates/templates.php:860
 msgid "4:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:888
+#: includes/template-library/templates/templates.php:864
 msgid "4:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:892
+#: includes/template-library/templates/templates.php:868
 msgid "5:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:896
+#: includes/template-library/templates/templates.php:872
 msgid "5:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:900
+#: includes/template-library/templates/templates.php:876
 msgid "6:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:904
+#: includes/template-library/templates/templates.php:880
 msgid "6:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:908
+#: includes/template-library/templates/templates.php:884
 msgid "7:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:912
+#: includes/template-library/templates/templates.php:888
 msgid "7:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:916
+#: includes/template-library/templates/templates.php:892
 msgid "8:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:920
+#: includes/template-library/templates/templates.php:896
 msgid "8:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:924
+#: includes/template-library/templates/templates.php:900
 msgid "9:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:928
+#: includes/template-library/templates/templates.php:904
 msgid "9:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:932
+#: includes/template-library/templates/templates.php:908
 msgid "10:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:936
+#: includes/template-library/templates/templates.php:912
 msgid "10:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:940
+#: includes/template-library/templates/templates.php:916
 msgid "11:00 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:944
+#: includes/template-library/templates/templates.php:920
 msgid "11:30 am"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:948
+#: includes/template-library/templates/templates.php:924
 msgid "12:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:952
+#: includes/template-library/templates/templates.php:928
 msgid "12:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:956
+#: includes/template-library/templates/templates.php:932
 msgid "1:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:960
+#: includes/template-library/templates/templates.php:936
 msgid "1:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:964
+#: includes/template-library/templates/templates.php:940
 msgid "2:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:968
+#: includes/template-library/templates/templates.php:944
 msgid "2:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:972
+#: includes/template-library/templates/templates.php:948
 msgid "3:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:976
+#: includes/template-library/templates/templates.php:952
 msgid "3:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:980
+#: includes/template-library/templates/templates.php:956
 msgid "4:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:984
+#: includes/template-library/templates/templates.php:960
 msgid "4:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:988
+#: includes/template-library/templates/templates.php:964
 msgid "5:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:992
+#: includes/template-library/templates/templates.php:968
 msgid "5:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:996
+#: includes/template-library/templates/templates.php:972
 msgid "6:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1000
+#: includes/template-library/templates/templates.php:976
 msgid "6:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1004
+#: includes/template-library/templates/templates.php:980
 msgid "7:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1008
+#: includes/template-library/templates/templates.php:984
 msgid "7:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1012
+#: includes/template-library/templates/templates.php:988
 msgid "8:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1016
+#: includes/template-library/templates/templates.php:992
 msgid "8:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1020
+#: includes/template-library/templates/templates.php:996
 msgid "9:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1024
+#: includes/template-library/templates/templates.php:1000
 msgid "9:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1028
+#: includes/template-library/templates/templates.php:1004
 msgid "10:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1032
+#: includes/template-library/templates/templates.php:1008
 msgid "10:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1036
+#: includes/template-library/templates/templates.php:1012
 msgid "11:00 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1040
+#: includes/template-library/templates/templates.php:1016
 msgid "11:30 pm"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1097
+#: includes/template-library/templates/templates.php:1073
 msgid "What's on your mind?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1140
+#: includes/template-library/templates/templates.php:1116
 msgid "Your Comments/Questions"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1278
+#: includes/template-library/templates/templates.php:1230
 msgid "A form that allows your users to enter a contest"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1279
+#: includes/template-library/templates/templates.php:1231
 msgid "Contest Entry Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1285
+#: includes/template-library/templates/templates.php:1237
 msgid "Form Template Library: Contest Entry Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1286
+#: includes/template-library/templates/templates.php:1238
 msgid "Enter our competition today to be in with a chance of winning..."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1291
+#: includes/template-library/templates/templates.php:1243
 msgid "Enter!"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1468
+#: includes/template-library/templates/templates.php:1420
 msgid "The answer is..."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1477
+#: includes/template-library/templates/templates.php:1429
 msgid "Answer A"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1483
+#: includes/template-library/templates/templates.php:1435
 msgid "Answer B"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1489
+#: includes/template-library/templates/templates.php:1441
 msgid "Answer C"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1531
+#: includes/template-library/templates/templates.php:1483
 msgid "Competition Terms and Conditions"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1556
+#: includes/template-library/templates/templates.php:1508
 msgid "<strong>I agree to the competition terms and conditions.</strong>"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1567
-#: includes/template-library/templates/templates.php:5681
+#: includes/template-library/templates/templates.php:1519
+#: includes/template-library/templates/templates.php:5561
 msgid "Terms and conditions placeholder."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1652
-msgid "You have successfully entered our competition"
-msgstr ""
-
-#: includes/template-library/templates/templates.php:1653
-msgid "<p>Hi there {Name (First):1.3},</p><p>Thank you for getting in touch and entering our competition. Keep an eye on your inbox as winners will be contacted via email.</p><p>Good Luck!</p>"
-msgstr ""
-
-#: includes/template-library/templates/templates.php:1678
+#: includes/template-library/templates/templates.php:1606
 msgid "Thank you for entering our competition! The winners will be contacted via email."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1691
+#: includes/template-library/templates/templates.php:1619
 msgid "A donation form for multiple purposes"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1699
+#: includes/template-library/templates/templates.php:1627
 msgid "Help us provide care and support for vulnerable adults."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1891
+#: includes/template-library/templates/templates.php:1819
 msgid "Donation Amount"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1901
+#: includes/template-library/templates/templates.php:1829
 msgid "Choose how much you would like to donate."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1918
+#: includes/template-library/templates/templates.php:1846
 msgid "10 USD"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1924
+#: includes/template-library/templates/templates.php:1852
 msgid "50 USD"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1930
+#: includes/template-library/templates/templates.php:1858
 msgid "250 USD"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1936
+#: includes/template-library/templates/templates.php:1864
 msgid "Other amount"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:1963
+#: includes/template-library/templates/templates.php:1891
 msgid "Other Amount"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2110
+#: includes/template-library/templates/templates.php:2038
 msgid "Thank you for your contribution! We appreciate your support."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2120
-msgid "You have received a new donation."
-msgstr ""
-
-#: includes/template-library/templates/templates.php:2133
-#: includes/template-library/templates/templates.php:2141
+#: includes/template-library/templates/templates.php:2049
+#: includes/template-library/templates/templates.php:2057
 msgid "A form that allows you to sell products and let your customers pay via different payment gateways"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2134
-#: includes/template-library/templates/templates.php:2140
+#: includes/template-library/templates/templates.php:2050
+#: includes/template-library/templates/templates.php:2056
 msgid "eCommerce Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2154
-#: includes/template-library/templates/templates.php:3023
-#: includes/template-library/templates/templates.php:3841
+#: includes/template-library/templates/templates.php:2070
+#: includes/template-library/templates/templates.php:2927
+#: includes/template-library/templates/templates.php:3733
 msgid "My Super Awesome Product"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2179
-#: includes/template-library/templates/templates.php:3047
-#: includes/template-library/templates/templates.php:3865
+#: includes/template-library/templates/templates.php:2095
+#: includes/template-library/templates/templates.php:2951
+#: includes/template-library/templates/templates.php:3757
 msgid "This is my super awesome product. It's the best, so everyone should buy it!"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2215
-#: includes/template-library/templates/templates.php:3086
-#: includes/template-library/templates/templates.php:3904
+#: includes/template-library/templates/templates.php:2131
+#: includes/template-library/templates/templates.php:2990
+#: includes/template-library/templates/templates.php:3796
 msgid "Another Amazing Product"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2240
-#: includes/template-library/templates/templates.php:3110
-#: includes/template-library/templates/templates.php:3928
+#: includes/template-library/templates/templates.php:2156
+#: includes/template-library/templates/templates.php:3014
+#: includes/template-library/templates/templates.php:3820
 msgid "If you loved the first product, you're really going to love this one. Don't miss out, order yours while they're still in stock."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2276
+#: includes/template-library/templates/templates.php:2192
 msgid "Subtotal"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2568
-#: includes/template-library/templates/templates.php:3397
-#: includes/template-library/templates/templates.php:4215
+#: includes/template-library/templates/templates.php:2484
+#: includes/template-library/templates/templates.php:3301
+#: includes/template-library/templates/templates.php:4107
 msgid "Billing Address"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2655
-#: includes/template-library/templates/templates.php:3484
-#: includes/template-library/templates/templates.php:4302
+#: includes/template-library/templates/templates.php:2571
+#: includes/template-library/templates/templates.php:3388
+#: includes/template-library/templates/templates.php:4194
 msgid "Shipping Address"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2767
-#: includes/template-library/templates/templates.php:3595
-#: includes/template-library/templates/templates.php:4413
+#: includes/template-library/templates/templates.php:2683
+#: includes/template-library/templates/templates.php:3499
+#: includes/template-library/templates/templates.php:4305
 msgid "Standard Shipping"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2773
-#: includes/template-library/templates/templates.php:3601
-#: includes/template-library/templates/templates.php:4419
+#: includes/template-library/templates/templates.php:2689
+#: includes/template-library/templates/templates.php:3505
+#: includes/template-library/templates/templates.php:4311
 msgid "Express Shipping"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2779
-#: includes/template-library/templates/templates.php:3607
-#: includes/template-library/templates/templates.php:4425
+#: includes/template-library/templates/templates.php:2695
+#: includes/template-library/templates/templates.php:3511
+#: includes/template-library/templates/templates.php:4317
 msgid "Overnight Shipping"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2865
+#: includes/template-library/templates/templates.php:2781
 msgid "PayPal"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2976
-#: includes/template-library/templates/templates.php:3795
-#: includes/template-library/templates/templates.php:4644
+#: includes/template-library/templates/templates.php:2892
+#: includes/template-library/templates/templates.php:3699
+#: includes/template-library/templates/templates.php:4536
 msgid "Thank you for shopping with us! Your payment was successfully completed."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:2999
-#: includes/template-library/templates/templates.php:3006
+#: includes/template-library/templates/templates.php:2903
+#: includes/template-library/templates/templates.php:2910
 msgid "Stripe Checkout Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:3000
-#: includes/template-library/templates/templates.php:3007
+#: includes/template-library/templates/templates.php:2904
+#: includes/template-library/templates/templates.php:2911
 msgid "A form that allows you to sell products and let your customers pay via Stripe"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:3691
+#: includes/template-library/templates/templates.php:3595
 msgid "Card Details"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:3696
-#: includes/template-library/templates/templates.php:4524
-#: js.php:861
+#: includes/template-library/templates/templates.php:3600
+#: includes/template-library/templates/templates.php:4416
+#: js.php:871
 msgid "Card Type"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:3817
-#: includes/template-library/templates/templates.php:3824
+#: includes/template-library/templates/templates.php:3709
+#: includes/template-library/templates/templates.php:3716
 msgid "PayPal Checkout Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:3818
-#: includes/template-library/templates/templates.php:3825
+#: includes/template-library/templates/templates.php:3710
+#: includes/template-library/templates/templates.php:3717
 msgid "A form that allows you to sell products and let your customers pay via PayPal"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:4667
+#: includes/template-library/templates/templates.php:4547
 msgid "Allow your users to apply for a job"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:4668
-#: includes/template-library/templates/templates.php:4675
+#: includes/template-library/templates/templates.php:4548
+#: includes/template-library/templates/templates.php:4555
 msgid "Employment Application Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:4681
+#: includes/template-library/templates/templates.php:4561
 msgid "Submit Application"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:4689
+#: includes/template-library/templates/templates.php:4569
 msgid "Your Personal Information"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5041
+#: includes/template-library/templates/templates.php:4921
 msgid "Best Time To Call You"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5049
+#: includes/template-library/templates/templates.php:4929
 msgid "Mornings"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5055
+#: includes/template-library/templates/templates.php:4935
 msgid "Early Afternoon"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5061
+#: includes/template-library/templates/templates.php:4941
 msgid "Late Afternoon"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5067
+#: includes/template-library/templates/templates.php:4947
 msgid "Early Evening"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5074
+#: includes/template-library/templates/templates.php:4954
 msgid "When is the best time for us to reach you via telephone?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5152
-#: includes/template-library/templates/templates.php:5195
+#: includes/template-library/templates/templates.php:5032
+#: includes/template-library/templates/templates.php:5075
 msgid "Position You're Applying For"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5221
+#: includes/template-library/templates/templates.php:5101
 msgid "IT/Technical"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5227
+#: includes/template-library/templates/templates.php:5107
 msgid "Clerical/Accounting"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5233
+#: includes/template-library/templates/templates.php:5113
 msgid "Facilities Maintenance"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5277
+#: includes/template-library/templates/templates.php:5157
 msgid "Hours You Are Available for Work"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5284
+#: includes/template-library/templates/templates.php:5164
 msgid "Please tell us what hours you are available for work each day of the week."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5354
+#: includes/template-library/templates/templates.php:5234
 msgid "Previous Employment"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5397
+#: includes/template-library/templates/templates.php:5277
 msgid "Your Previous Employers"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5404
+#: includes/template-library/templates/templates.php:5284
 msgid "Please list your previous employers, the dates you worked and the position you held"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5419
+#: includes/template-library/templates/templates.php:5299
 msgid "Employer"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5425
+#: includes/template-library/templates/templates.php:5305
 msgid "Dates"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5431
+#: includes/template-library/templates/templates.php:5311
 msgid "Position"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5511
+#: includes/template-library/templates/templates.php:5391
 msgid "More About You"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5554
+#: includes/template-library/templates/templates.php:5434
 msgid "Tell Us About Yourself"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5598
+#: includes/template-library/templates/templates.php:5478
 msgid "Upload Your Resume"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5605
+#: includes/template-library/templates/templates.php:5485
 msgid "Upload your resume in .pdf, .doc or .docx format"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5645
+#: includes/template-library/templates/templates.php:5525
 msgid "Terms and Conditions"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5670
+#: includes/template-library/templates/templates.php:5550
 msgid "<strong>I agree to the terms and conditions.</strong>"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5786
+#: includes/template-library/templates/templates.php:5666
 msgid "Thank you for submitting your application! We will get in touch with you shortly."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5798
-msgid "We have received your application."
-msgstr ""
-
-#: includes/template-library/templates/templates.php:5799
-msgid "<p>Hi {Name (First):1.3},</p><p>Thank you for submitting your application. We are in the process of reviewing it and will get in touch with you shortly.</p>"
-msgstr ""
-
-#: includes/template-library/templates/templates.php:5822
+#: includes/template-library/templates/templates.php:5678
 msgid "Let your users book tickets for an event"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5823
-#: includes/template-library/templates/templates.php:5829
-#: includes/template-library/templates/templates.php:9183
-#: includes/template-library/templates/templates.php:9223
+#: includes/template-library/templates/templates.php:5679
+#: includes/template-library/templates/templates.php:5685
+#: includes/template-library/templates/templates.php:8884
+#: includes/template-library/templates/templates.php:8924
 msgid "Event Registration Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5830
+#: includes/template-library/templates/templates.php:5686
 msgid "Please complete this form to register for the event."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:5843
+#: includes/template-library/templates/templates.php:5699
 msgid "Contact Details"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6242
+#: includes/template-library/templates/templates.php:6098
 msgid "Event Details"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6294
+#: includes/template-library/templates/templates.php:6150
 msgid "Male"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6300
+#: includes/template-library/templates/templates.php:6156
 msgid "Female"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6306
+#: includes/template-library/templates/templates.php:6162
 msgid "Non-binary"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6312
+#: includes/template-library/templates/templates.php:6168
 msgid "Agender"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6318
+#: includes/template-library/templates/templates.php:6174
 msgid "My gender isn't listed"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6375
+#: includes/template-library/templates/templates.php:6231
 msgid "16-24"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6405
+#: includes/template-library/templates/templates.php:6261
 msgid "65+"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6447
+#: includes/template-library/templates/templates.php:6303
 msgid "How did you hear about this event?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6456
-#: includes/template-library/templates/templates.php:10460
+#: includes/template-library/templates/templates.php:6312
+#: includes/template-library/templates/templates.php:10138
 msgid "Social Media"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6462
+#: includes/template-library/templates/templates.php:6318
 msgid "Google"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6468
-#: includes/template-library/templates/templates.php:10472
+#: includes/template-library/templates/templates.php:6324
+#: includes/template-library/templates/templates.php:10150
 msgid "Word of Mouth"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6474
+#: includes/template-library/templates/templates.php:6330
 msgid "Refer a Friend"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6480
+#: includes/template-library/templates/templates.php:6336
 msgid "Past Participant"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6616
+#: includes/template-library/templates/templates.php:6472
 msgid "Ticket Type"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6643
+#: includes/template-library/templates/templates.php:6499
 msgid "Early Bird Ticket"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6649
+#: includes/template-library/templates/templates.php:6505
 msgid "Premium Ticket"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6655
+#: includes/template-library/templates/templates.php:6511
 msgid "VIP Ticket"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6684
+#: includes/template-library/templates/templates.php:6540
 msgid "Number of tickets needed"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6841
-msgid "We have received your registration."
-msgstr ""
-
-#: includes/template-library/templates/templates.php:6842
-msgid "<p>Hi there {Name (First):1.3},</p><p>Thank you for registering for our event. We look forward to seeing you!</p>"
-msgstr ""
-
-#: includes/template-library/templates/templates.php:6866
+#: includes/template-library/templates/templates.php:6698
 msgid "Allow your users to purchase a gift certificate"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6867
+#: includes/template-library/templates/templates.php:6699
 msgid "Gift Certificate Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6873
+#: includes/template-library/templates/templates.php:6705
 msgid "Gift Certificate Order Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6874
+#: includes/template-library/templates/templates.php:6706
 msgid "Purchase a gift certificate today for your nearest and dearest..."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6879
+#: includes/template-library/templates/templates.php:6711
 msgid "Buy Now"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:6996
+#: includes/template-library/templates/templates.php:6828
 msgid "Your Email"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7053
+#: includes/template-library/templates/templates.php:6885
 msgid "How would you like the gift certificate delivered?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7068
+#: includes/template-library/templates/templates.php:6900
 msgid "Mail"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7110
+#: includes/template-library/templates/templates.php:6942
 msgid "Name of Recipient"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7214
+#: includes/template-library/templates/templates.php:7046
 msgid "Email of Recipient"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7279
+#: includes/template-library/templates/templates.php:7111
 msgid "Address of Recipient"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7415
+#: includes/template-library/templates/templates.php:7247
 msgid "Add a message to your gift certificate..."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7459
+#: includes/template-library/templates/templates.php:7291
 msgid "Gift Certificate Amount"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7485
+#: includes/template-library/templates/templates.php:7317
 msgid "$30"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7491
+#: includes/template-library/templates/templates.php:7323
 msgid "$50"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7497
+#: includes/template-library/templates/templates.php:7329
 msgid "$100"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7655
-#: includes/template-library/templates/templates.php:7716
-msgid "<p>Dear {Your Name (First):1.3} </p><p>Thank you for making a gift certificate purchase.</p><p>A {Gift Certificate Amount:9} gift certificate will now be emailed to {Name of Recipient (First):3.3} {Name of Recipient (Last):3.6}.</p><p>We will email you a receipt for your purchase shortly.</p>"
-msgstr ""
-
-#: includes/template-library/templates/templates.php:7686
-msgid "<p>Gift Certificate ID: <strong>000GIFT{entry_id}</strong></p><p>Dear {Name of Recipient (First):3.3},</p><p>We are delighted to send you this gift certificate worth {Gift Certificate Amount:9} from {Your Name (First):1.3} {Your Name (Last):1.6}.</p><p>Here's a message from them to you...</p><p><blockquote>{Add a message to your gift certificate...:17}</blockquote></p><p>We look forward to seeing you in-store to redeem your gift certificate!</p>"
-msgstr ""
-
-#: includes/template-library/templates/templates.php:7738
+#: includes/template-library/templates/templates.php:7462
 msgid "Thank you for making a gift certificate purchase! You should receive an email from us shortly with more information."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7754
+#: includes/template-library/templates/templates.php:7478
 msgid "Let users sign up to your newsletter"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7755
+#: includes/template-library/templates/templates.php:7479
 msgid "Newsletter Signup Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7761
+#: includes/template-library/templates/templates.php:7485
 msgid "Form Template Library: Newsletter Signup Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7762
+#: includes/template-library/templates/templates.php:7486
 msgid "If you want to keep up to date with what's happening on the blog, sign up for our newsletter!"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7767
+#: includes/template-library/templates/templates.php:7491
 msgid "Keep me up to date!"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7937
+#: includes/template-library/templates/templates.php:7661
 msgid "Privacy"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7945
+#: includes/template-library/templates/templates.php:7669
 msgid "I agree with the storage and handling of my data by this website. - <a target=\"_blank\" href=\"#\" rel=\"noopener noreferrer\">Privacy Policy</a> <abbr class=\"wpgdprc-required\" title=\"You need to accept this checkbox.\">*</abbr>"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7946
+#: includes/template-library/templates/templates.php:7670
 msgid "I agree with the storage and handling of my data by this website."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:7954
+#: includes/template-library/templates/templates.php:7678
 msgid "I agree with the storage and handling of my data by this website. - <a target=\"_blank\" href=\"#\" rel=\"noopener noreferrer\">Privacy  Policy</a> <abbr class=\"wpgdprc-required\" title=\"You need to accept this checkbox.\">*</abbr>"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8046
+#: includes/template-library/templates/templates.php:7770
 msgid "Thank you for signing up. Be on the lookout for our monthly newsletter!"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8070
+#: includes/template-library/templates/templates.php:7783
 msgid "Helps users ask for a quote for a certain service or product you are selling on your website"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8071
-#: includes/template-library/templates/templates.php:8077
-#: includes/template-library/templates/templates.php:9178
-#: includes/template-library/templates/templates.php:9217
+#: includes/template-library/templates/templates.php:7784
+#: includes/template-library/templates/templates.php:7790
+#: includes/template-library/templates/templates.php:8879
+#: includes/template-library/templates/templates.php:8918
 msgid "Request a Quote Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8078
+#: includes/template-library/templates/templates.php:7791
 msgid "Please fill out the information below and we will be in touch shortly with your personalized quote."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8360
+#: includes/template-library/templates/templates.php:8073
 msgid "Please select the service/s you require..."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8368
-#: includes/template-library/templates/templates.php:8401
+#: includes/template-library/templates/templates.php:8081
+#: includes/template-library/templates/templates.php:8114
 msgid "Landscape Gardening"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8374
-#: includes/template-library/templates/templates.php:8406
+#: includes/template-library/templates/templates.php:8087
+#: includes/template-library/templates/templates.php:8119
 msgid "Ground Maintenance"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8380
-#: includes/template-library/templates/templates.php:8411
+#: includes/template-library/templates/templates.php:8093
+#: includes/template-library/templates/templates.php:8124
 msgid "Tree Surgery Services"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8386
-#: includes/template-library/templates/templates.php:8416
+#: includes/template-library/templates/templates.php:8099
+#: includes/template-library/templates/templates.php:8129
 msgid "Fencing"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8392
-#: includes/template-library/templates/templates.php:8421
+#: includes/template-library/templates/templates.php:8105
+#: includes/template-library/templates/templates.php:8134
 msgid "Clearance"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8580
+#: includes/template-library/templates/templates.php:8281
 msgid "Get feedback about your product using a survey form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8581
-#: includes/template-library/templates/templates.php:8587
-#: includes/template-library/templates/templates.php:9163
-#: includes/template-library/templates/templates.php:9199
+#: includes/template-library/templates/templates.php:8282
+#: includes/template-library/templates/templates.php:8288
+#: includes/template-library/templates/templates.php:8864
+#: includes/template-library/templates/templates.php:8900
 msgid "Survey Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8588
+#: includes/template-library/templates/templates.php:8289
 msgid "Tell us what you think about Acme Products..."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8768
+#: includes/template-library/templates/templates.php:8469
 msgid "Company Name"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8855
+#: includes/template-library/templates/templates.php:8556
 msgid "Rate Acme Products"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8868
+#: includes/template-library/templates/templates.php:8569
 msgid "Terrible"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8874
+#: includes/template-library/templates/templates.php:8575
 msgid "Not so great"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8886
+#: includes/template-library/templates/templates.php:8587
 msgid "Pretty good"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8892
+#: includes/template-library/templates/templates.php:8593
 msgid "Excellent"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8900
-#: includes/template-library/templates/templates.php:9008
-#: includes/template-library/templates/templates.php:9092
-#: includes/template-library/templates/templates.php:9231
-#: includes/template-library/templates/templates.php:9333
-#: includes/template-library/templates/templates.php:9434
-#: includes/template-library/templates/templates.php:9503
+#: includes/template-library/templates/templates.php:8601
+#: includes/template-library/templates/templates.php:8709
+#: includes/template-library/templates/templates.php:8793
+#: includes/template-library/templates/templates.php:8932
+#: includes/template-library/templates/templates.php:9034
+#: includes/template-library/templates/templates.php:9135
+#: includes/template-library/templates/templates.php:9204
 msgid "First row"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8904
-#: includes/template-library/templates/templates.php:9012
-#: includes/template-library/templates/templates.php:9096
-#: includes/template-library/templates/templates.php:9235
-#: includes/template-library/templates/templates.php:9337
-#: includes/template-library/templates/templates.php:9438
-#: includes/template-library/templates/templates.php:9507
+#: includes/template-library/templates/templates.php:8605
+#: includes/template-library/templates/templates.php:8713
+#: includes/template-library/templates/templates.php:8797
+#: includes/template-library/templates/templates.php:8936
+#: includes/template-library/templates/templates.php:9038
+#: includes/template-library/templates/templates.php:9139
+#: includes/template-library/templates/templates.php:9208
 msgid "Second row"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8908
-#: includes/template-library/templates/templates.php:9016
-#: includes/template-library/templates/templates.php:9100
-#: includes/template-library/templates/templates.php:9239
-#: includes/template-library/templates/templates.php:9341
-#: includes/template-library/templates/templates.php:9442
-#: includes/template-library/templates/templates.php:9511
+#: includes/template-library/templates/templates.php:8609
+#: includes/template-library/templates/templates.php:8717
+#: includes/template-library/templates/templates.php:8801
+#: includes/template-library/templates/templates.php:8940
+#: includes/template-library/templates/templates.php:9042
+#: includes/template-library/templates/templates.php:9143
+#: includes/template-library/templates/templates.php:9212
 msgid "Third row"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8912
-#: includes/template-library/templates/templates.php:9020
-#: includes/template-library/templates/templates.php:9104
-#: includes/template-library/templates/templates.php:9243
-#: includes/template-library/templates/templates.php:9345
-#: includes/template-library/templates/templates.php:9446
-#: includes/template-library/templates/templates.php:9515
+#: includes/template-library/templates/templates.php:8613
+#: includes/template-library/templates/templates.php:8721
+#: includes/template-library/templates/templates.php:8805
+#: includes/template-library/templates/templates.php:8944
+#: includes/template-library/templates/templates.php:9046
+#: includes/template-library/templates/templates.php:9147
+#: includes/template-library/templates/templates.php:9216
 msgid "Fourth row"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8916
-#: includes/template-library/templates/templates.php:9024
-#: includes/template-library/templates/templates.php:9108
-#: includes/template-library/templates/templates.php:9247
-#: includes/template-library/templates/templates.php:9349
-#: includes/template-library/templates/templates.php:9450
-#: includes/template-library/templates/templates.php:9519
+#: includes/template-library/templates/templates.php:8617
+#: includes/template-library/templates/templates.php:8725
+#: includes/template-library/templates/templates.php:8809
+#: includes/template-library/templates/templates.php:8948
+#: includes/template-library/templates/templates.php:9050
+#: includes/template-library/templates/templates.php:9151
+#: includes/template-library/templates/templates.php:9220
 msgid "Fifth row"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8957
+#: includes/template-library/templates/templates.php:8658
 msgid "How many sites do you have Acme Products installed on?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8970
+#: includes/template-library/templates/templates.php:8671
 msgid "Just one"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8976
+#: includes/template-library/templates/templates.php:8677
 msgid "2-5"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8982
+#: includes/template-library/templates/templates.php:8683
 msgid "6-10"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8988
+#: includes/template-library/templates/templates.php:8689
 msgid "11-25"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:8994
+#: includes/template-library/templates/templates.php:8695
 msgid "26-100"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9000
+#: includes/template-library/templates/templates.php:8701
 msgid "100+"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9065
+#: includes/template-library/templates/templates.php:8766
 msgid "Do you use Acme Products to sell products or services?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9149
+#: includes/template-library/templates/templates.php:8850
 msgid "What types of forms have you created with Acme Products?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9288
+#: includes/template-library/templates/templates.php:8989
 msgid "Rank these add-ons based on how useful they are to you."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9301
+#: includes/template-library/templates/templates.php:9002
 msgid "Stripe"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9307
+#: includes/template-library/templates/templates.php:9008
 msgid "MailChimp"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9313
+#: includes/template-library/templates/templates.php:9014
 msgid "Zapier"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9319
+#: includes/template-library/templates/templates.php:9020
 msgid "Surveys"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9325
+#: includes/template-library/templates/templates.php:9026
 msgid "Dropbox"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9389
+#: includes/template-library/templates/templates.php:9090
 msgid "Acme Products fulfils all my form needs"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9402
+#: includes/template-library/templates/templates.php:9103
 msgid "Strongly disagree"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9426
+#: includes/template-library/templates/templates.php:9127
 msgid "Strongly agree"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9489
+#: includes/template-library/templates/templates.php:9190
 msgid "How could Acme Products be improved?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9631
+#: includes/template-library/templates/templates.php:9320
 msgid "Let your users register to your website easily"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9632
-#: includes/template-library/templates/templates.php:9638
+#: includes/template-library/templates/templates.php:9321
+#: includes/template-library/templates/templates.php:9327
 msgid "User Registration Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9639
+#: includes/template-library/templates/templates.php:9328
 msgid "Please complete the following form to register on our site. Thanks."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9824
+#: includes/template-library/templates/templates.php:9513
 msgid "Username"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9958
+#: includes/template-library/templates/templates.php:9647
 msgid "Thank you for registering! You should receive an email from us shortly containing your account information."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9982
+#: includes/template-library/templates/templates.php:9660
 msgid "Helps your users register to a webinar"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9983
-#: includes/template-library/templates/templates.php:9989
+#: includes/template-library/templates/templates.php:9661
+#: includes/template-library/templates/templates.php:9667
 msgid "Webinar Registration Form"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9990
+#: includes/template-library/templates/templates.php:9668
 msgid "Register for our latest webinar..."
 msgstr ""
 
-#: includes/template-library/templates/templates.php:9995
+#: includes/template-library/templates/templates.php:9673
 msgid "Register Today"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10179
+#: includes/template-library/templates/templates.php:9857
 msgid "Company Website"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10225
+#: includes/template-library/templates/templates.php:9903
 msgid "Position / Job Title"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10272
+#: includes/template-library/templates/templates.php:9950
 msgid "Industry Type"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10281
+#: includes/template-library/templates/templates.php:9959
 msgid "Advertising"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10287
+#: includes/template-library/templates/templates.php:9965
 msgid "Agriculture"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10293
+#: includes/template-library/templates/templates.php:9971
 msgid "Banking"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10299
+#: includes/template-library/templates/templates.php:9977
 msgid "Construction"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10305
+#: includes/template-library/templates/templates.php:9983
 msgid "Creatives"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10317
+#: includes/template-library/templates/templates.php:9995
 msgid "Entertainment"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10323
+#: includes/template-library/templates/templates.php:10001
 msgid "Fashion"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10329
+#: includes/template-library/templates/templates.php:10007
 msgid "Finance"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10335
+#: includes/template-library/templates/templates.php:10013
 msgid "Hospitality"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10353
+#: includes/template-library/templates/templates.php:10031
 msgid "Services"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10404
+#: includes/template-library/templates/templates.php:10082
 msgid "Do you have any questions you would like to ask our speakers?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10451
+#: includes/template-library/templates/templates.php:10129
 msgid "How did you hear about this webinar?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10466
+#: includes/template-library/templates/templates.php:10144
 msgid "Advertisement"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10519
+#: includes/template-library/templates/templates.php:10197
 msgid "Want to keep up-to-date with our latest news and announcements?"
 msgstr ""
 
-#: includes/template-library/templates/templates.php:10637
+#: includes/template-library/templates/templates.php:10315
 msgid "Thank you for registering for our webinar! Keep an eye out for an email from us containing more information."
 msgstr ""
 
@@ -13858,12 +13821,12 @@ msgid "YYYY"
 msgstr ""
 
 #: js.php:346
-#: js.php:1173
+#: js.php:1183
 msgid "Hour"
 msgstr ""
 
 #: js.php:348
-#: js.php:1174
+#: js.php:1184
 msgid "Minute"
 msgstr ""
 
@@ -13871,208 +13834,202 @@ msgstr ""
 msgid "Same as previous"
 msgstr ""
 
-#: js.php:449
+#: js.php:459
 msgid "is no longer necessary."
 msgstr ""
 
-#: js.php:449
-#: js.php:1702
-#: js.php:1751
-msgid "Learn more"
-msgstr ""
-
-#: js.php:485
+#: js.php:495
 msgid "This field is not associated with a product. Please add a Product Field to the form."
 msgstr ""
 
-#: js.php:503
+#: js.php:513
 msgid "Deleted Field"
 msgstr ""
 
-#: js.php:534
+#: js.php:544
 msgid "Column 1"
 msgstr ""
 
-#: js.php:534
+#: js.php:544
 msgid "Column 2"
 msgstr ""
 
-#: js.php:534
+#: js.php:544
 msgid "Column 3"
 msgstr ""
 
-#: js.php:644
+#: js.php:654
 msgid "You are about to move this form to the trash. 'Cancel' to stop, 'OK' to move to trash."
 msgstr ""
 
-#: js.php:666
+#: js.php:676
 msgid "Section Break"
 msgstr ""
 
-#: js.php:682
+#: js.php:692
 msgid "HTML Block"
 msgstr ""
 
-#: js.php:708
-#: js.php:722
-#: js.php:737
-#: js.php:768
-#: js.php:796
-#: js.php:1084
+#: js.php:718
+#: js.php:732
+#: js.php:747
+#: js.php:778
+#: js.php:806
+#: js.php:1094
 msgid "Untitled"
 msgstr ""
 
-#: js.php:711
-#: js.php:727
-#: js.php:728
-#: js.php:740
-#: js.php:771
-#: js.php:807
-#: js.php:808
+#: js.php:721
+#: js.php:737
+#: js.php:738
+#: js.php:750
+#: js.php:781
+#: js.php:817
+#: js.php:818
 msgid "First Choice"
 msgstr ""
 
-#: js.php:711
-#: js.php:727
-#: js.php:728
-#: js.php:740
-#: js.php:771
-#: js.php:807
-#: js.php:808
+#: js.php:721
+#: js.php:737
+#: js.php:738
+#: js.php:750
+#: js.php:781
+#: js.php:817
+#: js.php:818
 msgid "Second Choice"
 msgstr ""
 
-#: js.php:711
-#: js.php:727
-#: js.php:728
-#: js.php:740
-#: js.php:771
-#: js.php:807
-#: js.php:808
+#: js.php:721
+#: js.php:737
+#: js.php:738
+#: js.php:750
+#: js.php:781
+#: js.php:817
+#: js.php:818
 msgid "Third Choice"
 msgstr ""
 
-#: js.php:926
+#: js.php:936
 msgid "Hidden Field"
 msgstr ""
 
-#: js.php:930
+#: js.php:940
 msgid "Post Title"
 msgstr ""
 
-#: js.php:934
+#: js.php:944
 msgid "Post Body"
 msgstr ""
 
-#: js.php:938
+#: js.php:948
 msgid "Post Excerpt"
 msgstr ""
 
-#: js.php:943
+#: js.php:953
 msgid "Post Tags"
 msgstr ""
 
-#: js.php:950
+#: js.php:960
 msgid "Post Custom Field"
 msgstr ""
 
-#: js.php:969
+#: js.php:979
 msgid "Product Name"
 msgstr ""
 
-#: js.php:1015
+#: js.php:1025
 msgid "First Option"
 msgstr ""
 
-#: js.php:1015
+#: js.php:1025
 msgid "Second Option"
 msgstr ""
 
-#: js.php:1015
+#: js.php:1025
 msgid "Third Option"
 msgstr ""
 
-#: js.php:1026
+#: js.php:1036
 msgid "Donation"
 msgstr ""
 
-#: js.php:1070
+#: js.php:1080
 msgid "I agree to the privacy policy."
 msgstr ""
 
-#: js.php:1071
+#: js.php:1081
 msgid "Enter consent agreement text here.  The Consent Field will store this agreement text with the form entry in order to track what the user has consented to."
 msgstr ""
 
-#: js.php:1581
+#: js.php:1591
 msgid "recommended size:"
 msgstr ""
 
-#: js.php:1593
-#: js.php:1626
+#: js.php:1603
+#: js.php:1636
 msgid "Add choice"
 msgstr ""
 
-#: js.php:1596
-#: js.php:1629
+#: js.php:1606
+#: js.php:1639
 msgid "Delete choice"
 msgstr ""
 
-#: js.php:1661
+#: js.php:1671
 msgid "Select a field"
 msgstr ""
 
-#: js.php:1680
+#: js.php:1690
 msgid "The Multi Select field type is hard to use for people who cannot use a mouse. Please select a different field type to improve the accessibility of your form."
 msgstr ""
 
-#: js.php:1681
+#: js.php:1691
 msgid "Users can enter a date in the field without using the date picker. Display the date format so they know what is the specified format."
 msgstr ""
 
-#: js.php:1682
+#: js.php:1692
 msgid "The datepicker is not accessible for users who rely on the keyboard or screen reader. Please select a different input type to improve the accessibility of your form."
 msgstr ""
 
-#: js.php:1683
+#: js.php:1693
 msgid "The Enhanced User Interface is not accessible for screen reader users and people who cannot use a mouse."
 msgstr ""
 
-#: js.php:1684
+#: js.php:1694
 msgid "Hiding the label can make it difficult for users to fill out your form. Please keep the label visible to improve the accessibility of your form."
 msgstr ""
 
-#: js.php:1685
+#: js.php:1695
 msgid "Hiding the choice labels can make it difficult for users to fill out your form. Please keep the choice labels visible to improve the accessibility of your form."
 msgstr ""
 
-#: js.php:1686
+#: js.php:1696
 msgid "The image button is not accessible for users who rely on a screen reader. Please use a text button to improve the accessibility of your form."
 msgstr ""
 
 #. translators: 1. Open abbr tag 2. Close abbr tag
-#: js.php:1690
+#: js.php:1700
 msgid "To better comply with %1$sWCAG%2$s, we use the placeholder or description as a hidden label for screen readers."
 msgstr ""
 
-#: js.php:1706
+#: js.php:1716
 msgid "This field has accessibility issues."
 msgstr ""
 
 #. translators: 1. Open abbr tag 2. Close abbr tag
-#: js.php:1743
+#: js.php:1753
 msgid "An empty label violates %1$sWCAG%2$s. Please use descriptive text for your label. To hide the label, use the \"Field Label Visibility\" setting."
 msgstr ""
 
-#: js.php:1755
+#: js.php:1765
 msgid "This field has errors."
 msgstr ""
 
-#: js.php:1773
+#: js.php:1783
 msgid "The submit button can't be placed inline on multi-page forms."
 msgstr ""
 
-#: js.php:1774
+#: js.php:1784
 msgid "If a valid image url is not present a text-only submit button will be used."
 msgstr ""
 
@@ -14515,6 +14472,13 @@ msgstr ""
 
 #: tests/playwright/mu-plugins/snippets/gform_settings_header_buttons.php:5
 msgid "I'm a Button!"
+msgstr ""
+
+#: tests/unit-tests/save-form/test-form-crud-handler.php:152
+#: tests/unit-tests/save-form/test-form-crud-handler.php:294
+#: tests/unit-tests/save-form/test-form-crud-handler.php:622
+#: tests/unit-tests/save-form/test-form-crud-handler.php:747
+msgid "New submission from {form_title}"
 msgstr ""
 
 #: tooltips.php:9

@@ -96,20 +96,88 @@ class GF_Field_Email extends GF_Field {
 		return (bool) $this->emailConfirmEnabled ;
 	}
 
+	/**
+	 * Validates the field value(s).
+	 *
+	 * @since 1.9
+	 * @since 2.9.15 Updated to use $this->is_email_rejected().
+	 *
+	 * @param string $value The value to be validated.
+	 * @param array  $form  The form being processed.
+	 *
+	 * @return void
+	 */
 	public function validate( $value, $form ) {
 		$email = is_array( $value ) ? rgar( $value, 0 ) : $value; // Form objects created in 1.8 will supply a string as the value.
-		$is_blank = rgblank( $value ) || ( is_array( $value ) && rgempty( array_filter( $value ) ) );
+		if ( rgblank( $email ) ) {
+			return;
+		}
 
-		if ( ! $is_blank && ! GFCommon::is_valid_email( $email ) ) {
+		if ( ! GFCommon::is_valid_email( $email ) ) {
 			$this->failed_validation  = true;
-			$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'The email address entered is invalid, please check the formatting (e.g. email@domain.com).', 'gravityforms' ) : $this->errorMessage;
-		} elseif ( $this->emailConfirmEnabled && ! empty( $email ) ) {
+			$this->validation_message = $this->errorMessage ?: esc_html__( 'The email address entered is invalid, please check the formatting (e.g. email@domain.com).', 'gravityforms' );
+		} elseif ( $this->is_email_rejected( $email ) ) {
+			$this->set_context_property( 'is_value_spam', true );
+			$this->failed_validation  = true;
+			$this->validation_message = $this->errorMessage ?: esc_html__( 'The email address entered is invalid.', 'gravityforms' );
+		} elseif ( $this->emailConfirmEnabled ) {
 			$confirm = is_array( $value ) ? rgar( $value, 1 ) : $this->get_input_value_submission( 'input_' . $this->id . '_2' );
 			if ( $confirm != $email ) {
 				$this->failed_validation  = true;
 				$this->validation_message = esc_html__( 'Your emails do not match.', 'gravityforms' );
 			}
 		}
+	}
+
+	/**
+	 * Determines if the given email address matches a value on the rejectable values list.
+	 *
+	 * @since 2.9.15
+	 *
+	 * @param string $email The value to be checked.
+	 *
+	 * @return bool
+	 */
+	public function is_email_rejected( $email ) {
+		$form_id           = absint( $this->formId );
+		$field_id          = absint( $this->id );
+		$field             = $this;
+
+		if ( GFCommon::is_preview() ) {
+			$rejectable_values = array();
+		} else {
+			$rejectable_values = array(
+				'@domain.com',
+				'@example.com',
+			);
+		}
+
+		/**
+		 * Allows the list of rejectable values for the email field to be customized.
+		 *
+		 * @since 2.9.15
+		 *
+		 * @param array          $rejectable_values An array of values or partial values to be rejected. Defaults to an empty array on the form preview page.
+		 * @param string         $email             The submitted value.
+		 * @param GF_Field_Email $field             The field being validated.
+		 */
+		$rejectable_values = gf_apply_filters( array( 'gform_email_field_rejectable_values', $form_id, $field_id ), $rejectable_values, $email, $field );
+
+		if ( empty( $rejectable_values ) || ! is_array( $rejectable_values ) ) {
+			return false;
+		}
+
+		$rejectable_values = array_unique( array_filter( $rejectable_values ) );
+		if ( empty( $rejectable_values ) ) {
+			return false;
+		}
+
+		$pattern = '/' . implode( '|', array_map( 'preg_quote', $rejectable_values ) ) . '/i';
+		if ( preg_match( $pattern, $email ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public function get_field_input( $form, $value = '', $entry = null ) {

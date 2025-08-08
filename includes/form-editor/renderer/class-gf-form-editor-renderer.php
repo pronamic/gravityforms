@@ -16,17 +16,14 @@ class GF_Form_Editor_Renderer {
 	 * @return string
 	 */
 	public static function render_form_editor( $form_id, $form_detail, $echo = false ) {
-
-		$editor = '';
-
-		ob_start();
-			$form_detail::forms_page( $form_id );
-		$editor = ob_get_clean();
+		\ob_start();
+		$form_detail::forms_page( $form_id );
+		$editor = \ob_get_clean();
 
 		if ( $echo ) {
 			echo $editor;
 		}
 
-		return mb_convert_encoding( $editor, 'UTF-8', 'ISO-8859-1' );
+		return \mb_convert_encoding( $editor, 'UTF-8', 'ISO-8859-1' );
 	}
 }

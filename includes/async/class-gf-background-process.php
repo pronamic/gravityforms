@@ -978,7 +978,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 
 			$task_num = 0;
 
-			add_action( 'shutdown', array( $this, 'shutdown_error_handler' ) );
+			add_action( 'shutdown', array( $this, 'shutdown_error_handler' ), 0 );
 			foreach ( $batch->data as $key => $task ) {
 				$this->increment_task_attempts( $batch, $key, $task );
 				$attempt_num = $this->supports_attempts ? sprintf( ' Attempt number: %d.', rgar( $task, 'attempts', 1 ) ) : '';
@@ -1014,7 +1014,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 					break;
 				}
 			}
-			remove_action( 'shutdown', array( $this, 'shutdown_error_handler' ) );
+			remove_action( 'shutdown', array( $this, 'shutdown_error_handler' ), 0 );
 
 			$this->log_debug( sprintf( '%s(): Batch completed for %s.', __METHOD__, $this->action ) );
 

@@ -473,15 +473,22 @@ class GF_Field_Time extends GF_Field {
 		}
 
 		if ( ! is_array( $value ) && ! empty( $value ) ) {
-			preg_match( '/^(\d*):(\d*) ?(.*)$/', $value, $matches );
-			$value    = array();
-			$value[0] = $matches[1];
-			$value[1] = $matches[2];
-			$value[2] = rgar( $matches, 3 );
+			if ( $this->is_administrative() && str_starts_with( $value, '{' ) ) {
+				$value = json_decode( $value, true );
+				if ( empty( $value ) ) {
+					return '';
+				}
+				$value = array_values( $value );
+			} else {
+				preg_match( '/^(\d*):(\d*) ?(.*)$/', $value, $matches );
+				$value    = array();
+				$value[0] = rgar( $matches, 1 );
+				$value[1] = rgar( $matches, 2 );
+				$value[2] = rgar( $matches, 3 );
+			}
 		}
-
-		$hour   = wp_strip_all_tags( $value[0] );
-		$minute = wp_strip_all_tags( $value[1] );
+		$hour   = wp_strip_all_tags( rgar( $value, 0 ) );
+		$minute = wp_strip_all_tags( rgar( $value, 1 ) );
 		$ampm   = wp_strip_all_tags( rgar( $value, 2 ) );
 		if ( ! empty( $ampm ) ) {
 			$ampm = " $ampm";

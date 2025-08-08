@@ -5521,7 +5521,7 @@ class GFFormsModel {
 	public static function queue_save_input_value( $value, $form, $field, &$lead, $current_fields, $input_id, $item_index = '' ) {
 
 		$input_name = 'input_' . str_replace( '.', '_', $input_id );
-		if ( is_array( $value ) && ! ( $field->is_value_submission_array() && ! is_array( $value[0] ) ) ) {
+		if ( is_array( $value ) && ! ( $field->is_value_submission_array() && ! is_array( rgar( $value, 0 ) ) ) ) {
 			foreach ( $value as $i => $v ) {
 				$new_item_index = $item_index . '_' . $i;
 				if ( is_array( $v ) && ! ( $field->is_value_submission_array() && ! is_array( $v[0] ) ) ) {

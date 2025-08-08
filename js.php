@@ -430,7 +430,17 @@ if ( ! class_exists( 'GFForms' ) ) {
 			'gf_first_quarter',
 			'gf_second_quarter',
 			'gf_third_quarter',
-			'gf_fourth_quarter'
+			'gf_fourth_quarter',
+			'gf_scroll_text',
+			'gf_hide_ampm',
+			'gf_hide_charleft',
+			'gf_alert_green',
+			'gf_alert_red',
+			'gf_alert_yellow',
+			'gf_alert_gray',
+			'gf_alert_blue',
+			'gf_simple_horizontal',
+			'gf_invisible'
 		];
 
 		var classes = field.cssClass.split(/\s+/);
@@ -446,7 +456,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 		var message = '<div id="gfield-warning-deprecated" class="gform-alert gform-alert--notice gform-alert--inline" role="alert">';
 			message += '<span class="gform-alert__icon gform-icon gform-icon--circle-notice-fine" aria-hidden="true"></span>';
 			message += '<div class="gform-alert__message-wrap">';
-			message += '<p class="gform-alert__message">' + deprecatedClass + ' ' + <?php echo json_encode( esc_html__( 'is no longer necessary.', 'gravityforms' ) ); ?> + ' <a href="https://docs.gravityforms.com/working-with-columns/" target="_blank" title="' + <?php echo json_encode( esc_attr__( 'Working with Columns in the Form Editor in Gravity Forms 2.5', 'gravityforms' ) ); ?> + '">' + <?php echo json_encode( esc_html__( 'Learn more', 'gravityforms' ) ); ?> + '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a></p>';
+			message += '<p class="gform-alert__message">' + deprecatedClass + ' ' + <?php echo json_encode( esc_html__( 'is no longer necessary.', 'gravityforms' ) ); ?> + ' <a href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/" target="_blank" title="' + <?php echo json_encode( esc_attr__( 'Deprecation of Ready Classes in Gravity Forms 3.1', 'gravityforms' ) ); ?> + '">' + <?php echo json_encode( esc_html__( 'Learn more', 'gravityforms' ) ); ?> + '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a></p>';
 			message += '</div>';
 			message += '</div>';
 

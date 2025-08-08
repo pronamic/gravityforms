@@ -105,6 +105,35 @@ class GFFormSettings {
 	 */
 	public static function form_settings_fields( $form ) {
 
+		// Handles the deprecation notice for the confirmation ready classes in the CSS class field of form settings.
+		$deprecated_confirmation_classes_field_notice = function( $value, $field ) use ( $form ) {
+			if ( GFCommon::is_legacy_markup_enabled_og( $form ) ){
+				return false;
+			}
+
+			$deprecated_confirmation_classes = [
+				'gf_confirmation_simple_yellow',
+				'gf_confirmation_simple_gray',
+				'gf_confirmation_yellow_gradient',
+				'gf_confirmation_green_gradient',
+			];
+
+			if ( in_array( $value, $deprecated_confirmation_classes ) ) {
+				return '<div id="gfield-warning-deprecated" class="gform-alert gform-alert--notice gform-alert--inline" role="alert" style="margin-block-start: 1rem;">
+					<span class="gform-alert__icon gform-icon gform-icon--circle-notice-fine" aria-hidden="true"></span>
+					<div class="gform-alert__message-wrap">
+						<p class="gform-alert__message">' . esc_html__( 'This form uses the "' . $value . '" Ready Class, which will be removed in Gravity Forms 3.1. You can use a CSS code snippet instead.', 'gravityforms' ) .
+					   ' <a href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/" target="_blank" title="' .
+					   esc_attr__( 'Deprecation of Ready Classes in Gravity Forms 3.1', 'gravityforms' ) . '">' .
+					   esc_html__( 'Learn more', 'gravityforms' ) .
+					   '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;' .
+					   '<span class="gform-icon gform-icon--external-link"></span></a></p>
+					</div>
+				</div>';
+			}
+			return '';
+		};
+
 		$fields = array(
 			'form_basics' => array(
 				'title'  => esc_html__( 'Form Basics', 'gravityforms' ),
@@ -286,10 +315,11 @@ class GFFormSettings {
 						),
 					),
 					array(
-						'name'    => 'cssClass',
-						'type'    => 'text',
-						'label'   => esc_html__( 'CSS Class Name', 'gravityforms' ),
-						'tooltip' => gform_tooltip( 'form_css_class', '', true ),
+						'name'        => 'cssClass',
+						'type'        => 'text',
+						'after_input' => $deprecated_confirmation_classes_field_notice,
+						'label'       => esc_html__( 'CSS Class Name', 'gravityforms' ),
+						'tooltip'     => gform_tooltip( 'form_css_class', '', true ),
 					),
 				),
 			),
@@ -691,6 +721,52 @@ class GFFormSettings {
 		</div>';
 	}
 
+	/**
+	 * Displays a warning if confirmation deprecated CSS Ready Classes are used in the form settings.
+	 *
+	 * This method checks if the form uses any deprecated CSS Ready Classes and displays
+	 * a warning message. It also ensures the warning is not shown if the user has dismissed it.
+	 *
+	 * @since 2.9.15
+	 *
+	 * @param array $form The form object being checked for deprecated classes.
+	 *
+	 * @return string|false The HTML for the warning message or false if no warning is needed.
+	 */
+	public static function deprecated_classes_warning( $form ) {
+		if ( GFCommon::is_legacy_markup_enabled_og( $form ) ){
+			return false;
+		}
+
+		$deprecated_confirmation_classes = [
+			'gf_confirmation_simple_yellow',
+			'gf_confirmation_simple_gray',
+			'gf_confirmation_yellow_gradient',
+			'gf_confirmation_green_gradient',
+		];
+
+		if ( isset( $form['cssClass'] ) ) {
+			$field_classes = explode( ' ', $form['cssClass'] );
+			foreach ( $field_classes as $class ) {
+				if ( in_array( $class, $deprecated_confirmation_classes ) ) {
+					return '<div class="gform-alert" data-js="gform-alert" style="grid-column: 1/-1;">
+						<span class="gform-alert__icon gform-icon gform-icon--campaign" aria-hidden="true"></span>
+						<div class="gform-alert__message-wrap">
+							<p class="gform-alert__message">' . esc_html__( 'This form uses a deprecated CSS Ready Class, which will be removed in Gravity Forms 3.1.', 'gravityforms' ) . '</p>
+							<a class="gform-alert__cta gform-button gform-button--white gform-button--size-xs" href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/" target="_blank">'
+						   	. esc_html__( 'Learn More', 'gravityforms' ) .
+						   	'<span class="screen-reader-text">' . esc_html__('about deprecated ready classes', 'gravityforms') . '</span>
+							<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;
+							<span class="gform-icon gform-icon--external-link"></span>
+							</a>
+						</div>
+					</div>';
+
+				}
+			}
+		}
+		return '';
+	}
 
 
 	// # SETTINGS RENDERER ---------------------------------------------------------------------------------------------
@@ -790,6 +866,12 @@ class GFFormSettings {
 
 				},
 				'before_fields' => function() use ( &$form ) {
+
+					// Ensure form is not empty and display form settings warning accordingly.
+					$notice = self::deprecated_classes_warning( $form );
+					if ( ! empty( $notice ) ) {
+						echo $notice;
+					}
 
 					?>
 

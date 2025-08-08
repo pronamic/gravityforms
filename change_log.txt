@@ -1,3 +1,17 @@
+### 2.9.15 | 2025-08-07
+- Added the [gform_enable_download_nocache_headers](https://docs.gravityforms.com/gform_enable_download_nocache_headers/) filter to allow developers to enable or disable the no-cache headers for file downloads. Credit: The GravityKit Team.
+- Added the [gform_email_field_rejectable_values](https://docs.gravityforms.com/gform_email_field_rejectable_values/) filter, which can be used to provide an array of values or partial values that the email field should reject during validation.
+- Added security enhancements.
+- Fixed the time field value not being saved and PHP notices on submission if a form contains administrative time field with dynamic population enabled.
+- Fixed a PHP fatal error that can occur in some hosting environments when the form is saved via Ajax in the form editor.
+- Updated the message displayed when the user has exceeded the license verification rate limit to be more informative.
+- Updated messages in the form editor and form settings page to provide more information about the upcoming deprecation of Ready Classes in version 3.1.0.
+- Updated the UI of dialogs and flyouts.
+- Updated background processor error handler priority to increase chances of fatal errors being logged.
+- Removed notifications from form templates.
+- API: Added inline documentation for the Theme Framework CSS API.
+- API: Fixed an issue with the JS gform.product.getPaymentAmount() method that returns the wrong payment amount in certain situations.
+
 ### 2.9.14 | 2025-07-24
 - Added the constant [GF_ENABLE_NOTIFICATION_EMAIL_HEADER](https://docs.gravityforms.com/gf_enable_notification_email_header) and filter [gform_notification_email_header](https://docs.gravityforms.com/gform_notification_email_header) to allow enabling and setting of `X-Gravity-Forms-Source` email header.
 - Added alt attribute to the checked indicator image in the consent field for improved accessibility.
