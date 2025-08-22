@@ -208,7 +208,7 @@ class GFEntryList {
 			$id           = esc_attr( $filter['id'] );
 			$label        = esc_attr( $filter['label'] );
 			$checked      = checked( $filter['id'], $selected_filter, false );
-			$radios_arr[] = sprintf( '<input type="radio" name="gform_default_filter" value="%s" id="gform_default_filter_%s" %s /><label for="gform_default_filter_%s">%s</label>', $id, $id, $checked, $id, $label );
+			$radios_arr[] = sprintf( '<div><input type="radio" name="gform_default_filter" value="%s" id="gform_default_filter_%s" %s /><label for="gform_default_filter_%s">%s</label></div>', $id, $id, $checked, $id, $label );
 		}
 
 		$radios_str = join( "\n", $radios_arr );
@@ -223,7 +223,7 @@ class GFEntryList {
 		$return .= "
 			<fieldset class='screen-options'>
             <legend>{$filter_title}</legend>
-            <div>
+            <div class='gform-screen-options-filters-container'>
 				{$radios_str}
             </div>
             </fieldset>
@@ -312,14 +312,18 @@ class GFEntryList {
 	}
 
 	public static function leads_page( $form_id ) {
-		global $wpdb;
-
-		//quit if version of wp is not supported
 		if ( ! GFCommon::ensure_wp_version() ) {
 			return;
 		}
 
 		$form = GFFormsModel::get_form_meta( $form_id );
+		if ( empty( $form['id'] ) ) {
+			GFCommon::add_error_message( esc_html__( "Oops! We couldn't find your form. Please try again.", 'gravityforms' ) );
+			GFForms::admin_header();
+
+			return;
+		}
+
 		$table = new GF_Entry_List_Table( array( 'form_id' => $form_id, 'form' => $form ) );
 
 		wp_print_styles( array( 'thickbox', 'gform_settings' ) );
@@ -452,70 +456,61 @@ class GFEntryList {
 	}
 
 	public static function get_filter_links( $form, $include_counts = true ) {
+		$form_id = absint( rgar( $form, 'id' ) );
+		if ( empty( $form_id ) ) {
+			return array();
+		}
 
-		$form_id = absint( $form['id'] );
-
-		$summary = $include_counts ? GFFormsModel::get_form_counts( $form_id ) : array();
-
-		$active_entry_count = rgar( $summary, 'total' );
-		$unread_count      = rgar( $summary, 'unread' );
-		$starred_count     = rgar( $summary, 'starred' );
-		$spam_count        = rgar( $summary,'spam' );
-		$trash_count       = rgar( $summary,'trash' );
-
+		$counts       = $include_counts ? GFFormsModel::get_form_counts( $form_id ) : array();
 		$filter_links = array(
 			array(
-				'id' => 'all',
+				'id'            => 'all',
 				'field_filters' => array(),
-				'count' => $active_entry_count,
-				'label'   => esc_html_x( 'All', 'Entry List', 'gravityforms' ),
+				'count'         => rgar( $counts, 'total', 0 ),
+				'label'         => esc_html_x( 'All', 'Entry List', 'gravityforms' ),
 			),
 			array(
-				'id' => 'unread',
+				'id'            => 'unread',
 				'field_filters' => array(
 					array( 'key' => 'is_read', 'value' => false ),
 				),
-				'count' => $unread_count,
-				'label'   => esc_html_x( 'Unread', 'Entry List', 'gravityforms' ),
+				'count'         => rgar( $counts, 'unread', 0 ),
+				'label'         => esc_html_x( 'Unread', 'Entry List', 'gravityforms' ),
 			),
 			array(
-				'id' => 'star',
+				'id'            => 'star',
 				'field_filters' => array(
 					array( 'key' => 'is_starred', 'value' => true ),
 				),
-				'count' => $starred_count,
-				'label'   => esc_html_x( 'Starred', 'Entry List', 'gravityforms' ),
+				'count'         => rgar( $counts, 'starred', 0 ),
+				'label'         => esc_html_x( 'Starred', 'Entry List', 'gravityforms' ),
 			),
-		);
-		if ( ( $spam_count > 0 ) || GFCommon::spam_enabled( $form_id ) ) {
-			$filter_links[] = array(
-				'id' => 'spam',
+			array(
+				'id'            => 'spam',
 				'field_filters' => array(),
-				'count' => $spam_count,
-				'label'   => esc_html__( 'Spam', 'gravityforms' ),
-			);
-		}
-		$filter_links[] = array(
-			'id' => 'trash',
-			'field_filters' => array(),
-			'count' => $trash_count,
-			'label'   => esc_html__( 'Trash', 'gravityforms' ),
+				'count'         => rgar( $counts, 'spam', 0 ),
+				'label'         => esc_html__( 'Spam', 'gravityforms' ),
+			),
+			array(
+				'id'            => 'trash',
+				'field_filters' => array(),
+				'count'         => rgar( $counts, 'trash', 0 ),
+				'label'         => esc_html__( 'Trash', 'gravityforms' ),
+			),
 		);
 
 		/**
 		 * Allow the row of filter links to be modified.
 		 *
-		 * Array elements:
-		 * selected - bool
-		 * filter   - string
-		 * label    - string
+		 * @since 1.9.15
+		 * @since 2.9.16 Added the $counts param.
 		 *
-		 * @param array $filter_links The filter links.
-		 *
+		 * @param array $filter_links   The filter links.
+		 * @param array $form           The form the filter links are being prepared for.
+		 * @param bool  $include_counts Indicates if the database query to get the counts was performed.
+		 * @param array $counts         The number of entries that match the filters when $include_counts is true.
 		 */
-		$filter_links = apply_filters( 'gform_filter_links_entry_list', $filter_links, $form, $include_counts );
-
-		return $filter_links;
+		return apply_filters( 'gform_filter_links_entry_list', $filter_links, $form, $include_counts, $counts );
 	}
 
 	public static function all_leads_page() {
@@ -1162,8 +1157,13 @@ final class GF_Entry_List_Table extends WP_List_Table {
 				break;
 
 			default :
-				$message = isset( $_GET['field_id'] ) ? esc_html__( 'This form does not have any entries matching the search criteria.', 'gravityforms' ) : esc_html__( 'This form does not have any entries yet.', 'gravityforms' );
-
+				if ( isset( $_GET['field_id'] ) ) {
+					$message = esc_html__( 'This form does not have any entries matching the search criteria.', 'gravityforms' );
+				} elseif ( $this->filter ) {
+					$message = esc_html__( 'This form does not have any entries matching the selected filter.', 'gravityforms' );
+				} else {
+					$message = esc_html__( 'This form does not have any entries yet.', 'gravityforms' );
+				}
 		}
 		echo $message;
 	}

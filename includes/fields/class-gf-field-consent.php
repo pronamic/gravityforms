@@ -209,7 +209,7 @@ class GF_Field_Consent extends GF_Field {
 		$target_input_id       = parent::get_first_input_id( $form );
 		$for_attribute         = empty( $target_input_id ) ? '' : "for='{$target_input_id}'";
 		$label_class_attribute = 'class="gform-field-label gform-field-label--type-inline gfield_consent_label"';
-		$required_div          = ( $this->labelPlacement === 'hidden_label' && $this->isRequired ) ? $this->get_required_indicator() : '';
+		$required_div          = ( $this->labelPlacement === 'hidden_label' && $this->isRequired && ! GFCommon::is_entry_detail_edit() ) ? $this->get_required_indicator() : '';
 
 		if ( $is_admin && ! GFCommon::is_entry_detail_edit() ) {
 			$checkbox_label = ! is_array( $value ) || empty( $value[ $id . '.2' ] ) ? $this->checkboxLabel : $value[ $id . '.2' ];

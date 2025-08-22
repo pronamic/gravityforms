@@ -26,7 +26,14 @@ class Text extends Base {
 	 */
 	public $input_type = 'text';
 
-	protected $step;
+	/**
+	 * Step attribute for number inputs. Originally set to protected as a dynamic property.
+	 *
+	 * @since 2.8.1
+	 *
+	 * @var string
+	 */
+	public $step;
 
 	protected $append;
 

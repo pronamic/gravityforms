@@ -62,6 +62,7 @@ class GF_Field_Radio extends GF_Field {
 			'description_setting',
 			'css_class_setting',
 			'other_choice_setting',
+			'display_choices_columns_setting',
 		);
 	}
 

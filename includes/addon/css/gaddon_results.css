@@ -36,8 +36,9 @@ table#gquiz-results-summary td.gquiz-results-summary-data {
 }
 
 .gquiz-field-precentages-correct {
-    float: left;
-    margin: 8px 0 0 64px;
+	float: inline-start;
+	margin-block-start: 8px;
+	margin-inline-start: 64px;
 }
 
 /* -------------------------------------*/
@@ -108,12 +109,12 @@ table#gaddon-results-summary td.gaddon-results-summary-data {
 
     .gf-results .gf-result-box {
         flex: 1 1 0px;
-        margin-right: 1.25rem;
+        margin-inline-end: 1.25rem;
         margin-bottom: 0;
     }
 
     .gf-results .gf-result-box:last-child {
-        margin-right: 0;
+        margin-inline-end: 0;
     }
 }
 

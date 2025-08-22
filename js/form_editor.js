@@ -688,6 +688,7 @@ function LoadFieldSettings() {
 	jQuery("#field_default_value").val(field.defaultValue == undefined ? "" : field.defaultValue);
 	jQuery("#field_default_value_textarea").val(field.defaultValue == undefined ? "" : field.defaultValue);
 	jQuery("#field_autocomplete_attribute").val(field.autocompleteAttribute);
+	jQuery("#field_display_columns").val(field.displayColumns == undefined ? "1" : field.displayColumns);
 	jQuery("#field_description").val(field.description == undefined ? "" : field.description);
 	jQuery("#field_description").attr('placeholder', field.descriptionPlaceholder == undefined ? "" : field.descriptionPlaceholder);
 	jQuery("#field_checkbox_label").val(field.checkboxLabel == undefined ? "" : field.checkboxLabel);
@@ -907,6 +908,7 @@ function LoadFieldSettings() {
 	ToggleInputMaskOptions(true);
 
 	InitAutocompleteOptions(true);
+	InitDisplayInColumns( true )
 
 	if (inputType == "creditcard") {
 		field = UpgradeCreditCardField(field);
@@ -1286,6 +1288,13 @@ function LoadFieldSettings() {
 		jQuery( "#choice_alignment_vertical" ).prop( "checked", true );
 	}
 
+	if (field.displayAlignment == "horizontal" || field.displayAlignment == undefined) {
+		jQuery( "#display_choice_alignment_horizontal" ).prop( "checked", true );
+
+	} else if (field.displayAlignment == "vertical") {
+		jQuery( "#display_choice_alignment_vertical" ).prop( "checked", true );
+	}
+
 	SetProductField(field);
 
 	Placeholders.enable();
@@ -1312,6 +1321,13 @@ function getAllFieldSettings(field) {
 	}
 
 	var settingsArray = allSettings.split(', ');
+
+	// Remove display_choices_columns_setting from the image choice and multiple choice fields
+	if (field.type === 'image_choice' || field.type === 'multi_choice') {
+		settingsArray = settingsArray.filter(function(setting) {
+			return setting !== '.display_choices_columns_setting';
+		});
+	}
 
 	/**
 	 * gform_editor_field_settings
@@ -1922,6 +1938,26 @@ function ToggleAutocompleteAttribute( isInit ) {
 function InitAutocompleteOptions( isInit ) {
 	jQuery( '#field_enable_autocomplete' ).prop( "checked", field.enableAutocomplete ? true : false );
 	ToggleAutocompleteAttribute( true) ;
+}
+
+// handles the display in columns setting.
+function SetDisplayInColumns( isInit, value ) {
+	SetFieldProperty('enableDisplayInColumns', value)
+	ToggleDisplayInColumns( isInit );
+}
+
+function ToggleDisplayInColumns( isInit ) {
+	if( jQuery( "#field_display_in_columns" ).is( ":checked" ) ) {
+		jQuery( "#display_in_columns_container" ).show();
+	}
+	else{
+		jQuery( "#display_in_columns_container" ).hide();
+	}
+}
+
+function InitDisplayInColumns( isInit ) {
+	jQuery( '#field_display_in_columns' ).prop( "checked", field.enableDisplayInColumns ? true : false );
+	ToggleDisplayInColumns( true );
 }
 
 function HasPostContentField(){

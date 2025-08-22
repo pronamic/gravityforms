@@ -2368,7 +2368,38 @@ class GFFormDetail {
 							<?php
 							do_action( 'gform_field_appearance_settings', 500, $form_id );
 							?>
+							<li class="display_choices_columns_setting field_setting">
+								<input type="checkbox" id="field_display_in_columns" onclick="SetDisplayInColumns(false, this.checked)" onkeypress="SetDisplayInColumns(false, this.checked)"/>
+								<label for="field_display_in_columns" class="inline">
+									<?php esc_html_e( 'Display in columns', 'gravityforms' ); ?>
+									<?php  gform_tooltip( 'form_field_display_choices_in_columns' ); ?>
+								</label>
+								<div id="display_in_columns_container">
+									<label for="field_display_columns" class="section_label">
+										<?php esc_html_e( 'Number of Columns', 'gravityforms' ); ?>
+									</label>
+									<select id="field_display_columns" onchange="SetFieldProperty( 'displayColumns', jQuery(this).val() ); RefreshSelectedFieldPreview();" onkeypress="SetFieldProperty( 'displayColumns', jQuery(this).val() ); RefreshSelectedFieldPreview();">
+										<option value="1"><?php esc_html_e( '1 Column', 'gravityforms' ); ?></option>
+										<option value="2"><?php esc_html_e( '2 Columns', 'gravityforms' ); ?></option>
+										<option value="3"><?php esc_html_e( '3 Columns', 'gravityforms' ); ?></option>
+										<option value="4"><?php esc_html_e( '4 Columns', 'gravityforms' ); ?></option>
+										<option value="5"><?php esc_html_e( '5 Columns', 'gravityforms' ); ?></option>
+									</select>
+									<fieldset style="margin-top:0.9375rem;">
+										<legend class="section_label">
+											<?php esc_html_e( 'Column Sort Direction', 'gravityforms' ); ?>
+											<?php  gform_tooltip( 'form_field_column_sort_direction' ); ?>
+										</legend>
+										<div>
+											<input type="radio" name="display_choice_alignment" id="display_choice_alignment_horizontal" value="horizontal" onclick="SetFieldProperty( 'displayAlignment' , jQuery(this).val() ); RefreshSelectedFieldPreview();" onkeypress="SetFieldProperty( 'alignment', jQuery(this).val() ); RefreshSelectedFieldPreview();"/>
+											<label for="display_choice_alignment_horizontal" class="inline"><?php esc_html_e( 'Across', 'gravityforms' ); ?></label>
 
+											<input type="radio" name="display_choice_alignment" id="display_choice_alignment_vertical" value="vertical" onclick="SetFieldProperty( 'displayAlignment' , jQuery(this).val() ); RefreshSelectedFieldPreview();" onkeypress="SetFieldProperty( 'alignment', jQuery(this).val() ); RefreshSelectedFieldPreview();"/>
+											<label for="display_choice_alignment_vertical" class="inline"><?php esc_html_e( 'Down', 'gravityforms' ); ?></label>
+										</div>
+									</fieldset>
+								</div>
+							</li>
 						</ul>
 
 						<button tabindex="0" id="advanced_tab_toggle" class="panel-block-tabs__toggle">
@@ -3477,7 +3508,15 @@ class GFFormDetail {
 			'gf_alert_gray',
 			'gf_alert_blue',
 			'gf_simple_horizontal',
-			'gf_invisible'
+			'gf_invisible',
+			'gf_list_2col',
+			'gf_list_3col',
+			'gf_list_4col',
+			'gf_list_5col',
+			'gf_list_2col_vertical',
+			'gf_list_3col_vertical',
+			'gf_list_4col_vertical',
+			'gf_list_5col_vertical',
 		);
 
 		foreach ( $form['fields'] as $field ) {

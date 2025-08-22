@@ -3967,11 +3967,6 @@ Content-Type: text/html;
 
 		$type = RGFormsModel::get_input_type( $field );
 		switch ( $type ) {
-
-			case 'honeypot':
-				return "<div class='ginput_container'><input name='input_{$id}' id='{$field_id}' type='text' value='' autocomplete='new-password'/></div>";
-				break;
-
 			case 'adminonly_hidden' :
 				$inputs = $field->get_entry_inputs();
 
@@ -5769,16 +5764,16 @@ Content-Type: text/html;
 
 		$gf_vars['FieldAdded'] = '&nbsp;' . esc_html__( 'field added to form', 'gravityforms' ); // Added field to form
 
-        if ( ( is_admin() && rgget( 'id' ) ) || ( self::is_form_editor() && rgpost( 'form_id' ) ) ) {
+		if ( ( is_admin() && rgget( 'id' ) ) || ( self::is_form_editor() && rgpost( 'form_id' ) ) ) {
+			$form_id = absint( rgget( 'id' ) ?: rgpost( 'form_id' ) );
+			$form    = GFFormsModel::get_form_meta( $form_id );
+			if ( $form ) {
+				$gf_vars['mergeTags'] = GFCommon::get_merge_tags( rgar( $form, 'fields', array() ), '', false );
 
-			$form_id              = ( rgget( 'id' ) ) ? rgget( 'id' ) : rgpost( 'form_id' );
-			$form                 = RGFormsModel::get_form_meta( $form_id );
-			$gf_vars['mergeTags'] = GFCommon::get_merge_tags( $form['fields'], '', false );
-
-			$address_field                 = new GF_Field_Address();
-			$gf_vars['addressTypes']       = $address_field->get_address_types( $form['id'] );
-			$gf_vars['defaultAddressType'] = $address_field->get_default_address_type( $form['id'] );
-
+				$address_field                 = new GF_Field_Address();
+				$gf_vars['addressTypes']       = $address_field->get_address_types( $form_id );
+				$gf_vars['defaultAddressType'] = $address_field->get_default_address_type( $form_id );
+			}
 			$gf_vars['idString'] = __( 'ID: ', 'gravityforms' );
 		}
 
@@ -6159,9 +6154,17 @@ Content-Type: text/html;
 		<?php
 	}
 
+	/**
+	 * Outputs the gf_vars variable if a script that requires it has been enqueued.
+	 *
+	 * @since unknown
+	 * @since 2.9.16 Updated to use self::get_inline_script_tag().
+	 *
+	 * @return void
+	 */
 	public static function maybe_output_gf_vars() {
 		if ( self::requires_gf_vars() ) {
-			echo '<script type="text/javascript">' . self::gf_vars( false ) . '</script>';
+			echo self::get_inline_script_tag( self::gf_vars( false ), false );
 		}
 	}
 
@@ -6242,6 +6245,9 @@ Content-Type: text/html;
 
 	// used by the gfFieldFilterUI() jQuery plugin
 	public static function get_field_filter_settings( $form ) {
+		if ( ! self::form_has_fields( $form ) ) {
+			return array();
+		}
 
 		$exclude_types = array( 'rank', 'page', 'html' );
 
@@ -6307,7 +6313,7 @@ Content-Type: text/html;
 			$field_filters[] = $filter_settings;
 		}
 
-		$form_id            = $form['id'];
+		$form_id            = rgar( $form, 'id' );
 		$entry_meta_filters = self::get_entry_meta_filter_settings( $form_id );
 		$field_filters      = array_merge( $field_filters, $entry_meta_filters );
 		$field_filters      = array_values( $field_filters ); // reset the numeric keys in case some filters have been unset
@@ -6323,9 +6329,7 @@ Content-Type: text/html;
 		 * @param array $field_filters The form field, entry properties, and entry meta filter settings.
 		 * @param array $form          The form object the filter settings have been prepared for.
 		 */
-		$field_filters = apply_filters( 'gform_field_filters', $field_filters, $form );
-
-		return $field_filters;
+		return apply_filters( 'gform_field_filters', $field_filters, $form );
 	}
 
 	public static function get_entry_info_filter_settings() {
@@ -8167,6 +8171,60 @@ Content-Type: text/html;
 	 */
 	public static function output_default_css() {
 		return (bool) ( ! GFCommon::is_frontend_default_css_disabled() || GFCommon::is_form_editor() || GFCommon::is_entry_detail() );
+	}
+
+	/**
+	 * Sends a success JSON response with a delimiter indicating the beginning and end of the JSON string.
+	 *
+	 * @since 2.9.16
+	 *
+	 * @param mixed $data The data to be sent in the JSON response.
+	 *
+	 * @return void
+	 */
+	public static function send_json_success( $data ) {
+		$response = array( 'success' => true );
+
+		if ( isset( $data ) ) {
+			$response['data'] = $data;
+		}
+
+		self::send_json( $response );
+	}
+
+	/**
+	 * Sends an error JSON response with a delimiter indicating the beginning and end of the JSON string.
+	 *
+	 * @since 2.9.16
+	 *
+	 * @param mixed $data The data to be sent in the JSON response.
+	 *
+	 * @return void
+	 */
+	public static function send_json_error( $data ) {
+		$response = array( 'success' => false );
+
+		if ( isset( $data ) ) {
+			$response['data'] = $data;
+		}
+
+		self::send_json( $response );
+	}
+
+	/**
+	 * Sends a JSON response with a delimiter indicating the beginning and end of the JSON string.
+	 *
+	 * @since 2.9.16
+	 *
+	 * @param array $response The response data to be sent in the JSON response.
+	 *
+	 * @return void
+	 */
+	public static function send_json( $response ) {
+		// Outputting JSON content with delimiters.
+		echo '<!-- gf:json_start -->' . wp_json_encode( $response ) . '<!-- gf:json_end -->';
+
+		wp_die( '', '', array( 'response' => null ) );
 	}
 
 }

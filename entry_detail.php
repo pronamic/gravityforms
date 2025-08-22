@@ -35,7 +35,7 @@ class GFEntryDetail {
 	public static function add_meta_boxes() {
 
 		$entry = self::get_current_entry();
-		if ( is_wp_error( $entry ) ) {
+		if ( is_wp_error( $entry ) || ! $entry ) {
 			return;
 		}
 
@@ -105,12 +105,25 @@ class GFEntryDetail {
 	}
 
 	public static function get_current_form() {
-
 		if ( isset( self::$_form ) ) {
-			return  self::$_form;
+			return self::$_form;
 		}
 
-		$form = GFCommon::gform_admin_pre_render( GFFormsModel::get_form_meta( absint( $_GET['id'] ) ) );
+		$form_id = absint( rgget( 'id' ) );
+		if ( empty( $form_id ) ) {
+			self::set_current_form( array() );
+
+			return array();
+		}
+
+		$form = GFFormsModel::get_form_meta( $form_id );
+		if ( empty( $form ) ) {
+			self::set_current_form( array() );
+
+			return array();
+		}
+
+		$form = GFCommon::gform_admin_pre_render( $form );
 
 		self::set_current_form( $form );
 
@@ -133,8 +146,49 @@ class GFEntryDetail {
 			return self::$_entry;
 		}
 		$form    = self::get_current_form();
-		$form_id = absint( $form['id'] );
-		$lead_id = rgpost( 'entry_id' ) ? absint( rgpost( 'entry_id' ) ) : absint( rgget( 'lid' ) );
+		$form_id = absint( rgar( $form, 'id' ) );
+
+		self::set_current_entry( false );
+		if ( empty( $form_id ) ) {
+			return false;
+		}
+
+		$entry        = false;
+		$has_entry_id = false;
+		if ( isset( $_POST['entry_id'] ) ) {
+			$has_entry_id = true;
+			$entry_id     = absint( $_POST['entry_id'] );
+		} elseif ( isset( $_GET['lid'] ) ) {
+			$has_entry_id = true;
+			$entry_id     = absint( $_GET['lid'] );
+		}
+
+		if ( $has_entry_id ) {
+			if ( empty( $entry_id ) ) {
+				return false;
+			}
+
+			$entry = GFAPI::get_entry( $entry_id );
+			if ( is_wp_error( $entry ) ) {
+				return $entry;
+			}
+
+			$entry_form_id = absint( rgar( $entry, 'form_id' ) );
+			if ( $entry_form_id !== $form_id ) {
+				if ( wp_safe_redirect( add_query_arg( array(
+					'id'       => $entry_form_id,
+					'lid'      => $entry_id,
+					'order'    => false,
+					'filter'   => false,
+					'paged'    => false,
+					'pos'      => false,
+					'field_id' => false,
+					'operator' => false,
+				) ) ) ) {
+					exit;
+				}
+			}
+		}
 
 		$filter = rgget( 'filter' );
 		$status = in_array( $filter, array( 'trash', 'spam' ) ) ? $filter : 'active';
@@ -143,8 +197,8 @@ class GFEntryDetail {
 		$sort_direction = rgget( 'order' ) ? rgget( 'order' ) : 'DESC';
 
 		$sort_field      = empty( $_GET['orderby'] ) ? 0 : $_GET['orderby'];
-		$sort_field_meta = RGFormsModel::get_field( $form, $sort_field );
-		$is_numeric      = rgar( $sort_field_meta, 'type' ) == 'number';
+		$sort_field_meta = GFFormsModel::get_field( $form, $sort_field );
+		$is_numeric      = $sort_field_meta && $sort_field_meta->get_input_type() === 'number';
 
 		$search_criteria['status'] = $status;
 
@@ -202,17 +256,16 @@ class GFEntryDetail {
 			$sorting = array();
 		}
 
-		$leads = GFAPI::get_entries( $form['id'], $search_criteria, $sorting, $paging, self::$_total_count );
-
-		if ( ! $lead_id ) {
-			$lead = ! empty( $leads ) ? $leads[0] : false;
+		if ( empty( $entry ) ) {
+			$entries = GFAPI::get_entries( $form_id, $search_criteria, $sorting, $paging, self::$_total_count );
+			$entry   = rgar( $entries, 0, false );
 		} else {
-			$lead = GFAPI::get_entry( $lead_id );
+			self::$_total_count = GFAPI::count_entries( $form_id, $search_criteria );
 		}
 
-		self::set_current_entry( $lead );
+		self::set_current_entry( $entry );
 
-		return $lead;
+		return $entry;
 	}
 
 	public static function set_current_entry( $entry ) {
@@ -230,22 +283,26 @@ class GFEntryDetail {
 			return;
 		}
 
-		$requested_form_id = absint( $_GET['id'] );
-		if ( empty( $requested_form_id ) ) {
+		$form    = self::get_current_form();
+		$form_id = absint( rgar( $form, 'id' ) );
+		if ( empty( $form_id ) ) {
+			GFCommon::add_error_message( esc_html__( "Oops! We couldn't find your form. Please try again.", 'gravityforms' ) );
+			GFForms::admin_header();
+
 			return;
 		}
 
 		$lead = self::get_current_entry();
 		if ( is_wp_error( $lead ) || ! $lead ) {
-			esc_html_e( "Oops! We couldn't find your entry. Please try again", 'gravityforms' );
+			GFCommon::add_error_message( esc_html__( "Oops! We couldn't find your entry. Please try again.", 'gravityforms' ) );
+			GFForms::admin_header();
 
 			return;
 		}
-        GFForms::admin_header();
 
-		$lead_id  = $lead['id'];
-		$form     = self::get_current_form();
-		$form_id  = absint( $form['id'] );
+		GFForms::admin_header();
+
+		$lead_id = rgar( $lead, 'id' );
 
 		/**
 		 * Fires before the entry detail page is shown or any processing is handled.
@@ -255,7 +312,7 @@ class GFEntryDetail {
 		 *
 		 * @since 2.3.3.9
 		 */
-		gf_do_action( array( 'gform_pre_entry_detail', $form['id'] ), $form, $lead );
+		gf_do_action( array( 'gform_pre_entry_detail', $form_id ), $form, $lead );
 
 		$total_count = self::get_total_count();
 		$position    = rgget( 'pos' ) ? rgget( 'pos' ) : 0;

@@ -85,6 +85,7 @@ class GF_Field_Checkbox extends GF_Field {
 			'description_setting',
 			'css_class_setting',
 			'select_all_choices_setting',
+			'display_choices_columns_setting',
 		);
 
 	}
@@ -220,7 +221,7 @@ class GF_Field_Checkbox extends GF_Field {
 
 		// Prepare button markup.
 		$button_markup = sprintf(
-			'<button type="button" id="button_%1$d_select_all" class="gfield_choice_all_toggle gform-theme-button--size-sm" onclick="gformToggleCheckboxes( this )" data-checked="%4$d" data-label-select="%2$s" data-label-deselect="%3$s"%6$s>%5$s</button>',
+			'<div class="gfield-choice-toggle-all"><button type="button" id="button_%1$d_select_all" class="gfield_choice_all_toggle gform-theme-button--size-sm" onclick="gformToggleCheckboxes( this )" data-checked="%4$d" data-label-select="%2$s" data-label-deselect="%3$s"%6$s>%5$s</button></div>',
 			$this->id,
 			$select_label,
 			$deselect_label,

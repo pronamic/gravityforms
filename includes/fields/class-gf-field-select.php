@@ -199,6 +199,19 @@ class GF_Field_Select extends GF_Field {
 		return $value;
 	}
 
+	/**
+	 * Forces settings into expected values while saving the form object.
+	 *
+	 * @since 2.9.16
+	 * @access public
+	 *
+	 * @return void
+	 */
+	public function sanitize_settings() {
+		parent::sanitize_settings();
+		$this->enableEnhancedUI = (bool) $this->enableEnhancedUI;
+	}
+
 	// # FIELD FILTER UI HELPERS ---------------------------------------------------------------------------------------
 
 	/**

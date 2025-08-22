@@ -1,3 +1,25 @@
+### 2.9.16 | 2025-08-21
+- Added settings to the Radio and Checkbox fields to replace the list column Ready Classes.
+- Added sanitization to the enableEnhancedUI property in GF_Field_Select to be consistent with GF_Field_Multiselect.
+- Added the [gform_entries_filter_count_queries](https://docs.gravityforms.com/gform_entries_filter_count_queries/) filter, which can be used to add queries for custom filter links for the entries list page.
+- Added the [gform_honeypot_input_name](https://docs.gravityforms.com/gform_honeypot_input_name/) filter, so the input name used by the honeypot input can be customized.
+- Updated the [gform_filter_links_entry_list](https://docs.gravityforms.com/gform_filter_links_entry_list/) filter, so the entry counts are passed as the 4th param.
+- Fixed a JavaScript error that can occur on form render when themes and plugins output unexpected content in the admin-ajax.php response.
+- Fixed a PHP warning that occurs on third-party admin pages that use the id query argument when a script that requires the gf_vars variable has been enqueued.
+- Fixed a bug that causes the reset button on the field map setting to sometimes display on top of other elements.
+- Fixed an issue that can cause ACF fields to trigger form submissions when editing a post.
+- Fixed an issue where all the rows of a List type field can be deleted if the delete row buttons are clicked in quick succession.
+- Fixed the entry detail page to display an error message if the entry id query argument is invalid. Credit: The Gravity Wiz Team.
+- Fixed an issue where data is not saved when conditional rules match against empty Consent field.
+- Fixed an issue where required indicator is displayed for Consent field in entry edit view when field label is hidden.
+- Fixed an issue where the results page is not displaying the charts correctly in RTL languages.
+- Fixed an issue with the legacy post creation feature that impacted the performance of all form submissions.
+- Fixed class attribute being declared twice for single product base price input when quantity field is disabled.
+- AF: Fixed an issue where the wp_inline_script_attributes filter is not impacting the script tag for the JavaScript gform.extensions variable.
+- AF: Updated the entries list page to include filter links for the various payment statuses.
+- API: Updated the $step attribute used with the text $input_type settings field to be public.
+- API: Fixed issue where the placeholder attribute was not working correctly in the Settings API.
+
 ### 2.9.15 | 2025-08-07
 - Added the [gform_enable_download_nocache_headers](https://docs.gravityforms.com/gform_enable_download_nocache_headers/) filter to allow developers to enable or disable the no-cache headers for file downloads. Credit: The GravityKit Team.
 - Added the [gform_email_field_rejectable_values](https://docs.gravityforms.com/gform_email_field_rejectable_values/) filter, which can be used to provide an array of values or partial values that the email field should reject during validation.

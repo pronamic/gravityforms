@@ -239,7 +239,7 @@ class Base implements ArrayAccess {
 	 *
 	 * @var string
 	 */
-	protected $placeholder;
+	public $placeholder;
 
 	/**
 	 * Checkbox input attributes

@@ -535,8 +535,10 @@ if ( ! class_exists( 'GFResults' ) ) {
 							'viewWindowMode' => 'explicit',
 							'viewWindow'     => array( 'min' => 0 ),
 							'title'          => esc_html__( 'Frequency', 'gravityforms' ),
-						)
-
+						),
+						'tooltip'   => array(
+							'isHtml' => true,
+						),
 					);
 
 					$data_table_json = htmlentities( json_encode( $data_table ), ENT_QUOTES, 'UTF-8', true );

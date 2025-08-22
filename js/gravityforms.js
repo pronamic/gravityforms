@@ -1277,7 +1277,7 @@ function gformToggleCheckboxes( toggleElement ) {
 	var checked,
         $toggleElement        = jQuery( toggleElement ),
         toggleElementCheckbox = $toggleElement.is( 'input[type="checkbox"]' ),
-        $toggle               = toggleElementCheckbox ? $toggleElement.parent() : $toggleElement.prev(),
+        $toggle               = $toggleElement.parent(),
 	    $toggleLabel          = $toggle.find( 'label' ),
 	    $checkboxes           = $toggle.parent().find( '.gchoice:not( .gchoice_select_all )' ),
 	    formId         = gf_get_form_id_by_html_id( $toggle.parents( '.gfield' ).attr( 'id' ) ),
@@ -1421,9 +1421,15 @@ function gformAddListItem( addButton, max ) {
 
 function gformDeleteListItem( deleteButton, max ) {
 
-    var $deleteButton = jQuery( deleteButton ),
-        $group        = $deleteButton.parents( '.gfield_list_group' ),
-        $container    = $group.parents( '.gfield_list_container' );
+	var $deleteButton = jQuery( deleteButton );
+	if ( $deleteButton.prop( 'disabled' ) ) {
+		return;
+	} else {
+		$deleteButton.prop( 'disabled', true );
+	}
+
+	var $group     = $deleteButton.parents( '.gfield_list_group' ),
+		$container = $group.parents( '.gfield_list_container' );
 
     $group.remove();
 
@@ -1479,7 +1485,11 @@ function gformToggleIcons( $container, max ) {
         $addButtons = $container.find( '.add_list_item' ),
         isLegacy    =  typeof gf_legacy !== 'undefined' && gf_legacy.is_legacy;
 
-    $container.find( '.delete_list_item' ).css( 'visibility', groupCount == 1 ? 'hidden' : 'visible' );
+	if ( groupCount === 1 ) {
+		$container.find( '.delete_list_item' ).prop( 'disabled', true ).css( 'visibility', 'hidden' );
+	} else {
+		$container.find( '.delete_list_item' ).prop( 'disabled', false ).css( 'visibility', 'visible' );
+	}
 
     if ( max > 0 && groupCount >= max ) {
 

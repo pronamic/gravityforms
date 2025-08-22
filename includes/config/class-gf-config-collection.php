@@ -3,6 +3,7 @@
 namespace Gravity_Forms\Gravity_Forms\Config;
 
 use Gravity_Forms\Gravity_Forms\Config\GF_Config;
+use GFCommon;
 
 /**
  * Collection to hold GF_Config items and provide their structured data when needed.
@@ -58,7 +59,7 @@ class GF_Config_Collection {
 		$nonce_result = check_ajax_referer( 'gform_config_ajax', 'gform_ajax_nonce', false );
 
 		if ( ! $nonce_result ) {
-			wp_send_json_error( esc_html__( 'Unable to verify nonce. Please refresh the page and try again.', 'gravityforms' ) );
+			GFCommon::send_json_error( esc_html__( 'Unable to verify nonce. Please refresh the page and try again.', 'gravityforms' ) );
 		}
 
 		$args         = json_decode( rgpost( 'args' ), true );
@@ -75,11 +76,11 @@ class GF_Config_Collection {
 		$configs = $this->get_configs_by_path( $config_path, $args );
 
 		if ( ! $configs ) {
-			wp_send_json_error( sprintf( esc_html__( 'Unable to find config: %s', 'gravityforms' ), $config_path ) );
+			GFCommon::send_json_error( sprintf( esc_html__( 'Unable to find config: %s', 'gravityforms' ), $config_path ) );
 		}
 
 		$data = $this->get_merged_data_for_object( $configs, $args );
-		wp_send_json_success( $data );
+		GFCommon::send_json_success( $data );
 	}
 	/**
 	 * Localize the data for the given script.

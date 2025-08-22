@@ -440,7 +440,15 @@ if ( ! class_exists( 'GFForms' ) ) {
 			'gf_alert_gray',
 			'gf_alert_blue',
 			'gf_simple_horizontal',
-			'gf_invisible'
+			'gf_invisible',
+			'gf_list_2col',
+			'gf_list_3col',
+			'gf_list_4col',
+			'gf_list_5col',
+			'gf_list_2col_vertical',
+			'gf_list_3col_vertical',
+			'gf_list_4col_vertical',
+			'gf_list_5col_vertical',
 		];
 
 		var classes = field.cssClass.split(/\s+/);

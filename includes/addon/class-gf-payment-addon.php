@@ -263,6 +263,12 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		if ( GFForms::get_page_query_arg() == 'gf_entries' ) {
 			add_action( 'gform_payment_details', array( $this, 'entry_info' ), 10, 2 );
+			if ( ! has_filter( 'gform_entries_filter_count_queries', array( __CLASS__, 'entries_filter_count_queries', ) ) ) {
+				add_filter( 'gform_entries_filter_count_queries', array( __CLASS__, 'entries_filter_count_queries' ) );
+			}
+			if ( ! has_filter( 'gform_filter_links_entry_list', array( __CLASS__, 'filter_links_entry_list' ) ) ) {
+				add_filter( 'gform_filter_links_entry_list', array( __CLASS__, 'filter_links_entry_list' ), 90, 4 );
+			}
 		}
 	}
 
@@ -3966,6 +3972,136 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 	public function get_supports_callback(){
 		return $this->_supports_callbacks;
 	}
+
+	/**
+	 * Helper to get the configs for the payment status filter links.
+	 *
+	 * @since 2.9.16
+	 *
+	 * @return array[]
+	 */
+	private static function get_statuses_for_filter_links() {
+		// Defines the configs for the default statuses, some filter links will display entries for multiple statuses.
+		$statuses = array(
+			array(
+				'id'     => 'payment_pending',
+				'values' => array( 'Pending', 'Processing' ),
+				'label'  => esc_html__( 'Payment Processing', 'gravityforms' ),
+			),
+			array(
+				'id'     => 'payment_authorized',
+				'values' => array( 'Authorized' ),
+				'label'  => esc_html__( 'Payment Authorized', 'gravityforms' ),
+			),
+			array(
+				'id'     => 'payment_completed',
+				'values' => array( 'Paid', 'Active' ),
+				'label'  => esc_html__( 'Payment Completed', 'gravityforms' ),
+			),
+			array(
+				'id'     => 'payment_failed',
+				'values' => array( 'Failed', 'Voided' ),
+				'label'  => esc_html__( 'Payment Failed', 'gravityforms' ),
+			),
+		);
+
+		$done         = array_column( $statuses, 'values' );
+		$done         = array_merge( ...$done );
+		$all_statuses = GFCommon::get_entry_payment_statuses();
+
+		// Adds the configs for any remaining statuses.
+		foreach ( $all_statuses as $status => $label ) {
+			if ( in_array( $status, $done ) ) {
+				continue;
+			}
+
+			$statuses[] = array(
+				'id'     => 'payment_' . strtolower( str_replace( ' ', '_', $status ) ),
+				'values' => array( $status ),
+				'label'  => sprintf( esc_html__( 'Payment %s', 'gravityforms' ), $label ),
+			);
+		}
+
+		return $statuses;
+	}
+
+	/**
+	 * Callback for gform_entries_filter_count_queries; registers the db queries to be used to get the entry counts for the filters.
+	 *
+	 * @since 2.9.16.
+	 *
+	 * @param array $queries The filter count queries.
+	 *
+	 * @return array
+	 */
+	public static function entries_filter_count_queries( $queries ) {
+		global $wpdb;
+		$statuses = self::get_statuses_for_filter_links();
+
+		foreach ( $statuses as $status ) {
+			$id     = rgar( $status, 'id' );
+			$values = rgar( $status, 'values' );
+			$count  = count( $values );
+			if ( $count === 1 ) {
+				$queries[] = $wpdb->prepare( "COUNT(DISTINCT CASE WHEN l.payment_status=%s AND l.status='active' THEN l.id END) as $id", $values[0] );
+			} else {
+				$placeholders = implode( ', ', array_fill( 0, $count, '%s' ) );
+				$queries[]    = $wpdb->prepare( "COUNT(DISTINCT CASE WHEN l.payment_status IN ($placeholders) AND l.status='active' THEN l.id END) as $id", ...$values );
+			}
+		}
+
+		return $queries;
+	}
+
+	/**
+	 * Callback for gform_filter_links_entry_list; registers the filter links to be displayed on the entries list page.
+	 *
+	 * @since 2.9.16
+	 *
+	 * @param array $filter_links   The filter links to be displayed.
+	 * @param array $form           The form that the entries are being viewed for.
+	 * @param bool  $include_counts Indicates if the entry counts should be included. True for above the entries list table. False for the screen options.
+	 * @param array $counts         The number of entries that match the filters when $include_counts is true.
+	 */
+	public static function filter_links_entry_list( $filter_links, $form, $include_counts, $counts ) {
+		$statuses       = self::get_statuses_for_filter_links();
+		$default_filter = rgar( GFEntryList::get_screen_options_values(), 'default_filter' );
+
+		foreach ( $statuses as $status ) {
+			$id    = rgar( $status, 'id' );
+			$count = rgar( $counts, $id, 0 );
+
+			// Only add the filter above the entries list table when there are matching entries, unless it is the default filter.
+			if ( $include_counts && $count <= 0 && $id !== $default_filter ) {
+				continue;
+			}
+
+			$values = rgar( $status, 'values' );
+			if ( count( $values ) === 1 ) {
+				$field_filter = array(
+					'key'      => 'payment_status',
+					'operator' => '=',
+					'value'    => $values[0],
+				);
+			} else {
+				$field_filter = array(
+					'key'      => 'payment_status',
+					'operator' => 'in',
+					'value'    => $values,
+				);
+			}
+
+			$filter_links[] = array(
+				'id'            => $id,
+				'field_filters' => array( $field_filter ),
+				'count'         => $count,
+				'label'         => rgar( $status, 'label' ),
+			);
+		}
+
+		return $filter_links;
+	}
+
 }
 
 if ( ! class_exists( 'WP_List_Table' ) ) {

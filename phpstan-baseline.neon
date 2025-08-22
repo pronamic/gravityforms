@@ -121,11 +121,6 @@ parameters:
 			path: entry_list.php
 
 		-
-			message: "#^Expected 3 @param tags, found 1\\.$#"
-			count: 1
-			path: entry_list.php
-
-		-
 			message: "#^Expected 4 @param tags, found 3\\.$#"
 			count: 1
 			path: entry_list.php

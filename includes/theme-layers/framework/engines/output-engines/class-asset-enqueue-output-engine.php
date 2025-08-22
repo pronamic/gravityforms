@@ -94,7 +94,10 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 			$form = $settings = array();
 			if ( in_array( \GFForms::get_page(), array( 'form_editor', 'entry_detail', 'entry_detail_edit' ) ) ) {
 				$form = GFAPI::get_form( rgget( 'id' ) );
-				$settings = $self->get_settings( $form['id'] );
+				if ( ! $form ) {
+					return;
+				}
+				$settings = $self->get_settings( rgar( $form, 'id' ) );
 			}
 
 			$self->enqueue_form_styles( $form, $settings );
@@ -111,14 +114,14 @@ class Asset_Enqueue_Output_Engine extends Output_Engine {
 		add_filter( 'gform_preview_styles', function( $styles, $form ) use ( $self ) {
 			global $wp_styles;
 
-			$settings = $this->get_settings( $form['id'] );
+			$settings = $this->get_settings( rgar( $form, 'id' ) );
 			$self->enqueue_form_assets( $form, false, $settings, array() );
 			return array_unique( array_merge( $styles, $wp_styles->queue ) );
 		}, 10, 2 );
 
 		// Enqueue scripts and styles anywhere a form is loaded (admin or front end). Except for the block editor and form editor, which are handled above.
 		add_action( 'gform_enqueue_scripts', function( $form, $ajax ) use ( $self ) {
-			$settings = $this->get_settings( $form['id'] );
+			$settings = $this->get_settings( rgar( $form, 'id' ) );
 			$style_settings = $this->parse_form_style( $form );
 			$self->enqueue_form_assets( $form, $ajax, $settings, $style_settings );
 		}, 1000, 4 );

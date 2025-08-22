@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.15
+Version: 2.9.16
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.15';
+	public static $version = '2.9.16';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -4195,7 +4195,7 @@ class GFForms {
 		if ( $view == 'entry' && ( rgget( 'lid' ) || ! rgblank( rgget( 'pos' ) ) ) ) {
 			require_once( GFCommon::get_base_path() . '/entry_detail.php' );
 			GFEntryDetail::lead_detail_page();
-		} else if ( $view == 'entries' || empty( $view ) ) {
+		} else if ( $view == 'entries' || empty( $view ) || ! has_action( 'gform_entries_view' ) ) {
 			require_once( GFCommon::get_base_path() . '/entry_list.php' );
 			GFEntryList::all_entries_page();
 		} else {
@@ -5417,12 +5417,18 @@ class GFForms {
 	 * @uses   GFForms::format_toolbar_menu_items()
 	 */
 	public static function top_toolbar() {
-
-		$forms = RGFormsModel::get_forms( null, 'title' );
-		$id    = rgempty( 'id', $_GET ) ? count( $forms ) > 0 ? $forms[0]->id : '0' : rgget( 'id' );
+		if ( ! empty( $_GET['id'] ) ) {
+			$id = absint( $_GET['id'] );
+		} else {
+			$forms = RGFormsModel::get_forms( null, 'title' );
+			$id    = count( $forms ) > 0 ? absint( $forms[0]->id ) : '0';
+		}
 
 		// Get form.
 		$form = GFAPI::get_form( $id );
+		if ( empty( $form ) ) {
+			return;
+		}
 
 		?>
 		<div id="gform-form-toolbar" class="gform-form-toolbar">

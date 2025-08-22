@@ -1381,21 +1381,27 @@ abstract class GFAddOn {
 	public function output_third_party_styles( $markup, $form ) {
 		$settings           = $this->get_current_settings();
 		$all_block_settings = apply_filters( 'gform_form_block_attribute_values', array() );
-		$page_instance      = isset( $form['page_instance'] ) ? $form['page_instance'] : 0;
-		$block_settings     = isset( $all_block_settings[ $form['id'] ][ $page_instance ] ) ? $all_block_settings[ $form['id'] ][ $page_instance ] : array();
-		$properties         = call_user_func_array( array( $this, 'theme_layer_third_party_styles' ), array( $form['id'], $settings, $block_settings ) );
+		$page_instance      = rgar( $form, 'page_instance', 0 );
+		$form_id            = absint( rgar( $form, 'id' ) );
+		$block_settings     = rgars( $all_block_settings, $form_id . '/' . $page_instance, array() );
+		$properties         = call_user_func_array(
+			array( $this, 'theme_layer_third_party_styles' ),
+			array(
+				$form_id,
+				$settings,
+				$block_settings,
+			)
+		);
 
 		if ( empty( $properties ) ) {
 			return $markup;
 		}
 
 		$base_identifier = sprintf( 'gform.extensions.styles.%s', $this->get_slug() );
-		$form_identifier = sprintf( 'gform.extensions.styles.%s[%s]', $this->get_slug(), $form['id'] );
-		$full_identifier = sprintf( 'gform.extensions.styles.%s[%s][%s]', $this->get_slug(), $form['id'], $page_instance );
+		$form_identifier = sprintf( 'gform.extensions.styles.%s[%s]', $this->get_slug(), $form_id );
+		$full_identifier = sprintf( 'gform.extensions.styles.%s[%s][%s]', $this->get_slug(), $form_id, $page_instance );
 
 		ob_start(); ?>
-
-		<script>
 			if ( typeof gform !== 'undefined' ) {
 				gform.extensions = gform.extensions || {};
 				gform.extensions.styles = gform.extensions.styles || {};
@@ -1403,12 +1409,11 @@ abstract class GFAddOn {
 				<?php echo $form_identifier; ?> = <?php echo $form_identifier; ?> || {};
 				<?php echo $full_identifier; ?> = <?php echo json_encode( $properties ); ?>;
 			}
-		</script>
-
 		<?php
 
-		$props = ob_get_clean();
-		return $markup . $props;
+		$script = rtrim( ob_get_clean() );
+
+		return $markup . GFCommon::get_inline_script_tag( $script, false );
 	}
 
 

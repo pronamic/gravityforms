@@ -720,27 +720,61 @@ class GFFormsModel {
 		}
 
 		$entry_table_name = self::get_entry_table_name();
-		$entry_detail_table_name = self::get_entry_meta_table_name();
 
-		$sql             = $wpdb->prepare(
-			"SELECT
-                    (SELECT count(DISTINCT(l.id)) FROM $entry_table_name l WHERE l.form_id=%d AND l.status='active') as total,
-                    (SELECT count(DISTINCT(l.id)) FROM $entry_table_name l WHERE l.is_read=0 AND l.status='active' AND l.form_id=%d) as unread,
-                    (SELECT count(DISTINCT(l.id)) FROM $entry_table_name l WHERE l.is_starred=1 AND l.status='active' AND l.form_id=%d) as starred,
-                    (SELECT count(DISTINCT(l.id)) FROM $entry_table_name l WHERE l.status='spam' AND l.form_id=%d) as spam,
-                    (SELECT count(DISTINCT(l.id)) FROM $entry_table_name l WHERE l.status='trash' AND l.form_id=%d) as trash",
-			$form_id, $form_id, $form_id, $form_id, $form_id
+		$queries = array(
+			"COUNT(DISTINCT CASE WHEN l.status='active' THEN l.id END) as total",
+			"COUNT(DISTINCT CASE WHEN l.is_read=0 AND l.status='active' THEN l.id END) as unread",
+			"COUNT(DISTINCT CASE WHEN l.is_starred=1 AND l.status='active' THEN l.id END) as starred",
+			"COUNT(DISTINCT CASE WHEN l.status='spam' THEN l.id END) as spam",
+			"COUNT(DISTINCT CASE WHEN l.status='trash' THEN l.id END) as trash",
 		);
 
+		/**
+		 * Allows the queries used to get the counts for the entries list filter links to be overridden.
+		 *
+		 * @since 2.9.16
+		 *
+		 * @param array $queries The filter count queries.
+		 * @param int   $form_id The ID of the form the queries are being prepared for.
+		 */
+		$filtered_queries = apply_filters( 'gform_entries_filter_count_queries', $queries, $form_id );
+
+		if ( empty( $filtered_queries ) || ! is_array( $filtered_queries ) ) {
+			return array();
+		}
+
+		if ( $filtered_queries !== $queries ) {
+			$filtered_queries = array_filter(
+				$filtered_queries,
+				function ( $query ) use ( $queries ) {
+					if ( in_array( $query, $queries, true ) ) {
+						return true;
+					}
+
+					$forbidden = '/\b(?:create|drop|alter|delete|truncate|insert|update|replace)\b|;|--|\/\*/i';
+					if ( preg_match( $forbidden, $query ) ) {
+						return false;
+					}
+
+					return true;
+				}
+			);
+
+			if ( empty( $filtered_queries ) ) {
+				$filtered_queries = $queries;
+			}
+		}
+
+		$queries = implode( ',', $filtered_queries );
+
 		$wpdb->timer_start();
-		$results = $wpdb->get_results( $sql, ARRAY_A );
-		$time_total = $wpdb->timer_stop();
-		if ( $time_total > 1 ) {
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT $queries FROM %i l WHERE l.form_id=%d", $entry_table_name, $form_id ), ARRAY_A );
+		if ( $wpdb->timer_stop() > 1 ) {
 			GFCache::set( $cache_key, $results[0], true, 10 * MINUTE_IN_SECONDS );
 		}
 
 		return $results[0];
-
 	}
 
 	/**
@@ -3161,7 +3195,7 @@ class GFFormsModel {
 		$total_fields = array();
 		/* @var $calculation_fields GF_Field[] */
 		$calculation_fields = array();
-		$recalculate_total  = false;
+		$has_post_field     = false;
 
 		GFCommon::log_debug( __METHOD__ . '(): Saving entry fields.' );
 
@@ -3213,8 +3247,11 @@ class GFFormsModel {
 					continue;
 				}
 
-				if ( $field->type == 'post_category' ) {
-					$field = GFCommon::add_categories_as_choices( $field, '' );
+				if ( $field->type === 'post_category' ) {
+					$field          = GFCommon::add_categories_as_choices( $field, '' );
+					$has_post_field = true;
+				} elseif ( ! $has_post_field && GFCommon::is_post_field( $field ) ) {
+					$has_post_field = true;
 				}
 
 				$inputs = $field->get_entry_inputs();
@@ -3227,6 +3264,8 @@ class GFFormsModel {
 				}
 			}
 		}
+
+		GFCache::set( 'has_post_field_entry_' . $entry['id'], $has_post_field );
 
 		$results = GFFormsModel::commit_batch_field_operations();
 
@@ -3801,6 +3840,8 @@ class GFFormsModel {
 			} elseif ( $source_field instanceof GF_Field_MultiSelect && ! empty( $field_value ) && ! is_array( $field_value ) ) {
 				// Convert the comma-delimited string into an array.
 				$field_value = $source_field->to_array( $field_value );
+			} elseif ( $source_field instanceof GF_Field_Consent ) {
+				$field_value = rgar( $field_value, $rule['fieldId'] . '.1' );
 			} elseif ( $source_field->get_input_type() != 'checkbox' && is_array( $field_value ) && $source_field->id != $rule['fieldId'] && is_array( $source_field->get_entry_inputs() ) ) {
 				// Get the specific input value from the full field value.
 				$field_value = rgar( $field_value, $rule['fieldId'] );
@@ -5027,12 +5068,14 @@ class GFFormsModel {
 		GFCommon::timer_start( __METHOD__ );
 		GFCommon::log_debug( 'GFFormsModel::create_post(): Starting.' );
 
-		$has_post_field = false;
-		foreach ( $form['fields'] as $field ) {
-			$is_hidden = self::is_field_hidden( $form, $field, array(), $lead );
-			if ( ! $is_hidden && in_array( $field->type, array( 'post_category', 'post_title', 'post_content', 'post_excerpt', 'post_tags', 'post_custom_field', 'post_image' ) ) ) {
-				$has_post_field = true;
-				break;
+		$has_post_field = (bool) GFCache::get( 'has_post_field_entry_' . rgar( $lead, 'id' ), $found, false );
+		if ( ! $found ) {
+			// Fallback for when post creation is triggered at a later date/time.
+			foreach ( $form['fields'] as $field ) {
+				if ( GFCommon::is_post_field( $field ) && ! self::is_field_hidden( $form, $field, array(), $lead ) ) {
+					$has_post_field = true;
+					break;
+				}
 			}
 		}
 
@@ -6723,7 +6766,15 @@ class GFFormsModel {
 	}
 
 	public static function get_grid_columns( $form_id, $input_label_only = false ) {
-		$form      = self::get_form_meta( $form_id );
+		if ( empty( $form_id ) ) {
+			return array();
+		}
+
+		$form = self::get_form_meta( $form_id );
+		if ( empty( $form ) ) {
+			return array();
+		}
+
 		$field_ids = self::get_grid_column_meta( $form_id );
 
 		if ( ! is_array( $field_ids ) ) {
@@ -7100,12 +7151,18 @@ class GFFormsModel {
 	}
 
 	/**
-	 * Set RGFormsModel::$lead for use in hooks where $lead is not explicitly passed.
+	 * Populates the the static $_current_lead property withh the given entry, for use in hooks where it is not explicitly passed.
 	 *
-	 * @param mixed $lead
+	 * @since unknown
+	 * @since 2.9.16 Added the $flush_cache param.
+	 *
+	 * @param array $lead        The entry to be cached.
+	 * @param bool  $flush_cache Indicates if the contents of the static $_cache property should be flushed.
 	 */
-	public static function set_current_lead( $lead ) {
-		GFCache::flush();
+	public static function set_current_lead( $lead, $flush_cache = true ) {
+		if ( $flush_cache ) {
+			GFCache::flush();
+		}
 		self::$_current_lead = $lead;
 	}
 
