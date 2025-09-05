@@ -336,8 +336,8 @@ class GF_OSDXP {
 				foreach ( $this->slugs as $path => $name ) {
 					?>
                     <li <?php echo ( $path === $plugin_page ) ? 'class="active"' : '' ?>>
-                        <a href="<?php echo admin_url( 'admin.php?page=' . $path ); ?>">
-							<?php echo $name; ?>
+                        <a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=' . $path ) ); ?>">
+							<?php echo esc_html( $name ); ?>
                         </a>
                     </li>
 					<?php

@@ -89,7 +89,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		}
 
 		if ( ! self::$deprecation_notice_fired ) {
-			_deprecated_function( "Array access to the field object is now deprecated. Further notices will be suppressed. \$field['" . $offset . "']", '2.0', 'the object operator e.g. $field->' . $offset );
+			_deprecated_function( "Array access to the field object is now deprecated. Further notices will be suppressed. \$field['" . esc_attr( $offset ) . "']", '2.0', 'the object operator e.g. $field->' . esc_attr( $offset ) );
 			self::$deprecation_notice_fired = true;
 		}
 	}
@@ -1011,25 +1011,28 @@ class GF_Field extends stdClass implements ArrayAccess {
 	/**
 	 * Retrieve the input value on submission.
 	 *
+	 * @since 1.9
+	 * @since 2.9.17 Updated to return null if the field failed state validation.
+	 *
 	 * @param string    $standard_name            The input name used when accessing the $_POST.
 	 * @param string    $custom_name              The dynamic population parameter name.
 	 * @param array     $field_values             The dynamic population parameter names with their corresponding values to be populated.
 	 * @param bool|true $get_from_post_global_var Whether to get the value from the $_POST array as opposed to $field_values.
 	 *
-	 * @return array|string
+	 * @return array|string|null
 	 */
 	public function get_input_value_submission( $standard_name, $custom_name = '', $field_values = array(), $get_from_post_global_var = true ) {
 
 		$form_id = $this->formId;
-		if ( ! empty( $_POST[ 'is_submit_' . $form_id ] ) && $get_from_post_global_var ) {
-			$value = rgpost( $standard_name );
-			$value = GFFormsModel::maybe_trim_input( $value, $form_id, $this );
+		if ( ! empty( $_POST[ 'is_submit_' . $form_id ] ) && $get_from_post_global_var ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$value = $this->get_context_property( 'failed_state_validation' ) ? null : rgpost( $standard_name );
 
-			return $value;
+			return GFFormsModel::maybe_trim_input( $value, $form_id, $this );
 		} elseif ( $this->allowsPrepopulate ) {
 			return GFFormsModel::get_parameter_value( $custom_name, $field_values, $this );
 		}
 
+		return null;
 	}
 
 

@@ -28,9 +28,9 @@ class GF_Query_JSON_Handler extends GF_JSON_Handler {
 		$query         = "SELECT form_id FROM {$wpdb->prefix}gf_form_meta AS meta LEFT JOIN {$wpdb->prefix}gf_form AS form ON form.id = meta.form_id WHERE is_trash = 0 AND is_active = 1 AND JSON_CONTAINS(display_meta, %s, %s)";
 
 		// To define a "section" to query against, we pass it as `$.section` as the third argument to JSON_CONTAINS.
-		$prepared_query = $wpdb->prepare( $query, $json_selector, sprintf( '$.%s', $section ) );
+		$prepared_query = $wpdb->prepare( $query, $json_selector, sprintf( '$.%s', $section ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		return $wpdb->get_var( $prepared_query );
+		return $wpdb->get_var( $prepared_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 }

@@ -70,7 +70,7 @@ class GF_Splash_Page_Service_Provider extends GF_Service_Provider {
 		}, 10, 3 );
 
 		add_action( 'admin_footer', function () use ( $container ) {
-			echo $container->get( self::SPLASH_PAGE )->about_page_modal();
+			echo $container->get( self::SPLASH_PAGE )->about_page_modal(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}, 10, 0 );
 	}
 

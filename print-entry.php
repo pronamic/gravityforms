@@ -24,7 +24,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 }
 
 if ( ! GFCommon::current_user_can_any( 'gravityforms_view_entries' ) ) {
-	die( __( "You don't have adequate permission to view entries.", 'gravityforms' ) );
+	die( esc_html__( "You don't have adequate permission to view entries.", 'gravityforms' ) );
 }
 
 add_action( 'gform_print_entry_content', 'gform_default_entry_content', 10, 3 );
@@ -65,7 +65,7 @@ function gform_default_entry_content( $form, $entry, $entry_ids ) {
 
 	// Output entry divider/page break.
 	if ( array_search( $entry['id'], $entry_ids ) < count( $entry_ids ) - 1 ) {
-		echo '<div class="print-hr ' . $page_break . '"></div>';
+		echo '<div class="print-hr ' . esc_attr( $page_break ) . '"></div>';
 	}
 
 }
@@ -96,7 +96,7 @@ if ( 0 == $entry_ids ) {
 	$search_field_id = rgget( 'field_id' );
 	$search_operator = rgget( 'operator' );
 
-	if ( isset( $_GET['field_id'] ) && $_GET['field_id'] !== '' ) {
+	if ( isset( $_GET['field_id'] ) && $_GET['field_id'] !== '' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$key            = $search_field_id;
 		$val            = rgget( 's' );
 		$strpos_row_key = strpos( $search_field_id, '|' );
@@ -107,7 +107,7 @@ if ( 0 == $entry_ids ) {
 		}
 		$search_criteria['field_filters'][] = array(
 			'key'      => $key,
-			'operator' => rgempty( 'operator', $_GET ) ? 'is' : rgget( 'operator' ),
+			'operator' => rgempty( 'operator', $_GET ) ? 'is' : rgget( 'operator' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'value'    => $val,
 		);
 	}
@@ -180,7 +180,7 @@ if ( empty( $form_id ) || empty( $entry_ids ) ) {
 $form = GFAPI::get_form( $form_id );
 
 // Get script/styling extension.
-$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 $entry_title = count( $entry_ids ) > 1 ? esc_html__( 'Bulk Print', 'gravityforms' ) : esc_html__( 'Entry # ', 'gravityforms' ) . absint( $entry_ids[0] );
 
@@ -199,7 +199,7 @@ $admin_title = sprintf( __( '%1$s &lsaquo; %2$s &lsaquo; Print Preview - Gravity
 		<meta name="Robots" content="noindex, nofollow" />
 		<meta http-equiv="Imagetoolbar" content="No" />
 		<title><?php echo esc_html( $admin_title ); ?></title>
-		<link rel='stylesheet' href='<?php echo GFCommon::get_base_url() ?>/css/print<?php echo $min; ?>.css' type='text/css' />
+		<link rel='stylesheet' href='<?php echo esc_url( GFCommon::get_base_url() ) ?>/css/print<?php echo esc_html( $min ); ?>.css' type='text/css' />
 		<?php
 
 			/**
@@ -231,7 +231,7 @@ $admin_title = sprintf( __( '%1$s &lsaquo; %2$s &lsaquo; Print Preview - Gravity
 
 		?>
 	</head>
-	<body <?php echo $auto_print; ?>>
+	<body <?php echo esc_attr( $auto_print ); ?>>
 
 		<div id="print_preview_hdr" style="display:none">
 			<div>

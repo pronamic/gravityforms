@@ -182,7 +182,7 @@ class GF_Splash_Page {
 
 		ob_start();
 		include __DIR__ . '/gf_splash.php';
-		echo ob_get_clean();
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

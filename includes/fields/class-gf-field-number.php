@@ -114,7 +114,7 @@ class GF_Field_Number extends GF_Field {
 
 		// Raw value will be tested against the is_numeric() function to make sure it is in the right format.
 		// If the POST value is an array then the field is inside a repeater so use $value.
-		$raw_value = isset( $_POST[ 'input_' . $this->id ] ) && ! is_array( $_POST[ 'input_' . $this->id ] ) ? GFCommon::maybe_add_leading_zero( rgpost( 'input_' . $this->id ) ) : $value;
+		$raw_value = isset( $_POST[ 'input_' . $this->id ] ) && ! is_array( $_POST[ 'input_' . $this->id ] ) ? GFCommon::maybe_add_leading_zero( rgpost( 'input_' . $this->id ) ) : $value; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		$has_raw_value         = ! rgblank( trim( $raw_value ) );
 		$requires_valid_number = $has_raw_value && ! $this->has_calculation();

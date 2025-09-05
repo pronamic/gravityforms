@@ -10,7 +10,7 @@ class GFAsyncUpload {
 
 		GFCommon::log_debug( 'GFAsyncUpload::upload(): Starting.' );
 
-		if ( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
+		if ( $_SERVER['REQUEST_METHOD'] != 'POST' ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 			status_header( 404 );
 			die();
 		}
@@ -66,20 +66,20 @@ class GFAsyncUpload {
 		//adding index.html files to all subfolders
 		if ( ! file_exists( GFFormsModel::get_upload_root() . '/index.html' ) ) {
 			GFForms::add_security_files();
-		} else if ( ! file_exists( GFFormsModel::get_upload_path( $form_id ) . '/index.html' ) ) {
+		} else if ( ! file_exists( GFFormsModel::get_upload_path( $form_id ) . '/index.html' ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
 			GFCommon::recursive_add_index_file( GFFormsModel::get_upload_path( $form_id ) );
-		} else if ( ! file_exists( GFFormsModel::get_upload_path( $form_id ) . "/$y/index.html" ) ) {
+		} else if ( ! file_exists( GFFormsModel::get_upload_path( $form_id ) . "/$y/index.html" ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization 
 			GFCommon::recursive_add_index_file( GFFormsModel::get_upload_path( $form_id ) . "/$y" );
 		} else {
 			GFCommon::recursive_add_index_file( GFFormsModel::get_upload_path( $form_id ) . "/$y/$m" );
 		}
 
-		if ( ! file_exists( $target_dir . '/index.html' ) ) {
+		if ( ! file_exists( $target_dir . '/index.html' ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
 			GFCommon::recursive_add_index_file( $target_dir );
 		}
 
-		$uploaded_filename = $_REQUEST['original_filename'];
-		$file_name = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : '';
+		$uploaded_filename = $_REQUEST['original_filename']; //  phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		$file_name = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		$field_id  = rgpost( 'field_id' );
 		$field_id  = absint( $field_id );
 
@@ -114,7 +114,7 @@ class GFAsyncUpload {
 		$max_upload_size_in_bytes = $field->maxFileSize > 0 ? $field->maxFileSize * 1048576 : wp_max_upload_size();
 		$max_upload_size_in_mb    = $max_upload_size_in_bytes / 1048576;
 
-		if ( $_FILES['file']['size'] > 0 && $_FILES['file']['size'] > $max_upload_size_in_bytes ) {
+		if ( $_FILES['file']['size'] > 0 && $_FILES['file']['size'] > $max_upload_size_in_bytes ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 			self::die_error( 104,sprintf( __( 'File exceeds size limit. Maximum file size: %dMB', 'gravityforms' ), $max_upload_size_in_mb ) );
 		}
 
@@ -156,7 +156,7 @@ class GFAsyncUpload {
 
 		if ( ! $whitelisting_disabled && $check_chunk ) {
 
-			$file_array = $_FILES['file'];
+			$file_array = $_FILES['file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
 			if ( $chunks ) {
 				$file_array['tmp_name'] = $file_path;
@@ -188,9 +188,9 @@ class GFAsyncUpload {
 					$tmp_file_path = $target_dir . $file;
 
 					// Remove temp file if it is older than the max age and is not the current file
-					if ( preg_match( '/\.part$/', $file ) && ( filemtime( $tmp_file_path ) < time() - $max_file_age ) && ( $tmp_file_path != "{$file_path}.part" ) ) {
+					if ( preg_match( '/\.part$/', $file ) && ( filemtime( $tmp_file_path ) < time() - $max_file_age ) && ( $tmp_file_path != "{$file_path}.part" ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
 						GFCommon::log_debug( 'GFAsyncUpload::upload(): Deleting file: ' . $tmp_file_path );
-						@unlink( $tmp_file_path );
+						@unlink( $tmp_file_path ); // nosemgrep audit.php.lang.security.file.phar-deserialization, audit.php.lang.security.file.read-write-delete
 					}
 				}
 				closedir( $dir );
@@ -201,25 +201,25 @@ class GFAsyncUpload {
 		}
 
 		if ( isset( $_SERVER['HTTP_CONTENT_TYPE'] ) ) {
-			$contentType = $_SERVER['HTTP_CONTENT_TYPE'];
+			$contentType = $_SERVER['HTTP_CONTENT_TYPE']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		}
 
 		if ( isset( $_SERVER['CONTENT_TYPE'] ) ) {
-			$contentType = $_SERVER['CONTENT_TYPE'];
+			$contentType = $_SERVER['CONTENT_TYPE']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		}
 
 		// Handle non multipart uploads older WebKit versions didn't support multipart in HTML5
 		if ( strpos( $contentType, 'multipart' ) !== false ) {
-			if ( isset( $_FILES['file']['tmp_name'] ) && is_uploaded_file( $_FILES['file']['tmp_name'] ) ) {
+			if ( isset( $_FILES['file']['tmp_name'] ) && is_uploaded_file( $_FILES['file']['tmp_name'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				// Open temp file
 				$out = @fopen( "{$file_path}.part", $chunk == 0 ? 'wb' : 'ab' );
 				if ( $out ) {
 					// Read binary input stream and append it to temp file
-					$in = @fopen( $_FILES['file']['tmp_name'], 'rb' );
+					$in = @fopen( $_FILES['file']['tmp_name'], 'rb' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 					if ( $in ) {
 						while ( $buff = fread( $in, 4096 ) ) {
-							fwrite( $out, $buff );
+							fwrite( $out, $buff ); // nosemgrep audit.php.lang.security.file.read-write-delete
 						}
 					} else {
 						self::die_error( 101, __( 'Failed to open input stream.', 'gravityforms' ) );
@@ -227,7 +227,7 @@ class GFAsyncUpload {
 
 					@fclose( $in );
 					@fclose( $out );
-					@unlink( $_FILES['file']['tmp_name'] );
+					@unlink( $_FILES['file']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				} else {
 					self::die_error( 102, __( 'Failed to open output stream.', 'gravityforms' ) );
 				}
@@ -243,7 +243,7 @@ class GFAsyncUpload {
 
 				if ( $in ) {
 					while ( $buff = fread( $in, 4096 ) ) {
-						fwrite( $out, $buff );
+						fwrite( $out, $buff ); // nosemgrep audit.php.lang.security.file.read-write-delete
 					}
 				} else {
 					self::die_error( 101, __( 'Failed to open input stream.', 'gravityforms' ) );
@@ -260,7 +260,7 @@ class GFAsyncUpload {
 			// Upload is complete. Strip the temp .part suffix off
 			rename( "{$file_path}.part", $file_path );
 
-			if ( file_exists( $file_path ) ) {
+			if ( file_exists( $file_path ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
 				GFFormsModel::set_permissions( $file_path );
 			} else {
 				self::die_error( 105, __( 'Upload unsuccessful', 'gravityforms' ) . ' ' . $uploaded_filename );
@@ -293,7 +293,7 @@ class GFAsyncUpload {
 
 		$output = json_encode( $output );
 
-		die( $output );
+		die( $output ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public static function die_error( $status_code, $message ) {
@@ -305,7 +305,7 @@ class GFAsyncUpload {
 			'message' => $message,
 		);
 		$response_json = json_encode( $response );
-		die( $response_json );
+		die( $response_json ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }
 

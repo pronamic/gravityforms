@@ -66,7 +66,7 @@ class GF_System_Report {
 		?>
 
 		<div class="alert info">
-			<p><?php _e( 'The following is a system report containing useful technical information for troubleshooting issues. If you need further help after viewing the report, click on the "Copy System Report" button below to copy the report and paste it in your message to support.', 'gravityforms' ); ?></p>
+			<p><?php esc_html_e( 'The following is a system report containing useful technical information for troubleshooting issues. If you need further help after viewing the report, click on the "Copy System Report" button below to copy the report and paste it in your message to support.', 'gravityforms' ); ?></p>
 
 			<button class="gform-button gform-button--size-r gform-button--white gform-button--icon-leading gform-system-report__copy-button" data-js="gf-copy-system-report">
 				<i class="gform-button__icon gform-button__icon--inactive gform-icon gform-icon--copy" data-js="button-icon"></i>
@@ -93,7 +93,7 @@ class GF_System_Report {
 
 
 			// Display section title.
-			echo '<h3><span>' . $section['title'] . '</span></h3>';
+			echo '<h3><span>' . $section['title'] . '</span></h3>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 			// Loop through tables.
 			foreach ( $section['tables'] as $table ) {
@@ -106,7 +106,7 @@ class GF_System_Report {
 				echo '<table class="gform_system_report wp-list-table fixed striped feeds">';
 
 				// Add table caption.
-				echo '<caption>' . rgar( $table, 'title' ) . '</caption>';
+				echo '<caption>' . rgar( $table, 'title' ) . '</caption>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 				// Add table headers (for screen readers and accessibility).
 				echo '<thead class="screen-reader-text"><tr><th scope="col">'. esc_html__( 'Setting', 'gravityforms' ) .'</th><th scope="col">'. esc_html__( 'Value', 'gravityforms' ) .'</th></tr></thead>';
@@ -125,10 +125,10 @@ class GF_System_Report {
 					echo '<tr>';
 
 					// Display item label.
-					echo '<td data-export-label="' . esc_attr( $item['label'] ) . '">' . $item['label'] . '</td>';
+					echo '<td data-export-label="' . esc_attr( $item['label'] ) . '">' . $item['label'] . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 					// Display item value.
-					echo '<td>' . self::prepare_item_value( $item ) . '</td>';
+					echo '<td>' . self::prepare_item_value( $item ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 					// Close item row.
 					echo '</tr>';
@@ -264,8 +264,8 @@ class GF_System_Report {
 
 					$warning = esc_html__( 'Do not close or navigate away from this page until the upgrade is 100% complete.', 'gravityforms' );
 
-					printf( '<p>%s</p>', $warning );
-					printf( '<p>%s</p>', $message );
+					printf( '<p>%s</p>', $warning ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					printf( '<p>%s</p>', $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					?>
 					<script>
 						jQuery(document).ready(function ($) {
@@ -354,7 +354,7 @@ class GF_System_Report {
 		}
 		self::$background_tasks = $background_tasks;
 
-		$db_date  = $wpdb->get_var( 'SELECT utc_timestamp()' );
+		$db_date  = $wpdb->get_var( 'SELECT utc_timestamp()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$php_date = date( 'Y-m-d H:i:s' );
 
 		// Prepare system report.
@@ -522,17 +522,17 @@ class GF_System_Report {
 							array(
 								'label'        => esc_html__( 'Software', 'gravityforms' ),
 								'label_export' => 'Software',
-								'value'        => esc_html( $_SERVER['SERVER_SOFTWARE'] ),
+								'value'        => esc_html( $_SERVER['SERVER_SOFTWARE'] ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 							),
 							array(
 								'label'        => esc_html__( 'Port', 'gravityforms' ),
 								'label_export' => 'Port',
-								'value'        => esc_html( $_SERVER['SERVER_PORT'] ),
+								'value'        => esc_html( $_SERVER['SERVER_PORT'] ),  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 							),
 							array(
 								'label'        => esc_html__( 'Document Root', 'gravityforms' ),
 								'label_export' => 'Document Root',
-								'value'        => esc_html( $_SERVER['DOCUMENT_ROOT'] ),
+								'value'        => esc_html( $_SERVER['DOCUMENT_ROOT'] ),  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 							),
 						),
 					),
@@ -633,7 +633,7 @@ class GF_System_Report {
 							array(
 								'label'        => esc_html__( 'Database Character Set', 'gravityforms' ),
 								'label_export' => 'Database Character Set',
-								'value'        => esc_html( ( GFCommon::get_dbms_type() === 'SQLite' ) ? $wpdb->charset : $wpdb->get_var( 'SELECT @@character_set_database' ) ),
+								'value'        => esc_html( ( GFCommon::get_dbms_type() === 'SQLite' ) ? $wpdb->charset : $wpdb->get_var( 'SELECT @@character_set_database' ) ), // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 							),
 							array(
 								'label'        => esc_html__( 'Database Collation', 'gravityforms' ),
@@ -1316,7 +1316,7 @@ class GF_System_Report {
 		}
 
 		// Get network active plugins.
-		$network_active_plugins = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->sitemeta} WHERE meta_key=%s", 'active_sitewide_plugins' ) );
+		$network_active_plugins = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->sitemeta} WHERE meta_key=%s", 'active_sitewide_plugins' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		// If no network active plugins were found, return.
 		if ( empty( $network_active_plugins ) ) {
@@ -1593,7 +1593,7 @@ class GF_System_Report {
 			(select count(1) from {$lead_meta_table}) as lead_meta_count,
 			(select count(1) from {$lead_notes_table}) as lead_notes_count";
 
-		$results = $wpdb->get_results( $query );
+		$results = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		if ( $wpdb->last_error || ! isset( $results[0] ) ) {
 			return 0;

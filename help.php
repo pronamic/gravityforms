@@ -24,8 +24,8 @@ class GFHelp {
 		$dev_min = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
 
 		?>
-        <link rel="stylesheet" href="<?php echo GFCommon::get_base_url(); ?>/assets/css/dist/admin<?php echo $dev_min; ?>.css" />
-		<div class="wrap gforms_help <?php echo GFCommon::get_browser_class() ?>">
+        <link rel="stylesheet" href="<?php echo esc_url( GFCommon::get_base_url() ); ?>/assets/css/dist/admin<?php echo esc_html( $dev_min ); ?>.css" />
+		<div class="wrap gforms_help <?php echo esc_attr( GFCommon::get_browser_class() ); ?>">
 
             <?php
             GFCommon::admin_screen_reader_title();
@@ -190,9 +190,9 @@ class GFHelp {
                 </div>
             </div>
 		</div>
-		<img id="hexagons-bg-orange" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-orange.svg" alt=""/>
-		<img id="hexagons-bg-dark-blue" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-dark-blue.svg" alt=""/>
-		<img id="hexagons-bg-light-blue" src="<?php echo GFCommon::get_base_url(); ?>/images/hexagons-bg-light-blue.svg" alt=""/>
+		<img id="hexagons-bg-orange" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/hexagons-bg-orange.svg" alt=""/>
+		<img id="hexagons-bg-dark-blue" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/hexagons-bg-dark-blue.svg" alt=""/>
+		<img id="hexagons-bg-light-blue" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/hexagons-bg-light-blue.svg" alt=""/>
 	<?php
 	}
 }

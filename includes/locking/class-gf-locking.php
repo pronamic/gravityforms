@@ -112,7 +112,7 @@ abstract class GFLocking {
 	}
 
 	public function register_scripts() {
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$locking_path = GFCommon::get_base_url() . '/includes/locking/';
 		wp_register_script( 'gforms_locking', $locking_path . "js/locking{$min}.js", array( 'jquery', 'heartbeat' ), GFCommon::$version );
 		wp_register_script( 'gforms_locking_view', $locking_path . "js/locking-view{$min}.js", array( 'jquery', 'heartbeat' ), GFCommon::$version );
@@ -323,11 +323,11 @@ abstract class GFLocking {
 	}
 
 	public function maybe_lock_object( $is_edit_page ) {
-		if ( isset( $_GET['get-edit-lock'] ) ) {
+		if ( isset( $_GET['get-edit-lock'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$this->set_lock( $this->_object_id );
 			wp_safe_redirect( $this->_edit_url );
 			exit();
-		} else if ( isset( $_GET['release-edit-lock'] ) ) {
+		} else if ( isset( $_GET['release-edit-lock'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$this->delete_lock_meta( $this->_object_id );
 			wp_safe_redirect( $this->_redirect_url );
 			exit();
@@ -533,7 +533,7 @@ abstract class GFLocking {
 		$locked_class = $this->is_locked( $object_id ) ? 'wp-locked' : '';
 		$classes      = ' gf-locking ' . $locked_class;
 		if ( $echo ) {
-			echo $classes;
+			echo $classes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return $classes;
@@ -556,7 +556,7 @@ abstract class GFLocking {
 		$lock_indicator = '<div class="locked-indicator"></div>';
 
 		if ( $echo ) {
-			echo $lock_indicator;
+			echo $lock_indicator; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return $lock_indicator;
@@ -579,7 +579,7 @@ abstract class GFLocking {
 		$locked_info = '<div class="locked-info"><span class="locked-avatar">' . $locked_avatar . '</span> <span class="locked-text">' . $locked_text . "</span></div>\n";
 
 		if ( $echo ) {
-			echo $locked_info;
+			echo $locked_info; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return $locked_info;

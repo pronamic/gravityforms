@@ -13,9 +13,9 @@ class GF_Download {
 	 * @since 2.0
 	 */
 	public static function maybe_process() {
-		if ( isset( $_GET['gf-download'] ) ) {
+		if ( isset( $_GET['gf-download'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			$file     = $_GET['gf-download'];
+			$file     = $_GET['gf-download']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			$form_id  = rgget( 'form-id' );
 			$field_id = rgget( 'field-id' );
 
@@ -181,7 +181,7 @@ class GF_Download {
 
 		while ( ! @feof( $handle ) ) {
 			$buffer = @fread( $handle, $chunksize );
-			echo $buffer;
+			echo $buffer; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 			if ( $retbytes ) {
 				$cnt += strlen( $buffer );

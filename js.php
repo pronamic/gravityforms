@@ -16,7 +16,7 @@ if ( ! class_exists( 'GFForms' ) ) {
             if (!confirmed) return;
 
             //Sending AJAX request
-            jQuery.post( ajaxurl, {action: "gf_delete_custom_choice", name: gform_selected_custom_choice, gf_delete_custom_choice: "<?php echo wp_create_nonce( 'gf_delete_custom_choice' ) ?>"});
+            jQuery.post( ajaxurl, {action: "gf_delete_custom_choice", name: gform_selected_custom_choice, gf_delete_custom_choice: "<?php echo wp_create_nonce( 'gf_delete_custom_choice' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"});
 
             //Updating UI
             delete gform_custom_choices[gform_selected_custom_choice];
@@ -47,7 +47,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 		var choices = jQuery('#gfield_bulk_add_input').val().split('\n');
 
 		//Sending AJAX request
-		jQuery.post(ajaxurl, {action: "gf_save_custom_choice", previous_name: gform_selected_custom_choice, new_name: name, choices: jQuery.toJSON(choices), gf_save_custom_choice: "<?php echo wp_create_nonce( 'gf_save_custom_choice' ) ?>"});
+		jQuery.post(ajaxurl, {action: "gf_save_custom_choice", previous_name: gform_selected_custom_choice, new_name: name, choices: jQuery.toJSON(choices), gf_save_custom_choice: "<?php echo wp_create_nonce( 'gf_save_custom_choice' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"});
 
 		//deleting existing custom choice
 		if (gform_selected_custom_choice.length > 0)
@@ -538,7 +538,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 		<?php
 		$current_currency = RGCurrency::get_currency( GFCommon::get_currency() );
 		?>
-		var currency = new gform.Currency(<?php echo GFCommon::json_encode( $current_currency )?>);
+		var currency = new gform.Currency(<?php echo GFCommon::json_encode( $current_currency ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>);
 		return currency;
 	}
 
@@ -737,7 +737,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 				break;
 			case "radio" :
 				if (!field.label)
-					field.label = "<?php _e( 'Untitled', 'gravityforms' ); ?>";
+					field.label = "<?php esc_html_e( 'Untitled', 'gravityforms' ); ?>";
 
 				field.validateState = true;
 				field.inputs = null;
@@ -1350,11 +1350,11 @@ if ( ! class_exists( 'GFForms' ) ) {
 		var nextId = GetNextFieldId();
 		var field = CreateField( nextId, type, index );
 
-		var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' )?>");
+		var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>");
 		mysack.execute = 1;
 		mysack.method = 'POST';
 		mysack.setVar("action", "rg_add_field");
-		mysack.setVar("rg_add_field", "<?php echo wp_create_nonce( 'rg_add_field' ) ?>");
+		mysack.setVar("rg_add_field", "<?php echo wp_create_nonce( 'rg_add_field' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>");
 		mysack.setVar("index", index);
 		mysack.setVar("field", jQuery.toJSON(field));
 		mysack.setVar('form_id', form.id);
@@ -1395,7 +1395,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 
 		jQuery.post(ajaxurl, {
 				action: "rg_duplicate_field",
-				rg_duplicate_field: "<?php echo wp_create_nonce( 'rg_duplicate_field' ) ?>",
+				rg_duplicate_field: "<?php echo wp_create_nonce( 'rg_duplicate_field' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>",
 				field: jQuery.toJSON(field),
 				source_field_id: sourceFieldId,
 				form_id: form.id
@@ -1418,7 +1418,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 				},
 				body: new URLSearchParams({
 					action: 'rg_ajax_get_form',
-					rg_ajax_get_form: "<?php echo wp_create_nonce( 'rg_ajax_get_form' ) ?>",
+					rg_ajax_get_form: "<?php echo wp_create_nonce( 'rg_ajax_get_form' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>",
 					form_id: form.id
 				})
 			});
@@ -1436,7 +1436,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 		if (!field)
 			field = GetSelectedField();
 		var fieldId = field.id,
-			data = {'action': 'rg_refresh_field_preview', 'rg_refresh_field_preview': '<?php echo wp_create_nonce( 'rg_refresh_field_preview' ) ?>', 'field': jQuery.toJSON(field), 'formId': form.id};
+			data = {'action': 'rg_refresh_field_preview', 'rg_refresh_field_preview': '<?php echo wp_create_nonce( 'rg_refresh_field_preview' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>', 'field': jQuery.toJSON(field), 'formId': form.id};
 
         /**
 		 * Do something before a field's preview has been refreshed.
@@ -1509,11 +1509,11 @@ if ( ! class_exists( 'GFForms' ) ) {
 		field["inputType"] = type;
 		SetDefaultValues(field);
 
-        var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' )?>");
+        var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>");
         mysack.execute = 1;
         mysack.method = 'POST';
         mysack.setVar("action", "rg_change_input_type");
-        mysack.setVar("rg_change_input_type", "<?php echo wp_create_nonce( 'rg_change_input_type' ) ?>");
+        mysack.setVar("rg_change_input_type", "<?php echo wp_create_nonce( 'rg_change_input_type' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>");
         mysack.setVar("field", jQuery.toJSON(field));
         mysack.setVar('form_id', form.id);
         mysack.onError = function () {
@@ -1594,12 +1594,12 @@ if ( ! class_exists( 'GFForms' ) ) {
 					fileID:	  field.choices[i].attachment_id,
 					externalManager:  true,
 					i18n:             {
-						click_to_upload: '<?php _e( 'Click to upload', 'gravityforms' ); ?>',
-						drag_n_drop:     '<?php _e( 'or drag and drop', 'gravityforms' ); ?>',
-						max:             '<?php _e( 'recommended size:', 'gravityforms' ); ?>',
-						or:              '<?php _e( 'or', 'gravityforms' ); ?>',
-						replace:         '<?php _e( 'Replace', 'gravityforms' ); ?>',
-						delete:          '<?php _e( 'Delete', 'gravityforms' ); ?>',
+						click_to_upload: '<?php esc_html_e( 'Click to upload', 'gravityforms' ); ?>',
+						drag_n_drop:     '<?php esc_html_e( 'or drag and drop', 'gravityforms' ); ?>',
+						max:             '<?php esc_html_e( 'recommended size:', 'gravityforms' ); ?>',
+						or:              '<?php esc_html_e( 'or', 'gravityforms' ); ?>',
+						replace:         '<?php esc_html_e( 'Replace', 'gravityforms' ); ?>',
+						delete:          '<?php esc_html_e( 'Delete', 'gravityforms' ); ?>',
 					},
 					uploadIcon: 'photograph',
 					uploadIconPrefix: 'gform-common-icon',
@@ -1662,7 +1662,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 		var fg = field.simpleCaptchaFontColor == undefined ? "" : field.simpleCaptchaFontColor;
 		var bg = field.simpleCaptchaBackgroundColor == undefined ? "" : field.simpleCaptchaBackgroundColor;
 
-		var url = "<?php echo admin_url( 'admin-ajax.php?action=rg_captcha_image' )?>" + "&type=" + field.captchaType + "&pos=" + pos + "&size=" + size + "&fg=" + fg.replace("#", "%23") + "&bg=" + bg.replace("#", "%23");
+		var url = "<?php echo admin_url( 'admin-ajax.php?action=rg_captcha_image' ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" + "&type=" + field.captchaType + "&pos=" + pos + "&size=" + size + "&fg=" + fg.replace("#", "%23") + "&bg=" + bg.replace("#", "%23");
 		return url;
 	}
 

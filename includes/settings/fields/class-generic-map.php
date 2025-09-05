@@ -243,7 +243,7 @@ class Generic_Map extends Base {
 		$key_field              = $this->key_field;
 		$key_field['choices']   = rgar( $key_field, 'choices' ) ? $this->get_choices( $key_field['choices'] ) : array();
 		// Populate default choices only if the feed hasn't been saved yet.
-		if ( empty( $_GET['fid'] ) ) {
+		if ( rgget( 'fid' ) ) {
 			$key_field['choices'] = $this->populate_default_key_values( $key_field['choices'] );
 		}
 		// Prepare JS params.

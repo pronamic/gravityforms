@@ -209,7 +209,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 		switch ( $this->captchaType ) {
 			case 'simple_captcha' :
 				if ( class_exists( 'ReallySimpleCaptcha' ) ) {
-					$prefix      = $_POST[ "input_captcha_prefix_{$this->id}" ];
+					$prefix      = rgpost( "input_captcha_prefix_{$this->id}" ); 
 					$captcha_obj = $this->get_simple_captcha();
 
 					if ( ! $captcha_obj->check( $prefix, str_replace( ' ', '', $value ) ) ) {
@@ -222,7 +222,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 				break;
 
 			case 'math' :
-				$prefixes    = explode( ',', $_POST[ "input_captcha_prefix_{$this->id}" ] );
+				$prefixes    = explode( ',', rgpost( "input_captcha_prefix_{$this->id}" ) );
 				$captcha_obj = $this->get_simple_captcha();
 
 				//finding first number
@@ -281,7 +281,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 	public function validate_recaptcha( $form ) {
 		if ( rgpost( 'gform_conversational_form' ) ) {
 			$hash = md5( $form['title'] . $form['id'] );
-			if ( $hash === $_POST['gform_conversational_form'] && is_plugin_active( 'gravityformsconversationalforms/conversationalforms.php' ) ) {
+			if ( $hash === rgpost( 'gform_conversational_form' ) && is_plugin_active( 'gravityformsconversationalforms/conversationalforms.php' ) ) {
 				// This is a conversational form, and recaptcha v2 isn't supported
 				return true;
 			}
@@ -784,7 +784,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 		$padded = $plaintext . str_repeat( chr( $pad ), $pad );
 
 		//encrypt as 128
-		$encrypted = GFCommon::openssl_encrypt( $padded, $secret_key, MCRYPT_RIJNDAEL_128 );
+		$encrypted = GFCommon::openssl_encrypt( $padded, $secret_key, MCRYPT_RIJNDAEL_128 ); // gitleaks:allow
 
 		$token = str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), $encrypted );
 		GFCommon::log_debug( ' token being used is: ' . $token );

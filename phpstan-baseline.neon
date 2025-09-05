@@ -141,11 +141,6 @@ parameters:
 			path: export.php
 
 		-
-			message: "#^Function esc_html invoked with 2 parameters, 1 required\\.$#"
-			count: 1
-			path: export.php
-
-		-
 			message: "#^Result of function wp_nonce_field \\(void\\) is used\\.$#"
 			count: 1
 			path: export.php
@@ -767,11 +762,6 @@ parameters:
 
 		-
 			message: "#^Method GF_Field\\:\\:get_conditional_logic_event\\(\\) should return string but return statement is missing\\.$#"
-			count: 1
-			path: includes/fields/class-gf-field.php
-
-		-
-			message: "#^Method GF_Field\\:\\:get_input_value_submission\\(\\) should return array\\|string but return statement is missing\\.$#"
 			count: 1
 			path: includes/fields/class-gf-field.php
 

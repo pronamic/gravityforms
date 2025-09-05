@@ -19,7 +19,7 @@
                     >
                         <span class="screen-reader-text"><?php echo esc_html__( '(opens in a new tab)', 'gravityforms' ); ?></span>
                         <img
-                            src="<?php echo $this->img_dir . 'g2.svg'; ?>"
+                            src="<?php echo esc_attr( $this->img_dir ) . 'g2.svg';  ?>"
                             alt="<?php esc_attr_e( 'G2 logo', 'gravityforms' ); ?>"
                             class="gform-reviews__logo"
                         />
@@ -42,13 +42,13 @@
                     >
                         <span class="screen-reader-text"><?php echo esc_html__( '(opens in a new tab)', 'gravityforms' ); ?></span>
                         <img
-                            src="<?php echo $this->img_dir . 'trustpilot.svg'; ?>"
+                            src="<?php echo esc_attr( $this->img_dir ) . 'trustpilot.svg'; ?>"
                             alt="<?php esc_attr_e( 'Trustpilot logo', 'gravityforms' ); ?>"
                             class="gform-reviews__logo"
                         />
                         <span class="gform-reviews__stars gform-reviews__stars--image">
                             <img
-                                src="<?php echo $this->img_dir . 'trustpilot-rating.svg'; ?>"
+                                src="<?php echo esc_attr( $this->img_dir ) . 'trustpilot-rating.svg'; ?>"
                                 alt="<?php esc_attr_e( 'Trustpilot rating', 'gravityforms' ); ?>"
                                 class="gform-reviews__stars-image"
                             />

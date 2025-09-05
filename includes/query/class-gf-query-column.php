@@ -80,7 +80,7 @@ class GF_Query_Column {
 		static $entry_columns = array();
 		if ( empty( $entry_columns ) ) {
 			global $wpdb;
-			$entry_columns = wp_list_pluck( $wpdb->get_results( 'SHOW COLUMNS FROM ' . GFFormsModel::get_entry_table_name(), ARRAY_A ), 'Field' );
+			$entry_columns = wp_list_pluck( $wpdb->get_results( $wpdb->prepare( 'SHOW COLUMNS FROM %i', GFFormsModel::get_entry_table_name() ), ARRAY_A ), 'Field' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 		return in_array( $this->field_id, $entry_columns );
 	}
@@ -100,7 +100,7 @@ class GF_Query_Column {
 		static $nullable_entry_columns = array();
 		if ( empty( $nullable_entry_columns ) ) {
 			global $wpdb;
-			$nullable_entry_columns = wp_list_pluck( $wpdb->get_results( 'SHOW COLUMNS FROM ' . GFFormsModel::get_entry_table_name() . " WHERE `Null` = 'YES'", ARRAY_A ), 'Field' );
+			$nullable_entry_columns = wp_list_pluck( $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM %i WHERE `Null` = 'YES'", GFFormsModel::get_entry_table_name() ), ARRAY_A ), 'Field' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 		return in_array( $this->field_id, $nullable_entry_columns );
 	}

@@ -72,7 +72,7 @@ class GF_Duplicate_Submissions_Handler {
 	public function maybe_enqueue_scripts() {
 
 		if ( $this->is_enabled() ) {
-			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || rgget( 'gform_debug' ) ? '' : '.min';
 			wp_enqueue_script( 'gform_duplicate_submissions', $this->base_url . "/js/duplicate-submissions{$min}.js", array(), true );
 			wp_localize_script( 'gform_duplicate_submissions', 'gf_duplicate_submissions', $this->get_localized_script_data() );
 		}

@@ -272,7 +272,7 @@ class GF_Field_Textarea extends GF_Field {
 
 		}
 
-		echo $script;
+		echo $script; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	}
 

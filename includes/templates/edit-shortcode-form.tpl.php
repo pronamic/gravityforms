@@ -8,14 +8,14 @@
 		</div>
 		<br />
 		<div>
-			<a href="javascript:void(0);" onclick="jQuery('#gf-edit-shortcode-form-advanced-attrs').toggle();" onkeypress="jQuery('#gf-edit-shortcode-form-advanced-attrs').toggle();" ><?php _e('Advanced Options', 'gravityforms'); ?></a>
+			<a href="javascript:void(0);" onclick="jQuery('#gf-edit-shortcode-form-advanced-attrs').toggle();" onkeypress="jQuery('#gf-edit-shortcode-form-advanced-attrs').toggle();" ><?php esc_html_e('Advanced Options', 'gravityforms'); ?></a>
 		</div>
 		<br />
 		<div id="gf-edit-shortcode-form-advanced-attrs" class="gf-edit-shortcode-form-advanced-attrs" style="display:none;">
 		</div>
 
-		<input id="gform-update-shortcode" type="button" class="button-primary" value="<?php _e( 'Update Form', 'gravityforms' ); ?>" />
-		<input id="gform-insert-shortcode" type="button" class="button-primary" value="<?php _e( 'Insert Form', 'gravityforms' ); ?>" />&nbsp;&nbsp;&nbsp;
+		<input id="gform-update-shortcode" type="button" class="button-primary" value="<?php esc_attr_e( 'Update Form', 'gravityforms' ); ?>" />
+		<input id="gform-insert-shortcode" type="button" class="button-primary" value="<?php esc_attr_e( 'Insert Form', 'gravityforms' ); ?>" />&nbsp;&nbsp;&nbsp;
 
 	</form>
 

@@ -739,8 +739,8 @@ Class GFNotification {
 						?>
 
 						var form = <?php echo json_encode( $form ) ?>;
-						var current_notification = <?php echo GFCommon::json_encode( $notification ) ?>;
-						var entry_meta = <?php echo GFCommon::json_encode( $entry_meta ) ?>;
+						var current_notification = <?php echo GFCommon::json_encode( $notification ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+						var entry_meta = <?php echo GFCommon::json_encode( $entry_meta ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
 
 						jQuery( function() {
 							ToggleConditionalLogic( true, 'notification' );
@@ -878,12 +878,12 @@ Class GFNotification {
 
 				jQuery.ajax(
 					{
-						url:      '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+						url:      '<?php echo admin_url( 'admin-ajax.php' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>',
 						method:   'POST',
 						dataType: 'json',
 						data: {
 							action:                        'rg_update_notification_active',
-							rg_update_notification_active: '<?php echo wp_create_nonce( 'rg_update_notification_active' ); ?>',
+							rg_update_notification_active: '<?php echo wp_create_nonce( 'rg_update_notification_active' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>',
 							form_id:                       '<?php echo intval( $form_id ); ?>',
 							notification_id:               notification_id,
 							is_active:                     is_active ? 0 : 1,
@@ -1109,7 +1109,7 @@ Class GFNotification {
 		$selected = rgempty( 'selectedValue' ) ? 0 : rgpost( 'selectedValue' );
 
 		$dropdown = wp_dropdown_categories( array( 'class' => 'gfield_routing_select gfield_routing_value_dropdown gfield_category_dropdown', 'orderby' => 'name', 'id' => $id, 'selected' => $selected, 'hierarchical' => true, 'hide_empty' => 0, 'echo' => false ) );
-		die( $dropdown );
+		die( $dropdown ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -1411,7 +1411,7 @@ class GFNotificationTable extends WP_List_Table {
 			</tfoot>
 
 			<tbody id="the-list"<?php if ( $singular ) {
-				echo " class='list:$singular'";
+				echo " class='list:$singular'"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			} ?>>
 
 			<?php $this->display_rows_or_placeholder(); ?>
@@ -1438,8 +1438,8 @@ class GFNotificationTable extends WP_List_Table {
 		static $row_class = '';
 		$row_class = ( $row_class == '' ? ' class="alternate"' : '' );
 
-		echo '<tr id="notification-' . esc_attr( $item['id'] ) . '" ' . $row_class . '>';
-		echo $this->single_row_columns( $item );
+		echo '<tr id="notification-' . esc_attr( $item['id'] ) . '" ' . $row_class . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->single_row_columns( $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '</tr>';
 	}
 
@@ -1470,7 +1470,7 @@ class GFNotificationTable extends WP_List_Table {
 	 * @return void
 	 */
 	function column_default( $item, $column ) {
-		echo rgar( $item, $column );
+		echo rgar( $item, $column ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -1564,8 +1564,8 @@ class GFNotificationTable extends WP_List_Table {
 				foreach ( $actions as $key => $html ) {
 					$divider = $key == $last_key ? '' : ' | ';
 					?>
-					<span class="<?php echo $key; ?>">
-                        <?php echo $html . $divider; ?>
+					<span class="<?php echo esc_attr( $key ); ?>">
+                        <?php echo $html . $divider; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     </span>
 				<?php
 				}
@@ -1597,7 +1597,7 @@ class GFNotificationTable extends WP_List_Table {
 			esc_html_e( 'WordPress', 'gravityforms' );
 		} else if ( rgar( $services, $notification['service'] ) ) {
 			$service = rgar( $services, $notification['service'] );
-			echo rgar( $service, 'label' );
+			echo rgar( $service, 'label' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} else {
 			esc_html_e( 'Undefined Service', 'gravityforms' );
 		}
@@ -1617,7 +1617,7 @@ class GFNotificationTable extends WP_List_Table {
 	 * @return void
 	 */
 	function column_event( $notification ) {
-		echo rgar( $this->notification_events, rgar( $notification, 'event' ) );
+		echo rgar( $this->notification_events, rgar( $notification, 'event' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

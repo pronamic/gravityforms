@@ -21,7 +21,7 @@ class GF_Fields {
 			throw new Exception( 'The type must be set' );
 		}
 		if ( isset( self::$_fields[ $field->type ] ) ) {
-			throw new Exception( 'Field type already registered: ' . $field->type );
+			throw new Exception( 'Field type already registered: ' . esc_html( $field->type ) );
 		}
 		self::$_fields[ $field->type ] = $field;
 	}

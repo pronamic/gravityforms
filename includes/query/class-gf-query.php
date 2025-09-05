@@ -687,7 +687,7 @@ class GF_Query {
 
 		$results = $this->query();
 
-		$this->total_found = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		$this->total_found = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $this->get_entries( $results );
 	}
@@ -702,7 +702,7 @@ class GF_Query {
 
 		$results = $this->query();
 
-		$this->total_found = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		$this->total_found = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		$ids = array();
 
@@ -816,7 +816,7 @@ class GF_Query {
 		GFCommon::log_debug( __METHOD__ . '(): sql => ' . $sql );
 
 		$this->timer_start();
-		$results = $wpdb->get_results( $sql, ARRAY_N );
+		$results = $wpdb->get_results( $sql, ARRAY_N ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$this->queries []= array( $this->timer_stop(), $sql );
 
 		if ( is_null( $results ) ) {
@@ -980,7 +980,7 @@ class GF_Query {
 				/**
 				 * Make sure a WHERE clause exists on meta fields.
 				 */
-				$conditions[] = $wpdb->prepare( sprintf( '`%s`.`meta_key` = %%s', $alias_on ), $on->field_id );
+				$conditions[] = $wpdb->prepare( sprintf( '`%s`.`meta_key` = %%s', $alias_on ), $on->field_id ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 			}
 
 			$conditions[] = sprintf( '`%s`.`form_id` = %d', $alias_on, $on->source );
@@ -1468,7 +1468,7 @@ class GF_Query {
 
 		$entry_table = GFFormsModel::get_entry_table_name();
 		$sql = sprintf( "SELECT * from $entry_table WHERE id IN(%s)", $placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) ) );
-		$entryset = $wpdb->get_results( $wpdb->prepare( $sql, $ids ), ARRAY_A );
+		$entryset = $wpdb->get_results( $wpdb->prepare( $sql, $ids ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		$entry_meta_table = GFFormsModel::get_entry_meta_table_name();
 
@@ -1496,7 +1496,7 @@ class GF_Query {
 				$entry_meta_placeholders = implode( ',', array_fill( 0, count( $entry_meta ), '%s' ) );
 				$sql = sprintf( '( form_id = %d AND meta_key IN (%s) )', $form_id, $entry_meta_placeholders );
 				if ( ! isset( $meta_clauses[ $form_id ] ) ) {
-					$meta_clauses[ $form_id ] = $wpdb->prepare( $sql, array_keys( $entry_meta ) );
+					$meta_clauses[ $form_id ] = $wpdb->prepare( $sql, array_keys( $entry_meta ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				}
 			}
 		}
@@ -1510,7 +1510,7 @@ WHERE entry_id IN(%s)
 AND ( meta_key REGEXP '^[0-9|.]+$'
 %s )
 ", $placeholders, $meta_clauses_str );
-		$metaset = $wpdb->get_results( $wpdb->prepare( $sql, $ids ), ARRAY_A );
+		$metaset = $wpdb->get_results( $wpdb->prepare( $sql, $ids ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 
 		foreach ( $metaset as $meta ) {

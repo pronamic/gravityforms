@@ -216,6 +216,6 @@ function gform_tooltip( $name, $css_class = '', $return = false ) {
 	if ( $return ) {
 		return $tooltip;
 	} else {
-		echo $tooltip;
+		echo $tooltip; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }

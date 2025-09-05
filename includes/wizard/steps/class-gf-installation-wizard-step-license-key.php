@@ -26,7 +26,7 @@ class GF_Installation_Wizard_Step_License_Key extends GF_Installation_Wizard_Ste
 			<?php
 			$key_error = $this->validation_message( 'license_key', false );
 			if ( $key_error ) {
-				echo $key_error;
+				echo $key_error; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			?>
 		</div>
@@ -43,7 +43,7 @@ class GF_Installation_Wizard_Step_License_Key extends GF_Installation_Wizard_Ste
 					<input type="checkbox" id="accept_terms" value="1" <?php checked( 1, $this->accept_terms ); ?> name="accept_terms" />
 					<?php esc_html_e( 'I understand the risks of not providing a valid license key.', 'gravityforms' ); ?> <span class="gfield_required">*</span>
 				</label>
-				<?php echo $message ?>
+				<?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</div>
 		<?php
 		}

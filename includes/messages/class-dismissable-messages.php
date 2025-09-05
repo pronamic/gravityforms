@@ -155,11 +155,11 @@ class Dismissable_Messages {
 
 				$need_script = true;
 				?>
-				<div class="notice below-h1 notice-<?php echo $class; ?> is-dismissible gf-notice"
-				     data-gf_dismissible_key="<?php echo $message['key'] ?>"
-				     data-gf_dismissible_nonce="<?php echo wp_create_nonce( 'gf_dismissible_nonce' ) ?>">
+				<div class="notice below-h1 notice-<?php echo esc_attr( $class ); ?> is-dismissible gf-notice"
+				     data-gf_dismissible_key="<?php echo esc_attr( $message['key'] ) ?>"
+				     data-gf_dismissible_nonce="<?php echo esc_attr( wp_create_nonce( 'gf_dismissible_nonce' ) ) ?>">
 					<p>
-						<?php echo $message['text']; ?>
+						<?php echo $message['text']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</p>
 				</div>
 				<?php

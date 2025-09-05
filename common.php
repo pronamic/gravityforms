@@ -568,7 +568,7 @@ class GFCommon {
 
 		if ( is_array( $files ) ) {
 			foreach ( $files as $file ) {
-				require_once $file;
+				require_once $file; // nosemgrep audit.php.lang.security.file.inclusion-arg
 			}
 		}
 
@@ -699,7 +699,7 @@ class GFCommon {
 
 		?>
 
-		<select id="<?php echo esc_attr( $element_id ); ?>_variable_select" onchange="<?php echo $onchange ?>" class="<?php echo esc_attr( $class ) ?>">
+		<select id="<?php echo esc_attr( $element_id ); ?>_variable_select" onchange="<?php echo esc_attr( $onchange ); ?>" class="<?php echo esc_attr( $class ) ?>">
 			<option value=''><?php esc_html_e( 'Insert Merge Tag', 'gravityforms' ); ?></option>
 
 			<?php foreach ( $merge_tags as $group => $group_tags ) {
@@ -978,18 +978,18 @@ class GFCommon {
 		if ( is_array( $field->inputs ) ) {
 			if ( RGFormsModel::get_input_type( $field ) == 'checkbox' ) {
 				?>
-				<option value='<?php echo '{' . esc_html( GFCommon::get_label( $field, $field->id ) ) . ':' . $field->id . "{$tag_args}}" ?>'><?php echo esc_html( GFCommon::get_label( $field, $field->id ) ) ?></option>
+				<option value='<?php echo '{' . esc_html( GFCommon::get_label( $field, $field->id ) ) . ':' . esc_html( $field->id . "{$tag_args}}" ); ?>'><?php echo esc_html( GFCommon::get_label( $field, $field->id ) ) ?></option>
 				<?php
 			}
 
 			foreach ( $field->inputs as $input ) {
 				?>
-				<option value='<?php echo '{' . esc_html( GFCommon::get_label( $field, $input['id'] ) ) . ':' . $input['id'] . "{$tag_args}}" ?>'><?php echo esc_html( GFCommon::get_label( $field, $input['id'] ) ) ?></option>
+				<option value='<?php echo '{' . esc_html( GFCommon::get_label( $field, $input['id'] ) ) . ':' . esc_html( $input['id'] . "{$tag_args}}" ); ?>'><?php echo esc_html( GFCommon::get_label( $field, $input['id'] ) ) ?></option>
 				<?php
 			}
 		} else {
 			?>
-			<option value='<?php echo '{' . esc_html( GFCommon::get_label( $field ) ) . ':' . $field->id . "{$tag_args}}" ?>'><?php echo esc_html( GFCommon::get_label( $field ) ) ?></option>
+			<option value='<?php echo '{' . esc_html( GFCommon::get_label( $field ) ) . ':' . esc_attr( $field->id . "{$tag_args}}" ) ?>'><?php echo esc_html( GFCommon::get_label( $field ) ) ?></option>
 			<?php
 		}
 	}
@@ -1000,7 +1000,7 @@ class GFCommon {
 		self::insert_variables( $fields, $element_id, true, '', $insert_variables_onchange, $max_label_size, null, '', 'gform_content_template_merge_tags' );
 		?>
 		&nbsp;&nbsp;
-		<select id="<?php echo $element_id ?>_image_size_select" onchange="InsertPostImageVariable('<?php echo esc_js( $element_id ); ?>', '<?php echo esc_js( $element_id ); ?>'); SetCustomFieldTemplate();" style="display:none;">
+		<select id="<?php echo esc_attr( $element_id ); ?>_image_size_select" onchange="InsertPostImageVariable('<?php echo esc_js( $element_id ); ?>', '<?php echo esc_js( $element_id ); ?>'); SetCustomFieldTemplate();" style="display:none;">
 			<option value=""><?php esc_html_e( 'Select image size', 'gravityforms' ) ?></option>
 			<option value="thumbnail"><?php esc_html_e( 'Thumbnail', 'gravityforms' ) ?></option>
 			<option value="thumbnail:left"><?php esc_html_e( 'Thumbnail - Left Aligned', 'gravityforms' ) ?></option>
@@ -1029,11 +1029,11 @@ class GFCommon {
 		if ( $fields == null ) {
 			$fields = array();
 		}
-		$onchange = empty( $onchange ) ? sprintf( "InsertVariable('%s', '%s');", esc_js( $element_id ), esc_js( $callback ) ) : $onchange;
+		$onchange = empty( $onchange ) ? sprintf( "InsertVariable('%s', '%s');", $element_id, $callback ) : $onchange;
 		$class    = 'gform_merge_tags';
 		?>
 
-		<select id="<?php echo esc_attr( $element_id ); ?>_variable_select" class="<?php echo esc_attr( $class ); ?>" onchange="<?php echo $onchange; ?>">
+		<select id="<?php echo esc_attr( $element_id ); ?>_variable_select" class="<?php echo esc_attr( $class ); ?>" onchange="<?php echo esc_attr( $onchange ); ?>">
 			<option value=''><?php esc_html_e( 'Insert Merge Tag', 'gravityforms' ); ?></option>
 			<optgroup label="<?php esc_attr_e( 'Allowable form fields', 'gravityforms' ); ?>">
 				<?php foreach ( $fields as $field ) {
@@ -1535,7 +1535,7 @@ class GFCommon {
 			$text       = str_replace( '{user_agent}', self::format_variable_value( $user_agent, $url_encode, $esc_html, $format, $nl2br ), $text );
 
 			//referrer
-			$referer = isset( $_POST['ajax_referer'] ) ? esc_url( urldecode( $_POST['ajax_referer'] ) ) : rgar( $_SERVER, 'HTTP_REFERER' );
+			$referer = isset( $_POST['ajax_referer'] ) ? esc_url_raw( urldecode( wp_unslash( $_POST['ajax_referer'] ) ) ) : rgar( $_SERVER, 'HTTP_REFERER' ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			if ( $esc_html ) {
 				$referer = esc_html( $referer );
 			}
@@ -3237,7 +3237,7 @@ Content-Type: text/html;
 
 	public static function ensure_wp_version() {
 		if ( ! GF_SUPPORTED_WP_VERSION ) {
-			echo "<div class='error' style='padding:10px;'>" . sprintf( esc_html__( 'Gravity Forms requires WordPress %s or greater. You must upgrade WordPress in order to use Gravity Forms', 'gravityforms' ), GF_MIN_WP_VERSION ) . '</div>';
+			echo "<div class='error' style='padding:10px;'>" . sprintf( esc_html__( 'Gravity Forms requires WordPress %s or greater. You must upgrade WordPress in order to use Gravity Forms', 'gravityforms' ), esc_html( GF_MIN_WP_VERSION ) ) . '</div>';
 
 			return false;
 		}
@@ -3717,7 +3717,7 @@ Content-Type: text/html;
 					$field_value .= '|' . $price;
 				}
 
-				if ( ! isset( $_GET['gf_token'] ) && empty( $_POST ) && self::is_empty_array( $value ) && rgget('view') != 'entry' ) {
+				if ( ! isset( $_GET['gf_token'] ) && empty( $_POST ) && self::is_empty_array( $value ) && rgget('view') != 'entry' ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 					$selected = rgar( $choice, 'isSelected' ) ? "selected='selected'" : '';
 				} else {
 					if ( is_array( $value ) ) {
@@ -3882,7 +3882,7 @@ Content-Type: text/html;
 
 		?>
 		<h1>
-			<span id='gform_settings_page_title' class='gform_settings_page_title<?php echo $editable_class ?>' onclick='GF_ShowEditTitle()'><?php echo esc_html( rgar( $form, 'title' ) ); ?></span>
+			<span id='gform_settings_page_title' class='gform_settings_page_title<?php echo esc_attr( $editable_class ); ?>' onclick='GF_ShowEditTitle()'><?php echo esc_html( rgar( $form, 'title' ) ); ?></span>
 			<?php GFForms::form_switcher(); ?>
 			<span class="gf_admin_page_formid">ID: <?php echo absint( $form['id'] ); ?></span>
 		</h1>
@@ -4026,7 +4026,7 @@ Content-Type: text/html;
 		}
 
 
-		if ( ! $is_ssl && isset( $_SERVER['HTTP_CF_VISITOR'] ) && strpos( $_SERVER['HTTP_CF_VISITOR'], 'https' ) ) {
+		if ( ! $is_ssl && isset( $_SERVER['HTTP_CF_VISITOR'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_VISITOR'] ) ), 'https' ) ) {
 			$is_ssl = true;
 		}
 
@@ -4037,7 +4037,7 @@ Content-Type: text/html;
 		$url_info  = parse_url( RGFormsModel::get_current_page_url() );
 		$file_name = basename( rgar( $url_info, 'path' ) );
 
-		return $file_name == 'preview.php' || rgget( 'gf_page', $_GET ) == 'preview' || rgget( 'gf_ajax_page', $_GET ) == 'preview';
+		return $file_name == 'preview.php' || rgget( 'gf_page', $_GET ) == 'preview' || rgget( 'gf_ajax_page', $_GET ) == 'preview'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -4877,16 +4877,19 @@ Content-Type: text/html;
 
 		//adding IE version
 		if ( $is_IE ) {
-			if ( strpos( $_SERVER['HTTP_USER_AGENT'], 'MSIE 6' ) !== false ) {
-				$classes[] = 'gf_browser_ie6';
-			} else if ( strpos( $_SERVER['HTTP_USER_AGENT'], 'MSIE 7' ) !== false ) {
-				$classes[] = 'gf_browser_ie7';
-			}
-			if ( strpos( $_SERVER['HTTP_USER_AGENT'], 'MSIE 8' ) !== false ) {
-				$classes[] = 'gf_browser_ie8';
-			}
-			if ( strpos( $_SERVER['HTTP_USER_AGENT'], 'MSIE 9' ) !== false ) {
-				$classes[] = 'gf_browser_ie9';
+			if ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+				$ie_user_agent = sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) );
+				if (  strpos( $ie_user_agent, 'MSIE 6' ) !== false ) {
+					$classes[] = 'gf_browser_ie6';
+				} else if ( strpos( $ie_user_agent, 'MSIE 7' ) !== false ) {
+					$classes[] = 'gf_browser_ie7';
+				}
+				if ( strpos( $ie_user_agent, 'MSIE 8' ) !== false ) {
+					$classes[] = 'gf_browser_ie8';
+				}
+				if ( strpos( $ie_user_agent, 'MSIE 9' ) !== false ) {
+					$classes[] = 'gf_browser_ie9';
+				}
 			}
 		}
 
@@ -5152,7 +5155,7 @@ Content-Type: text/html;
 	public static function add_categories_as_choices( $field, $value ) {
 
 		$choices         = $inputs = array();
-		$is_post         = isset( $_POST['gform_submit'] );
+		$is_post         = isset( $_POST['gform_submit'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$has_placeholder = $field->categoryInitialItemEnabled && RGFormsModel::get_input_type( $field ) == 'select';
 
 		if ( $has_placeholder ) {
@@ -5430,7 +5433,7 @@ Content-Type: text/html;
 
 	public static function conditional_shortcode( $attributes, $content = null ) {
 
-		extract(
+		extract( // nosemgrep audit.php.wp.security.extract.shortcode-attr
 			shortcode_atts(
 				array(
 					'merge_tag' => '',
@@ -5555,7 +5558,7 @@ Content-Type: text/html;
 	 * @param WP_Error|array $response The remote request response or WP_Error on failure.
 	 */
 	public static function log_remote_response( $response ) {
-		if ( is_wp_error( $response ) || isset( $_GET['gform_debug'] ) ) {
+		if ( is_wp_error( $response ) || isset( $_GET['gform_debug'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			self::log_error( __METHOD__ . '(): ' . print_r( $response, 1 ) );
 		} else {
 			self::log_debug( sprintf( '%s(): code: %s; body: %s', __METHOD__, wp_remote_retrieve_response_code( $response ), wp_remote_retrieve_body( $response ) ) );
@@ -5573,7 +5576,7 @@ Content-Type: text/html;
 				$text = 'selected="selected"';
 		}
 
-		echo $condition ? $text : '';
+		echo $condition ? esc_html( $text ) : '';
 	}
 
 	/**
@@ -5608,7 +5611,7 @@ Content-Type: text/html;
 			return $return_array ? $gf_global : $gf_global_json;
 		}
 
-		echo $gf_global_json;
+		echo $gf_global_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public static function gf_vars( $echo = true ) {
@@ -5821,7 +5824,7 @@ Content-Type: text/html;
 		if ( ! $echo ) {
 			return $gf_vars_json;
 		} else {
-			echo $gf_vars_json;
+			echo $gf_vars_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 
@@ -5890,10 +5893,10 @@ Content-Type: text/html;
 			<div class="alert error below-h2">
 				<?php if ( count( $errors ) > 1 ) { ?>
 					<ul style="margin: 0.5em 0 0; padding: 2px;">
-						<li><?php echo implode( '</li><li>', $errors ); ?></li>
+						<li><?php echo wp_kses_post( implode( '</li><li>', $errors ) ); ?></li>
 					</ul>
 				<?php } else { ?>
-					<p><?php echo $errors[0]; ?></p>
+					<p><?php echo wp_kses_post( $errors[0] ); ?></p>
 				<?php } ?>
 			</div>
 			<?php
@@ -5902,10 +5905,10 @@ Content-Type: text/html;
 			<div id="message" class="alert success below-h2">
 				<?php if ( count( $messages ) > 1 ) { ?>
 					<ul style="margin: 0.5em 0 0; padding: 2px;">
-						<li><?php echo implode( '</li><li>', $messages ); ?></li>
+						<li><?php echo wp_kses_post( implode( '</li><li>', $messages ) ); ?></li>
 					</ul>
 				<?php } else { ?>
-					<p><strong><?php echo $messages[0]; ?></strong></p>
+					<p><strong><?php echo wp_kses_post( $messages[0] ); ?></strong></p>
 				<?php } ?>
 			</div>
 			<?php
@@ -6045,12 +6048,12 @@ Content-Type: text/html;
 		?>
 		<header class="gform-settings-header <?php echo esc_attr( $header_button_class ); ?>">
 			<div class="gform-settings__wrapper">
-				<img src="<?php echo GFCommon::get_base_url(); ?>/images/logos/gravity-logo-dark.svg" alt="Gravity Forms" width="220" />
+				<img src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/logos/gravity-logo-dark.svg" alt="Gravity Forms" width="220" />
 
 				<?php
 				if ( !empty ( $header_buttons ) ) { ?>
 					<div class="gform-settings-header_buttons">
-						<?php echo $header_buttons; ?>
+						<?php echo $header_buttons; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</div>
 				<?php } ?>
 			</div>
@@ -6164,7 +6167,7 @@ Content-Type: text/html;
 	 */
 	public static function maybe_output_gf_vars() {
 		if ( self::requires_gf_vars() ) {
-			echo self::get_inline_script_tag( self::gf_vars( false ), false );
+			echo self::get_inline_script_tag( self::gf_vars( false ), false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 
@@ -6206,7 +6209,7 @@ Content-Type: text/html;
 			return;
 		}
 
-		echo self::get_inline_script_tag( self::get_hooks_javascript_code(), false );
+		echo self::get_inline_script_tag( self::get_hooks_javascript_code(), false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -6219,7 +6222,7 @@ Content-Type: text/html;
 	public static function get_hooks_javascript_code() {
 		require_once self::get_base_path() . '/form_display.php';
 
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignoreWordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Recommended
 
 		GFFormDisplay::$hooks_js_printed = true;
 
@@ -7012,7 +7015,7 @@ Content-Type: text/html;
 
 		global $wpdb;
 
-		$count = $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" );
+		$count = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return ! empty( $count );
 
@@ -7078,13 +7081,13 @@ Content-Type: text/html;
 				$determined_locale = get_user_locale();
 			}
 
-			if ( isset( $_GET['_locale'] ) && 'user' === $_GET['_locale'] && wp_is_json_request() ) {
+			if ( isset( $_GET['_locale'] ) && 'user' === $_GET['_locale'] && wp_is_json_request() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$determined_locale = get_user_locale();
 			}
 		}
 
-		if ( ! empty( $_GET['wp_lang'] ) && ! empty( $GLOBALS['pagenow'] ) && 'wp-login.php' === $GLOBALS['pagenow'] ) {
-			$determined_locale = sanitize_text_field( $_GET['wp_lang'] );
+		if ( ! empty( $_GET['wp_lang'] ) && ! empty( $GLOBALS['pagenow'] ) && 'wp-login.php' === $GLOBALS['pagenow'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$determined_locale = sanitize_text_field( wp_unslash( $_GET['wp_lang'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**
@@ -7795,10 +7798,10 @@ Content-Type: text/html;
 
 		if ( empty( $value ) ) {
 			global $wpdb;
-			$value = $wpdb->get_var( 'SELECT version();' );
+			$value = $wpdb->get_var( 'SELECT version();' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			if ( ( get_class( $wpdb ) === 'WP_SQLite_DB' ) || $wpdb->last_error ) {
-				$value = $wpdb->get_var( 'SELECT sqlite_version();' );
+				$value = $wpdb->get_var( 'SELECT sqlite_version();' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			}
 
 		}
@@ -7893,7 +7896,7 @@ Content-Type: text/html;
 			return;
 		}
 
-		echo $svgs[ $key ];
+		echo $svgs[ $key ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -8393,7 +8396,7 @@ class GFCache {
 			);
 		}
 
-		$rows_deleted = $wpdb->query( $sql );
+		$rows_deleted = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- prepare statement above
 
 		$success = $rows_deleted !== false ? true : false;
 

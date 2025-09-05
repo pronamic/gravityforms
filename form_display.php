@@ -429,12 +429,12 @@ class GFFormDisplay {
 				continue;
 			}
 
-			if ( empty( $_FILES[ $input_name ]['name'] ) ) {
+			if ( empty( $_FILES[ $input_name ]['name'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 				GFCommon::log_debug( "GFFormDisplay::upload_files(): Skipping field because a file could not be found: {$field->label}({$field->id} - {$field->type})." );
 				continue;
 			}
 
-			$file_name = $_FILES[ $input_name ]['name'];
+			$file_name = $_FILES[ $input_name ]['name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 			if ( GFCommon::file_name_has_disallowed_extension( $file_name ) ) {
 				GFCommon::log_debug( __METHOD__ . "(): Illegal file extension: {$file_name}" );
 				continue;
@@ -459,7 +459,7 @@ class GFFormDisplay {
 			if ( empty( $allowed_extensions ) && ! $whitelisting_disabled ) {
 				// Whitelist the file type
 
-				$valid_file_name = GFCommon::check_type_and_ext( $_FILES[ $input_name ], $file_name );
+				$valid_file_name = GFCommon::check_type_and_ext( $_FILES[ $input_name ], $file_name ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 				if ( is_wp_error( $valid_file_name ) ) {
 					GFCommon::log_debug( __METHOD__ . "(): The uploaded file type is not allowed: {$file_name}" );
@@ -470,12 +470,12 @@ class GFFormDisplay {
 			$file_info = RGFormsModel::get_temp_filename( $form['id'], $input_name );
 			GFCommon::log_debug( 'GFFormDisplay::upload_files(): Temp file info: ' . print_r( $file_info, true ) );
 
-			if ( $file_info && move_uploaded_file( $_FILES[ $input_name ]['tmp_name'], $target_path . $file_info['temp_filename'] ) ) {
+			if ( $file_info && move_uploaded_file( $_FILES[ $input_name ]['tmp_name'], $target_path . $file_info['temp_filename'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 				GFFormsModel::set_permissions( $target_path . $file_info['temp_filename'] );
 				$files[ $input_name ] = $file_info['uploaded_filename'];
 				GFCommon::log_debug( "GFFormDisplay::upload_files(): File uploaded successfully: {$file_info['uploaded_filename']}" );
 			} else {
-				GFCommon::log_error( "GFFormDisplay::upload_files(): File could not be uploaded: tmp_name: {$_FILES[ $input_name ]['tmp_name']} - target location: " . $target_path . $file_info['temp_filename'] );
+				GFCommon::log_error( "GFFormDisplay::upload_files(): File could not be uploaded: tmp_name: {$_FILES[ $input_name ]['tmp_name']} - target location: " . $target_path . $file_info['temp_filename'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidatedNotSanitized
 			}
 		}
 		return $files;
@@ -1096,8 +1096,8 @@ class GFFormDisplay {
 		}
 
 		$partial_entry = $submitted_values = $review_page_done = false;
-		if ( isset( $_GET['gf_token'] ) ) {
-			$incomplete_submission_info = GFFormsModel::get_draft_submission_values( $_GET['gf_token'] );
+		if ( isset( $_GET['gf_token'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$incomplete_submission_info = GFFormsModel::get_draft_submission_values( sanitize_text_field( wp_unslash( $_GET['gf_token'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( rgar( $incomplete_submission_info, 'form_id' ) == $form_id ) {
 				$submission_details_json                  = $incomplete_submission_info['submission'];
 				$submission_details                       = json_decode( $submission_details_json, true );
@@ -1253,7 +1253,7 @@ class GFFormDisplay {
 
 				// Separate the CSS classes.
 				$form_css_classes = explode( ' ', $form_css_class );
-				$form_css_classes = array_filter( $form_css_classes );
+				$form_css_classes = array_filter( $form_css_classes ); // nosemgrep audit.php.lang.misc.array-filter-no-callback
 
 				// Append _wrapper to each class.
 				foreach ( $form_css_classes as &$wrapper_class ) {
@@ -1341,7 +1341,7 @@ class GFFormDisplay {
 			$form_string .= gf_apply_filters( array( 'gform_form_tag', $form_id ), "<form method='post' enctype='multipart/form-data' {$target} id='gform_{$form_id}' {$form_css_class} action='{$action}' data-formid='{$form_id}' novalidate>", $form );
 
 			// If Save and Continue token was provided but expired/invalid, display error message.
-			if ( isset( $_GET['gf_token'] ) && ! is_array( $incomplete_submission_info ) ) {
+			if ( isset( $_GET['gf_token'] ) && ! is_array( $incomplete_submission_info ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 				/**
 				 * Modify the error message displayed when an expired/invalid Save and Continue link is used.
@@ -1559,7 +1559,7 @@ class GFFormDisplay {
 
 			$form_string = gf_apply_filters( array( 'gform_get_form_filter', $form_id ), $form_string, $form );
 
-			if ( isset( $_GET['gform_debug'] ) || GFCommon::is_preview() ) {
+			if ( isset( $_GET['gform_debug'] ) || GFCommon::is_preview() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				GFCommon::log_debug( __METHOD__ . sprintf( '(): Preparing form (#%d) markup completed in %F seconds.', $form_id, GFCommon::timer_end( __METHOD__ ) ) );
 			}
 
@@ -1713,7 +1713,7 @@ class GFFormDisplay {
 		$form_string = gf_apply_filters( array( 'gform_footer_init_scripts_filter', $form_id ), $form_string, $form, $current_page );
 
 		if ( ! isset( $_init_forms[ $form_id ] ) ) {
-			echo $form_string;
+			echo $form_string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			if ( ! is_array( $_init_forms ) ) {
 				$_init_forms = array();
 			}
@@ -1854,7 +1854,7 @@ class GFFormDisplay {
 		}
 		$save_inputs = '';
 		if ( rgars( $form, 'save/enabled' ) ) {
-			$resume_token = isset( $_POST['gform_resume_token'] ) ? $_POST['gform_resume_token'] : rgget( 'gf_token' );
+			$resume_token = isset( $_POST['gform_resume_token'] ) ? wp_unslash( $_POST['gform_resume_token'] ) : rgget( 'gf_token' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$resume_token = sanitize_key( $resume_token );
 			$save_inputs  = "<input type='hidden' class='gform_hidden' name='gform_save' id='gform_save_{$form_id}' value='' />
                              <input type='hidden' class='gform_hidden' name='gform_resume_token' id='gform_resume_token_{$form_id}' value='{$resume_token}' />";
@@ -1941,7 +1941,7 @@ class GFFormDisplay {
 	 */
 	public static function is_empty( $field, $form_id = 0 ) {
 
-		if ( empty( $_POST[ 'is_submit_' . $field->formId ] ) ) {
+		if ( empty( $_POST[ 'is_submit_' . $field->formId ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return true;
 		}
 
@@ -2315,7 +2315,7 @@ class GFFormDisplay {
 	 * @return string The confirmation message.
 	 */
 	public static function get_confirmation_message( $confirmation, $form, $entry, $aux_data = array() ) {
-		$ajax   = isset( $_POST['gform_ajax'] );
+		$ajax   = isset( $_POST['gform_ajax'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$anchor = self::get_anchor( $form, $ajax );
 		$anchor = $anchor['tag'];
 
@@ -2428,7 +2428,7 @@ class GFFormDisplay {
 		}
 
 		// Prevent tampering with the submitted form
-		if ( empty( $_POST[ 'is_submit_' . $form_id ] ) ) {
+		if ( empty( $_POST[ 'is_submit_' . $form_id ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			GFCommon::log_debug( __METHOD__ . "(): Aborting. The is_submit_{$form_id} input is empty." );
 
 			return false;
@@ -2601,6 +2601,7 @@ class GFFormDisplay {
 				'hiddenproduct',
 				'consent',
 			) ) ? esc_html__( 'Please enter a valid value.', 'gravityforms' ) : esc_html__( 'Invalid selection. Please select from the available choices.', 'gravityforms' );
+			$field->set_context_property( 'failed_state_validation', true );
 		} else {
 			// Running the field type specific validation.
 			$field->validate( $value, $form );
@@ -2792,11 +2793,11 @@ class GFFormDisplay {
 
 		if ( ! isset( $_gf_state ) ) {
 
-			if ( empty( $_POST["state_{$form_id}"] ) || ! is_string( $_POST["state_{$form_id}"] ) ) {
+			if ( empty( $_POST["state_{$form_id}"] ) || ! is_string( $_POST["state_{$form_id}"] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				return true;
 			}
 
-			$state = json_decode( base64_decode( $_POST[ "state_{$form_id}" ] ), true );
+			$state = json_decode( base64_decode( $_POST[ "state_{$form_id}" ] ), true ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			if ( ! $state || ! is_array( $state ) || sizeof( $state ) != 2 ) {
 				return true;
@@ -5006,13 +5007,13 @@ class GFFormDisplay {
 	}
 
 	public static function handle_save_email_confirmation( $form, $ajax ) {
-		$resume_email = $_POST['gform_resume_email'];
+		$resume_email = rgpost( 'gform_resume_email' );
 		if ( ! GFCommon::is_valid_email( $resume_email ) ) {
 			GFCommon::log_debug( 'GFFormDisplay::handle_save_email_confirmation(): Invalid email address: ' . $resume_email );
 
 			return new WP_Error( 'invalid_email' );
 		}
-		$resume_token       = $_POST['gform_resume_token'];
+		$resume_token       = rgpost( 'gform_resume_token' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, 
 		$submission_details = GFFormsModel::get_draft_submission_values( $resume_token );
 		$submission_json    = $submission_details['submission'];
 		$submission         = json_decode( $submission_json, true );
@@ -5053,7 +5054,7 @@ class GFFormDisplay {
 	}
 
 	public static function handle_save_confirmation( $form, $resume_token, $confirmation_message, $ajax ) {
-		$resume_email = isset( $_POST['gform_resume_email'] ) ? $_POST['gform_resume_email'] : null;
+		$resume_email = isset( $_POST['gform_resume_email'] ) ? sanitize_email( wp_unslash( $_POST['gform_resume_email'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		$confirmation_message = self::maybe_sanitize_confirmation_message( $confirmation_message );
 		$confirmation_message = self::replace_save_variables( $confirmation_message, $form, $resume_token, $resume_email );
@@ -5189,11 +5190,11 @@ class GFFormDisplay {
 	 * @return bool|int False or the ID of the form being processed.
 	 */
 	public static function is_submit_form_id_valid( $ajax_form_id = null ) {
-		if ( empty( $_POST['gform_submit'] ) ) {
+		if ( empty( $_POST['gform_submit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return false;
 		}
 
-		$form_id = absint( $_POST['gform_submit'] );
+		$form_id = absint( $_POST['gform_submit'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		if ( $form_id === 0 || rgpost( 'is_submit_' . $form_id ) !== '1' ) {
 			return false;
@@ -5266,7 +5267,7 @@ class GFFormDisplay {
 		}
 
 		$args = false;
-		if ( ! self::is_iframe_submission_method() || ! isset( $_POST['gform_ajax'] ) ) {
+		if ( ! self::is_iframe_submission_method() || ! isset( $_POST['gform_ajax'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return false;
 		}
 

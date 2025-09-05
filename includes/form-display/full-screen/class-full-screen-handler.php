@@ -75,7 +75,7 @@ class Full_Screen_Handler {
 
 		// Query to get MySQL version. No prepare() needed since it's a static query.
 		$query   = "SHOW VARIABLES LIKE 'version'";
-		$results = $wpdb->get_row( $query );
+		$results = $wpdb->get_row( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( empty( $results->Value ) ) {
 			return null;

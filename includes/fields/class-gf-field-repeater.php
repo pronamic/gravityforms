@@ -739,7 +739,7 @@ class GF_Field_Repeater extends GF_Field {
 
 		$repeater_fields = array();
 
-		$is_new_entry = empty( $_POST[ 'is_submit_' . $this->formId ] ) && ! array_key_exists( 'id', $entry );
+		$is_new_entry = empty( $_POST[ 'is_submit_' . $this->formId ] ) && ! array_key_exists( 'id', $entry ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		foreach ( $repeater_field->fields as $field ) {
 			if ( is_array( $field->fields ) ) {

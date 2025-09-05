@@ -13,13 +13,13 @@ foreach ( rgars( $order_summary, 'rows/body', array() ) as $row ) {
 			)
 		) . ')';
 	}
-	echo rgar( $row, 'quantity' ) . ' ' . rgar( $row, 'name' ) . ': ' . rgar( $row, 'sub_total_money', 0 ) . "\n\n";
+	echo rgar( $row, 'quantity' ) . ' ' . rgar( $row, 'name' ) . ': ' . rgar( $row, 'sub_total_money', 0 ) . "\n\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 foreach ( rgars( $order_summary, 'rows/footer', array() ) as $row ) {
-	echo rgar( $row, 'name' ) . ': ' . rgar( $row, 'sub_total_money', 0 ) . "\n\n";
+	echo rgar( $row, 'name' ) . ': ' . rgar( $row, 'sub_total_money', 0 ) . "\n\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
-echo esc_html__( 'Sub Total', 'gravityforms' ) . ': ' . $order_summary['totals']['sub_total_money'] . "\n\n";
+echo esc_html__( 'Sub Total', 'gravityforms' ) . ': ' . $order_summary['totals']['sub_total_money'] . "\n\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-echo esc_html__( 'Total', 'gravityforms' ) . ': ' . $order_summary['totals']['total_money'] . "\n\n";
+echo esc_html__( 'Total', 'gravityforms' ) . ': ' . $order_summary['totals']['total_money'] . "\n\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

@@ -198,7 +198,7 @@ class GF_Forms_Model_Legacy {
 		if ( empty( $entry_count ) ) {
 			//Getting entry count per form
 			$sql         = "SELECT form_id, count(id) as entry_count FROM $lead_table_name l WHERE status='active' GROUP BY form_id";
-			$entry_count = $wpdb->get_results( $sql );
+			$entry_count = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			GFCache::set( 'get_entry_count_per_form', $entry_count, true, 30 );
 		}
@@ -225,7 +225,8 @@ class GF_Forms_Model_Legacy {
 		$lead_table_name = self::get_lead_table_name();
 		$lead_detail_table_name = self::get_lead_details_table_name();
 
-		$sql             = $wpdb->prepare(
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$sql = $wpdb->prepare(
 			"SELECT
                     (SELECT count(DISTINCT(l.id)) FROM $lead_table_name l INNER JOIN $lead_detail_table_name ld ON l.id=ld.lead_id WHERE l.form_id=%d AND l.status='active') as total,
                     (SELECT count(DISTINCT(l.id)) FROM $lead_table_name l INNER JOIN $lead_detail_table_name ld ON l.id=ld.lead_id WHERE l.is_read=0 AND l.status='active' AND l.form_id=%d) as unread,
@@ -234,8 +235,9 @@ class GF_Forms_Model_Legacy {
                     (SELECT count(DISTINCT(l.id)) FROM $lead_table_name l INNER JOIN $lead_detail_table_name ld ON l.id=ld.lead_id WHERE l.status='trash' AND l.form_id=%d) as trash",
 			$form_id, $form_id, $form_id, $form_id, $form_id
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$results = $wpdb->get_results( $sql, ARRAY_A );
+		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		return $results[0];
 
@@ -267,7 +269,7 @@ class GF_Forms_Model_Legacy {
 		}
 
 		//updating lead
-		$result = $wpdb->update( $lead_table, array( $property_name => $property_value ), array( 'id' => $lead_id ) );
+		$result = $wpdb->update( $lead_table, array( $property_name => $property_value ), array( 'id' => $lead_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( ! $disable_hook ) {
 
@@ -330,19 +332,19 @@ class GF_Forms_Model_Legacy {
 		GFFormsModel::delete_files( $lead_id );
 
 		//Delete from lead details
-		$sql = $wpdb->prepare( "DELETE FROM $lead_detail_table_name WHERE lead_id=%d", $lead_id );
-		$wpdb->query( $sql );
+		$sql = $wpdb->prepare( "DELETE FROM %i WHERE lead_id=%d", $lead_detail_table_name, $lead_id );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		//Delete from lead notes
-		$sql = $wpdb->prepare( "DELETE FROM $lead_notes_table WHERE lead_id=%d", $lead_id );
-		$wpdb->query( $sql );
+		$sql = $wpdb->prepare( "DELETE FROM %i WHERE lead_id=%d", $lead_notes_table, $lead_id );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		//Delete from lead meta
 		gform_delete_meta( $lead_id );
 
 		//Delete from lead
-		$sql = $wpdb->prepare( "DELETE FROM $lead_table WHERE id=%d", $lead_id );
-		$wpdb->query( $sql );
+		$sql = $wpdb->prepare( "DELETE FROM %i WHERE id=%d", $lead_table, $lead_id );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 	}
 
@@ -370,35 +372,41 @@ class GF_Forms_Model_Legacy {
 		$status_filter = empty( $status ) ? '' : $wpdb->prepare( 'AND status=%s', $status );
 
 		//Delete from lead details
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
-			" DELETE FROM $lead_detail_table
-                                WHERE lead_id IN (
-                                    SELECT id FROM $lead_table WHERE form_id=%d {$status_filter}
-                                )", $form_id
+			" DELETE FROM %i
+				WHERE lead_id IN (
+					SELECT id FROM %i WHERE form_id=%d {$status_filter}
+				)", $lead_detail_table, $lead_table, $form_id
 		);
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		//Delete from lead notes
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
-			" DELETE FROM $lead_notes_table
-                                WHERE lead_id IN (
-                                    SELECT id FROM $lead_table WHERE form_id=%d {$status_filter}
-                                )", $form_id
+			" DELETE FROM %i
+				WHERE lead_id IN (
+					SELECT id FROM %i WHERE form_id=%d {$status_filter}
+				)", $lead_notes_table, $lead_table, $form_id
 		);
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		//Delete from lead meta
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
-			" DELETE FROM $lead_meta_table
-        						WHERE lead_id IN (
-        							SELECT id FROM $lead_table WHERE form_id=%d {$status_filter}
-                                )", $form_id
+			" DELETE FROM %i
+				WHERE lead_id IN (
+					SELECT id FROM %i WHERE form_id=%d {$status_filter}
+				)", $lead_meta_table, $lead_table, $form_id
 		);
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		//Delete from lead
-		$sql = $wpdb->prepare( "DELETE FROM $lead_table WHERE form_id=%d {$status_filter}", $form_id );
-		$wpdb->query( $sql );
+		$sql = $wpdb->prepare( "DELETE FROM %i WHERE form_id=%d {$status_filter}", $lead_table, $form_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public static function delete_files_by_form( $form_id, $status = '' ) {
@@ -425,7 +433,7 @@ class GF_Forms_Model_Legacy {
 		}
 
 		$status_filter = empty( $status ) ? '' : $wpdb->prepare( 'AND status=%s', $status );
-		$results       = $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}rg_lead WHERE form_id=%d {$status_filter}", $form_id ), ARRAY_A );
+		$results       = $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}rg_lead WHERE form_id=%d {$status_filter}", $form_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery 
 
 		foreach ( $results as $result ) {
 			GFFormsModel::delete_files( $result['id'], $form );
@@ -460,8 +468,8 @@ class GF_Forms_Model_Legacy {
 		// update lead field value - simulate form submission
 
 		$lead_detail_table = self::get_lead_details_table_name();
-		$sql               = $wpdb->prepare( "SELECT id FROM $lead_detail_table WHERE lead_id=%d AND meta_key = %s", $entry_id, $field_id );
-		$entry_detail_id   = $wpdb->get_var( $sql );
+		$sql               = $wpdb->prepare( "SELECT id FROM %i WHERE lead_id=%d AND meta_key = %s", $lead_detail_table, $entry_id, $field_id );
+		$entry_detail_id   = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		GFFormsModel::update_lead_field_value( $form, $entry, $field, $entry_detail_id, $field_id, $field_value );
 
@@ -492,18 +500,18 @@ class GF_Forms_Model_Legacy {
 		$lead_detail_table      = self::get_lead_details_table_name();
 
 		// Delete from lead details
-		$sql = $wpdb->prepare( "DELETE FROM $lead_detail_table WHERE form_id=%d AND field_number >= %d AND field_number < %d", $form_id, $field_id, $field_id + 1 );
-		$wpdb->query( $sql );
+		$sql = $wpdb->prepare( "DELETE FROM %i WHERE form_id=%d AND field_number >= %d AND field_number < %d", $lead_detail_table, $form_id, $field_id, $field_id + 1 );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		//Delete leads with no details
 		$sql = $wpdb->prepare(
-			" DELETE FROM $lead_table
+			" DELETE FROM %i
                                 WHERE form_id=%d
                                 AND id NOT IN(
-                                    SELECT DISTINCT(lead_id) FROM $lead_detail_table WHERE form_id=%d
-                                )", $form_id, $form_id
+                                    SELECT DISTINCT(lead_id) FROM %i WHERE form_id=%d
+                                )", $lead_table, $form_id, $lead_detail_table, $form_id
 		);
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 	}
 
 	public static function save_lead( $form, &$lead ) {
@@ -542,8 +550,7 @@ class GF_Forms_Model_Legacy {
 			 */
 			$currency = gf_apply_filters( array( 'gform_currency_pre_save_entry', $form['id'] ), GFCommon::get_currency(), $form );
 
-			$wpdb->query( $wpdb->prepare( "INSERT INTO $lead_table(form_id, ip, source_url, date_created, user_agent, currency, created_by) VALUES(%d, %s, %s, utc_timestamp(), %s, %s, {$user_id})", $form['id'], GFFormsModel::get_ip(), $source_url, $user_agent, $currency ) );
-
+			$wpdb->query( $wpdb->prepare( "INSERT INTO %i(form_id, ip, source_url, date_created, user_agent, currency, created_by) VALUES(%d, %s, %s, utc_timestamp(), %s, %s, {$user_id})", $lead_table, $form['id'], GFFormsModel::get_ip(), $source_url, $user_agent, $currency ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			//reading newly created lead id
 			$lead_id = $wpdb->insert_id;
@@ -559,7 +566,7 @@ class GF_Forms_Model_Legacy {
 			GFCommon::log_debug( __METHOD__ . "(): Entry record created in the database. ID: {$lead_id}." );
 		}
 
-		$current_fields   = $wpdb->get_results( $wpdb->prepare( "SELECT id, field_number FROM $lead_detail_table WHERE lead_id=%d", $lead['id'] ) );
+		$current_fields   = $wpdb->get_results( $wpdb->prepare( "SELECT id, field_number FROM %i WHERE lead_id=%d", $lead_detail_table, $lead['id'] ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		$total_fields = array();
 		/* @var $calculation_fields GF_Field[] */
@@ -665,7 +672,7 @@ class GF_Forms_Model_Legacy {
 		$multiple_files = $field->multipleFiles;
 		$uploaded_files = GFFormsModel::$uploaded_files;
 		$form_id        = $form['id'];
-		if ( RG_CURRENT_VIEW == 'entry' && $type == 'fileupload' && ( ( ! $multiple_files && empty( $_FILES[ $input_name ]['name'] ) ) || ( $multiple_files && ! isset( $uploaded_files[ $form_id ][ $input_name ] ) ) ) ) {
+		if ( RG_CURRENT_VIEW == 'entry' && $type == 'fileupload' && ( ( ! $multiple_files && empty( $_FILES[ $input_name ]['name'] ) ) || ( $multiple_files && ! isset( $uploaded_files[ $form_id ][ $input_name ] ) ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return;
 		} else if ( RG_CURRENT_VIEW == 'entry' && in_array( $field->type, array( 'post_category', 'post_title', 'post_content', 'post_excerpt', 'post_tags', 'post_custom_field', 'post_image' ) ) ) {
 			return;
@@ -744,10 +751,10 @@ class GF_Forms_Model_Legacy {
 			$inner_sql   = '';
 			foreach ( $field->inputs as $input ) {
 				$union = empty( $inner_sql ) ? '' : ' UNION ALL ';
-				$inner_sql .= $union . $wpdb->prepare( $inner_sql_template, $input['id'], $form_id, $form_id, $input['id'] - 0.0001, $input['id'] + 0.0001, $value[ $input['id'] ] );
+				$inner_sql .= $union . $wpdb->prepare( $inner_sql_template, $input['id'], $form_id, $form_id, $input['id'] - 0.0001, $input['id'] + 0.0001, $value[ $input['id'] ] ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,
 			}
 		} else {
-			$inner_sql = $wpdb->prepare( $inner_sql_template, $field->id, $form_id, $form_id, doubleval( $field->id ) - 0.0001, doubleval( $field->id ) + 0.0001, $value );
+			$inner_sql = $wpdb->prepare( $inner_sql_template, $field->id, $form_id, $form_id, doubleval( $field->id ) - 0.0001, doubleval( $field->id ) + 0.0001, $value ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$sql .= $inner_sql . "
@@ -755,7 +762,7 @@ class GF_Forms_Model_Legacy {
                 GROUP BY lead_id
                 ORDER BY match_count DESC";
 
-		$count = gf_apply_filters( array( 'gform_is_duplicate', $form_id ), $wpdb->get_var( $sql ), $form_id, $field, $value );
+		$count = gf_apply_filters( array( 'gform_is_duplicate', $form_id ), $wpdb->get_var( $sql ), $form_id, $field, $value ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $count != null && $count >= $input_count;
 	}
@@ -764,12 +771,13 @@ class GF_Forms_Model_Legacy {
 		global $wpdb;
 		$notes_table = self::get_lead_notes_table_name();
 
-		return $wpdb->get_results(
+		
+		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, 
 			$wpdb->prepare(
 				"  SELECT n.id, n.user_id, n.date_created, n.value, n.note_type, ifnull(u.display_name,n.user_name) as user_name, u.user_email
-                                                    FROM $notes_table n
+                                                    FROM %i n
                                                     LEFT OUTER JOIN $wpdb->users u ON n.user_id = u.id
-                                                    WHERE lead_id=%d ORDER BY id", $lead_id
+                                                    WHERE lead_id=%d ORDER BY id", $notes_table, $lead_id
 			)
 		);
 	}
@@ -786,7 +794,7 @@ class GF_Forms_Model_Legacy {
 		);
 
 		//getting results
-		$results = $wpdb->get_results( $sql );
+		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$leads   = self::build_lead_array( $results );
 
 		return $leads;
@@ -806,10 +814,10 @@ class GF_Forms_Model_Legacy {
 		}
 
 		//initializing rownum
-		$wpdb->query( 'select @rownum:=0' );
+		$wpdb->query( 'select @rownum:=0' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		//getting results
-		$results = $wpdb->get_results( $sql );
+		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		$leads = self::build_lead_array( $results );
 
@@ -880,6 +888,7 @@ class GF_Forms_Model_Legacy {
 		$entry_meta          = self::get_entry_meta( $form_id );
 		$entry_meta_sql_join = '';
 		if ( false === empty( $entry_meta ) && array_key_exists( $sort_field, $entry_meta ) ) {
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$entry_meta_sql_join = $wpdb->prepare(
 				"INNER JOIN
 				(
@@ -890,6 +899,7 @@ class GF_Forms_Model_Legacy {
 				) lead_meta_data ON lead_meta_data.lead_id = l.id
 				", $sort_field
 			);
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$is_numeric_sort     = $entry_meta[ $sort_field ]['is_numeric'];
 		}
 		$grid_columns = RGFormsModel::get_grid_columns( $form_id );
@@ -961,7 +971,7 @@ class GF_Forms_Model_Legacy {
 		}
 
 		if ( $payment_status ) {
-			$where[] = $wpdb->prepare( "payment_status = '%s'", $payment_status );
+			$where[] = $wpdb->prepare( "payment_status = '%s'", $payment_status ); // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.QuotedSimplePlaceholder
 		}
 
 		if ( $status !== null ) {
@@ -996,7 +1006,7 @@ class GF_Forms_Model_Legacy {
                 INNER JOIN $lead_detail_table_name ld ON l.id = ld.lead_id
                 $where";
 
-		return $wpdb->get_var( $sql );
+		return $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public static function get_lead_ids( $form_id, $search, $star = null, $read = null, $start_date = null, $end_date = null, $status = null, $payment_status = null ) {
@@ -1016,7 +1026,7 @@ class GF_Forms_Model_Legacy {
                 INNER JOIN $detail_table_name ld ON l.id = ld.lead_id
                 $where";
 
-		$rows = $wpdb->get_results( $sql );
+		$rows = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( empty( $rows ) ) {
 			return array();
@@ -1034,7 +1044,7 @@ class GF_Forms_Model_Legacy {
 		global $wpdb;
 		$lead_detail_table_name = self::get_lead_details_table_name();
 		$field_list             = '';
-		$fields                 = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT field_number FROM $lead_detail_table_name WHERE form_id=%d", $form_id ) );
+		$fields                 = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT field_number FROM %i WHERE form_id=%d", $lead_detail_table_name, $form_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 		foreach ( $fields as $field ) {
 			$field_list .= intval( $field->field_number ) . ',';
 		}
@@ -1058,12 +1068,12 @@ class GF_Forms_Model_Legacy {
 		}
 
 		//initializing rownum
-		$wpdb->query( 'SELECT @rownum:=0' );
+		$wpdb->query( 'SELECT @rownum:=0' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		GFCommon::log_debug( $sql );
 
 		//getting results
-		$results = $wpdb->get_results( $sql );
+		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		$leads = self::build_lead_array( $results );
 
@@ -1084,7 +1094,7 @@ class GF_Forms_Model_Legacy {
                 $where
                 ";
 
-		$rows = $wpdb->get_results( $sql );
+		$rows = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( empty( $rows ) ) {
 			return array();
@@ -1178,7 +1188,7 @@ class GF_Forms_Model_Legacy {
 		if ( is_array( $form_id ) ) {
 			$in_str_arr    = array_fill( 0, count( $form_id ), '%d' );
 			$in_str        = join( ',', $in_str_arr );
-			$form_id_where = $wpdb->prepare( "l.form_id IN ($in_str)", $form_id );
+			$form_id_where = $wpdb->prepare( "l.form_id IN ($in_str)", $form_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		} else {
 			$form_id_where = $form_id > 0 ? $wpdb->prepare( 'l.form_id=%d', $form_id ) : '';
 		}
@@ -1273,6 +1283,7 @@ class GF_Forms_Model_Legacy {
 		$entry_meta_sql_join      = '';
 		$sort_field_is_entry_meta = false;
 		if ( false === empty( $entry_meta ) && array_key_exists( $sort_field, $entry_meta ) ) {
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$entry_meta_sql_join      = $wpdb->prepare(
 				"
                 LEFT JOIN
@@ -1284,6 +1295,7 @@ class GF_Forms_Model_Legacy {
                 ) lead_meta_data ON lead_meta_data.lead_id = l.id
                 ", $sort_field
 			);
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$is_numeric_sort          = $entry_meta[ $sort_field ]['is_numeric'];
 			$sort_field_is_entry_meta = true;
 		} else {
@@ -1409,7 +1421,7 @@ class GF_Forms_Model_Legacy {
 		if ( is_array( $form_id ) ) {
 			$in_str_arr    = array_fill( 0, count( $form_id ), '%d' );
 			$in_str        = join( ',', $in_str_arr );
-			$form_id_where = $wpdb->prepare( "AND form_id IN ($in_str)", $form_id );
+			$form_id_where = $wpdb->prepare( "AND form_id IN ($in_str)", $form_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		} else {
 			$form_id_where = $form_id > 0 ? $wpdb->prepare( 'AND form_id=%d', $form_id ) : '';
 		}
@@ -1477,9 +1489,10 @@ class GF_Forms_Model_Legacy {
 						}
 						// Format in SQL and sanitize the strings in the list
 						$search_terms = array_fill( 0, count( $search_term ), '%s' );
-						$search_terms_in = $wpdb->prepare( '( ' . implode( ', ', $search_terms ) . ' )', $search_term );
+						$search_terms_in = $wpdb->prepare( '( ' . implode( ', ', $search_terms ) . ' )', $search_term ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 
 						/* doesn't support "<>" for checkboxes */
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 						$field_query = $wpdb->prepare(
 							"
                         l.id IN
@@ -1490,10 +1503,12 @@ class GF_Forms_Model_Legacy {
                         WHERE (field_number BETWEEN %s AND %s AND value {$operator} {$search_terms_in})
                         {$form_id_where}
                         )", (float) $key - 0.0001, $upper_field_number_limit );
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					} else {
 						$search_term_placeholder = rgar( $search, 'is_numeric' ) || $is_number_field ? '%f' : '%s';
 						/* doesn't support "<>" for checkboxes */
-						$field_query = $wpdb->prepare(
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$field_query = $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 							"
                         l.id IN
                         (
@@ -1504,9 +1519,11 @@ class GF_Forms_Model_Legacy {
                         {$form_id_where}
                         )", (float) $key - 0.0001, $upper_field_number_limit, $search_term
 						);
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					}
 
 					if ( ( empty( $val ) && $operator != '<>' ) || $val === '%%' || ( $operator === '<>' && ! empty( $val ) ) ) {
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 						$skipped_field_query = $wpdb->prepare(
 							"
                             l.id NOT IN
@@ -1518,6 +1535,7 @@ class GF_Forms_Model_Legacy {
                             {$form_id_where}
                             )", (float) $key - 0.0001, $upper_field_number_limit
 						);
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 						$field_query = '(' . $field_query . ' OR ' . $skipped_field_query . ')';
 					}
 
@@ -1571,7 +1589,7 @@ class GF_Forms_Model_Legacy {
 												$choice_value = $choice['value'];
 												$choice_search_operator = '=';
 											}
-											$choice_texts_clauses_for_field[] = $wpdb->prepare( "(field_number BETWEEN %s AND %s AND value {$choice_search_operator} %s)", (float) $field->id - 0.0001, (float) $field->id + 0.9999, $choice_value );
+											$choice_texts_clauses_for_field[] = $wpdb->prepare( "(field_number BETWEEN %s AND %s AND value {$choice_search_operator} %s)", (float) $field->id - 0.0001, (float) $field->id + 0.9999, $choice_value ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 										}
 									}
 								}
@@ -1594,7 +1612,7 @@ class GF_Forms_Model_Legacy {
                         FROM {$lead_details_table_name}
                         WHERE {$choice_texts_clause} ) OR ";
 					}
-					$choice_value_clause = $wpdb->prepare( "value {$operator} %s", $search_term );
+					$choice_value_clause = $wpdb->prepare( "value {$operator} %s", $search_term ); //  phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$sql_array[] = '(' . $choice_texts_clause . $choice_value_clause . ')';
 					break;
 				case 'meta':
@@ -1607,8 +1625,9 @@ class GF_Forms_Model_Legacy {
 							$operator = 'NOT IN';
 						}
 						$search_terms = array_fill( 0, count( $search_term ), '%s' );
-						$search_terms_in = $wpdb->prepare( '( ' . implode( ', ', $search_terms ) . ' )', $search_term );
+						$search_terms_in = $wpdb->prepare( '( ' . implode( ', ', $search_terms ) . ' )', $search_term ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 						$sql_array[] = $wpdb->prepare(
 							"
                         l.id IN
@@ -1619,10 +1638,12 @@ class GF_Forms_Model_Legacy {
                         WHERE meta_key=%s AND meta_value $operator $search_terms_in
                         $form_id_where
                         )", $search['key'] );
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					} else {
 						$meta = rgar( $entry_meta, $key );
 						$placeholder = rgar( $meta, 'is_numeric' ) ? '%s' : '%s';
 						$search_term = 'like' == $operator ? "%$val%" : $val;
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 						$sql_array[] = $wpdb->prepare(
 							"
                         l.id IN
@@ -1634,6 +1655,7 @@ class GF_Forms_Model_Legacy {
                         $form_id_where
                         )", $search['key'], $search_term
 						);
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 					}
 
 					break;
@@ -1795,9 +1817,9 @@ class GF_Forms_Model_Legacy {
 				$date_created_end_utc  = get_gmt_from_date( $date_created_end );
 				$where_array[] = $wpdb->prepare( '(date_created >= %s AND date_created <= %s)', $date_create_start_utc, $date_created_end_utc );
 			} else if ( in_array( $key, $int_columns ) ) {
-				$where_array[] = $wpdb->prepare( "l.{$key} $operator %d", $search_term );
+				$where_array[] = $wpdb->prepare( "l.{$key} $operator %d", $search_term ); //  phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			} else {
-				$where_array[] = $wpdb->prepare( "l.{$key} $operator %s", $search_term );
+				$where_array[] = $wpdb->prepare( "l.{$key} $operator %s", $search_term ); //  phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			}
 		}
 
@@ -1821,7 +1843,7 @@ class GF_Forms_Model_Legacy {
                 $where
                 ";
 
-		return (int) $wpdb->get_var( $sql );
+		return (int) $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public static function get_entry_meta_counts() {
@@ -1831,7 +1853,8 @@ class GF_Forms_Model_Legacy {
 		$meta_table_name = self::get_lead_meta_table_name();
 		$notes_table_name = self::get_lead_notes_table_name();
 
-		$results = $wpdb->get_results(
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			"
             SELECT
             (SELECT count(0) FROM $detail_table_name) as details,
@@ -1839,7 +1862,7 @@ class GF_Forms_Model_Legacy {
             (SELECT count(0) FROM $notes_table_name) as notes
             "
 		);
-
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return array(
 			'details' => intval( $results[0]->details ),
 			'meta'    => intval( $results[0]->meta ),
@@ -1860,7 +1883,7 @@ class GF_Forms_Model_Legacy {
 		}
 
 		$table_name                   = RGFormsModel::get_lead_meta_table_name();
-		$results                      = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE lead_id=%d AND meta_key=%s", $entry_id, $meta_key ) );
+		$results                      = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM {$table_name} WHERE lead_id=%d AND meta_key=%s", $entry_id, $meta_key ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$value                        = isset( $results[0] ) ? $results[0]->meta_value : null;
 		$meta_value                   = $value === null ? false : maybe_unserialize( $value );
 		$_gform_lead_meta[ $cache_key ] = $meta_value;
@@ -1892,7 +1915,7 @@ class GF_Forms_Model_Legacy {
                     WHERE lead_id IN ($entry_ids_str)
                     GROUP BY lead_id";
 
-		$results = $wpdb->get_results( $sql_query );
+		$results = $wpdb->get_results( $sql_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		foreach ( $results as $result ) {
 			foreach ( $meta_keys as $meta_key ) {
@@ -1928,17 +1951,17 @@ class GF_Forms_Model_Legacy {
 		$serialized_meta_value  = maybe_serialize( $meta_value );
 		$meta_exists = gform_get_meta( $entry_id, $meta_key ) !== false;
 		if ( $meta_exists ) {
-			$wpdb->update( $table_name, array( 'meta_value' => $serialized_meta_value ), array( 'lead_id' => $entry_id, 'meta_key' => $meta_key ), array( '%s' ), array( '%d', '%s' ) );
+			$wpdb->update( $table_name, array( 'meta_value' => $serialized_meta_value ), array( 'lead_id' => $entry_id, 'meta_key' => $meta_key ), array( '%s' ), array( '%d', '%s' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_value, WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 		} else {
 
 			if ( empty( $form_id ) ) {
 				$lead_table_name = RGFormsModel::get_lead_table_name();
-				$form_id         = $wpdb->get_var( $wpdb->prepare( "SELECT form_id from $lead_table_name WHERE id=%d", $entry_id ) );
+				$form_id         = $wpdb->get_var( $wpdb->prepare( "SELECT form_id from %i WHERE id=%d", $lead_table_name, $entry_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			} else {
 				$form_id = intval( $form_id );
 			}
 
-			$wpdb->insert( $table_name, array( 'form_id' => $form_id, 'lead_id' => $entry_id, 'meta_key' => $meta_key, 'meta_value' => $serialized_meta_value ), array( '%d', '%d', '%s', '%s' ) );
+			$wpdb->insert( $table_name, array( 'form_id' => $form_id, 'lead_id' => $entry_id, 'meta_key' => $meta_key, 'meta_value' => $serialized_meta_value ), array( '%d', '%d', '%s', '%s' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_value, WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 		}
 
 		//updates cache
@@ -1968,12 +1991,12 @@ class GF_Forms_Model_Legacy {
 
 		if ( empty( $form_id ) ) {
 			$lead_table_name = RGFormsModel::get_lead_table_name();
-			$form_id         = $wpdb->get_var( $wpdb->prepare( "SELECT form_id from $lead_table_name WHERE id=%d", $entry_id ) );
+			$form_id         = $wpdb->get_var( $wpdb->prepare( "SELECT form_id from %i WHERE id=%d", $lead_table_name, $entry_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		} else {
 			$form_id = intval( $form_id );
 		}
 
-		$wpdb->insert( $table_name, array( 'form_id' => $form_id, 'lead_id' => $entry_id, 'meta_key' => $meta_key, 'meta_value' => $serialized_meta_value ), array( '%d', '%d', '%s', '%s' ) );
+		$wpdb->insert( $table_name, array( 'form_id' => $form_id, 'lead_id' => $entry_id, 'meta_key' => $meta_key, 'meta_value' => $serialized_meta_value ), array( '%d', '%d', '%s', '%s' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.SlowDBQuery.slow_db_query_meta_value, WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 
 		$cache_key                      = get_current_blog_id() . '_' . $entry_id . '_' . $meta_key;
 		$_gform_lead_meta[ $cache_key ] = $meta_value;
@@ -1984,7 +2007,7 @@ class GF_Forms_Model_Legacy {
 		$table_name  = RGFormsModel::get_lead_meta_table_name();
 		$meta_filter = empty( $meta_key ) ? '' : $wpdb->prepare( 'AND meta_key=%s', $meta_key );
 
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$table_name} WHERE lead_id=%d {$meta_filter}", $entry_id ) );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM %i WHERE lead_id=%d {$meta_filter}", $table_name, $entry_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		//clears cache.
 		$_gform_lead_meta = array();
@@ -2092,6 +2115,8 @@ class GF_Forms_Model_Legacy {
 		$transaction_type = isset( $entry['transaction_type'] ) ? intval( $entry['transaction_type'] ) : 'NULL';
 
 		$lead_table = GFFormsModel::get_lead_table_name();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
 			"
                 UPDATE $lead_table
@@ -2118,7 +2143,8 @@ class GF_Forms_Model_Legacy {
                 id = %d
                 ", $form_id, $is_starred, $is_read, $ip, $source_url, $user_agent, $currency, $status, $payment_method, $entry_id
 		);
-		$result     = $wpdb->query( $sql );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result     = $wpdb->query( $sql );  // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		if ( false === $result ) {
 			return new WP_Error( 'update_entry_properties_failed', __( 'There was a problem while updating the entry properties', 'gravityforms' ), $wpdb->last_error );
 		}
@@ -2126,7 +2152,7 @@ class GF_Forms_Model_Legacy {
 		// Only save field values for fields that currently exist in the form. The rest in $entry will be ignored. The rest in $current_entry will get deleted.
 
 		$lead_detail_table = GFFormsModel::get_lead_details_table_name();
-		$current_fields    = $wpdb->get_results( $wpdb->prepare( "SELECT id, field_number FROM $lead_detail_table WHERE lead_id=%d", $entry_id ) );
+		$current_fields    = $wpdb->get_results( $wpdb->prepare( "SELECT id, field_number FROM %i WHERE lead_id=%d", $lead_detail_table, $entry_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		$form = GFFormsModel::get_form_meta( $form_id );
 
@@ -2224,11 +2250,13 @@ class GF_Forms_Model_Legacy {
 		global $wpdb;
 		$form_table_name = GFFormsModel::get_form_table_name();
 		$form_id         = intval( $form_id );
-		$result          = $wpdb->get_var(
+		$result          = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$wpdb->prepare(
 				" SELECT count(id) FROM {$form_table_name}
                   WHERE id=%d", $form_id
 			)
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);
 
 		$result = intval( $result );
@@ -2304,7 +2332,8 @@ class GF_Forms_Model_Legacy {
 		$transaction_type = isset( $entry['transaction_type'] ) ? intval( $entry['transaction_type'] ) : 'NULL';
 
 		$lead_table = GFFormsModel::get_lead_table_name();
-		$result     = $wpdb->query(
+		$result     = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$wpdb->prepare(
 				"
                 INSERT INTO $lead_table
@@ -2313,6 +2342,7 @@ class GF_Forms_Model_Legacy {
                 (%d, {$post_id}, {$date_created}, %d,  %d, %s, %s, %s, %s, {$payment_status}, {$payment_date}, {$payment_amount}, {$transaction_id}, {$is_fulfilled}, {$user_id}, {$transaction_type}, %s, %s)
                 ", $form_id, $is_starred, $is_read, $ip, $source_url, $user_agent, $currency, $status, $payment_method
 			)
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);
 		if ( false === $result ) {
 			return new WP_Error( 'insert_entry_properties_failed', __( 'There was a problem while inserting the entry properties', 'gravityforms' ), $wpdb->last_error );
@@ -2416,7 +2446,7 @@ class GF_Forms_Model_Legacy {
 
 		$lead_details_table_name = GFFormsModel::get_lead_details_table_name();
 
-		$lead_detail_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$lead_details_table_name} WHERE lead_id=%d AND field_number BETWEEN %s AND %s", $entry_id, $input_id_min, $input_id_max ) );
+		$lead_detail_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM %i WHERE lead_id=%d AND field_number BETWEEN %s AND %s", $lead_details_table_name, $entry_id, $input_id_min, $input_id_max ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		$result = true;
 		if ( ! isset( $entry[ $input_id ] ) || $entry[ $input_id ] != $value ){
@@ -2497,13 +2527,13 @@ class GF_Forms_Model_Legacy {
 
 			if ( $lead_detail_id > 0 ) {
 
-				$result = $wpdb->update( $lead_detail_table, array( 'value' => $value ), array( 'id' => $lead_detail_id ), array( '%s' ), array( '%d' ) );
+				$result = $wpdb->update( $lead_detail_table, array( 'value' => $value ), array( 'id' => $lead_detail_id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				if ( false === $result ) {
 					return false;
 				}
 
 			} else {
-				$result = $wpdb->insert( $lead_detail_table, array( 'lead_id' => $lead_id, 'form_id' => $form_id, 'field_number' => $input_id, 'value' => $value ), array( '%d', '%d', '%F', '%s' ) );
+				$result = $wpdb->insert( $lead_detail_table, array( 'lead_id' => $lead_id, 'form_id' => $form_id, 'field_number' => $input_id, 'value' => $value ), array( '%d', '%d', '%F', '%s' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				if ( false === $result ) {
 					return false;
 				}
@@ -2511,8 +2541,8 @@ class GF_Forms_Model_Legacy {
 			}
 		} else {
 			//Deleting details for this field
-			$sql    = $wpdb->prepare( "DELETE FROM $lead_detail_table WHERE lead_id=%d AND field_number BETWEEN %s AND %s ", $lead_id, doubleval( $input_id ) - 0.0001, doubleval( $input_id ) + 0.0001 );
-			$result = $wpdb->query( $sql );
+			$sql    = $wpdb->prepare( "DELETE FROM %i WHERE lead_id=%d AND field_number BETWEEN %s AND %s ", $lead_detail_table, $lead_id, doubleval( $input_id ) - 0.0001, doubleval( $input_id ) + 0.0001 );
+			$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 			if ( false === $result ) {
 				return false;
 			}
@@ -2525,9 +2555,9 @@ class GF_Forms_Model_Legacy {
 		global $wpdb;
 
 		$table_name = self::get_lead_notes_table_name();
-		$sql        = $wpdb->prepare( "INSERT INTO $table_name(lead_id, user_id, user_name, value, note_type, date_created) values(%d, %d, %s, %s, %s, utc_timestamp())", $lead_id, $user_id, $user_name, $note, $note_type );
+		$sql        = $wpdb->prepare( "INSERT INTO %i(lead_id, user_id, user_name, value, note_type, date_created) values(%d, %d, %s, %s, %s, utc_timestamp())", $table_name, $lead_id, $user_id, $user_name, $note, $note_type );
 
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		/**
 		 * Fires after a note has been added to an entry
@@ -2547,7 +2577,7 @@ class GF_Forms_Model_Legacy {
 
 		$table_name = self::get_lead_notes_table_name();
 
-		$lead_id = $wpdb->get_var( $wpdb->prepare( "SELECT lead_id FROM $table_name WHERE id = %d", $note_id ) );
+		$lead_id = $wpdb->get_var( $wpdb->prepare( "SELECT lead_id FROM %i WHERE id = %d", $table_name, $note_id ) );  // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		/**
 		 * Fires before a note is deleted
@@ -2557,8 +2587,8 @@ class GF_Forms_Model_Legacy {
 		 */
 		do_action( 'gform_pre_note_deleted', $note_id, $lead_id );
 
-		$sql        = $wpdb->prepare( "DELETE FROM $table_name WHERE id=%d", $note_id );
-		$wpdb->query( $sql );
+		$sql        = $wpdb->prepare( "DELETE FROM %i WHERE id=%d", $table_name, $note_id );
+		$wpdb->query( $sql );  // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public static function get_lead_count_all_forms( $status = 'active' ) {
@@ -2566,16 +2596,16 @@ class GF_Forms_Model_Legacy {
 
 		$lead_table_name   = self::get_lead_table_name();
 
-		$result = $wpdb->get_var( "SHOW COLUMNS FROM $lead_table_name LIKE 'status'" );
+		$result = $wpdb->get_var( "SHOW COLUMNS FROM $lead_table_name LIKE 'status'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( $result ) {
 			$sql = $wpdb->prepare( "SELECT count(id)
-								FROM $lead_table_name
-								WHERE status=%s", $status );
+								FROM %i
+								WHERE status=%s", $lead_table_name, $status );
 		} else {
 			$sql = "SELECT count(id) FROM $lead_table_name";
 		}
 
-		return $wpdb->get_var( $sql );
+		return $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 }

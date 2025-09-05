@@ -18,7 +18,7 @@ class GF_Embed_Button {
 		?>
 		<button data-js="embed-flyout-trigger" class="gform-button gform-button--white gform-button--icon-leading">
 			<i class="gform-button__icon gform-icon gform-icon--embed-alt"></i>
-			<?php _e( 'Embed', 'gravityforms' ); ?>
+			<?php esc_html_e( 'Embed', 'gravityforms' ); ?>
 		</button>
 		<?php
 	}

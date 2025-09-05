@@ -164,11 +164,11 @@ class GFAutoUpgrade {
 
 	// Displays current version details on plugins page and updates page
 	public function display_changelog() {
-		if ( $_REQUEST['plugin'] != $this->_slug ) {
+		if ( isset( $_REQUEST['plugin'] ) && $_REQUEST['plugin'] != $this->_slug ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 		$change_log = $this->get_changelog();
-		echo $change_log;
+		echo $change_log; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		exit;
 	}
@@ -294,7 +294,7 @@ class GFAutoUpgrade {
 	public function display_updates() {
 
 		?>
-		<div class="wrap <?php echo GFCommon::get_browser_class() ?>">
+		<div class="wrap <?php echo esc_attr( GFCommon::get_browser_class() ); ?>">
 			<h2><?php esc_html_e( $this->_title ); ?></h2>
 			<?php
 			$force_check = rgget( 'force-check' ) == 1;
@@ -319,7 +319,7 @@ class GFAutoUpgrade {
 
 					?>
 					<div class="gf_update_outdated alert_yellow">
-						<?php echo $message . ' <p>' . sprintf( esc_html__( 'You can update to the latest version automatically or download the update and install it manually. %sUpdate Automatically%s %sDownload Update%s', 'gravityforms' ), "</p><a class='button-primary' href='{$upgrade_url}'>", '</a>', "&nbsp;<a class='button' href='{$version_info['url']}'>", '</a>' ); ?>
+						<?php echo $message . ' <p>' . sprintf( esc_html__( 'You can update to the latest version automatically or download the update and install it manually. %sUpdate Automatically%s %sDownload Update%s', 'gravityforms' ), "</p><a class='button-primary' href='{$upgrade_url}'>", '</a>', "&nbsp;<a class='button' href='{$version_info['url']}'>", '</a>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 					</div>
 				<?php
 				}
@@ -327,7 +327,7 @@ class GFAutoUpgrade {
 
 				?>
 				<div class="gf_update_current alert_green">
-					<?php printf( esc_html__( 'Your version of %s is up to date.', 'gravityforms' ), $this->_title ); ?>
+					<?php printf( esc_html__( 'Your version of %s is up to date.', 'gravityforms' ), esc_html( $this->_title ) ); ?>
 				</div>
 			<?php
 			}

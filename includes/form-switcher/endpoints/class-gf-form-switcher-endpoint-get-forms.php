@@ -62,6 +62,7 @@ class GF_Form_Switcher_Endpoint_Get_Forms {
 				'attributes' => [
 					GFForms::get_form_switcher_results_page_attr( $form->id ),
 					GFForms::get_form_switcher_subview_attr( $form->id ),
+					"title = '$form->title'",
 				]
 			];
 		}

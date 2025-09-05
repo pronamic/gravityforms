@@ -106,7 +106,7 @@ class GF_API_Keys_Table extends WP_List_Table {
 		?>
 
 		<input type="hidden" name="single_action"/> <input type="hidden" name="action_args"/>
-		<table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
+		<table class="wp-list-table <?php echo esc_attr( implode( ' ', $this->get_table_classes() ) ); ?>">
 			<thead>
 			<tr>
 				<?php $this->print_column_headers(); ?>
@@ -115,7 +115,7 @@ class GF_API_Keys_Table extends WP_List_Table {
 
 			<tbody id="the-list"<?php
 			if ( $singular ) {
-				echo " data-wp-lists='list:$singular'";
+				echo " data-wp-lists='list:$singular'"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			} ?>>
 			<?php $this->display_rows_or_placeholder(); ?>
 			</tbody>
@@ -136,7 +136,7 @@ class GF_API_Keys_Table extends WP_List_Table {
 	 * @param object $item The current item
 	 */
 	public function single_row( $item ) {
-		echo "<tr id='key_row_{$item['key_id']}' >";
+		echo "<tr id='key_row_{$item['key_id']}' >"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		$this->single_row_columns( $item );
 		echo '</tr>';
 	}

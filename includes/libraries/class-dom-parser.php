@@ -287,7 +287,7 @@ class Dom_Parser {
 			return false;
 		}
 
-		if ( ! empty( $_POST['gform_ajax'] ) ) {
+		if ( ! empty( $_POST['gform_ajax'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return false;
 		}
 

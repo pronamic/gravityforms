@@ -58,8 +58,8 @@ class GF_Entry_Meta_Batch_Processor {
 		}
 
 		self::$_batch_entry_meta_updates[] = array(
-			'meta_value' => $entry_meta_value,
-			'meta_key'   => $entry_meta_key,
+			'meta_value' => $entry_meta_value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			'meta_key'   => $entry_meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			'form_id'    => $form_id,
 			'entry_id'   => $entry_id,
 		);
@@ -94,7 +94,7 @@ class GF_Entry_Meta_Batch_Processor {
 				$meta_keys
 			)
 		);
-		$existing_rows                  = $wpdb->get_results( $sql, ARRAY_A );
+		$existing_rows                  = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$update_rows                    = array();
 		foreach ( $existing_rows as $row ) {
 			$update_rows[ $row['meta_key'] ] = $row['id'];
@@ -102,16 +102,16 @@ class GF_Entry_Meta_Batch_Processor {
 
 		$values = array();
 		foreach ( self::$_batch_entry_meta_updates as $update ) {
-			$update['meta_value'] = maybe_serialize( $update['meta_value'] );
+			$update['meta_value'] = maybe_serialize( $update['meta_value'] ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			$values[]             = $wpdb->prepare( '(%s,%s,%s,%s,%s)', rgar( $update_rows, $update['meta_key'] ), $update['meta_key'], $update['meta_value'], $update['form_id'], $update['entry_id'] );
 		}
 		$values_str = join( ',', $values );
 
 		$update_sql = "INSERT INTO {$meta_table} (id,meta_key,meta_value,form_id,entry_id)
-					VALUES {$values_str}
-					ON DUPLICATE KEY UPDATE meta_value=VALUES(meta_value);";
+			VALUES {$values_str}
+			ON DUPLICATE KEY UPDATE meta_value=VALUES(meta_value);";
 
-		$result = $wpdb->query( $update_sql );
+		$result = $wpdb->query( $update_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( $result === false ) {
 			$result = new \WP_Error( 'update_error', $wpdb->last_error );

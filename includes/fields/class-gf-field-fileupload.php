@@ -158,29 +158,29 @@ class GF_Field_FileUpload extends GF_Field {
 		$allowed_extensions = ! empty( $this->allowedExtensions ) ? GFCommon::clean_extensions( explode( ',', strtolower( $this->allowedExtensions ) ) ) : array();
 		if ( $this->multipleFiles ) {
 			$file_names = isset( GFFormsModel::$uploaded_files[ $form['id'] ][ $input_name ] ) ? GFFormsModel::$uploaded_files[ $form['id'] ][ $input_name ] : array();
-		} elseif ( ! empty( $_FILES[ $input_name ] ) ) {
+		} elseif ( ! empty( $_FILES[ $input_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$max_upload_size_in_bytes = isset( $this->maxFileSize ) && $this->maxFileSize > 0 ? $this->maxFileSize * 1048576 : wp_max_upload_size();
 			$max_upload_size_in_mb    = $max_upload_size_in_bytes / 1048576;
-			if ( ! empty( $_FILES[ $input_name ]['name'] ) && $_FILES[ $input_name ]['error'] > 0 ) {
+			if ( ! empty( $_FILES[ $input_name ]['name'] ) && $_FILES[ $input_name ]['error'] > 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 				$uploaded_file_name = isset( GFFormsModel::$uploaded_files[ $form['id'] ][ $input_name ] ) ? GFFormsModel::$uploaded_files[ $form['id'] ][ $input_name ] : '';
 				if ( empty( $uploaded_file_name ) ) {
 					$this->failed_validation = true;
-					switch ( $_FILES[ $input_name ]['error'] ) {
+					switch ( $_FILES[ $input_name ]['error'] ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Missing
 						case UPLOAD_ERR_INI_SIZE :
 						case UPLOAD_ERR_FORM_SIZE :
-							GFCommon::log_debug( __METHOD__ . '(): File ' . $_FILES[ $input_name ]['name'] . ' exceeds size limit. Maximum file size: ' . $max_upload_size_in_mb . 'MB' );
+							GFCommon::log_debug( __METHOD__ . '(): File ' . $_FILES[ $input_name ]['name'] . ' exceeds size limit. Maximum file size: ' . $max_upload_size_in_mb . 'MB' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 							$fileupload_validation_message = sprintf( esc_html__( 'File exceeds size limit. Maximum file size: %dMB', 'gravityforms' ), $max_upload_size_in_mb );
 							break;
 						default :
-							GFCommon::log_debug( __METHOD__ . '(): The following error occurred while uploading - ' . $_FILES[ $input_name ]['error'] );
-							$fileupload_validation_message = sprintf( esc_html__( 'There was an error while uploading the file. Error code: %d', 'gravityforms' ), $_FILES[ $input_name ]['error'] );
+							GFCommon::log_debug( __METHOD__ . '(): The following error occurred while uploading - ' . $_FILES[ $input_name ]['error'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
+							$fileupload_validation_message = sprintf( esc_html__( 'There was an error while uploading the file. Error code: %d', 'gravityforms' ), $_FILES[ $input_name ]['error'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 					}
 					$this->validation_message = empty( $this->errorMessage ) ? $fileupload_validation_message : $this->errorMessage;
 					return;
 				}
-			} elseif ( $_FILES[ $input_name ]['size'] > 0 && $_FILES[ $input_name ]['size'] > $max_upload_size_in_bytes ) {
+			} elseif ( $_FILES[ $input_name ]['size'] > 0 && $_FILES[ $input_name ]['size'] > $max_upload_size_in_bytes ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Missing
 				$this->failed_validation = true;
-				GFCommon::log_debug( __METHOD__ . '(): File ' . $_FILES[ $input_name ]['name'] . ' exceeds size limit. Maximum file size: ' . $max_upload_size_in_mb . 'MB' );
+				GFCommon::log_debug( __METHOD__ . '(): File ' . $_FILES[ $input_name ]['name'] . ' exceeds size limit. Maximum file size: ' . $max_upload_size_in_mb . 'MB' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				$this->validation_message = sprintf( esc_html__( 'File exceeds size limit. Maximum file size: %dMB', 'gravityforms' ), $max_upload_size_in_mb );
 				return;
 			}
@@ -192,8 +192,8 @@ class GF_Field_FileUpload extends GF_Field {
 			 */
 			$whitelisting_disabled = apply_filters( 'gform_file_upload_whitelisting_disabled', false );
 
-			if ( ! empty( $_FILES[ $input_name ]['name'] ) && ! $whitelisting_disabled ) {
-				$check_result = GFCommon::check_type_and_ext( $_FILES[ $input_name ] );
+			if ( ! empty( $_FILES[ $input_name ]['name'] ) && ! $whitelisting_disabled ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$check_result = GFCommon::check_type_and_ext( $_FILES[ $input_name ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 				if ( is_wp_error( $check_result ) ) {
 					$this->failed_validation = true;
 					GFCommon::log_debug( sprintf( '%s(): %s; %s', __METHOD__, $check_result->get_error_code(), $check_result->get_error_message()  ) );
@@ -201,7 +201,7 @@ class GF_Field_FileUpload extends GF_Field {
 					return;
 				}
 			}
-			$single_file_name = $_FILES[ $input_name ]['name'];
+			$single_file_name = $_FILES[ $input_name ]['name']; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			if ( ! empty( $single_file_name ) ) {
 				$file_names[] = array( 'uploaded_filename' => $single_file_name );
 			}
@@ -534,7 +534,7 @@ class GF_Field_FileUpload extends GF_Field {
 		} else {
 			$file_info = GFFormsModel::get_temp_filename( $form_id, $input_name );
 
-			return ! $file_info && empty( $_FILES[ $input_name ]['name'] );
+			return ! $file_info && empty( $_FILES[ $input_name ]['name'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
 	}
 
@@ -734,9 +734,9 @@ class GF_Field_FileUpload extends GF_Field {
 			if ( $file_info && file_exists( $temp_filepath ) ) {
 				GFCommon::log_debug( __METHOD__ . '(): File already uploaded to tmp folder, moving.' );
 				$_gf_uploaded_files[ $input_name ] = $this->move_temp_file( $form_id, $file_info );
-			} else if ( ! empty( $_FILES[ $input_name ]['name'] ) ) {
+			} else if ( ! empty( $_FILES[ $input_name ]['name'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				GFCommon::log_debug( __METHOD__ . '(): calling upload_file' );
-				$_gf_uploaded_files[ $input_name ] = $this->upload_file( $form_id, $_FILES[ $input_name ] );
+				$_gf_uploaded_files[ $input_name ] = $this->upload_file( $form_id, $_FILES[ $input_name ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 			} else {
 				GFCommon::log_debug( __METHOD__ . '(): No file uploaded. Exiting.' );
 			}

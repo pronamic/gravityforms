@@ -567,7 +567,7 @@ class GF_Field_Consent extends GF_Field {
 	public function get_field_description_from_revision( $revision_id ) {
 		global $wpdb;
 		$revisions_table_name = GFFormsModel::get_form_revisions_table_name();
-		$display_meta         = $wpdb->get_var( $wpdb->prepare( "SELECT display_meta FROM $revisions_table_name WHERE form_id=%d AND id=%d", $this->formId, $revision_id ) );
+		$display_meta         = $wpdb->get_var( $wpdb->prepare( "SELECT display_meta FROM $revisions_table_name WHERE form_id=%d AND id=%d", $this->formId, $revision_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$value                = '';
 		$is_entry_detail = $this->is_entry_detail();
 

@@ -92,7 +92,7 @@ class GF_Field_CreditCard extends GF_Field {
 		foreach ( $this->inputs as $input ) {
 			$input_id    = str_replace( $this->id . '.', '', $input['id'] );
 			$input_value = GFForms::get( $input['id'], $values );
-			if ( ! empty( $_POST[ 'is_submit_' . $this->formId ] ) && $this->isRequired && in_array( $input_id, $required_inputs_ids ) &&  empty( $input_value ) ) {
+			if ( ! empty( $_POST[ 'is_submit_' . $this->formId ] ) && $this->isRequired && in_array( $input_id, $required_inputs_ids ) &&  empty( $input_value ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$describedby_attributes[ $input_id ] = "aria-describedby='validation_message_{$this->formId}_{$this->id} {$warning_container_id}'";
 			} else {
 				$describedby_attributes[ $input_id ] = empty( $warning_container_id ) ? '' : "aria-describedby='{$warning_container_id}'";

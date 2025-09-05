@@ -188,10 +188,10 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 			return '';
 		}
 
-		$image_alt         = isset( $_POST["{$input_name}_2"] ) ? wp_strip_all_tags( $_POST["{$input_name}_2"] ) : '';
-		$image_title       = isset( $_POST["{$input_name}_1"] ) ? wp_strip_all_tags( $_POST["{$input_name}_1"] ) : '';
-		$image_caption     = isset( $_POST["{$input_name}_4"] ) ? wp_strip_all_tags( $_POST["{$input_name}_4"] ) : '';
-		$image_description = isset( $_POST["{$input_name}_7"] ) ? wp_strip_all_tags( $_POST["{$input_name}_7"] ) : '';
+		$image_alt         = isset( $_POST["{$input_name}_2"] ) ? wp_strip_all_tags( $_POST["{$input_name}_2"] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$image_title       = isset( $_POST["{$input_name}_1"] ) ? wp_strip_all_tags( $_POST["{$input_name}_1"] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$image_caption     = isset( $_POST["{$input_name}_4"] ) ? wp_strip_all_tags( $_POST["{$input_name}_4"] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$image_description = isset( $_POST["{$input_name}_7"] ) ? wp_strip_all_tags( $_POST["{$input_name}_7"] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 
 		return $url . '|:|' . $image_title . '|:|' . $image_caption . '|:|' . $image_description . '|:|' . $image_alt;
 	}

@@ -19,7 +19,7 @@
 			<?php foreach ( rgars( $order_summary, 'rows/body', array() ) as $row ) { ?>
 				<tr>
 					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; font-family: sans-serif; font-size:11px;">
-						<strong style="color:#BF461E; font-size:12px; margin-bottom:5px"><?php echo \GFCommon::maybe_wp_kses( rgar( $row, 'name' ) ); ?></strong>
+						<strong style="color:#BF461E; font-size:12px; margin-bottom:5px"><?php echo \GFCommon::maybe_wp_kses( rgar( $row, 'name' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
 							<ul style="margin:0">
 						<?php if ( is_array( rgar( $row, 'options' ) ) ) { ?>
 								<?php
@@ -32,8 +32,8 @@
 							</ul>
 					</td>
 					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; text-align:center; width:50px; font-family: sans-serif; font-size:11px;"><?php echo esc_html( rgar( $row, 'quantity', 1 ) ); ?></td>
-					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif; font-size:11px;"><?php echo rgar( $row, 'price_money' ); ?></td>
-					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif; font-size:11px;"><?php echo rgar( $row, 'sub_total_money' ); ?></td>
+					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif; font-size:11px;"><?php echo rgar( $row, 'price_money' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif; font-size:11px;"><?php echo rgar( $row, 'sub_total_money' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 				</tr>
 			<?php } ?>
 			</tbody>
@@ -43,15 +43,15 @@
 				<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; text-align:right; width:155px; font-family: sans-serif;">
 					<strong style="font-size:12px;"><?php esc_html_e( 'Sub Total', 'gravityforms' ); ?></strong></td>
 				<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif;">
-					<strong style="font-size:12px;"><?php echo $order_summary['totals']['sub_total_money']; ?></strong>
+					<strong style="font-size:12px;"><?php echo $order_summary['totals']['sub_total_money']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
 				</td>
 			</tr>
 			<?php foreach ( rgars( $order_summary, 'rows/footer', array() ) as $row ) { ?>
 				<tr>
 					<td colspan="2" style="background-color:#F4F4F4; border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; font-size:11px;">&nbsp;</td>
-					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif;font-size:12px;text-align:right;"><?php echo \GFCommon::maybe_wp_kses( rgar( $row, 'name' ) ); ?></td>
+					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif;font-size:12px;text-align:right;"><?php echo \GFCommon::maybe_wp_kses( rgar( $row, 'name' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif; font-size:11px;">
-						<?php echo rgar( $row, 'sub_total_money' ); ?>
+						<?php echo rgar( $row, 'sub_total_money' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</td>
 				</tr>
 			<?php } ?>
@@ -60,7 +60,7 @@
 				<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; text-align:right; width:155px; font-family: sans-serif;">
 					<strong style="font-size:12px;"><?php esc_html_e( 'Total', 'gravityforms' ); ?></strong></td>
 				<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif;">
-					<strong style="font-size:12px;"><?php echo $order_summary['totals']['total_money']; ?></strong></td>
+					<strong style="font-size:12px;"><?php echo $order_summary['totals']['total_money']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong></td>
 			</tr>
 			</tfoot>
 		</table>

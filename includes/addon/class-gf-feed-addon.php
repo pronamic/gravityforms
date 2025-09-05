@@ -243,7 +243,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 	public function scripts() {
 
-		$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$scripts = array(
 			array(
 				'handle'  => 'gform_form_admin',
@@ -303,7 +303,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function uninstall() {
 		global $wpdb;
 		$sql = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}gf_addon_feed WHERE addon_slug=%s", $this->get_slug() );
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 	}
 
@@ -786,12 +786,14 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$form_filter = is_numeric( $form_id ) ? $wpdb->prepare( 'AND form_id=%d', absint( $form_id ) ) : '';
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
 			"SELECT * FROM {$wpdb->prefix}gf_addon_feed
                                WHERE addon_slug=%s {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->get_slug()
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$results = $wpdb->get_results( $sql, ARRAY_A );
+		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach ( $results as &$result ) {
 			$result['meta'] = $this->decrypt_feed_meta( json_decode( $result['meta'], true ) );
 		}
@@ -814,12 +816,14 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$form_filter = is_numeric( $form_id ) ? $wpdb->prepare( 'AND form_id=%d', absint( $form_id ) ) : '';
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
 			"SELECT * FROM {$wpdb->prefix}gf_addon_feed
                                WHERE addon_slug=%s AND is_active=1 {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->get_slug()
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$results = $wpdb->get_results( $sql, ARRAY_A );
+		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach ( $results as &$result ) {
 			$result['meta'] = $this->decrypt_feed_meta( json_decode( $result['meta'], true ) );
 		}
@@ -848,10 +852,11 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$form_filter = is_numeric( $form_id ) ? $wpdb->prepare( 'AND form_id=%d', absint( $form_id ) ) : '';
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}gf_addon_feed
                                WHERE addon_slug=%s {$form_filter} ORDER BY `feed_order`, `id` ASC", $slug );
-
-		$results = $wpdb->get_results( $sql, ARRAY_A );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach( $results as &$result ) {
 			$result['meta'] = $this->decrypt_feed_meta( json_decode( $result['meta'], true ) );
 		}
@@ -895,7 +900,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}gf_addon_feed WHERE id=%d", $id );
 
-		$row = $wpdb->get_row( $sql, ARRAY_A );
+		$row = $wpdb->get_row( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( ! $row ) {
 			return false;
 		}
@@ -1136,7 +1141,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$meta = $this->get_encryptor()->encrypt_feed_meta( $meta, $this->get_fields_to_encrypt() );
 
 		$meta = json_encode( $meta );
-		$wpdb->update( "{$wpdb->prefix}gf_addon_feed", array( 'meta' => $meta ), array( 'id' => $id ), array( '%s' ), array( '%d' ) );
+		$wpdb->update( "{$wpdb->prefix}gf_addon_feed", array( 'meta' => $meta ), array( 'id' => $id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $wpdb->rows_affected > 0;
 	}
@@ -1145,7 +1150,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		global $wpdb;
 		$is_active = $is_active ? '1' : '0';
 
-		$wpdb->update( "{$wpdb->prefix}gf_addon_feed", array( 'is_active' => $is_active ), array( 'id' => $id ), array( '%d' ), array( '%d' ) );
+		$wpdb->update( "{$wpdb->prefix}gf_addon_feed", array( 'is_active' => $is_active ), array( 'id' => $id ), array( '%d' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $wpdb->rows_affected > 0;
 	}
@@ -1174,7 +1179,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$meta = $this->get_encryptor()->encrypt_feed_meta( $meta, $this->get_fields_to_encrypt() );
 
 		$meta = json_encode( $meta );
-		$wpdb->insert( "{$wpdb->prefix}gf_addon_feed", array( 'addon_slug' => $this->get_slug(), 'form_id' => $form_id, 'is_active' => $is_active, 'meta' => $meta ), array( '%s', '%d', '%d', '%s' ) );
+		$wpdb->insert( "{$wpdb->prefix}gf_addon_feed", array( 'addon_slug' => $this->get_slug(), 'form_id' => $form_id, 'is_active' => $is_active, 'meta' => $meta ), array( '%s', '%d', '%d', '%s' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $wpdb->insert_id;
 	}
@@ -1226,7 +1231,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		do_action( 'gform_pre_delete_feed', $id, $this );
 		do_action( "gform_{$this->get_short_slug()}_pre_delete_feed", $id, $this );
 
-		$wpdb->delete( "{$wpdb->prefix}gf_addon_feed", array( 'id' => $id ), array( '%d' ) );
+		$wpdb->delete( "{$wpdb->prefix}gf_addon_feed", array( 'id' => $id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public function delete_feeds( $form_id = null ) {
@@ -1234,12 +1239,14 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$form_filter = is_numeric( $form_id ) ? $wpdb->prepare( 'AND form_id=%d', absint( $form_id ) ) : '';
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
 			"SELECT id FROM {$wpdb->prefix}gf_addon_feed
                                WHERE addon_slug=%s {$form_filter} ORDER BY `feed_order`, `id` ASC", $this->get_slug()
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$feed_ids = $wpdb->get_col( $sql );
+		$feed_ids = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( ! empty( $feed_ids ) ) {
 			array_map( array( $this, 'delete_feed' ), $feed_ids );
@@ -1357,13 +1364,13 @@ abstract class GFFeedAddOn extends GFAddOn {
 			add_action(
 				'admin_notices',
 				function() use ( $notice ) {
-					echo $notice;
+					echo $notice; // phpcs:ignore WordPress.Security.EscapeOutput
 				}
 			);
 			return;
 		}
 
-		echo $notice;
+		echo $notice; // phpcs:ignore WordPress.Security.EscapeOutput
 	}
 
 	/**
@@ -1407,7 +1414,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		// Update each feed.
 		foreach ( $feed_order as $feed_id => $position ) {
 
-			$wpdb->update(
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->prefix . 'gf_addon_feed',
 				array( 'feed_order' => $position ),
 				array( 'id' => $feed_id ),
@@ -1591,7 +1598,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	}
 
 	public function is_feed_list_page() {
-		return ! isset( $_GET['fid'] );
+		return ! isset( $_GET['fid'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	public function is_detail_page() {
@@ -1683,7 +1690,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		// Set save success message following new feed (fid=0) redirect to saved fid.
 		$this->get_settings_renderer()->set_postback_message_callback( function( $message ) use ( $renderer ) {
 
-			if ( ! empty( $_POST ) ) {
+			if ( ! empty( $_POST ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				return $message;
 			}
 
@@ -1764,17 +1771,17 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		// If feed creation is disabled, display configuration message.
 		if ( ! $this->can_create_feed() ) {
-			printf( '%s<div>%s</div>', $title, $this->configure_addon_message() );
+			printf( '%s<div>%s</div>', $title, $this->configure_addon_message() );  // phpcs:ignore WordPress.Security.EscapeOutput
 			return;
 		}
 
 		// Output required scripts.
-		printf( '<script type="text/javascript">%s</script>', GFFormSettings::output_field_scripts( false ) );
+		printf( '<script type="text/javascript">%s</script>', GFFormSettings::output_field_scripts( false ) );  // phpcs:ignore WordPress.Security.EscapeOutput
 
 		// Render Settings framework or error message.
 		if ( ! $this->get_settings_renderer() ) {
 			$this->log_debug( __METHOD__ . '(): Could not load add-on settings. Settings renderer not initialized.' );
-			printf( '%s<p>%s</p>', $title, esc_html__( 'Unable to render feed settings.', 'gravityforms' ) );
+			printf( '%s<p>%s</p>', $title, esc_html__( 'Unable to render feed settings.', 'gravityforms' ) );  // phpcs:ignore WordPress.Security.EscapeOutput
 
 			return;
 		}
@@ -1820,7 +1827,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		<div class="gform-settings-panel">
 			<header class="gform-settings-panel__header">
-				<h4 class="gform-settings-panel__title"><span><?php echo $this->feed_list_title() ?></span></h4>
+				<h4 class="gform-settings-panel__title"><span><?php echo $this->feed_list_title(); // phpcs:ignore WordPress.Security.EscapeOutput ?></span></h4>
 			</header>
 
 			<div class="gform-settings-panel__content">
@@ -2181,7 +2188,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$sql = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}gf_addon_feed WHERE addon_slug=%s AND form_id = %d LIMIT 0,1", $this->get_slug(), $form_id );
 
-		$feed_id = $wpdb->get_var( $sql );
+		$feed_id = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( ! $feed_id ) {
 			$feed_id = 0;
 		}
@@ -2209,7 +2216,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		}
 
 		if ( $echo ) {
-			echo $html;
+			echo $html;  // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 
 		return $html;
@@ -2803,7 +2810,7 @@ class GFAddOnFeedsTable extends WP_List_Table {
 	}
 
 	function no_items() {
-		echo call_user_func( $this->_no_items_callback );
+		echo call_user_func( $this->_no_items_callback ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	function display_rows_or_placeholder() {
@@ -2812,8 +2819,8 @@ class GFAddOnFeedsTable extends WP_List_Table {
 		if ( $message !== false ) {
 			?>
 			<tr class="no-items">
-				<td class="colspanchange" colspan="<?php echo $this->get_column_count() ?>">
-					<?php echo $message ?>
+				<td class="colspanchange" colspan="<?php echo esc_attr( $this->get_column_count() ); ?>">
+					<?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</td>
 			</tr>
 			<?php

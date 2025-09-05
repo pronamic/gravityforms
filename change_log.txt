@@ -1,3 +1,15 @@
+### 2.9.17.1
+- Fixed a bug that prevented entries search input boxes from showing.
+
+### 2.9.17 | 2025-09-04
+- Added full text of the form name when hovering over a title in the form switcher dropdown.
+- Fixed a bug that prevented the password field description from being announced to screen readers.
+- Fixed a PHP fatal error and warnings that can occur if an empty batch is returned during background processing.
+- Fixed an issue where the values of hidden and readonly inputs for fields that have failed state validation (e.g. single product field) are repopulated with the invalid submitted values instead of reverting to their original values.
+- Fixed an issue that prevents forms with legacy markup from being able to disable legacy markup in form settings.
+- Fixed code standard errors and warnings.
+- API: Fixed an issue with the frontend feed system where the billing address line 2 field is populated with the billing address line 1 value, causing invalid billing address data to be sent to payment gateways such as Stripe.
+
 ### 2.9.16 | 2025-08-21
 - Added settings to the Radio and Checkbox fields to replace the list column Ready Classes.
 - Added sanitization to the enableEnhancedUI property in GF_Field_Select to be consistent with GF_Field_Multiselect.

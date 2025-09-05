@@ -52,7 +52,7 @@ class GFExport {
 			ob_clean();
 		}
 
-		echo $forms_json;
+		echo $forms_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		die();
 	}
 
@@ -119,13 +119,6 @@ class GFExport {
 			return - 1;
 		} //Error. JSON version is not compatible with current Gravity Forms version
 
-		$simplified_version = implode( '.', array_slice( preg_split( '/[.-]/', $forms['version'] ), 0, 2 ) );
-		if ( version_compare( 2.5, $simplified_version ) ) {
-			$markup_version = 1;
-		} else {
-			$markup_version = 2;
-		}
-
 		GFCache::delete( 'legacy_is_in_use' );
 
 		unset( $forms['version'] );
@@ -133,7 +126,7 @@ class GFExport {
 		$clean_forms = array();
 
 		foreach ( $forms as $form ) {
-			$form['markupVersion'] = rgar( $form, 'markupVersion' ) ? $form['markupVersion'] : $markup_version;
+			$form['markupVersion'] = 2;
 			$form                  = GFFormsModel::convert_field_objects( $form );
 			$clean_forms[]         = GFFormsModel::sanitize_settings( $form );
 		}
@@ -367,8 +360,9 @@ class GFExport {
 			$form_id = RGFormsModel::insert_form( $title );
 
 			//updating form meta
-			$form['title'] = $title;
-			$form['id']    = $form_id;
+			$form['title']         = $title;
+			$form['id']            = $form_id;
+			$form['markupVersion'] = 2;
 
 			$form = GFFormsModel::trim_form_meta_values( $form );
 
@@ -466,7 +460,7 @@ class GFExport {
 				$all_results = []; // Store the results of each import.
 
 				// Loop through each uploaded file.
-				foreach ( $_FILES['gf_import_file']['tmp_name'] as $import_file ) {
+				foreach ( $_FILES['gf_import_file']['tmp_name'] as $import_file ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					$result = self::import_file( $import_file, $forms );
 					$count += ( $result === -1 ) ? -1 : ( ( $result === 0 ) ? 0 : count( $result['form_ids'] ) );
 					$all_results[] = $result;
@@ -538,10 +532,17 @@ class GFExport {
 				printf(
 					'<div class="gf-notice notice notice-error">%s</div>',
 					sprintf(
-						esc_html( 'Notice: %d %s failed the import process. %s', 'gravityforms' ),
-						$failed_forms_count,
-						_n( 'form', 'forms', count( $failed_form_errors ), 'gravityforms' ),
-						$failed_errors
+						// translators: 1: number of forms; 2: error details (may contain HTML)
+						esc_html(
+							_n(
+								'Notice: %1$s form failed the import process. %2$s',
+								'Notice: %1$s forms failed the import process. %2$s',
+								$failed_forms_count,
+								'gravityforms'
+							)
+						),
+						number_format_i18n( (int) $failed_forms_count ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						wp_kses_post( $failed_errors )
 					)
 				);
 			}
@@ -710,7 +711,7 @@ class GFExport {
 			?>
 			<script>
 				jQuery( document ).ready( function () {
-					var export_ids = <?php echo json_encode( $export_ids ); ?>;
+					var export_ids = <?php echo json_encode( $export_ids ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>;
 					var clickSubmit = false;
 					export_ids.split(',').forEach( ( id ) => {
 						var formCheckbox = jQuery( '#gf_form_id_' + id );
@@ -754,11 +755,11 @@ class GFExport {
 
 				gform.utils.trigger( { event: 'gform/page_loader/show' } );
 
-				var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' )?>");
+				var mysack = new sack("<?php echo esc_js( esc_url_raw( admin_url( 'admin-ajax.php' ) ) )?>");
 				mysack.execute = 1;
 				mysack.method = 'POST';
 				mysack.setVar("action", "rg_select_export_form");
-				mysack.setVar("rg_select_export_form", "<?php echo wp_create_nonce( 'rg_select_export_form' ); ?>");
+				mysack.setVar("rg_select_export_form", "<?php echo esc_js( wp_create_nonce( 'rg_select_export_form' ) ); ?>");
 				mysack.setVar("form_id", formId);
 				mysack.onError = function () {
 					alert(<?php echo json_encode( __( 'Ajax error while selecting a form', 'gravityforms' ) ); ?>)
@@ -838,7 +839,7 @@ class GFExport {
 								$('#progress_container').text('0%');
 								$('#please_wait_container').hide();
 								var formId = parseInt( $('#export_form').val() );
-								var url = ajaxurl + '?action=gf_download_export&_wpnonce=<?php echo wp_create_nonce( 'gform_download_export' ); ?>&export-id=' + response.exportId + '&form-id=' + formId;
+								var url = ajaxurl + '?action=gf_download_export&_wpnonce=<?php echo esc_js( wp_create_nonce( 'gform_download_export' ) ); ?>&export-id=' + response.exportId + '&form-id=' + formId;
 								$('#submit_button').fadeIn();
 								document.location.href = url;
 							}
@@ -853,7 +854,7 @@ class GFExport {
 
         <div class="gform-settings__content">
             <form method="post" id="gform_export" class="gform_settings_form" data-js="page-loader">
-	            <?php echo wp_nonce_field( 'rg_start_export', 'rg_start_export_nonce' ); ?>
+	            <?php echo wp_nonce_field( 'rg_start_export', 'rg_start_export_nonce' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_nonce_field is safe ?>
                 <div class="gform-settings-panel gform-settings-panel--full">
                     <header class="gform-settings-panel__header"><legend class="gform-settings-panel__title"><?php esc_html_e( 'Export Entries', 'gravityforms' ) ;?></legend></header>
                     <div class="gform-settings-panel__content">
@@ -978,6 +979,7 @@ class GFExport {
 
 		while ( $go_to_next_page ) {
 
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			if ( version_compare( GFFormsModel::get_database_version(), '2.3-dev-1', '<' ) ) {
 				$sql = $wpdb->prepare( "SELECT d.field_number as field_id, d.value as value
                     FROM {$wpdb->prefix}rg_lead_detail d
@@ -997,9 +999,9 @@ class GFExport {
 					$page_size
 				);
 			}
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-
-			$results = $wpdb->get_results( $sql, ARRAY_A );
+			$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			foreach ( $results as $result ) {
 				$list              = unserialize( $result['value'] );
@@ -1060,7 +1062,7 @@ class GFExport {
 		$page_size          = 20;
 
 		$form_id = $form['id'];
-		$fields  = $_POST['export_field'];
+		$fields  = rgpost( 'export_field' );
 
 		$start_date = rgpost( 'export_date_start' );
 		$end_date   = rgpost( 'export_date_end' );
@@ -1177,7 +1179,7 @@ class GFExport {
 				 *
 				 * @param string   $line       The current line being exported.
 				 * @param array    $form       The current form object.
-				 * @param array    $fields     An array of field IDs to be exported.
+				 * @param array|string    $fields     An array of field IDs to be exported.
 				 * @param array    $field_rows An array of List fields
 				 * @param array    $entry      The current entry.
 				 * @param string   $separator  The separator
@@ -1219,7 +1221,7 @@ class GFExport {
 			 * @param array  $form       The Form object to get the entries from
 			 * @param string $start_date The start date for when the export of entries should take place
 			 * @param string $end_date   The end date for when the export of entries should stop
-			 * @param array  $fields     The specified fields where the entries should be exported from
+			 * @param array|string  $fields     The specified fields where the entries should be exported from
 			 * @param string $export_id  A unique ID for the export.
 			 */
 			do_action( 'gform_post_export_entries', $form, $start_date, $end_date, $fields, $export_id );
@@ -1434,7 +1436,7 @@ class GFExport {
 		$offset = absint( rgpost( 'offset' ) );
 		$export_id = sanitize_key( ( rgpost( 'exportId' ) ) );
 
-		$form_id = $_POST['export_form'];
+		$form_id = rgpost( 'export_form' );
 		$form    = RGFormsModel::get_form_meta( $form_id );
 
 		if ( empty( $export_id ) ) {

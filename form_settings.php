@@ -581,7 +581,7 @@ class GFFormSettings {
 			),
 		);
 
-		if ( self::show_legacy_markup_setting() ) {
+		if ( self::legacy_markup_enabled_or_posted( $form ) ) {
 			$fields['form_options']['fields'][] = array(
 				'name'          => 'markupVersion',
 				'type'          => 'toggle',
@@ -653,6 +653,26 @@ class GFFormSettings {
 
 		return $fields;
 
+	}
+
+	/**
+	 * The Settings API runs the settings field method before processing the postback,
+	 * so we have to run this hack to ensure we're respecting the posted value on initial load.
+	 *
+	 * @todo - Remove this and fix the Settings API order-of-operations.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $form The form to check.
+	 *
+	 * @return bool
+	 */
+	public static function legacy_markup_enabled_or_posted( $form ) {
+		if ( $_POST && empty( $_POST['_gform_setting_markupVersion'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, 
+			return apply_filters( 'gform_show_legacy_markup_setting', false );
+		}
+
+		return apply_filters( 'gform_show_legacy_markup_setting', GFCommon::is_legacy_markup_enabled( $form ) );
 	}
 
 	/**
@@ -870,7 +890,7 @@ class GFFormSettings {
 					// Ensure form is not empty and display form settings warning accordingly.
 					$notice = self::deprecated_classes_warning( $form );
 					if ( ! empty( $notice ) ) {
-						echo $notice;
+						echo $notice; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 
 					?>
@@ -1087,11 +1107,11 @@ class GFFormSettings {
 		wp_print_styles( array( 'jquery-ui-styles', 'gform_admin', 'gform_settings', 'wp-pointer' ) );
 
 		$form         = GFFormsModel::get_form_meta( rgget( 'id' ) );
-		$current_tab  = rgempty( 'subview', $_GET ) ? 'settings' : rgget( 'subview' );
+		$current_tab  = rgempty( 'subview', $_GET ) ? 'settings' : rgget( 'subview' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$setting_tabs = GFFormSettings::get_tabs( $form['id'] );
 
 		// If theme_layer is set in $_GET, we're on a theme layer and should use it as the current tab slug
-		if ( ! rgempty( 'theme_layer', $_GET ) ) {
+		if ( ! rgempty( 'theme_layer', $_GET ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$current_tab = rgget( 'theme_layer' );
 		}
 
@@ -1106,12 +1126,12 @@ class GFFormSettings {
 
 		?>
 
-		<div class="wrap gforms_edit_form gforms_form_settings_wrap <?php echo GFCommon::get_browser_class() ?>">
+		<div class="wrap gforms_edit_form gforms_form_settings_wrap <?php echo esc_attr( GFCommon::get_browser_class() ) ?>">
 
 			<?php
 				GFSettings::page_header_bar();
 				GFForms::top_toolbar();
-				echo GFCommon::get_remote_message();
+				echo GFCommon::get_remote_message(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				GFCommon::notices_section();
 			?>
 
@@ -1151,7 +1171,7 @@ class GFFormSettings {
 							'<a href="%s"%s><span class="icon">%s</span> <span class="label">%s</span></a>',
 							esc_url( $url ),
 							$current_tab === $tab['name'] ? ' class="active"' : '',
-							$icon_markup,
+							$icon_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							esc_html( $tab['label'] )
 						);
 					}
@@ -1336,7 +1356,7 @@ class GFFormSettings {
 	 * @return void
 	 */
 	public static function output( $a ) {
-		echo $a;
+		echo $a; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -1365,7 +1385,7 @@ class GFFormSettings {
 		$script_str .= sprintf( 'function GetConditionalLogicFields(){return %s;}', json_encode( $conditional_logic_fields ) ) . PHP_EOL;
 
 		if ( ! empty( $script_str ) && $echo ) {
-			echo $script_str;
+			echo $script_str; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return $script_str;

@@ -171,7 +171,7 @@ class GF_Ajax_Handler {
 	 * @return string The submission type. Possible values are SUBMISSION_TYPE_SUBMIT, SUBMISSION_TYPE_NEXT, SUBMISSION_TYPE_PREVIOUS, and SUBMISSION_TYPE_SAVE_AND_CONTINUE.
 	 */
 	public function get_submission_type( $target_page, $source_page ) {
-		if ( isset( $_POST['gform_send_resume_link'] ) ) {
+		if ( isset( $_POST['gform_send_resume_link'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return \GFFormDisplay::SUBMISSION_TYPE_SEND_LINK;
 		} elseif ( rgpost( 'gform_save') ) {
 			return \GFFormDisplay::SUBMISSION_TYPE_SAVE_AND_CONTINUE;
@@ -287,7 +287,7 @@ class GF_Ajax_Handler {
 
 		parse_str( $query_string, $query );
 		unset( $query['gf_page'] ); // Removing so it doesn't conflict with gf_ajax_page=preview.
-		$_GET = array_merge( $_GET, $query );
+		$_GET = array_merge( $_GET, $query ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 }

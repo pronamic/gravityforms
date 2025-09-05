@@ -244,7 +244,7 @@ class GFAPI {
 
 		$meta_table_name = GFFormsModel::get_meta_table_name();
 
-		if ( intval( $wpdb->get_var( $wpdb->prepare( "SELECT count(0) FROM {$meta_table_name} WHERE form_id=%d", $form_id ) ) ) == 0 ) {
+		if ( intval( $wpdb->get_var( $wpdb->prepare( "SELECT count(0) FROM {$meta_table_name} WHERE form_id=%d", $form_id ) ) ) == 0 ) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			return new WP_Error( 'not_found', __( 'Form not found', 'gravityforms' ) );
 		}
 
@@ -276,7 +276,7 @@ class GFAPI {
 
 		// Updating form title and is_active flag.
 		$is_active = rgar( $form, 'is_active' ) ? '1' : '0';
-		$result    = $wpdb->query( $wpdb->prepare( "UPDATE {$form_table_name} SET title=%s, is_active=%s WHERE id=%d", $form['title'], $is_active, $form['id'] ) );
+		$result    = $wpdb->query( $wpdb->prepare( "UPDATE {$form_table_name} SET title=%s, is_active=%s WHERE id=%d", $form['title'], $is_active, $form['id'] ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		GFFormsModel::flush_current_form( GFFormsModel::get_form_cache_key( $form_id ) );
 
@@ -357,7 +357,8 @@ class GFAPI {
 		}
 		$in_str_arr = array_fill( 0, count( $form_ids ), '%d' );
 		$in_str     = implode( ',', $in_str_arr );
-		$result     = $wpdb->query(
+		$result     = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			$wpdb->prepare(
 				"
                 UPDATE $table
@@ -365,6 +366,7 @@ class GFAPI {
                 WHERE id IN ($in_str)
                 ", $form_ids
 			)
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		);
 
 		GFFormsModel::flush_current_forms();
@@ -885,7 +887,7 @@ class GFAPI {
 		}
 		$post_id = ! empty( $entry['post_id'] ) ? intval( $entry['post_id'] ) : 'NULL';
 
-		$current_time = $wpdb->get_var( 'SELECT utc_timestamp()' );
+		$current_time = $wpdb->get_var( 'SELECT utc_timestamp()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		if ( empty( $entry['date_created'] ) ) {
 			$entry['date_created'] = $current_time;
@@ -986,6 +988,7 @@ class GFAPI {
 		$source_id = ! empty( $entry['source_id'] ) ? absint( $entry['source_id'] ) : 'NULL';
 
 		$entry_table = GFFormsModel::get_entry_table_name();
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
 			"
                 UPDATE $entry_table
@@ -1014,7 +1017,8 @@ class GFAPI {
                 id = %d
                 ", $form_id, $is_starred, $is_read, $ip, $source_url, $user_agent, $currency, $status, $payment_method, $entry_id
 		);
-		$result     = $wpdb->query( $sql );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result     = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 		if ( false === $result ) {
 			return new WP_Error( 'update_entry_properties_failed', __( 'There was a problem while updating the entry properties', 'gravityforms' ), $wpdb->last_error );
 		}
@@ -1022,7 +1026,7 @@ class GFAPI {
 		// Only save field values for fields that currently exist in the form. The rest in $entry will be ignored. The rest in $current_entry will get deleted.
 
 		$entry_meta_table = GFFormsModel::get_entry_meta_table_name();
-		$current_fields    = $wpdb->get_results( $wpdb->prepare( "SELECT id, meta_key, item_index FROM $entry_meta_table WHERE entry_id=%d", $entry_id ) );
+		$current_fields    = $wpdb->get_results( $wpdb->prepare( "SELECT id, meta_key, item_index FROM %i WHERE entry_id=%d", $entry_meta_table, $entry_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		$form = gf_apply_filters( array( 'gform_form_pre_update_entry', $form_id ), $form, $entry, $entry_id );
 
@@ -1273,7 +1277,8 @@ class GFAPI {
 		$transaction_type = isset( $entry['transaction_type'] ) ? intval( $entry['transaction_type'] ) : 'NULL';
 
 		$entry_table = GFFormsModel::get_entry_table_name();
-		$result     = $wpdb->query(
+		$result      = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$wpdb->prepare(
 				"
                 INSERT INTO $entry_table
@@ -1282,6 +1287,7 @@ class GFAPI {
                 (%d, {$post_id}, {$date_created}, {$date_updated}, %d,  %d, %s, %s, %s, %s, {$payment_status}, {$payment_date}, {$payment_amount}, {$transaction_id}, {$is_fulfilled}, {$user_id}, {$transaction_type}, %s, %s, {$source_id})
                 ", $form_id, $is_starred, $is_read, $ip, $source_url, $user_agent, $currency, $status, $payment_method
 			)
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);
 		if ( false === $result ) {
 			return new WP_Error( 'insert_entry_properties_failed', __( 'There was a problem while inserting the entry properties', 'gravityforms' ), $wpdb->last_error );
@@ -1443,12 +1449,12 @@ class GFAPI {
 				}
 			}
 		} else {
-			$sql = $wpdb->prepare( "SELECT id FROM {$entry_meta_table_name} WHERE entry_id=%d AND meta_key=%s", $entry_id, $input_id );
+			$sql = $wpdb->prepare( "SELECT id FROM %i WHERE entry_id=%d AND meta_key=%s", $entry_meta_table_name, $entry_id, $input_id );
 			if ( $item_index ) {
 				$sql .= $wpdb->prepare( ' AND item_index=%s', $item_index );
 			}
 
-			$lead_detail_id = $wpdb->get_var( $sql );
+			$lead_detail_id = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			if ( ! isset( $entry[ $input_id ] ) || ( $value === 0 && $entry[ $input_id ] !== '0' ) || $entry[ $input_id ] != $value ) {
 				$result = GFFormsModel::update_entry_field_value( $form, $entry, $field, $lead_detail_id, $input_id, $value, $item_index );
@@ -1908,12 +1914,12 @@ class GFAPI {
 	 * @param int   $source_page  Indicates which page was active when the values were submitted.
 	 */
 	private static function hydrate_post( $form_id, $input_values, $field_values, $target_page, $source_page ) {
-		if ( ! isset( $_POST ) ) {
+		if ( ! isset( $_POST ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$_POST = array();
 		}
 
 		if ( ! empty( $input_values ) ) {
-			$_POST = array_merge_recursive( $_POST, $input_values );
+			$_POST = array_merge_recursive( $_POST, $input_values ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
 
 		self::normalize_post_keys();
@@ -1936,7 +1942,7 @@ class GFAPI {
 	private static function normalize_post_keys() {
 		$_POST = array_combine( array_map( function ( $key ) {
 			return str_replace( '.', '_', $key );
-		}, array_keys( $_POST ) ), array_values( $_POST ) );
+		}, array_keys( $_POST ) ), array_values( $_POST ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/**
@@ -1972,7 +1978,7 @@ class GFAPI {
 	 */
 	public static function submit_form_filter_gform_pre_validation( $form ) {
 		$name = 'state_' . absint( $form['id'] );
-		if ( ! isset( $_POST[ $name ] ) ) {
+		if ( ! isset( $_POST[ $name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$field_values   = rgpost( 'gform_field_values' );
 			$_POST[ $name ] = GFFormDisplay::get_state( $form, $field_values );
 		}
@@ -2016,7 +2022,7 @@ class GFAPI {
 			} else {
 				$in_str_arr  = array_fill( 0, count( $form_ids ), '%d' );
 				$in_str      = join( ',', $in_str_arr );
-				$where_arr[] = $wpdb->prepare( "form_id IN ($in_str)", $form_ids );
+				$where_arr[] = $wpdb->prepare( "form_id IN ($in_str)", $form_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			}
 		}
 		if ( false === empty( $addon_slug ) ) {
@@ -2028,7 +2034,7 @@ class GFAPI {
 			} else {
 				$in_str_arr  = array_fill( 0, count( $feed_ids ), '%d' );
 				$in_str      = join( ',', $in_str_arr );
-				$where_arr[] = $wpdb->prepare( "id IN ($in_str)", $feed_ids );
+				$where_arr[] = $wpdb->prepare( "id IN ($in_str)", $feed_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			}
 		}
 
@@ -2038,8 +2044,7 @@ class GFAPI {
 			$sql .= ' WHERE ' . join( ' AND ', $where_arr );
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$results = $wpdb->get_results( $sql, ARRAY_A );
+		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( empty( $results ) ) {
 			return new WP_Error( 'not_found', __( 'Feed not found', 'gravityforms' ) );
 		}
@@ -2152,9 +2157,9 @@ class GFAPI {
 			return self::get_missing_table_wp_error( $table );
 		}
 
-		$sql = $wpdb->prepare( "DELETE FROM {$table} WHERE id=%d", $feed_id );
+		$sql = $wpdb->prepare( "DELETE FROM {$table} WHERE id=%d", $feed_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$results = $wpdb->query( $sql );
+		$results = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( false === $results ) {
 			return new WP_Error( 'error_deleting', sprintf( __( 'There was an error while deleting feed id %s', 'gravityforms' ), $feed_id ), $wpdb->last_error );
 		}
@@ -2196,12 +2201,12 @@ class GFAPI {
 		$feed_meta_json = json_encode( $feed_meta );
 		$table          = $wpdb->prefix . 'gf_addon_feed';
 		if ( empty( $form_id ) ) {
-			$sql = $wpdb->prepare( "UPDATE {$table} SET meta= %s WHERE id=%d", $feed_meta_json, $feed_id );
+			$sql = $wpdb->prepare( "UPDATE {$table} SET meta= %s WHERE id=%d", $feed_meta_json, $feed_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		} else {
-			$sql = $wpdb->prepare( "UPDATE {$table} SET form_id = %d, meta= %s WHERE id=%d", $form_id, $feed_meta_json, $feed_id );
+			$sql = $wpdb->prepare( "UPDATE {$table} SET form_id = %d, meta= %s WHERE id=%d", $form_id, $feed_meta_json, $feed_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		}
 
-		$results = $wpdb->query( $sql );
+		$results = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( false === $results ) {
 			return new WP_Error( 'error_updating', sprintf( __( 'There was an error while updating feed id %s', 'gravityforms' ), $feed_id ), $wpdb->last_error );
@@ -2245,9 +2250,9 @@ class GFAPI {
 		$feed_meta = self::encrypt_feed_meta( $feed_meta, $addon_slug );
 
 		$feed_meta_json = json_encode( $feed_meta );
-		$sql            = $wpdb->prepare( "INSERT INTO {$table} (form_id, meta, addon_slug) VALUES (%d, %s, %s)", $form_id, $feed_meta_json, $addon_slug );
+		$sql            = $wpdb->prepare( "INSERT INTO {$table} (form_id, meta, addon_slug) VALUES (%d, %s, %s)", $form_id, $feed_meta_json, $addon_slug ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$results = $wpdb->query( $sql );
+		$results = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( false === $results ) {
 			return new WP_Error( 'error_inserting', __( 'There was an error while inserting a feed', 'gravityforms' ), $wpdb->last_error );

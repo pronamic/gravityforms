@@ -104,7 +104,7 @@ class GF_Installation_Wizard {
 
 		<br />
 		<h2>
-			<?php echo $current_step->get_title(); ?>
+			<?php echo esc_html( $current_step->get_title() ); ?>
 		</h2>
 
 			<form action="" method="POST">
@@ -114,7 +114,7 @@ class GF_Installation_Wizard {
 
 				$validation_summary = $current_step->get_validation_summary();
 				if ( $validation_summary ) {
-					printf( '<div class="delete-alert alert_red">%s</div>', $validation_summary );
+					printf( '<div class="delete-alert alert_red">%s</div>', $validation_summary ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 
 				?>
@@ -139,9 +139,9 @@ class GF_Installation_Wizard {
 					$previous_button_text = $current_step->get_previous_button_text();
 					if ( $previous_button_text ) {
 						$previous_button = $this->get_step_index( $current_step ) > 0 ? '<input name="_previous" class="button button-primary" type="submit" value="' . esc_attr( $previous_button_text ) . '" style="margin-right:30px;" />' : '';
-						echo $previous_button;
+						echo $previous_button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
-					echo $next_button;
+					echo $next_button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					?>
 				</div>
 			</form>
@@ -248,7 +248,7 @@ class GF_Installation_Wizard {
 		$html .= '</ul>';
 
 		if ( $echo ) {
-			echo $html;
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		return $html;
 	}
@@ -268,7 +268,7 @@ class GF_Installation_Wizard {
 		foreach ( $steps as $step ) {
 			$step_summary = $step->summary( false );
 			if ( $step_summary ) {
-				printf( '<tr valign="top"><th scope="row"><label>%s</label></th><td>%s</td></tr>', esc_html( $step->get_title() ), $step_summary );
+				printf( '<tr valign="top"><th scope="row"><label>%s</label></th><td>%s</td></tr>', esc_html( $step->get_title() ), $step_summary ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 		echo '</tbody></table>';

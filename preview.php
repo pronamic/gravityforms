@@ -39,7 +39,7 @@ do_action( 'gform_preview_init', $form_id );
 require_once( GFCommon::get_base_path() . '/form_display.php' );
 
 // Get form object.
-$form       = RGFormsModel::get_form_meta( $_GET['id'] );
+$form       = RGFormsModel::get_form_meta( rgget( 'id' ) );
 $form_title = rgar( $form, 'title', __( 'Untitled Form', 'gravityforms' ) );
 
 /* translators: Form preview page title. 1: form title, 2: site title. */
@@ -120,7 +120,7 @@ do_action( 'gform_preview_body_open', $form_id );
 			<h1 style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">
 				<?php echo esc_html__( $admin_title );?>
 			</h1>
-			<h2><?php esc_html_e( 'Form Preview', 'gravityforms' ) ?> : ID <?php echo $form_id; ?></h2>
+			<h2><?php esc_html_e( 'Form Preview', 'gravityforms' ) ?> : ID <?php echo esc_html( $form_id ); ?></h2>
 		</div>
 	</div>
 	<div id="preview_note" class="preview_notice">
@@ -139,7 +139,7 @@ do_action( 'gform_preview_body_open', $form_id );
 	<span class="rule50"></span>
 	<span class="rule66"></span>
 	<span class="rule75"></span>
-	<?php echo RGForms::get_form( $form_id, true, true, true ); ?>
+	<?php echo RGForms::get_form( $form_id, true, true, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </div>
 <div id="browser_size_info"></div>
 

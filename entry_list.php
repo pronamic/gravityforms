@@ -694,7 +694,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	 * @return string The ordering to be used.
 	 */
 	public function get_order() {
-		return empty( $_GET['order'] ) ? 'ASC' : strtoupper( $_GET['order'] );
+		return empty( $_GET['order'] ) ? 'ASC' : strtoupper( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -708,7 +708,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	 * @return int The column to be used.
 	 */
 	public function get_orderby() {
-		return empty( $_GET['orderby'] ) ? 0 : $_GET['orderby'];
+		return empty( $_GET['orderby'] ) ? 0 : sanitize_text_field( wp_unslash( $_GET['orderby'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -720,7 +720,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 		$form_id = $this->get_form_id();
 
-		$page_index = empty( $_GET['paged'] ) ? 0 : absint( $_GET['paged'] - 1 );
+		$page_index = empty( $_GET['paged'] ) ? 0 : absint( $_GET['paged'] - 1 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$search_criteria = $this->get_search_criteria();
 
@@ -803,7 +803,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 		$status = in_array( $this->filter, array( 'trash', 'spam' ) ) ? $this->filter : 'active';
 		$search_criteria['status'] = $status;
 
-		if ( isset( $_GET['field_id'] ) && $_GET['field_id'] !== '' ) {
+		if ( isset( $_GET['field_id'] ) && $_GET['field_id'] !== '' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$key            = $search_field_id;
 			$val            = stripslashes( rgget( 's' ) );
 			$strpos_row_key = strpos( $search_field_id, '|' );
@@ -916,7 +916,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	function column_cb( $entry ) {
 		$entry_id = $entry['id'];
 		?>
-		<label class="screen-reader-text" for="cb-select-<?php echo esc_attr( $entry_id ); ?>"><?php _e( 'Select entry' ); ?></label>
+		<label class="screen-reader-text" for="cb-select-<?php echo esc_attr( $entry_id ); ?>"><?php esc_html_e( 'Select entry', 'gravityforms' ); ?></label>
 		<input type="checkbox" class="gform_list_checkbox" name="entry[]" value="<?php echo esc_attr( $entry_id ); ?>" />
 		<?php
 		$this->locking_info->lock_indicator();
@@ -944,9 +944,9 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	function _column_is_starred( $entry, $classes, $data, $primary ) {
 		echo '<td class="manage-column column-is_starred">';
 		if ( $this->filter !== 'trash' ) {
-			$action = GFCommon::current_user_can_any( 'gravityforms_edit_entries' ) ? "ToggleStar(this, '" . esc_js( $entry['id'] ) . "','" . esc_js( $this->filter ) . "');" : 'return false;';
+			$action = GFCommon::current_user_can_any( 'gravityforms_edit_entries' ) ? "ToggleStar(this, '" . intval( $entry['id'] ) . "','" . esc_attr( $this->filter ) . "');" : 'return false;';
 			?>
-			<img role="presentation" id="star_image_<?php echo esc_attr( $entry['id'] ) ?>" src="<?php echo GFCommon::get_base_url() ?>/images/star<?php echo intval( $entry['is_starred'] ) ?>.svg" onclick="<?php echo $action; ?>" />
+			<img role="presentation" id="star_image_<?php echo esc_attr( $entry['id'] ) ?>" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/star<?php echo intval( $entry['is_starred'] ) ?>.svg" onclick="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" />
 			<?php
 		}
 		echo '</td>';
@@ -1050,7 +1050,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 			 * @param array  $entry        The Entry object
 			 * @param string $query_string The current page's query string
 			 */
-			echo apply_filters( 'gform_entries_column_filter', $value, $form_id, $field_id, $entry, $query_string );
+			echo apply_filters( 'gform_entries_column_filter', $value, $form_id, $field_id, $entry, $query_string ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 			// Maintains gap between value and content from gform_entries_column which existed when using 1.9 and earlier.
 			echo '&nbsp; ';
@@ -1129,7 +1129,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 		$class .= $this->locking_info->list_row_class( $entry['id'], false );
 		$class .= $entry['is_starred'] ? ' entry_starred' : '';
 		$class .= in_array( $this->filter, array( 'trash', 'spam' ) ) ? ' entry_spam_trash' : '';
-		echo sprintf( '<tr id="entry_row_%d" class="%s" data-id="%d">', $entry['id'], $class, $entry['id'] );
+		echo sprintf( '<tr id="entry_row_%d" class="%s" data-id="%d">', esc_attr( $entry['id'] ), esc_attr( $class ), esc_attr( $entry['id'] ) );
 		$this->single_row_columns( $entry );
 		echo '</tr>';
 	}
@@ -1141,11 +1141,11 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 		switch ( $this->filter ) {
 			case 'unread' :
-				$message = isset( $_GET['field_id'] ) ? esc_html__( 'This form does not have any unread entries matching the search criteria.', 'gravityforms' ) : esc_html__( 'This form does not have any unread entries.', 'gravityforms' );
+				$message = isset( $_GET['field_id'] ) ? esc_html__( 'This form does not have any unread entries matching the search criteria.', 'gravityforms' ) : esc_html__( 'This form does not have any unread entries.', 'gravityforms' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				break;
 
 			case 'star' :
-				$message = isset( $_GET['field_id'] ) ? esc_html__( 'This form does not have any starred entries matching the search criteria.', 'gravityforms' ) : esc_html__( 'This form does not have any starred entries.', 'gravityforms' );
+				$message = isset( $_GET['field_id'] ) ? esc_html__( 'This form does not have any starred entries matching the search criteria.', 'gravityforms' ) : esc_html__( 'This form does not have any starred entries.', 'gravityforms' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				break;
 
 			case 'spam' :
@@ -1153,11 +1153,11 @@ final class GF_Entry_List_Table extends WP_List_Table {
 				break;
 
 			case 'trash' :
-				$message = isset( $_GET['field_id'] ) ? esc_html__( 'This form does not have any entries in the trash matching the search criteria.', 'gravityforms' ) : esc_html__( 'This form does not have any entries in the trash.', 'gravityforms' );
+				$message = isset( $_GET['field_id'] ) ? esc_html__( 'This form does not have any entries in the trash matching the search criteria.', 'gravityforms' ) : esc_html__( 'This form does not have any entries in the trash.', 'gravityforms' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				break;
 
 			default :
-				if ( isset( $_GET['field_id'] ) ) {
+				if ( isset( $_GET['field_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$message = esc_html__( 'This form does not have any entries matching the search criteria.', 'gravityforms' );
 				} elseif ( $this->filter ) {
 					$message = esc_html__( 'This form does not have any entries matching the selected filter.', 'gravityforms' );
@@ -1165,7 +1165,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 					$message = esc_html__( 'This form does not have any entries yet.', 'gravityforms' );
 				}
 		}
-		echo $message;
+		echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- all instances of message are escaped above
 	}
 
 	/**
@@ -1283,7 +1283,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 				if ( $index++ > 0 ) echo '|';
 				?>
 				<span class="<?php echo esc_attr( $action['class'] ); ?>">
-					<?php echo $action['link']; ?>
+					<?php echo $action['link']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?> 
 				</span>
 				<?php
 			}
@@ -1448,7 +1448,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 					break;
 				case 'change_columns':
-					$columns = GFCommon::json_decode( stripslashes( $_POST['grid_columns'] ), true );
+					$columns = GFCommon::json_decode( rgpost( 'grid_columns' ), true );
 					RGFormsModel::update_grid_column_meta( $form_id, $columns );
 					$this->_grid_columns = null;
 					$this->primary_column_name = null;
@@ -1471,7 +1471,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 			$select_all  = rgpost( 'all_entries' );
 			$search_criteria = $this->get_search_criteria();
 
-			$entries = empty( $select_all ) ? $_POST['entry'] : GFAPI::get_entry_ids( $form_id, $search_criteria );
+			$entries = empty( $select_all ) ? rgpost( 'entry' ) : GFAPI::get_entry_ids( $form_id, $search_criteria );
 
 			$entry_count = count( $entries ) > 1 ? sprintf( esc_html__( '%d entries', 'gravityforms' ), count( $entries ) ) : esc_html__( '1 entry', 'gravityforms' );
 
@@ -1552,8 +1552,8 @@ final class GF_Entry_List_Table extends WP_List_Table {
 		}
 
 		if ( ! empty( $message ) ) {
-			echo '<div id="message" class="alert ' . $message_class . '"><p>' . $message . '</p></div>';
-		};
+			echo '<div id="message" class="alert ' . esc_attr( $message_class ) . '"><p>' . $message . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $message escaped above
+		}
 	}
 
 	/**
@@ -1582,10 +1582,10 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 		$form_id = $this->get_form_id();
 		$form    = $this->get_form();
-		$search  = isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null;
+		$search  = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-		$orderby      = empty( $_GET['orderby'] ) ? 0 : $_GET['orderby'];
-		$order = empty( $_GET['order'] ) ? 'ASC' : strtoupper( $_GET['order'] );
+		$orderby = empty( $_GET['orderby'] ) ? 0 : sanitize_text_field( wp_unslash( $_GET['orderby'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$order   = empty( $_GET['order'] ) ? 'ASC' : strtoupper( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$filter = sanitize_text_field( rgget( 'filter ' ) );
 
@@ -1612,8 +1612,8 @@ final class GF_Entry_List_Table extends WP_List_Table {
 		<script type="text/javascript">
 
 			var messageTimeout = false,
-				gformFieldFilters = <?php echo json_encode( $field_filters ) ?>,
-				gformInitFilter = <?php echo json_encode( $init_filter_vars ) ?>;
+				gformFieldFilters = <?php echo json_encode( $field_filters ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+				gformInitFilter = <?php echo json_encode( $init_filter_vars ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>;
 
 			function ChangeColumns(columns) {
 				jQuery("#single_action").val("change_columns");
@@ -1671,11 +1671,11 @@ final class GF_Entry_List_Table extends WP_List_Table {
 			}
 
 			function UpdateEntryProperty(entry_id, name, value) {
-				var mysack = new sack("<?php echo admin_url( 'admin-ajax.php' )?>");
+				var mysack = new sack("<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>");
 				mysack.execute = 1;
 				mysack.method = 'POST';
 				mysack.setVar("action", "rg_update_lead_property");
-				mysack.setVar("rg_update_lead_property", "<?php echo wp_create_nonce( 'rg_update_lead_property' ) ?>");
+				mysack.setVar("rg_update_lead_property", "<?php echo esc_js( wp_create_nonce( 'rg_update_lead_property' ) ); ?>");
 				mysack.setVar("lead_id", entry_id);
 				mysack.setVar("name", name);
 				mysack.setVar("value", value);
@@ -1796,14 +1796,14 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 				jQuery.post(ajaxurl, {
 						action                 : "gf_resend_notifications",
-						gf_resend_notifications: '<?php echo wp_create_nonce( 'gf_resend_notifications' ); ?>',
+						gf_resend_notifications: '<?php echo esc_js( wp_create_nonce( 'gf_resend_notifications' ) ); ?>',
 						notifications          : jQuery.toJSON(selectedNotifications),
 						sendTo                 : sendTo,
 						leadIds                : leadIds,
-						filter                 : <?php echo json_encode( rgget( 'filter' ) ) ?>,
-						search                 : <?php echo json_encode( rgget( 's' ) ) ?>,
-						operator               : <?php echo json_encode( rgget( 'operator' ) ) ?>,
-						fieldId                : <?php echo json_encode( rgget( 'field_id' ) ) ?>,
+						filter                 : <?php echo json_encode( rgget( 'filter' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+						search                 : <?php echo json_encode( rgget( 's' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+						operator               : <?php echo json_encode( rgget( 'operator' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+						fieldId                : <?php echo json_encode( rgget( 'field_id' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
 						formId                 : <?php echo json_encode( $form_id ); ?>
 					},
 					function (response) {
@@ -1848,16 +1848,16 @@ final class GF_Entry_List_Table extends WP_List_Table {
 					'lid':        entryIDs,
 					'notes':      jQuery( '#gform_print_notes' ).is( ':checked' ) ? '1' : '',
 					'page_break': jQuery( '#gform_print_page_break' ).is( ':checked' ) ? '1' : '',
-					'filter':     <?php echo json_encode( rgget( 'filter' ) ) ?>,
-					's':          <?php echo json_encode( rgget( 's' ) ) ?>,
-					'field_id':   <?php echo json_encode( rgget( 'field_id' ) ) ?>,
-					'operator':   <?php echo json_encode( rgget( 'operator' ) ) ?>,
-					'orderby':    <?php echo json_encode( rgget( 'orderby' ) ) ?>,
-					'order':      <?php echo json_encode( rgget( 'order' ) ) ?>,
+					'filter':     <?php echo json_encode( rgget( 'filter' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+					's':          <?php echo json_encode( rgget( 's' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+					'field_id':   <?php echo json_encode( rgget( 'field_id' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+					'operator':   <?php echo json_encode( rgget( 'operator' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+					'orderby':    <?php echo json_encode( rgget( 'orderby' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
+					'order':      <?php echo json_encode( rgget( 'order' ) ); // nosemgrep scanner.php.lang.security.xss.direct-reflected ?>,
 				};
 
 				// Build print entry page URL.
-				var url = '<?php echo trailingslashit( site_url() ) ?>?' + jQuery.param( queryParams );
+				var url = '<?php echo esc_url( trailingslashit( site_url() ) ); ?>?' + jQuery.param( queryParams );
 
 				// Open print entry page.
 				window.open( url, 'printwindow' );

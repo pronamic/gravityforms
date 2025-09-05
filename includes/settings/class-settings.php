@@ -340,7 +340,7 @@ class Settings {
 	 */
 	public function scripts() {
 
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		// Define base scripts.
 		$scripts = array(
@@ -447,8 +447,8 @@ class Settings {
 					return true;
 				}
 			} else {
-				$query_matches      = isset( $condition['query'] ) ? $this->script_request_condition_matches( $_GET, $condition['query'] ) : true;
-				$post_matches       = isset( $condition['post'] ) ? $this->script_request_condition_matches( $_POST, $condition['post'] ) : true;
+				$query_matches      = isset( $condition['query'] ) ? $this->script_request_condition_matches( $_GET, $condition['query'] ) : true; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$post_matches       = isset( $condition['post'] ) ? $this->script_request_condition_matches( $_POST, $condition['post'] ) : true;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$field_type_matches = isset( $condition['field_types'] ) ? $this->script_field_condition_matches( $condition['field_types'], $form ) : true;
 
 				if ( $query_matches && $post_matches && $field_type_matches ) {
@@ -600,7 +600,7 @@ class Settings {
 			printf(
 				'<div class="alert %s" role="alert">%s</div>',
 				empty( $field_errors ) ? 'gforms_note_success' : 'gforms_note_error',
-				$this->postback_message
+				$this->postback_message // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			);
 
 		}
@@ -618,7 +618,7 @@ class Settings {
 			<?php
 
 				if ( ! empty( $this->before_fields ) && is_callable( $this->before_fields ) ) {
-					echo call_user_func( $this->before_fields );
+					echo call_user_func( $this->before_fields ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 
 				// If settings are tabbed, render tab navigation and tab content.
@@ -642,11 +642,11 @@ class Settings {
 				// Get save button.
 				$save = $this->render_save_button();
 				if ( ! empty( $save ) ) {
-					printf( '<div class="gform-settings-save-container">%s</div>', $save );
+					printf( '<div class="gform-settings-save-container">%s</div>', $save ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 
 				if ( ! empty( $this->after_fields ) && is_callable( $this->after_fields ) ) {
-					echo call_user_func( $this->after_fields );
+					echo call_user_func( $this->after_fields ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 
 				wp_nonce_field( 'gform_settings_save', 'gform_settings_save_nonce' );
@@ -801,7 +801,7 @@ class Settings {
 		printf(
 			'<fieldset id="%s" class="%s"%s>',
 			esc_attr( $this->get_section_id( $section ) ),
-			implode(' ', $class ),
+			esc_attr( implode(' ', $class ) ),
 			rgar( $section, 'style' ) ? sprintf( ' style="%s"', esc_attr( $section['style'] ) ) : ''
 		);
 
@@ -813,7 +813,7 @@ class Settings {
 				printf(
 					'<legend class="gform-settings-panel__title gform-settings-panel__title--header">%s %s</legend>',
 					esc_html( $section['title'] ),
-					self::maybe_get_tooltip( $section )
+					self::maybe_get_tooltip( $section ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				);
 			}
 
@@ -840,7 +840,7 @@ class Settings {
 
 		// Display section description.
 		if ( rgar( $section, 'description' ) ) {
-			printf( '<div class="gform-settings-description gform-kitchen-sink">%s</div>', $section['description'] );
+			printf( '<div class="gform-settings-description gform-kitchen-sink">%s</div>', $section['description'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		/**
@@ -888,8 +888,8 @@ class Settings {
 		printf(
 			'<div id="gform_setting_%s" class="gform-settings-field gform-settings-field__%s" %s>',
 			esc_attr( $field_name ),
-			$field->type,
-			$hidden
+			esc_attr( $field->type ),
+			$hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 
 		// Display field label.
@@ -897,15 +897,15 @@ class Settings {
 			printf(
 				'<div class="gform-settings-field__header"><label class="gform-settings-label" for="%s">%s%s</label>%s</div>',
 				esc_attr( $field->name ),
-				rgobj( $field, 'label' ),
-				$field->required ? '<span class="required">(' . __( 'Required', 'gravityforms' ) . ')</span>' : '',
-				self::maybe_get_tooltip( $field )
+				rgobj( $field, 'label' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$field->required ? '<span class="required">(' . esc_html__( 'Required', 'gravityforms' ) . ')</span>' : '',
+				self::maybe_get_tooltip( $field ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			);
 		}
 
 
 		// Display field input.
-		echo $field->prepare_markup();
+		echo $field->prepare_markup(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		echo '</div>';
 
@@ -924,7 +924,7 @@ class Settings {
 	 */
 	private static function is_section_collapsed( $props = array() ) {
 
-		return empty( $_POST ) ? rgar( $props, 'is_collapsed' ) : (bool) rgpost( 'gform_settings_section_collapsed_' . $props['id'] );
+		return empty( $_POST ) ? rgar( $props, 'is_collapsed' ) : (bool) rgpost( 'gform_settings_section_collapsed_' . $props['id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 	}
 
@@ -1917,7 +1917,7 @@ class Settings {
 		$errors = $this->get_field_errors();
 
 		if ( empty( $errors ) ) {
-			return rgpost( 'gform_settings_tab' ) ? sanitize_text_field( $_POST['gform_settings_tab'] ) : rgars( $tabs, '0/id' );
+			return rgpost( 'gform_settings_tab' ) ? sanitize_text_field( $_POST['gform_settings_tab'] ) : rgars( $tabs, '0/id' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.NonceVerification.Missing
 		}
 
 		// Get failed field names.
@@ -2519,12 +2519,12 @@ class Settings {
 		$_gf_settings_posted_values = array();
 
 		// If no values have been posted, return.
-		if ( count( $_POST ) <= 0 ) {
+		if ( count( $_POST ) <= 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return $_gf_settings_posted_values;
 		}
 
 		// Strip input name prefix from keys.
-		foreach ( $_POST as $key => $value ) {
+		foreach ( $_POST as $key => $value ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( preg_match( '|' . $this->input_name_prefix . '_(.*)|', $key, $matches ) ) {
 				$_gf_settings_posted_values[ $matches[1] ] = GFCommon::maybe_decode_json( stripslashes_deep( $value ) );
 				if ( is_string( $_gf_settings_posted_values[ $matches[1] ] ) ) {

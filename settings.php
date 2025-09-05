@@ -296,7 +296,7 @@ class GFSettings {
 							 *
 							 * @param string $uninstall_button The HTML of the uninstall button.
 							 */
-							echo apply_filters( 'gform_uninstall_button', $uninstall_button );
+							echo apply_filters( 'gform_uninstall_button', $uninstall_button ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 						}
 					?>
@@ -349,7 +349,7 @@ class GFSettings {
 	private static function uninstall_addon_message() {
 		if ( isset( self::$uninstalled_addon ) ) {
 			?>
-			<div class="alert success"><?php echo sprintf( esc_html__( '%s uninstalled. It can be re-activated from the %splugins page%s.', 'gravityforms' ), self::$uninstalled_addon ,"<a href='plugins.php'>", '</a>' ) ?></div>
+			<div class="alert success"><?php echo sprintf( esc_html__( '%s uninstalled. It can be re-activated from the %splugins page%s.', 'gravityforms' ), esc_html__( self::$uninstalled_addon ), "<a href='plugins.php'>", '</a>' ) ?></div>
 			<?php
 		}
 	}
@@ -495,7 +495,7 @@ class GFSettings {
 						'save_callback'       => function( $field, $value ) {
 							// Remove non-alphanumeric characters.
 							$value = preg_replace( '/[^a-zA-Z0-9]/', '', $value );
-							if ( isset( $_POST['_gform_setting_license_key'] ) ) {
+							if ( isset( $_POST['_gform_setting_license_key'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 								GFFormsModel::save_key( $value );
 							}
 
@@ -1194,7 +1194,7 @@ class GFSettings {
 				},
 				'after_fields'      => function() {
 					echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>';
-					printf( '<script type="text/javascript" src="%s"></script>', GFCommon::get_base_url() . '/js/plugin_settings.js' );
+					printf( '<script type="text/javascript" src="%s"></script>', esc_url( GFCommon::get_base_url() . '/js/plugin_settings.js' ) );
 				},
 			)
 		);
@@ -1310,7 +1310,7 @@ class GFSettings {
 			$message = '';
 		}
 
-		echo $message;
+		echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		exit;
 	}
@@ -1349,14 +1349,14 @@ class GFSettings {
 		if ( rgpost( 'uninstall_addon' ) ) {
 			check_admin_referer( 'uninstall', 'gf_addon_uninstall' );
 			foreach ( self::$addon_pages as $key => $addon ) {
-				if ( $_POST['addon'] == $addon['tab_label'] ) {
+				if ( rgpost( 'addon' ) == $addon['tab_label'] ) {
 					unset( self::$addon_pages[ $key ] );
 					break;
 				}
 			}
 
 			// Set the uninstalled addon variable to display a success message.
-			self::$uninstalled_addon = $_POST['addon'];
+			self::$uninstalled_addon = rgpost( 'addon' );
 		}
 
 		if ( ! empty( self::$addon_pages ) ) {
@@ -1409,12 +1409,12 @@ class GFSettings {
 
 			<?php
 			self::page_header_bar();
-			echo GFCommon::get_remote_message();
+			echo GFCommon::get_remote_message(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			GFCommon::notices_section();
 			?>
 
 			<?php if ( $message ) { ?>
-				<div id="message" class="updated"><p><?php echo $message; ?></p></div>
+				<div id="message" class="updated"><p><?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p></div>
 			<?php } ?>
 
 			<div class="gform-settings__wrapper">
@@ -1435,7 +1435,7 @@ class GFSettings {
 							'<a href="%s" %s><span class="icon">%s</span> <span class="label">%s</span></a>',
 							esc_url( $url ),
 							$current_tab === $tab['name'] ? ' class="active"' : '',
-							$icon_markup,
+							$icon_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							esc_html( $tab['label'] )
 						);
 					}

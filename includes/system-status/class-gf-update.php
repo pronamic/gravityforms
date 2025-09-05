@@ -73,7 +73,7 @@ class GF_Update {
 					$description       = rgar( $plugin, 'Description' );
 					$installed_version = rgar( $update, 'installed_version' );
 					?>
-					<tr class="inactive<?php echo $update_class ?>" data-slug="admin-bar-form-search"
+					<tr class="inactive<?php echo esc_attr( $update_class ) ?>" data-slug="admin-bar-form-search"
 						data-plugin="gw-admin-bar-form-manager.php">
 						<td class="plugin-title column-primary"><strong><?php echo esc_html( $name ) ?></strong>
 							<div class="row-actions visible">
@@ -87,12 +87,12 @@ class GF_Update {
 							</div>
 							<div class="active second plugin-version-author-uri">
 								Version <?php echo esc_html( $installed_version ); ?> |
-								<a href="<?php echo rgar( $plugin, 'PluginURI' ); ?>"><?php esc_html_e( 'Visit plugin page', 'gravityforms' ); ?></a>
+								<a href="<?php echo esc_url( rgar( $plugin, 'PluginURI' ) ); ?>"><?php esc_html_e( 'Visit plugin page', 'gravityforms' ); ?></a>
 							</div>
 							<?php 
 							$messages = GFForms::get_status_messages( $plugin_path, $plugin, $slug, $installed_version );
 							if ( ! empty( $messages) ) {
-								echo self::get_markup_for_status_messages( $messages );
+								echo self::get_markup_for_status_messages( $messages ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							}
 							?>
 						</td>

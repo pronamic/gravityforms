@@ -511,7 +511,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 				$frontend_feeds[ $key ]['trialPeriod']                        = rgar( $feed_meta, 'trialPeriod' );
 				$frontend_feeds[ $key ]['paymentAmount']                      = rgar( $feed_meta, 'paymentAmount' );
 				$frontend_feeds[ $key ]['billingInformation_address_line1']   = rgar( $feed_meta, 'billingInformation_address_line1' );
-				$frontend_feeds[ $key ]['billingInformation_address_line2']   = rgar( $feed_meta, 'billingInformation_address_line1' );
+				$frontend_feeds[ $key ]['billingInformation_address_line2']   = rgar( $feed_meta, 'billingInformation_address_line2' );
 				$frontend_feeds[ $key ]['billingInformation_address_city']    = rgar( $feed_meta, 'billingInformation_address_city' );
 				$frontend_feeds[ $key ]['billingInformation_address_state']   = rgar( $feed_meta, 'billingInformation_address_state' );
 				$frontend_feeds[ $key ]['billingInformation_address_zip']     = rgar( $feed_meta, 'billingInformation_address_zip' );
@@ -1262,7 +1262,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		global $wpdb;
 
 		// @todo: make sure stats does not show setup fee as a recurring payment
-		$payment_count = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}gf_addon_payment_transaction WHERE lead_id=%d", $entry_id ) );
+		$payment_count = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}gf_addon_payment_transaction WHERE lead_id=%d", $entry_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$is_recurring  = $payment_count > 0 && $transaction_type == 'payment' ? 1 : 0;
 		$subscription_id = empty( $subscription_id ) ? '' : $subscription_id;
 
@@ -1270,7 +1270,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			" INSERT INTO {$wpdb->prefix}gf_addon_payment_transaction (lead_id, transaction_type, transaction_id, amount, is_recurring, date_created, subscription_id)
                                 values(%d, %s, %s, %f, %d, utc_timestamp(), %s)", $entry_id, $transaction_type, $transaction_id, $amount, $is_recurring, $subscription_id
 		);
-		$wpdb->query( $sql );
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		$txn_id = $wpdb->insert_id;
 
@@ -1723,7 +1723,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$status = ! rgempty( 'status_header', $data ) ? $data['status_header'] : 200;
 
 		status_header( $status );
-		echo $error->get_error_message();
+		echo $error->get_error_message(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -1895,12 +1895,15 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 	public function register_callback( $callback_id, $entry_id ) {
 		global $wpdb;
 
-		$wpdb->insert( "{$wpdb->prefix}gf_addon_payment_callback", array(
-			'addon_slug'   => $this->get_slug(),
-			'callback_id'  => $callback_id,
-			'lead_id'      => $entry_id,
-			'date_created' => gmdate( 'Y-m-d H:i:s' )
-		) );
+		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			"{$wpdb->prefix}gf_addon_payment_callback", 
+			array(
+				'addon_slug'   => $this->get_slug(),
+				'callback_id'  => $callback_id,
+				'lead_id'      => $entry_id,
+				'date_created' => gmdate( 'Y-m-d H:i:s' )
+			) 
+		);
 	}
 
 	/**
@@ -1922,7 +1925,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		global $wpdb;
 
 		$sql = $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}gf_addon_payment_callback WHERE addon_slug=%s AND callback_id=%s", $this->get_slug(), $callback_id );
-		if ( $wpdb->get_var( $sql ) ) {
+		if ( $wpdb->get_var( $sql ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 			return true;
 		}
 
@@ -2422,12 +2425,12 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		$entry_table_name = self::get_entry_table_name();
 
-		$sql      = $wpdb->prepare( "SELECT id FROM {$entry_table_name} WHERE transaction_id = %s", $transaction_id );
-		$entry_id = $wpdb->get_var( $sql );
+		$sql      = $wpdb->prepare( "SELECT id FROM %i WHERE transaction_id = %s", $entry_table_name, $transaction_id );
+		$entry_id = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! $entry_id ) {
 			$sql      = $wpdb->prepare( "SELECT lead_id FROM {$wpdb->prefix}gf_addon_payment_transaction WHERE transaction_id = %s", $transaction_id );
-			$entry_id = $wpdb->get_var( $sql );
+			$entry_id = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		return $entry_id ? $entry_id : false;
@@ -2745,7 +2748,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$html .= "<script type='text/javascript'>var " . $field['name'] . '_intervals = ' . json_encode( $intervals ) . ';</script>';
 
 		if ( $echo ) {
-			echo $html;
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return $html;
@@ -2783,7 +2786,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$html .= '&nbsp' . $this->settings_select( $product_field, false );
 
 		if ( $echo ) {
-			echo $html;
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return $html;
@@ -2846,7 +2849,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$html .= '</div>';
 
 		if ( $echo ) {
-			echo $html;
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return $html;
@@ -3193,14 +3196,14 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$lead_date_filter        = '';
 		$transaction_date_filter = '';
 		if ( isset( $search['start_date'] ) ) {
-			$lead_date_filter        = $wpdb->prepare( " AND timestampdiff(SECOND, %s, CONVERT_TZ(l.payment_date, '+00:00', '" . $tz_offset . "')) >= 0", $search['start_date'] );
-			$transaction_date_filter = $wpdb->prepare( " AND timestampdiff(SECOND, %s, CONVERT_TZ(t.date_created, '+00:00', '" . $tz_offset . "')) >= 0", $search['start_date'] );
+			$lead_date_filter        = $wpdb->prepare( " AND timestampdiff(SECOND, %s, CONVERT_TZ(l.payment_date, '+00:00', '" . $tz_offset . "')) >= 0", $search['start_date'] ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$transaction_date_filter = $wpdb->prepare( " AND timestampdiff(SECOND, %s, CONVERT_TZ(t.date_created, '+00:00', '" . $tz_offset . "')) >= 0", $search['start_date'] ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		if ( isset( $search['end_date'] ) ) {
 			$search['end_date']      .= ' 23:59:59';
-			$lead_date_filter        .= $wpdb->prepare( " AND timestampdiff(SECOND, %s, CONVERT_TZ(l.payment_date, '+00:00', '" . $tz_offset . "')) <= 0", $search['end_date'] );
-			$transaction_date_filter .= $wpdb->prepare( " AND timestampdiff(SECOND, %s, CONVERT_TZ(t.date_created, '+00:00', '" . $tz_offset . "')) <= 0", $search['end_date'] );
+			$lead_date_filter        .= $wpdb->prepare( " AND timestampdiff(SECOND, %s, CONVERT_TZ(l.payment_date, '+00:00', '" . $tz_offset . "')) <= 0", $search['end_date'] ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$transaction_date_filter .= $wpdb->prepare( " AND timestampdiff(SECOND, %s, CONVERT_TZ(t.date_created, '+00:00', '" . $tz_offset . "')) <= 0", $search['end_date'] ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$payment_method_filter = '';
@@ -3211,6 +3214,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$offset           = $page_size * ( $current_page - 1 );
 		$entry_table_name = self::get_entry_table_name();
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
 			" SELECT SQL_CALC_FOUND_ROWS {$select}, leads.orders, leads.subscriptions, transaction.refunds, transaction.recurring_payments, transaction.revenue
                                 FROM (
@@ -3237,10 +3241,11 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
                                 LIMIT $page_size OFFSET $offset
                                 ", $form_id, $form_id
 		);
-
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		
 		GFCommon::log_debug( "sales sql: {$sql}" );
 
-		$results = $wpdb->get_results( $sql, ARRAY_A );
+		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching 
 
 
 		if ( isset( $search['start_date'] ) || isset( $search['end_date'] ) ) {
@@ -3255,7 +3260,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 			}
 
-			$data['row_count'] = $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+			$data['row_count'] = $wpdb->get_var( 'SELECT FOUND_ROWS()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$data['page_size'] = $page_size;
 
 			$data['rows'] = $results;
@@ -3353,7 +3358,8 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$tz_offset = $this->get_mysql_tz_offset();
 		$entry_table_name = self::get_entry_table_name();
 
-		$summary = $wpdb->get_results(
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+		$summary = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$wpdb->prepare(
 				"
                     SELECT transaction.date, leads.orders, leads.subscriptions, transaction.revenue
@@ -3377,8 +3383,10 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
                     ORDER BY date desc", $form_id, $form_id
 			), ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 
-		$total_summary = $wpdb->get_results(
+		$total_summary = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$wpdb->prepare(
 				"
                     SELECT sum( if(transaction_type = 1,1,0) ) as orders,
@@ -3386,9 +3394,11 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
                     FROM {$entry_table_name}
                     WHERE form_id=%d AND status='active'", $form_id
 			), ARRAY_A
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);
 
-		$total_revenue = $wpdb->get_var(
+		$total_revenue = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$wpdb->prepare(
 				"
                     SELECT sum( if(t.transaction_type = 'refund', abs(t.amount) * -1, t.amount) ) as revenue
@@ -3396,6 +3406,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
                     INNER JOIN {$entry_table_name} l ON l.id = t.lead_id
                     WHERE l.form_id=%d AND status='active'", $form_id
 			)
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);
 
 
@@ -3499,7 +3510,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		$entry_table_name = self::get_entry_table_name();
 
-		$payment_methods = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT payment_method FROM {$entry_table_name} WHERE form_id=%d", $form_id ) );
+		$payment_methods = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT payment_method FROM %i WHERE form_id=%d", $entry_table_name, $form_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return array_filter( $payment_methods, array( $this, 'array_filter_non_blank' ) );
 	}
@@ -3571,17 +3582,20 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$entry_meta_table_name = self::get_entry_meta_table_name();
 
 		// deleting transactions
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$sql = $wpdb->prepare(
 			"DELETE FROM {$wpdb->prefix}gf_addon_payment_transaction
                                 WHERE lead_id IN
                                    (SELECT lead_id FROM {$entry_meta_table_name} WHERE meta_key='payment_gateway' AND meta_value=%s)", $this->get_slug()
 		);
-		$wpdb->query( $sql );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( $this->_supports_callbacks ) {
 			// deleting callback log
 			$sql = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}gf_addon_payment_callback WHERE addon_slug=%s", $this->get_slug() );
-			$wpdb->query( $sql );
+			$wpdb->query( $sql );  // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		//clear cron
@@ -3592,7 +3606,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 	//-------- Scripts -----------------------
 	public function scripts() {
-		$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$scripts = array(
 			array(
 				'handle'  => 'gaddon_payment',
@@ -3871,7 +3885,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			       value="<?php esc_html_e( 'Cancel Subscription', 'gravityforms' ) ?>" class="button"
 			       onclick="cancel_subscription(<?php echo absint( $entry['id'] ); ?>);"
 			       onkeypress="cancel_subscription(<?php echo absint( $entry['id'] ); ?>);"/>
-			<img src="<?php echo GFCommon::get_base_url() ?>/images/spinner.svg" id="subscription_cancel_spinner"
+			<img src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/spinner.svg" id="subscription_cancel_spinner"
 			     style="display: none;"/>
 
 			<script type="text/javascript">
@@ -3891,16 +3905,16 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		global $wpdb;
 
 		//deleting from transaction table
-		$wpdb->delete( "{$wpdb->prefix}gf_addon_payment_transaction", array( 'lead_id' => $entry_id ), array( '%d' ) );
+		$wpdb->delete( "{$wpdb->prefix}gf_addon_payment_transaction", array( 'lead_id' => $entry_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		//deleting from callback table
-		$wpdb->delete( "{$wpdb->prefix}gf_addon_payment_callback", array( 'lead_id' => $entry_id ), array( '%d' ) );
+		$wpdb->delete( "{$wpdb->prefix}gf_addon_payment_callback", array( 'lead_id' => $entry_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public function ajax_cancel_subscription() {
 		check_ajax_referer( 'gaddon_cancel_subscription', 'gaddon_cancel_subscription' );
 
-		$entry_id = $_POST['entry_id'];
+		$entry_id = intval( rgpost('entry_id') );
 
 		$this->log_debug( __METHOD__ . '(): Processing request for entry #' . $entry_id );
 
@@ -4043,10 +4057,10 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			$values = rgar( $status, 'values' );
 			$count  = count( $values );
 			if ( $count === 1 ) {
-				$queries[] = $wpdb->prepare( "COUNT(DISTINCT CASE WHEN l.payment_status=%s AND l.status='active' THEN l.id END) as $id", $values[0] );
+				$queries[] = $wpdb->prepare( "COUNT(DISTINCT CASE WHEN l.payment_status=%s AND l.status='active' THEN l.id END) as $id", $values[0] ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			} else {
 				$placeholders = implode( ', ', array_fill( 0, $count, '%s' ) );
-				$queries[]    = $wpdb->prepare( "COUNT(DISTINCT CASE WHEN l.payment_status IN ($placeholders) AND l.status='active' THEN l.id END) as $id", ...$values );
+				$queries[]    = $wpdb->prepare( "COUNT(DISTINCT CASE WHEN l.payment_status IN ($placeholders) AND l.status='active' THEN l.id END) as $id", ...$values );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			}
 		}
 
@@ -4245,7 +4259,7 @@ class GFPaymentStatsTable extends WP_List_Table {
 
 		$this->_pagination = "<div class='tablenav-pages{$page_class}'>$output</div>";
 
-		echo $this->_pagination;
+		echo $this->_pagination; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 }

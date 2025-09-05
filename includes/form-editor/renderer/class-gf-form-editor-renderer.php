@@ -21,7 +21,7 @@ class GF_Form_Editor_Renderer {
 		$editor = \ob_get_clean();
 
 		if ( $echo ) {
-			echo $editor;
+			echo $editor; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return \mb_convert_encoding( $editor, 'UTF-8', 'ISO-8859-1' );

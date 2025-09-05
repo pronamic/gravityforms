@@ -24,14 +24,14 @@ class GF_Auto_Updates_Handler {
 	 * @param array  $old_value The previous value of the option.
 	 */
 	public function wp_option_updated( $option, $value, $old_value = array() ) {
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && ! empty( $_POST['asset'] ) && ! empty( $_POST['state'] ) ) {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && ! empty( $_POST['asset'] ) && ! empty( $_POST['state'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			// Option is being updated by the ajax request performed when using the enable/disable auto-updates links on the plugins page.
-			$asset = sanitize_text_field( urldecode( $_POST['asset'] ) );
+			$asset = sanitize_text_field( urldecode( wp_unslash( $_POST['asset'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			if ( $asset !== GF_PLUGIN_BASENAME ) {
 				return;
 			}
 
-			$is_enabled = $_POST['state'] === 'enable';
+			$is_enabled = $_POST['state'] === 'enable'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		} else {
 			// Option is being updated by some other means (e.g. CLI).
 			$is_enabled  = in_array( GF_PLUGIN_BASENAME, $value );

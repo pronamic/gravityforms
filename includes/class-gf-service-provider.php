@@ -100,7 +100,7 @@ abstract class GF_Service_Provider {
 	 */
 	protected function add_root_element( $root ) {
 		add_action( 'admin_footer', function() use ( $root ) {
-			echo '<div data-js="' . $root . '"></div>';
+			echo '<div data-js="' . esc_attr( $root ) . '"></div>';
 		}, 10, 0 );
 	}
 

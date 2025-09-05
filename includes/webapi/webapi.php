@@ -166,7 +166,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 			global $wpdb;
 
-			$table_exists = $wpdb->query( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( GFFormsModel::get_rest_api_keys_table_name() ) ) );
+			$table_exists = $wpdb->query( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( GFFormsModel::get_rest_api_keys_table_name() ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 			if ( ! $table_exists ) {
 				return true;
@@ -280,7 +280,7 @@ if ( class_exists( 'GFForms' ) ) {
 		// Scripts
 		public function scripts() {
 
-			$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+			$min     = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$scripts = array(
 				array(
 					'handle'  => 'wp-lists',
@@ -321,7 +321,7 @@ if ( class_exists( 'GFForms' ) ) {
 		}
 
 		public function styles() {
-			$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+			$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$styles = array(
 				array(
 					'handle'  => 'gfwebap_settings',
@@ -344,12 +344,14 @@ if ( class_exists( 'GFForms' ) ) {
 		 *
 		 */
 		public function output_webapi_json() {
-			if ( !empty( $_GET['subview'] ) && $_GET['subview'] === 'gravityformswebapi' ) {
+			if ( !empty( $_GET['subview'] ) && $_GET['subview'] === 'gravityformswebapi' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo '<script>
 				var gf_webapi_vars = {
 					"api_enabled": ' . $this->is_api_enabled() . ',
 					"enable_api_checkbox_checked": ' . $this->get_setting( "enabled" ) . ',
 				};</script>';
+				//phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 
@@ -407,8 +409,8 @@ if ( class_exists( 'GFForms' ) ) {
 								foreach ( $users as $user ) {
 									printf(
 										'<option value="%s">%s</option>',
-										$user['value'],
-										$user['label']
+										esc_attr( $user['value'] ),
+										esc_html( $user['label'] )
 									);
 								}
 								?>
@@ -706,7 +708,7 @@ if ( class_exists( 'GFForms' ) ) {
 			?>
 			<button class="button" id="gfwebapi-qrbutton"><?php esc_html_e( 'Show/hide QR Code', 'gravityforms' ); ?></button>
 			<div id="gfwebapi-qrcode-container" style="display:none;">
-				<img id="gfwebapi-qrcode" src="<?php echo GFCommon::get_base_url() ?>/images/spinner.svg"/>
+				<img id="gfwebapi-qrcode" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/spinner.svg"/>
 			</div>
 
 			<?php
@@ -799,10 +801,10 @@ if ( class_exists( 'GFForms' ) ) {
 			}
 
 			$schema    = strtolower( (string) rgget( 'schema' ) );
-			$offset    = isset( $_GET['paging']['offset'] ) ? strtolower( $_GET['paging']['offset'] ) : 0;
-			$page_size = isset( $_GET['paging']['page_size'] ) ? strtolower( $_GET['paging']['page_size'] ) : 10;
+			$offset    = isset( $_GET['paging']['offset'] ) ? strtolower( $_GET['paging']['offset'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$page_size = isset( $_GET['paging']['page_size'] ) ? strtolower( $_GET['paging']['page_size'] ) : 10; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-			$method = strtoupper( $_SERVER['REQUEST_METHOD'] );
+			$method = strtoupper( $_SERVER['REQUEST_METHOD'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$args   = compact( 'offset', 'page_size', 'schema' );
 
 			$endpoint = empty( $collection2 ) ? strtolower( $method ) . '_' . $collection : strtolower( $method ) . '_' . $collection . '_' . $collection2;
@@ -1154,13 +1156,14 @@ if ( class_exists( 'GFForms' ) ) {
 				$wpdb_prefix = $wpdb->prefix;
 			}
 
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$keys  = $wpdb->get_results("
 			SELECT key_id, user_id, description, permissions, concat('...', substring( consumer_key, -7, 7 )) as 'key', u.user_login as user, last_access
 			FROM {$table_name} k
 			INNER JOIN {$wpdb_prefix}users u ON k.user_id = u.id
 		", ARRAY_A
 			);
-
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			return $keys;
 		}
 
@@ -1168,11 +1171,13 @@ if ( class_exists( 'GFForms' ) ) {
 			global $wpdb;
 			$table_name = GFFormsModel::get_rest_api_keys_table_name();
 
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$key  = $wpdb->get_row( $wpdb->prepare("
 						SELECT *
 						FROM {$table_name}
 						WHERE key_id=%d", $key_id ) );
-
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			
 			return $key;
 		}
 
@@ -1180,6 +1185,7 @@ if ( class_exists( 'GFForms' ) ) {
 			global $wpdb;
 			$table_name = GFFormsModel::get_rest_api_keys_table_name();
 
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$wpdb->query(
 				$wpdb->prepare("
 				DELETE FROM {$table_name}
@@ -1187,6 +1193,8 @@ if ( class_exists( 'GFForms' ) ) {
 		", $key_id
 				)
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
 		}
 
 		public function update_api_key( $key_id, $key ) {
@@ -1200,7 +1208,7 @@ if ( class_exists( 'GFForms' ) ) {
 				$key['consumer_secret'] = $consumer_secret;
 				$key['truncated_key'] = substr( $consumer_key, -7 );
 
-				$wpdb->insert(
+				$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 					GFFormsModel::get_rest_api_keys_table_name(),
 					$key
 				);
@@ -1214,7 +1222,7 @@ if ( class_exists( 'GFForms' ) ) {
 				unset( $key['consumer_secret'] );
 				unset( $key['truncated_key'] );
 
-				$wpdb->update( GFFormsModel::get_rest_api_keys_table_name(), $key, array( 'key_id' => $key_id ) );
+				$wpdb->update( GFFormsModel::get_rest_api_keys_table_name(), $key, array( 'key_id' => $key_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				return array( 'consumer_key' => '', 'consumer_secret' => '' );
 			}
@@ -1713,26 +1721,27 @@ if ( class_exists( 'GFForms' ) ) {
 			} else {
 
 				// Sorting parameters
-				$sort_key = isset( $_GET['sorting']['key'] ) && ! empty( $_GET['sorting']['key'] ) ? $_GET['sorting']['key'] : 'id';
-				$sort_dir = isset( $_GET['sorting']['direction'] ) && ! empty( $_GET['sorting']['direction'] ) ? $_GET['sorting']['direction'] : 'DESC';
+				
+				$sort_key = isset( $_GET['sorting']['key'] ) && ! empty( $_GET['sorting']['key'] ) ? $_GET['sorting']['key'] : 'id'; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+				$sort_dir = isset( $_GET['sorting']['direction'] ) && ! empty( $_GET['sorting']['direction'] ) ? $_GET['sorting']['direction'] : 'DESC'; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 				$sorting  = array( 'key' => $sort_key, 'direction' => $sort_dir );
-				if ( isset( $_GET['sorting']['is_numeric'] ) ) {
-					$sorting['is_numeric'] = $_GET['sorting']['is_numeric'];
+				if ( isset( $_GET['sorting']['is_numeric'] ) ) { // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
+					$sorting['is_numeric'] = $_GET['sorting']['is_numeric']; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 				}
 
 				// Paging parameters
-				$page_size = isset( $_GET['paging']['page_size'] ) ? intval( $_GET['paging']['page_size'] ) : 10;
-				if ( isset( $_GET['paging']['current_page'] ) ) {
-					$current_page = intval( $_GET['paging']['current_page'] );
+				$page_size = isset( $_GET['paging']['page_size'] ) ? intval( $_GET['paging']['page_size'] ) : 10; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+				if ( isset( $_GET['paging']['current_page'] ) ) { // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
+					$current_page = intval( $_GET['paging']['current_page'] ); // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 					$offset       = $page_size * ( $current_page - 1 );
 				} else {
-					$offset = isset( $_GET['paging']['offset'] ) ? intval( $_GET['paging']['offset'] ) : 0;
+					$offset = isset( $_GET['paging']['offset'] ) ? intval( $_GET['paging']['offset'] ) : 0; // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
 				}
 
 				$paging = array( 'offset' => $offset, 'page_size' => $page_size );
 
-				if ( isset( $_GET['search'] ) ) {
-					$search = $_GET['search'];
+				if ( isset( $_GET['search'] ) ) { // phpcs:ignore  WordPress.Security.NonceVerification.Recommended
+					$search = $_GET['search']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					if ( ! is_array( $search ) ) {
 						$search = urldecode( ( stripslashes( $search ) ) );
 						$search = json_decode( $search, true );
@@ -1965,7 +1974,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 			$sql = $wpdb->prepare( "SELECT count(option_id) FROM $wpdb->options WHERE option_name LIKE %s", $key );
 
-			$result = $wpdb->get_var( $sql );
+			$result = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			return $result > 0;
 
@@ -1985,7 +1994,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 			$sql = $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", $key );
 
-			$result = $wpdb->query( $sql );
+			$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			return $result;
 		}
@@ -2299,7 +2308,7 @@ if ( class_exists( 'GFForms' ) ) {
 				} else {
 					$this->log_debug( __METHOD__ . '(): Switching to impersonation account.' );
 					$account_id = $settings['impersonate_account'];
-					wp_set_current_user( $account_id );
+					wp_set_current_user( $account_id ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.Discouraged
 				}
 			}
 
@@ -2320,7 +2329,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 			$api_key = rgget( 'api_key' );
 			$path    = strtolower( get_query_var( GFWEBAPI_ROUTE_VAR ) );
-			$method  = strtoupper( $_SERVER['REQUEST_METHOD'] );
+			$method  = strtoupper( $_SERVER['REQUEST_METHOD'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
 			$signature = rgget( 'signature' );
 
@@ -2359,7 +2368,7 @@ if ( class_exists( 'GFForms' ) ) {
 			header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ), true );
 			$output_json = json_encode( $output );
 
-			echo $output_json;
+			echo $output_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			die();
 		}
 

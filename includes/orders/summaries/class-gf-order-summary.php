@@ -42,7 +42,7 @@ final class GF_Order_Summary {
 
 		$order_summary['labels'] = self::get_labels( $form );
 		ob_start();
-		include 'views/view-' . $view . '.php';
+		include 'views/view-' . $view . '.php'; // nosemgrep audit.php.lang.security.file.inclusion-arg
 		return ob_get_clean();
 
 	}

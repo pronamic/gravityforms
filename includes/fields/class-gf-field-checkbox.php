@@ -423,7 +423,7 @@ class GF_Field_Checkbox extends GF_Field {
 				$input_id = $this->id . '.' . $choice_number;
 			}
 
-			if ( ( $this->is_form_editor() || ( ! isset( $_GET['gf_token'] ) && empty( $_POST ) ) ) && rgar( $choice, 'isSelected' ) ) {
+			if ( ( $this->is_form_editor() || ( ! isset( $_GET['gf_token'] ) && empty( $_POST ) ) ) && rgar( $choice, 'isSelected' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 				$checkboxes_selected++;
 			} else if ( is_array( $value ) && GFFormsModel::choice_value_match( $this, $choice, rgget( $input_id, $value ) ) ) {
 				$checkboxes_selected++;
@@ -483,7 +483,7 @@ class GF_Field_Checkbox extends GF_Field {
 		// Loop through field inputs.
 		foreach ( $this->inputs as $input ) {
 
-			if ( ! empty( $_POST[ 'is_submit_' . $this->formId ] ) && $get_from_post_global_var ) {
+			if ( ! empty( rgpost( 'is_submit_' . $this->formId ) ) && $get_from_post_global_var ) {
 
 				$input_value = rgpost( 'input_' . str_replace( '.', '_', strval( $input['id'] ) ) );
 
@@ -1078,11 +1078,11 @@ class GF_Field_Checkbox extends GF_Field {
 	public function get_checked_attribute( $choice, $value, $input_id, $form_id ) {
 		$is_form_editor  = $this->is_form_editor();
 
-		if ( ( $is_form_editor || ( ! isset( $_GET['gf_token'] ) && empty( $_POST ) ) ) && rgar( $choice, 'isSelected' ) ) {
+		if ( ( $is_form_editor || ( ! isset( $_GET['gf_token'] ) && empty( $_POST ) ) ) && rgar( $choice, 'isSelected' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 			$checked = "checked='checked'";
 		} elseif ( is_array( $value ) && GFFormsModel::choice_value_match( $this, $choice, rgget( $input_id, $value ) ) ) {
 			$checked = "checked='checked'";
-		} elseif ( ! is_array( $value ) && GFFormsModel::choice_value_match( $this, $choice, $value ) && ! empty( $_POST[ 'is_submit_' . $form_id ] ) ) {
+		} elseif ( ! is_array( $value ) && GFFormsModel::choice_value_match( $this, $choice, $value ) && ! empty( $_POST[ 'is_submit_' . $form_id ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$checked = "checked='checked'";
 		} else {
 			$checked = '';
