@@ -49,10 +49,11 @@ class GF_Field_Honeypot extends GF_Field {
 		$handler = GFForms::get_service_container()->get( Honeypot\GF_Honeypot_Service_Provider::GF_HONEYPOT_HANDLER );
 
 		return sprintf(
-			"<div class='ginput_container'><input name='%s' id='input_%d_%d' type='text' value='' autocomplete='new-password'/></div>",
+			"<div class='ginput_container'><input name='%s' id='input_%d_%d' type='text' value='%s' autocomplete='new-password'/></div>",
 			esc_attr( $handler->get_input_name( $form, $this->id ) ),
 			absint( rgar( $form, 'id', $this->formId ) ),
-			absint( $this->id )
+			absint( $this->id ),
+			esc_attr( $value )
 		);
 	}
 

@@ -106,17 +106,16 @@ class GFAsyncUpload {
 			self::die_error( 104, __( 'The uploaded file type is not allowed.', 'gravityforms' ) );
 		}
 
-		$file_name = sanitize_file_name( $file_name );
-		$uploaded_filename = sanitize_file_name( $uploaded_filename );
-
-		$allowed_extensions = ! empty( $field->allowedExtensions ) ? GFCommon::clean_extensions( explode( ',', strtolower( $field->allowedExtensions ) ) ) : array();
-
-		$max_upload_size_in_bytes = $field->maxFileSize > 0 ? $field->maxFileSize * 1048576 : wp_max_upload_size();
+		$max_upload_size_in_bytes = $field->get_max_file_size_bytes();
 		$max_upload_size_in_mb    = $max_upload_size_in_bytes / 1048576;
 
 		if ( $_FILES['file']['size'] > 0 && $_FILES['file']['size'] > $max_upload_size_in_bytes ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 			self::die_error( 104,sprintf( __( 'File exceeds size limit. Maximum file size: %dMB', 'gravityforms' ), $max_upload_size_in_mb ) );
 		}
+
+		$file_name          = sanitize_file_name( $file_name );
+		$uploaded_filename  = sanitize_file_name( $uploaded_filename );
+		$allowed_extensions = $field->get_clean_allowed_extensions();
 
 		if ( ! empty( $allowed_extensions ) ) {
 			if ( ! GFCommon::match_file_extension( $file_name, $allowed_extensions ) || ! GFCommon::match_file_extension( $uploaded_filename, $allowed_extensions ) ) {
@@ -147,14 +146,7 @@ class GFAsyncUpload {
 		// Only validate if chunking is disabled, or if the final chunk has been uploaded.
 		$check_chunk = $chunks === 0 || $chunk === ( $chunks - 1 );
 
-		/**
-		 * Allows the disabling of file upload whitelisting
-		 *
-		 * @param bool false Set to 'true' to disable whitelisting.  Defaults to 'false'.
-		 */
-		$whitelisting_disabled = apply_filters( 'gform_file_upload_whitelisting_disabled', false );
-
-		if ( ! $whitelisting_disabled && $check_chunk ) {
+		if ( ! $field->is_check_type_and_ext_disabled() && $check_chunk ) {
 
 			$file_array = $_FILES['file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 

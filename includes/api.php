@@ -1729,6 +1729,13 @@ class GFAPI {
 		$result['page_number']        = $submission_details['page_number'];
 		$result['source_page_number'] = $submission_details['source_page_number'];
 
+		if ( $result['page_number'] !== 0 ) {
+			$files = rgar( GFFormsModel::$uploaded_files, $form_id );
+			if ( ! empty( $files ) && is_array( $files ) ) {
+				$result['uploaded_files'] = $files;
+			}
+		}
+
 		if ( $result['is_valid'] || rgar( $submission_details, 'abort_with_confirmation' ) ) {
 			$confirmation_message = $submission_details['confirmation_message'];
 

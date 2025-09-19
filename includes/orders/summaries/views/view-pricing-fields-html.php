@@ -26,7 +26,7 @@
 								$count = sizeof( $row['options'] );
 								for ( $i = 0; $i < $count; $i ++ ) {
 									?>
-									<li style="padding:4px 0 4px 0"><?php echo esc_html( rgar( $row['options'][ $i ], 'option_label' ) );?></li>
+									<li style="padding:4px 0 4px 0"><?php echo \GFCommon::maybe_wp_kses( rgar( $row['options'][ $i ], 'option_label' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></li>
 								<?php } ?>
 						<?php } ?>
 							</ul>

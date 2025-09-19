@@ -2367,6 +2367,10 @@ abstract class GFFeedAddOn extends GFAddOn {
 				'name'  => 'delay_' . $this->get_slug(),
 			);
 
+			if ( isset( $config['default_value'] ) ) {
+				$choice['default_value'] = $config['default_value'];
+			}
+
 			$field_name = 'post_payment_actions';
 			$field      = $this->get_field( $field_name, $feed_settings_fields );
 

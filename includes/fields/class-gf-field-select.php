@@ -187,16 +187,20 @@ class GF_Field_Select extends GF_Field {
 	/**
 	 * Strips all tags from the input value.
 	 *
+	 * @since 1.9
+	 * @since 2.9.18 Added check for state validation.
+	 *
 	 * @param string $value The field value to be processed.
 	 * @param int $form_id The ID of the form currently being processed.
 	 *
 	 * @return string
 	 */
 	public function sanitize_entry_value( $value, $form_id ) {
+		if ( $this->is_state_validation_supported() ) {
+			return parent::sanitize_entry_value( $value, $form_id );
+		}
 
-		$value = wp_strip_all_tags( $value );
-
-		return $value;
+		return wp_strip_all_tags( $value );
 	}
 
 	/**

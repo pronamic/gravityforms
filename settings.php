@@ -1362,7 +1362,12 @@ class GFSettings {
 		if ( ! empty( self::$addon_pages ) ) {
 
 			$sorted_addons = self::$addon_pages;
-			asort( $sorted_addons );
+			usort(
+				$sorted_addons,
+				function ( $a, $b ) {
+					return strnatcasecmp( $a['tab_label'], $b['tab_label'] );
+				}
+			);
 
 			// Add add-ons to menu
 			foreach ( $sorted_addons as $sorted_addon ) {

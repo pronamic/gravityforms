@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset>
+	<arg name="basepath" value="." />
+	<arg name="extensions" value="php" />
+	<arg name="severity" value="4" />
+	<arg name="tab-width" value="4" />
+	<arg name="colors" />
+
+	<!-- Ignore warnings, show progress of the run and show sniff names -->
+	<arg value="nps" />
+
+	<ini name="memory_limit" value="512M"/>
+
+	<file>.</file>
+
+	<!-- Exclude files -->
+	<exclude-pattern>*vendor/</exclude-pattern>
+	<exclude-pattern>*tests/*</exclude-pattern>
+	<exclude-pattern>*tmp/*</exclude-pattern>
+	<exclude-pattern>*dist/*</exclude-pattern>
+
+	<rule ref="WordPress.Security"/>
+  	<rule ref="WordPress.DB"/>
+	<rule ref="Generic.VersionControl.GitMergeConflict"/>
+	
+	<rule ref="Generic.PHP.ForbiddenFunctions">
+		<properties>
+			<property name="error" />
+			<property name="forbiddenFunctions" type="array" extend="false" value="wp_set_current_user=>null" />
+		</properties>
+	</rule>
+
+	<arg name="report" value="full"/>
+</ruleset>

@@ -1,5 +1,24 @@
-### 2.9.17.1
-- Fixed a bug that prevented entries search input boxes from showing.
+### 2.9.18 | 2025-09-18
+- Added support for dynamically populating File Upload fields with file URLs. Note: the URL is saved to the entry; the file itself is not saved in the form uploads folder.
+- Added the [gform_submission_files_pre_save_field_value](https://docs.gravityforms.com/gform_submission_files_pre_save_field_value/) filter, so files can be modified (e.g. renamed) just before they are saved to the form folder and entry.
+- Updated the Checkboxes and Radio Buttons fields to show more choices in the form editor when the "Display in columns" setting is enabled for a more accurate preview.
+- Updated the block editor Advanced settings tab for better visibility and consistency.
+- Fixed an issue where the values of legacy post fields aren't saved on form submission if the page query string includes the `view` parameter with a value of `entry`. Credit: The Gravity PDF team.
+- Fixed the formatting of the Time field in RTL languages.
+- Fixed an issue where the submitted values of some fields with conditional logic based on a Consent field are not saved if the Consent field was the first field on the form when the conditional logic rule was configured.
+- Fixed an issue where the Honeypot field can be removed when paging through a multipage form and the new AJAX submission method is in use.
+- Fixed an issue where the value saved is truncated when the selected choice of a Dropdown field contains '<'.
+- Fixed an issue where an Email field with confirmation enabled passes validation when the first input is empty and the confirmation input is not empty.
+- Fixed an issue where two instances of the gform variable (hooks script) can be output with some themes.
+- Fixed an issue where Option field choices HTML tags are displayed as text in the order summary.
+- Fixed a PHP fatal error that occurs when editing an entry and the existing value of a multi-file enabled File Upload field JSON decodes to `null`.
+- Fixed an issue where the calculation field type uses an incorrect markup tag.
+- Fixed a bug that prevented the search box from showing on the Entries screen.
+- API: Fixed an issue where REST API form submissions don't validate or save files submitted using array-based input names (e.g. input_1[]) for multi-file enabled File Upload fields.
+- API: Added several new functions to `GF_Field_FileUpload` including: `get_tmp_file_details()`, `get_submission_files()`, `set_submission_files()`, `populate_file_urls_from_value()`, and `populate_file_url()`.
+- API: Deprecated `GFFormsModel::get_temp_filename()`, use `$file_upload_field->get_tmp_file_details( $file_or_name )` instead.
+- AF: Added support for enabling Post Payment actions by default via the GFFeedAddon::get_post_payment_actions_config() method.
+- AF: Fixed an issue where the add-on tabs on the settings page are not sorted alphabetically.
 
 ### 2.9.17 | 2025-09-04
 - Added full text of the form name when hovering over a title in the form switcher dropdown.

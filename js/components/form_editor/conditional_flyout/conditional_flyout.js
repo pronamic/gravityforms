@@ -150,7 +150,7 @@ function getCorrectDefaultFieldId( field ) {
 		return null;
 	}
 
-	if ( field.type === 'checkbox' || field.type === 'radio' || field.inputType === 'checkbox' || field.inputType === 'radio' || ! field.inputs || ! field.inputs.length ) {
+	if ( useFieldId( field ) ) {
 		return field.id;
 	}
 
@@ -163,6 +163,19 @@ function getCorrectDefaultFieldId( field ) {
 	}
 
 	return options[0].id;
+}
+
+/**
+ * Helper to determine if the field ID or the input ID is used as the field option value.
+ *
+ * @since 2.9.18
+ *
+ * @param {object} field The field being rendered.
+ *
+ * @return boolean
+ */
+function useFieldId( field ) {
+	return ! field.inputs || [ 'checkbox', 'email', 'consent', 'radio' ].includes( GetInputType( field ) );
 }
 
 /**
@@ -549,7 +562,7 @@ GFConditionalLogic.prototype.renderFieldOptions = function( rule ) {
 			continue;
 		}
 
-		if ( field.inputs && jQuery.inArray( GetInputType( field ), [ 'checkbox', 'email', 'consent' ] ) == -1 && GetInputType( field ) !== 'radio' ) {
+		if ( ! useFieldId( field ) ) {
 			for ( var j = 0; j < field.inputs.length; j++ ) {
 				var input = field.inputs[ j ];
 
@@ -569,7 +582,8 @@ GFConditionalLogic.prototype.renderFieldOptions = function( rule ) {
 			var config = {
 				label: GetLabel( field ),
 				value: field.id,
-				selected: field.id == rule.fieldId ? 'selected="selected"' : '',
+				// Comparing as integers because a getCorrectDefaultFieldId() bug caused some rules based on the consent field to use the input ID instead of the field ID.
+				selected: ( parseInt( field.id, 10 ) === parseInt( rule.fieldId, 10 ) ) ? 'selected="selected"' : '',
 			};
 
 			options.push( config );
@@ -845,10 +859,9 @@ GFConditionalLogic.prototype.gatherElements = function() {
 GFConditionalLogic.prototype.getDefaultRule = function() {
 	var fieldId = GetFirstRuleField();
 	var field   = GetFieldById( fieldId );
-	var fieldId = getCorrectDefaultFieldId( field );
 
 	return {
-		fieldId: fieldId,
+		fieldId: getCorrectDefaultFieldId( field ),
 		operator: 'is',
 		value: '',
 	};

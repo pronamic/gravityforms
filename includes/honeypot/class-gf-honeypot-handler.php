@@ -215,7 +215,7 @@ class GF_Honeypot_Handler {
 	 *
 	 * @return bool|\GF_Field Returns the honeypot field.
 	 */
-	private function get_honeypot_field( $form ) {
+	public function get_honeypot_field( $form ) {
 		$labels = $this->get_honeypot_labels();
 		shuffle( $labels );
 

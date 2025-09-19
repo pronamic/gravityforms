@@ -122,18 +122,19 @@ class Dom_Parser {
 	 * @return string
 	 */
 	private function inject_hooks_js() {
-		$insert_position  = $this->get_insert_position();
-		$hooks_javascript = \GFCommon::get_hooks_javascript_code();
+		$script           = \GFCommon::get_hooks_javascript_code();
+		$script_with_tag  = \GFCommon::get_inline_script_tag( $script, false );
+		$gforms_js_before = \wp_get_inline_script_tag( $script, array( 'id' => 'gform_gravityforms-js-before' ) );
 
-		$string = \GFCommon::get_inline_script_tag( $hooks_javascript, false );
-		$content = str_replace( $string, '', $this->content );
-		$pieces  = preg_split( "/\r\n|\n|\r/", $content );
+		$content         = str_replace( array( $script_with_tag, $gforms_js_before, $script ), '', $this->content );
+		$pieces          = preg_split( "/\r\n|\n|\r/", $content );
+		$insert_position = $this->get_insert_position();
 
 		if ( count( $pieces ) > 1 && $insert_position > 0 ) {
-			array_splice( $pieces, $insert_position, 0, $string );
+			array_splice( $pieces, $insert_position, 0, $script_with_tag );
 			$content = implode( "\n", $pieces );
 		} else {
-			$content = preg_replace( '/(<[\s]*head(?!e)[^>]*>)/', '$0 ' . $string, $content, 1 );
+			$content = preg_replace( '/(<[\s]*head(?!e)[^>]*>)/', '$0 ' . $script_with_tag, $content, 1 );
 		}
 
 		return $content;

@@ -4128,10 +4128,27 @@ Content-Type: text/html;
 		return $preview_link;
 	}
 
+	/**
+	 * Returns an array of file extensions with periods and spaces removed.
+	 *
+	 * @since unknown
+	 * @since 2.9.18 Updated to support being passed a string of comma separated extensions.
+	 *
+	 * @param array|string $extensions The file extensions to be cleaned.
+	 *
+	 * @return array
+	 */
 	public static function clean_extensions( $extensions ) {
-		$count = sizeof( $extensions );
-		for ( $i = 0; $i < $count; $i ++ ) {
-			$extensions[ $i ] = str_replace( '.', '', str_replace( ' ', '', $extensions[ $i ] ) );
+		if ( empty( $extensions ) ) {
+			return array();
+		}
+
+		if ( ! is_array( $extensions ) ) {
+			$extensions = explode( ',', strtolower( $extensions ) );
+		}
+
+		foreach ( $extensions as &$ext ) {
+			$ext = str_replace( array( '.', ' ' ), '', $ext );
 		}
 
 		return $extensions;

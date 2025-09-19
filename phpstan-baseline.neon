@@ -192,7 +192,7 @@ parameters:
 
 		-
 			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
-			count: 4
+			count: 3
 			path: form_display.php
 
 		-
@@ -666,21 +666,12 @@ parameters:
 			path: includes/fields/class-gf-field-fileupload.php
 
 		-
-			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
-			count: 1
-			path: includes/fields/class-gf-field-fileupload.php
-
-		-
 			message: "#^Variable \\$rules_messages in empty\\(\\) always exists and is not falsy\\.$#"
 			count: 1
 			path: includes/fields/class-gf-field-fileupload.php
 
 		-
-			message: "#^Variable \\$value in empty\\(\\) always exists and is not falsy\\.$#"
-			count: 1
-			path: includes/fields/class-gf-field-fileupload.php
 
-		-
 			message: "#^Callback expects 1 parameter, \\$accepted_args is set to 2\\.$#"
 			count: 2
 			path: includes/fields/class-gf-field-image-choice.php
@@ -1159,11 +1150,6 @@ parameters:
 			message: "#^Anonymous function has an unused use \\$container\\.$#"
 			count: 1
 			path: includes/updates/class-gf-updates-service-provider.php
-
-		-
-			message: "#^One or more @param tags has an invalid name or invalid syntax\\.$#"
-			count: 1
-			path: includes/upload.php
 
 		-
 			message: "#^Variable \\$contentType might not be defined\\.$#"

@@ -706,7 +706,9 @@ function gformDeleteUploadedFile(formId, fieldId, deleteButton){
 
     var fileIndex = jQuery(deleteButton).parent().index();
 
-    parent.find(".ginput_preview").eq(fileIndex).remove();
+    var filePreview = jQuery( deleteButton ).closest( '.ginput_preview' )[0];
+    var fileId = filePreview.id;
+    filePreview.remove();
 
     //displaying single file upload field
     parent.find('input[type="file"],.validation_message,#extensions_message_' + formId + '_' + fieldId).removeClass("gform_hidden");
@@ -728,10 +730,15 @@ function gformDeleteUploadedFile(formId, fieldId, deleteButton){
             if( $multfile.length > 0 ) {
                 files[inputName].splice(fileIndex, 1);
                 var settings = $multfile.data('settings');
-                var max = settings.gf_vars.max_files;
-                jQuery("#" + settings.gf_vars.message_id).html('');
-                if(files[inputName].length < max)
-                    gfMultiFileUploader.toggleDisabled(settings, false);
+                var count = files[ inputName ].length;
+                if ( count === 0 ) {
+                    jQuery( '#' + settings.gf_vars.message_id ).html('');
+                } else {
+                    jQuery( '#error_' + fileId ).remove(); // Removing the file-specific validation message.
+                    var max = settings.gf_vars.max_files;
+                    if ( count < max )
+                        gfMultiFileUploader.toggleDisabled( settings, false );
+                }
 
             } else {
                 files[inputName] = null;
@@ -3013,6 +3020,7 @@ function gformValidateFileSize( field, max_file_size ) {
 
 			if (file.percent == 100) {
 				if (response.status && response.status == 'ok') {
+					response.data.id = file.id;
 					addFile(fieldId, response.data);
 				} else {
 					addMessage(up.settings.gf_vars.message_id, strings.unknown_error + ': ' + file.name);
