@@ -236,7 +236,7 @@ class GFFormDetail {
 
 				$ajax_save_disabled = $save_form_helper->is_ajax_save_disabled( $form_id );
 				if ( $ajax_save_disabled ) {
-					$save_button = '<button aria-disabled="false" aria-expanded="false" class="update-form gform-button gform-button--primary-new gform-button--icon-leading " onclick="SaveForm();" onkeypress="SaveForm();"> <i class="gform-button__icon gform-icon gform-icon--floppy-disk"></i>' . esc_html__( 'Save Form', 'gravityforms' ) . '</button>';
+					$save_button = '<button aria-disabled="false" aria-expanded="false" class="update-form gform-button gform-button--primary-new gform-button--icon-leading " onclick="SaveForm();" onkeypress="SaveForm();"> <i class="gform-button__icon gform-icon gform-icon--floppy-disk" aria-hidden="true"></i>' . esc_html__( 'Save Form', 'gravityforms' ) . '</button>';
 				} else {
 					$save_button = '<button
 						id="ajax-save-form-menu-bar"
@@ -245,7 +245,7 @@ class GFFormDetail {
 						aria-expanded="false"
 						class="update-form update-form-ajax gform-button gform-button--primary-new gform-button--interactive gform-button--active-type-loader gform-button--icon-leading"
 					>
-						<i class="gform-button__icon gform-button__icon--inactive gform-icon gform-icon--floppy-disk" data-js="button-icon"></i>
+						<i class="gform-button__icon gform-button__icon--inactive gform-icon gform-icon--floppy-disk" data-js="button-icon" aria-hidden="true"></i>
 						<span class="gform-button__text gform-button__text--inactive" data-js="button-inactive-text">
 							' . esc_html__( 'Save Form', 'gravityforms' ) . '
 						</span>
@@ -349,7 +349,7 @@ class GFFormDetail {
 						<a id="preview_form_link" href="<?php echo esc_url_raw( trailingslashit( site_url() ) ); ?>?gf_page=preview&id={formid}" target="_blank">
 						<?php esc_html_e( 'Preview this Form', 'gravityforms' ); ?>
 						<span class="screen-reader-text"><?php echo esc_html__('(opens in a new tab)', 'gravityforms'); ?></span>&nbsp;
-						<span class="gform-icon gform-icon--external-link"></span>
+						<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span>
 						</a>
 					</div>
 
@@ -1550,7 +1550,7 @@ class GFFormDetail {
 									data-js="choices-ui-trigger"
 									style="display:none;"
 								>
-									<span class="gform-button__icon gform-icon gform-icon--cog choices-ui__trigger-icon"></span>
+									<span class="gform-button__icon gform-icon gform-icon--cog choices-ui__trigger-icon" aria-hidden="true"></span>
 									<?php esc_html_e( 'Edit Choices', 'gravityforms' ); ?>
 								</button>
 							</li>
@@ -1561,7 +1561,7 @@ class GFFormDetail {
 									<label class="gfield_choice_header_price" data-js="choices-ui-label"><?php esc_html_e( 'Price', 'gravityforms' ) ?></label>
 									<ul id="field_choices"></ul>
 									<button class='field-choice-clear-default gform-button gform-button--size-r gform-button--white gform-button--icon-leading' onclick="ResetDefaultChoices();" style="display: none;">
-										<i class="gform-button__icon gform-icon gform-icon--circle-close"></i>
+										<i class="gform-button__icon gform-icon gform-icon--circle-close" aria-hidden="true"></i>
 										<?php esc_attr_e( 'Clear Default Choices', 'gravityforms' ); ?>
 									</button>
 								</div>
@@ -3004,7 +3004,7 @@ class GFFormDetail {
 					}
 					?>
 				>
-				<div class="button-icon"><?php echo GFCommon::get_icon_markup( array( 'icon' => rgar( $button, 'data-icon' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+				<div class="button-icon"><?php echo GFCommon::get_icon_markup( array( 'icon' => rgar( $button, 'data-icon' ) ), null, array( 'aria-hidden' => 'true' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 				<div class="button-text"><?php echo esc_html( $button['value'] ); ?></div>
 				</button>
 			</li>
@@ -3421,9 +3421,9 @@ class GFFormDetail {
 							// Translators: 1. Opening <a> tag with link to the form export page, 2. closing <a> tag, 3. Opening <a> tag for documentation link, 4. Closing <a> tag.
 							esc_html__( 'If you continue to encounter this error, you can %1$sexport your form%2$s to include in your support request. You can also disable AJAX saving for this form. %3$sLearn more%4$s.', 'gravityforms' ),
 							'<a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=gf_export&subview=export_form&export_form_ids=' . rgget( 'id' ) ) ) . '" rel="noopener noreferrer" class="gform-export-form">',
-							'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>',
+							'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>',
 							'<a target="_blank" href="https://docs.gravityforms.com/gform_disable_ajax_save/" rel="noopener noreferrer">',
-							'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+							'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 						);
 					?>
 				</p>
@@ -3469,7 +3469,7 @@ class GFFormDetail {
 					<?php echo esc_html_e( 'Learn More', 'gravityforms' ); ?>
 					<span class="screen-reader-text"><?php echo esc_html__('about form legacy markup', 'gravityforms'); ?></span>
 					<span class="screen-reader-text"><?php echo esc_html__('(opens in a new tab)', 'gravityforms'); ?></span>&nbsp;
-					<span class="gform-icon gform-icon--external-link"></span>
+					<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span>
 				</a>
 			</div>
 		</div>
@@ -3517,6 +3517,12 @@ class GFFormDetail {
 			'gf_list_3col_vertical',
 			'gf_list_4col_vertical',
 			'gf_list_5col_vertical',
+			'gf_list_height_25',
+			'gf_list_height_50',
+			'gf_list_height_75',
+			'gf_list_height_100',
+			'gf_list_height_125',
+			'gf_list_height_150',
 		);
 
 		foreach ( $form['fields'] as $field ) {
@@ -3559,7 +3565,7 @@ class GFFormDetail {
 				>
 					<?php esc_html_e( 'Learn More', 'gravityforms' ); ?>
 					<span class="screen-reader-text"><?php echo esc_html__('(opens in a new tab)', 'gravityforms'); ?></span>&nbsp;
-					<span class="gform-icon gform-icon--external-link"></span>
+					<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span>
 				</a>
 			</div>
 		</div>

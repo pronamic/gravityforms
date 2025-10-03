@@ -518,7 +518,7 @@ class GF_Confirmation {
 			$dismissible_message = sprintf(
 				$dismissible_message,
 				'<a href="https://docs.gravityforms.com/security-warning-merge-tags-html-attribute-values/" target="_blank">',
-				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 			);
 			GFCommon::add_dismissible_message( $dismissible_message, 'confirmation_unsafe_' . $form_id );
 		}

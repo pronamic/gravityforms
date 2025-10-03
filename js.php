@@ -251,11 +251,11 @@ if ( ! class_exists( 'GFForms' ) ) {
 			const autoCompleteAttribute = field?.autocompleteAttribute || ''
 			field_str = "<label for='field_autocomplete_attribute' class='inline'>" + <?php echo json_encode( esc_html__( 'Autocomplete Attribute:', 'gravityforms' ) ); ?> + "&nbsp;</label>";
 			field_str += "<input type='text' value='" + autoCompleteAttribute + "' id='field_autocomplete_attribute' class='field_autocomplete_attribute' aria-describedby='autocomplete_attributes_list'/>";
-			field_str += "<a href='https://docs.gravityforms.com/accessibility-for-developers/#h-autocomplete' target='_blank' id='autocomplete_attributes_list' style='display: inline-block; margin-top: 13px;'>" + <?php echo json_encode( esc_html__( 'List of valid attributes', 'gravityforms' ) ); ?> + '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a><br>';
+			field_str += "<a href='https://docs.gravityforms.com/accessibility-for-developers/#h-autocomplete' target='_blank' id='autocomplete_attributes_list' style='display: inline-block; margin-top: 13px;'>" + <?php echo json_encode( esc_html__( 'List of valid attributes', 'gravityforms' ) ); ?> + '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a><br>';
 
 			SetFieldProperty( 'autocompleteAttribute', autoCompleteAttribute );
 		} else {
-			field_str = "<a href='https://docs.gravityforms.com/accessibility-for-developers/#h-autocomplete' target='_blank' style='display: inline-block; margin-bottom: 13px;'>" + <?php echo json_encode( esc_html__( 'List of valid attributes', 'gravityforms' ) ); ?> + '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>';
+			field_str = "<a href='https://docs.gravityforms.com/accessibility-for-developers/#h-autocomplete' target='_blank' style='display: inline-block; margin-bottom: 13px;'>" + <?php echo json_encode( esc_html__( 'List of valid attributes', 'gravityforms' ) ); ?> + '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>';
 			field_str += "<fieldset class='input_autocomplete'><legend class='screen-reader-text'>" + <?php echo json_encode( esc_html__( 'Autocomplete Attributes', 'gravityforms' ) ); ?> + "</legend><div class='gform-sidebar-setting-grid-wrapper gform-sidebar-setting-grid-wrapper__two-column'><div class='gform-sidebar-setting-grid-header'><span>" + <?php echo json_encode( esc_html__( 'Field', 'gravityforms' ) ); ?> + "</span><span>" + <?php echo json_encode( esc_html__( 'Attribute', 'gravityforms' ) ); ?> + "</span></div>";
 			for ( var i = 0; i < field["inputs"].length; i++ ) {
 				if ( field["inputs"][i]["isHidden"] ) {
@@ -449,6 +449,12 @@ if ( ! class_exists( 'GFForms' ) ) {
 			'gf_list_3col_vertical',
 			'gf_list_4col_vertical',
 			'gf_list_5col_vertical',
+			'gf_list_height_25',
+			'gf_list_height_50',
+			'gf_list_height_75',
+			'gf_list_height_100',
+			'gf_list_height_125',
+			'gf_list_height_150',
 		];
 
 		var classes = field.cssClass.split(/\s+/);
@@ -464,7 +470,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 		var message = '<div id="gfield-warning-deprecated" class="gform-alert gform-alert--notice gform-alert--inline" role="alert">';
 			message += '<span class="gform-alert__icon gform-icon gform-icon--circle-notice-fine" aria-hidden="true"></span>';
 			message += '<div class="gform-alert__message-wrap">';
-			message += '<p class="gform-alert__message">' + deprecatedClass + ' ' + <?php echo json_encode( esc_html__( 'is no longer necessary.', 'gravityforms' ) ); ?> + ' <a href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/" target="_blank" title="' + <?php echo json_encode( esc_attr__( 'Deprecation of Ready Classes in Gravity Forms 3.1', 'gravityforms' ) ); ?> + '">' + <?php echo json_encode( esc_html__( 'Learn more', 'gravityforms' ) ); ?> + '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a></p>';
+			message += '<p class="gform-alert__message">' + deprecatedClass + ' ' + <?php echo json_encode( esc_html__( 'is no longer necessary.', 'gravityforms' ) ); ?> + ' <a href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/" target="_blank" title="' + <?php echo json_encode( esc_attr__( 'Deprecation of Ready Classes in Gravity Forms 3.1', 'gravityforms' ) ); ?> + '">' + <?php echo json_encode( esc_html__( 'Learn more', 'gravityforms' ) ); ?> + '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a></p>';
 			message += '</div>';
 			message += '</div>';
 
@@ -1702,6 +1708,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 			label_placement_setting: <?php echo json_encode( esc_html__( 'Hiding the label can make it difficult for users to fill out your form. Please keep the label visible to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
 			image_choice_ui_show_label_setting: <?php echo json_encode( esc_html__( 'Hiding the choice labels can make it difficult for users to fill out your form. Please keep the choice labels visible to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
 			submit_type_setting: <?php echo json_encode( esc_html__( 'The image button is not accessible for users who rely on a screen reader. Please use a text button to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
+			rich_text_editor_setting: <?php echo json_encode( esc_html__( 'The Rich Text Editor is not accessible for users who rely on a screen reader. Please disable the Rich Text Editor to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
 			label_setting:
 			<?php
 			/* translators: 1. Open abbr tag 2. Close abbr tag */
@@ -1718,11 +1725,11 @@ if ( ! class_exists( 'GFForms' ) ) {
 				message = '<p class="gform-alert__message">' + predefinedMessages[ fieldSetting ] + '</p>';
 				message += '<a class="gform-alert__cta gform-button gform-button--white gform-button--size-xs" href="https://docs.gravityforms.com/field-accessibility-warning" target="_blank">';
 				message += <?php echo json_encode( esc_html__( 'Learn more', 'gravityforms' ) ); ?>;
-				message += '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>';
+				message += '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>';
 			} else {
 				message = '<p class="gform-alert__message"><a href="https://docs.gravityforms.com/field-accessibility-warning" target="_blank">';
 				message += <?php echo json_encode( esc_html__( 'This field has accessibility issues.', 'gravityforms' ) ); ?>;
-				message += '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a></p>';
+				message += '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a></p>';
 			}
 		}
 
@@ -1767,11 +1774,11 @@ if ( ! class_exists( 'GFForms' ) ) {
 			message += '<p class="gform-alert__message">' + predefinedMessages[ fieldSetting ] + '</p>';
 			message += '<a class="gform-alert__cta gform-button gform-button--white gform-button--size-xs" href="https://docs.gravityforms.com/field-accessibility-warning" target="_blank">';
 			message += <?php echo json_encode( esc_html__( 'Learn more', 'gravityforms' ) ); ?>;
-			message += '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>';
+			message += '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>';
 		} else {
 			message += '<a href="https://docs.gravityforms.com/field-accessibility-warning" target="_blank">';
 			message += <?php echo json_encode( esc_html__( 'This field has errors.', 'gravityforms' ) ); ?>;
-			message += '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>';
+			message += '<span class="screen-reader-text">' + <?php echo json_encode( esc_html__( '(opens in a new tab)', 'gravityforms' ) ); ?> + '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>';
 		}
 
 		return message;

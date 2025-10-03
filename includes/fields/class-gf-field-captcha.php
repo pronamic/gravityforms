@@ -162,7 +162,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 				sprintf(
 					esc_html__( 'To use the reCAPTCHA field, please configure your %1$sreCAPTCHA settings.%2$s', 'gravityforms' ),
 					'<a href="?page=gf_settings&subview=recaptcha" target="_blank">',
-					'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+					'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 				)
 			),
 			'icon_helper_text' => __( 'This field requires additional configuration', 'gravityforms' ),
@@ -480,7 +480,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 									__( 'To use the reCAPTCHA field, please configure your', 'gravityforms' ),
 											'<a href="?page=gf_settings&subview=recaptcha" target="_blank">',
 											__( 'reCAPTCHA settings', 'gravityforms' ),
-											'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+											'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 										) .'</div>
 									</div>
 								</div>

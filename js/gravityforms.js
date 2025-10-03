@@ -733,6 +733,7 @@ function gformDeleteUploadedFile(formId, fieldId, deleteButton){
                 var count = files[ inputName ].length;
                 if ( count === 0 ) {
                     jQuery( '#' + settings.gf_vars.message_id ).html('');
+                    gfMultiFileUploader.toggleDisabled( settings, false );
                 } else {
                     jQuery( '#error_' + fileId ).remove(); // Removing the file-specific validation message.
                     var max = settings.gf_vars.max_files;

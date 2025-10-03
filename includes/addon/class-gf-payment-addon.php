@@ -3051,6 +3051,9 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			),
 			'vAxis'  => array(
 				'title' => $sales_data['vAxis_title'],
+			),
+			'tooltip' => array(
+				'isHtml' => true,
 			)
 		);
 

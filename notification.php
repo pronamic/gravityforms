@@ -186,7 +186,7 @@ Class GFNotification {
 					sprintf(
 						esc_html__( 'Warning! Using a third-party email in the From Email field may prevent your notification from being delivered. It is best to use an email with the same domain as your website. %sMore details in our documentation.%s', 'gravityforms' ),
 						'<a href="https://docs.gravityforms.com/troubleshooting-notifications/#use-a-valid-from-address" target="_blank" >',
-						'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+						'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 					)
 				);
 			}

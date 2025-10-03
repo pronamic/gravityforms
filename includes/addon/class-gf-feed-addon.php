@@ -1332,7 +1332,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			esc_html__( 'The table `%1$s` does not exist. Please visit the %2$sForms > System Status%3$s page and click the "Re-run database upgrade" link (under the Database section) to create the missing table.', 'gravityforms' ),
 			esc_html( $table ),
 			'<a href="' . esc_attr( $status_page_url ) . '" target="_blank" rel="noopener">',
-			'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+			'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 		);
 	}
 

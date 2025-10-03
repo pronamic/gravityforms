@@ -193,7 +193,7 @@ class GF_Save_Form_Endpoint_Admin {
 				/* Translators: 1. Opening link tag, 2. Closing link tag. */
 				esc_html__( 'There was an error while saving your form. Please %1$scontact our support team%2$s.', 'gravityforms'),
 				'<a target="_blank" href="' . esc_attr( \GFCommon::get_support_url() ) . '">',
-				'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+				'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 			);
 		}
 

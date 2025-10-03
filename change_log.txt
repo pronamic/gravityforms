@@ -1,3 +1,18 @@
+### 2.9.19 | 2025-10-02
+- Added Signature Consent Form and Testimonial Form templates to the Template Library.
+- Added an accessibility warning in the form editor when the rich text editor setting is enabled on the Paragraph Text field.
+- Added a deprecation warning in the form editor when a form uses any of the `gf_list_height` Ready Classes.
+- Fixed an issue where canceling the conditional logic warning displayed by the rich text editor setting does not cancel the current changes.
+- Fixed accessibility of decorative font icons in admin screens so they are not announced by screen readers.
+- Fixed an issue where the Gravity Forms header displays incorrectly when Screen Options panel is open.
+- Fixed an issue where the upload button for a multi-file enabled File Upload field with a limit is not re-enabled when the last file is removed.
+- Fixed an issue where the gform variable (hooks script) can be output in the wrong location on some sites.
+- Fixed an issue where the sales page does not display the charts correctly in RTL languages.
+- Fixed an issue where the add and delete icon URL settings are not applied to the List field.
+- Fixed a PHP fatal error that occurs when editing an entry with a multi-file enabled File Upload field.
+- Fixed a PHP fatal error sometimes occurs when trying to dismiss a message in the admin.
+- Removed ready classes from the Employment Application form template.
+
 ### 2.9.18 | 2025-09-18
 - Added support for dynamically populating File Upload fields with file URLs. Note: the URL is saved to the entry; the file itself is not saved in the form uploads folder.
 - Added the [gform_submission_files_pre_save_field_value](https://docs.gravityforms.com/gform_submission_files_pre_save_field_value/) filter, so files can be modified (e.g. renamed) just before they are saved to the form folder and entry.

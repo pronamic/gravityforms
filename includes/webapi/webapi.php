@@ -571,7 +571,7 @@ if ( class_exists( 'GFForms' ) ) {
 					'description' => sprintf(
 						esc_html__( 'Create an API Key below to use the REST API version 2. Alternatively, you can use cookie authentication which is supported for logged in users. %1$sVisit our documentation pages%2$s for more information.', 'gravityforms' ),
 						'<a href="https://docs.gravityforms.com/rest-api-v2/" target="_blank">',
-						'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+						'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 					),
 					'dependency'  => array( $this, 'is_v2_enabled' ),
 					'fields'      => array(
@@ -588,7 +588,7 @@ if ( class_exists( 'GFForms' ) ) {
 					'description' => sprintf(
 						esc_html__( 'Configure your API Key below to use the REST API version 1. Alternatively, you can use cookie authentication which is supported for logged in users. %1$sVisit our documentation pages%2$s for more information.', 'gravityforms' ),
 						'<a href="https://docs.gravityforms.com/web-api/" target="_blank">',
-						'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+						'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 					),
 					'dependency'  => array( $this, 'is_v1_enabled' ),
 					'fields'      => array(

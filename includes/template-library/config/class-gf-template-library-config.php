@@ -116,7 +116,7 @@ class GF_Template_Library_Config extends GF_Config {
 							'value' => sprintf(
 								esc_html__( 'This template uses Add-ons not included in your current license plan. %1$sUpgrade%2$s'),
 								'<a href="' . $license_info->get_upgrade_link() . '" target="_blank" rel="noopener noreferrer">',
-								'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+								'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 							),
 							'default' => 'This template uses Add-ons not included in your current license plan. Upgrade.',
 						),

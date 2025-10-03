@@ -69,7 +69,7 @@ class GF_System_Report {
 			<p><?php esc_html_e( 'The following is a system report containing useful technical information for troubleshooting issues. If you need further help after viewing the report, click on the "Copy System Report" button below to copy the report and paste it in your message to support.', 'gravityforms' ); ?></p>
 
 			<button class="gform-button gform-button--size-r gform-button--white gform-button--icon-leading gform-system-report__copy-button" data-js="gf-copy-system-report">
-				<i class="gform-button__icon gform-button__icon--inactive gform-icon gform-icon--copy" data-js="button-icon"></i>
+				<i class="gform-button__icon gform-button__icon--inactive gform-icon gform-icon--copy" data-js="button-icon" aria-hidden="true"></i>
 
 				<span class="gform-system-report__copy-label" data-js="system-status-copy-label" aria-hidden="false">Copy System Report</span>
 				<span class="gform-system-report__copy-copied" data-js="system-status-copy-copied" aria-hidden="true">
@@ -1154,7 +1154,7 @@ class GF_System_Report {
                 $url  = str_replace( $logs_dir_path, $logs_dir_url, $file );
 
                 $logs[] = array(
-                    'label'        => '<a href="' . $url . '" target="_blank">' . esc_html( $plugin_name ) . '<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>',
+                    'label'        => '<a href="' . $url . '" target="_blank">' . esc_html( $plugin_name ) . '<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>',
                     'label_export' => esc_html( $plugin_name ),
                     'value'        => gf_logging()->get_log_file_size( $file, true ) . ' (' . GFCommon::format_date( date( 'c', filemtime( $file ) ) ) . ')',
                     'value_export' => $url,

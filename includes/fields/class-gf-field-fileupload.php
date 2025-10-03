@@ -899,7 +899,7 @@ class GF_Field_FileUpload extends GF_Field {
 			// Merge with existing files (entry detail edit page or an add-on edit entry page).
 			if ( ! empty( $uploaded_files ) ) {
 				$array = json_decode( $value, true );
-				if ( empty( $array ) ) {
+				if ( empty( $array ) || ! is_array( $array ) ) {
 					$value = $uploaded_files;
 				} else {
 					$value = array_unique( array_merge( $array, $uploaded_files ) );

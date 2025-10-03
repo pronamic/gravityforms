@@ -127,7 +127,7 @@ class GFFormSettings {
 					   esc_attr__( 'Deprecation of Ready Classes in Gravity Forms 3.1', 'gravityforms' ) . '">' .
 					   esc_html__( 'Learn more', 'gravityforms' ) .
 					   '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;' .
-					   '<span class="gform-icon gform-icon--external-link"></span></a></p>
+					   '<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a></p>
 					</div>
 				</div>';
 			}
@@ -735,7 +735,7 @@ class GFFormSettings {
 			        . esc_html__( 'Learn More', 'gravityforms' ) .
 			   		'<span class="screen-reader-text">' . esc_html__('about form legacy markup', 'gravityforms') . '</span>
 					<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;
-					<span class="gform-icon gform-icon--external-link"></span>
+					<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span>
 				</a>
 		    </div>
 		</div>';
@@ -777,7 +777,7 @@ class GFFormSettings {
 						   	. esc_html__( 'Learn More', 'gravityforms' ) .
 						   	'<span class="screen-reader-text">' . esc_html__('about deprecated ready classes', 'gravityforms') . '</span>
 							<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;
-							<span class="gform-icon gform-icon--external-link"></span>
+							<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span>
 							</a>
 						</div>
 					</div>';

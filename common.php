@@ -4105,7 +4105,7 @@ Content-Type: text/html;
 			<a href="%s" class="%s gform-button--icon-leading" target="%s" rel="noopener">
 				<span class="screen-reader-text">%s</span>
 				<span class="screen-reader-text">%s</span>
-				<i class="gform-button__icon gform-common-icon gform-common-icon--eye"></i>%s
+				<i class="gform-button__icon gform-common-icon gform-common-icon--eye" aria-hidden="true"></i>%s
 			</a>
 				',
 			esc_url( $options['url'] ),
@@ -5668,7 +5668,7 @@ Content-Type: text/html;
 		 */
 		$logic_a11y_warn                   = esc_html__( 'Adding conditional logic to the form submit button could cause usability problems for some users and negatively impact the accessibility of your form. Learn more about button conditional logic in our %1$sdocumentation%2$s.', 'gravityforms' );
 		$logic_a11y_warn_link1             = '<a href="https://docs.gravityforms.com/field-accessibility-warning/" target="_blank" rel="noopener">';
-		$logic_a11y_warn_link2             = '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>';
+		$logic_a11y_warn_link2             = '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>';
 		$gf_vars['conditional_logic_a11y'] = sprintf( $logic_a11y_warn, $logic_a11y_warn_link1, $logic_a11y_warn_link2 );
 		$gf_vars['page']                   = esc_html__( 'Page', 'gravityforms' );
 		$gf_vars['next_button']            = esc_html__( 'Next Button', 'gravityforms' );
@@ -6233,15 +6233,19 @@ Content-Type: text/html;
 	 * Get the Javascript code from the gforms_hooks file and return it.
 	 *
 	 * @since 2.5
+	 * @since 2.9.19 Added the $set_printed_prop param.
+	 *
+	 * @param bool $set_printed_prop Optional. Indicates if GFFormDisplay::$hooks_js_printed should be set to true.
 	 *
 	 * @return false|string
 	 */
-	public static function get_hooks_javascript_code() {
-		require_once self::get_base_path() . '/form_display.php';
+	public static function get_hooks_javascript_code( $set_printed_prop = true ) {
+		if ( $set_printed_prop ) {
+			require_once self::get_base_path() . '/form_display.php';
+			GFFormDisplay::$hooks_js_printed = true;
+		}
 
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignoreWordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Recommended
-
-		GFFormDisplay::$hooks_js_printed = true;
 
 		return file_get_contents( GFCommon::get_base_path() . '/js/gforms_hooks' . $min . '.js' );
 	}
@@ -7534,12 +7538,13 @@ Content-Type: text/html;
 	 * @since 2.5
 	 * @since 2.6 Added check for icon_namespace $item check to allow for custom font icon kits.
 	 *
-	 * @param array       $item    Array containing an "icon" property.
-	 * @param string|null $default Default icon.
+	 * @param array       $item        Array containing an "icon" property.
+	 * @param string|null $default     Default icon.
+	 * @param bool        $aria_hidden Whether to add aria-hidden attribute. Defaults to true.
 	 *
 	 * @return string|null
 	 */
-	public static function get_icon_markup( $item, $default = null ) {
+	public static function get_icon_markup( $item, $default = null, $aria_hidden = true ) {
 
 		// Get icon.
 		$icon = rgar( $item, 'icon', $default );
@@ -7552,27 +7557,30 @@ Content-Type: text/html;
 		// Get icon namespace.
 		$icon_namespace = rgar( $item, 'icon_namespace' );
 
+		// Add aria-hidden attribute.
+		$aria_hidden_attr = $aria_hidden ? ' aria-hidden="true"' : '';
+
 		// Return icon markup.
 		if ( ! rgblank( $icon_namespace ) ) {
-			return sprintf( '<i class="'. $icon_namespace .'-icon %s"></i>', esc_attr( $icon ) );
+			return sprintf( '<i class="'. $icon_namespace .'-icon %s"%s></i>', esc_attr( $icon ), $aria_hidden_attr );
 		} else if ( strpos( $icon, '<svg' ) !== false ) {
 			return $icon;
 		} else if ( filter_var( $icon, FILTER_VALIDATE_URL ) ) {
-			return sprintf( '<img src="%s" />', esc_attr( $icon ) );
+			return sprintf( '<img src="%s"%s />', esc_attr( $icon ), $aria_hidden_attr );
 		} else if ( strpos( $icon, 'fa-' ) !== false ) {
 			// Font awesome icon styles, aliased & non-aliased
 			$fa_styles = array( 'fas', 'fa-solid', 'far', 'fa-regular', 'fal', 'fa-light', 'fat', 'fa-thin', 'fad', 'fa-duotone', 'fab', 'fa-brands' );
 			if ( str_replace( $fa_styles, '', $icon ) !== $icon ) {
 				// Newer version which allows for icon styles
-				return sprintf( '<i class="%s"></i>', esc_attr( $icon ) );
+				return sprintf( '<i class="%s"%s></i>', esc_attr( $icon ), $aria_hidden_attr );
 			} else {
 				// Older version
-				return sprintf( '<i class="fa %s"></i>', esc_attr( $icon ) );
+				return sprintf( '<i class="fa %s"%s></i>', esc_attr( $icon ), $aria_hidden_attr );
 			}
 		} else if ( strpos( $icon, 'dashicons' ) === 0 ) {
-			return sprintf( '<i class="dashicons %s"></i>', esc_attr( $icon ) );
+			return sprintf( '<i class="dashicons %s"%s></i>', esc_attr( $icon ), $aria_hidden_attr );
 		} else if ( strpos( $icon, 'gform-icon' ) === 0 ) {
-			return sprintf( '<i class="gform-icon %s"></i>', esc_attr( $icon ) );
+			return sprintf( '<i class="gform-icon %s"%s></i>', esc_attr( $icon ), $aria_hidden_attr );
 		}
 
 		return null;

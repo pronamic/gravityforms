@@ -5262,13 +5262,13 @@ abstract class GFAddOn {
 					$url  = add_query_arg( array( 'view' => $tab['name'] ) );
 
 					// Get tab icon.
-					$icon_markup = GFCommon::get_icon_markup( $tab );
+					$icon_markup = GFCommon::get_icon_markup( $tab, 'gform-icon--cog' );
 
 					printf(
 						'<a href="%s"%s><span class="icon">%s</span> <span class="label">%s</span></a>',
 						esc_url( $url ),
 						$current_tab === $tab['name'] ? ' class="active"' : '',
-						is_null( $icon_markup ) ? '<i class="gform-icon gform-icon--cog"></i>' : $icon_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						$icon_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						esc_html( $label )
 					);
 				}

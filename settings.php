@@ -581,7 +581,7 @@ class GFSettings {
 						),
 					),
 					'description'   => sprintf(
-						'%s&nbsp;<a href="%s" target="_blank">%s<span class="screen-reader-text">%s</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>',
+						'%s&nbsp;<a href="%s" target="_blank">%s<span class="screen-reader-text">%s</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>',
 						esc_html__( 'This theme will be used by default everywhere forms are embedded on your site', 'gravityforms' ),
 						'https://docs.gravityforms.com/block-themes-and-style-settings/',
 						esc_html__( 'Learn more about form theme and style settings.', 'gravityforms' ),
@@ -701,7 +701,7 @@ class GFSettings {
 				'description' => sprintf(
 					esc_html__( 'We love improving the form building experience for everyone in our community. By enabling data collection, you can help us learn more about how our customers use Gravity Forms. %1$sLearn more...%2$s','gravityforms'),
 					'<a target="_blank" href="https://docs.gravityforms.com/about-additional-data-collection/">',
-					'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+					'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 				),
 				'class'         => 'gform-settings-panel--half',
 				'fields'        => array(
@@ -735,7 +735,7 @@ class GFSettings {
 				'description' => sprintf(
 						esc_html__( 'Enable this option to output the default form CSS. Disable it if you plan to create your own CSS in a child theme. Note: after Gravity Forms 2.8, this setting will no longer appear on the settings page. If you previously had it enabled, you will need to use the %sgform_disable_css%s filter to disable it.', 'gravityforms' ),
 						'<a href="https://docs.gravityforms.com/gform_disable_css/" target="_blank">',
-						'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>'
+						'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 						),
 
 				'class'       => 'gform-settings-panel--half',
@@ -867,10 +867,10 @@ class GFSettings {
 									target="_blank"
 									rel="noopener"
 								>
-									<i class="gform-button__icon gform-icon gform-icon--<?php echo esc_attr( $cta['class'] ); ?>"></i>
+									<i class="gform-button__icon gform-icon gform-icon--<?php echo esc_attr( $cta['class'] ); ?>" aria-hidden="true"></i>
 									<?php echo esc_html( $cta['label'] ); ?>
 									<span class="screen-reader-text"><?php echo esc_html__( '(opens in a new tab)', 'gravityforms' ); ?></span>&nbsp;
-									<span class="gform-icon gform-icon--external-link"></span>
+									<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span>
 								</a>
 							<?php elseif ( $cta['type'] === 'text' ) : ?>
 								<?php echo esc_html( $cta['content'] ); ?>
@@ -1069,7 +1069,7 @@ class GFSettings {
 						'id'          => 'recpatcha',
 						'title'       => esc_html__( 'reCAPTCHA Settings', 'gravityforms' ),
 						'description' => sprintf(
-							'%s <strong>%s</strong> %s <a href="https://www.google.com/recaptcha/admin/create" target="_blank">%s<span class="screen-reader-text">%s</span>&nbsp;<span class="gform-icon gform-icon--external-link"></span></a>',
+							'%s <strong>%s</strong> %s <a href="https://www.google.com/recaptcha/admin/create" target="_blank">%s<span class="screen-reader-text">%s</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>',
 							esc_html__( 'Gravity Forms integrates with reCAPTCHA, a free CAPTCHA service that uses an advanced risk analysis engine and adaptive challenges to keep automated software from engaging in abusive activities on your site. ', 'gravityforms' ),
 							esc_html__( 'Please note, only v2 keys are supported and checkbox keys are not compatible with invisible reCAPTCHA.', 'gravityforms' ),
 							esc_html__( 'These settings are required only if you decide to use the reCAPTCHA field.', 'gravityforms' ),
