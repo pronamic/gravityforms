@@ -33,7 +33,9 @@ class GF_Config_Multifile extends GF_Config {
 				'currently_uploading'    => wp_strip_all_tags( __( 'Please wait for the uploading to complete', 'gravityforms' ) ),
 				'cancel'                 => wp_strip_all_tags( __( 'Cancel', 'gravityforms' ) ),
 				'cancel_upload'          => wp_strip_all_tags( __( 'Cancel this upload', 'gravityforms' ) ),
-				'cancelled'              => wp_strip_all_tags( __( 'Cancelled', 'gravityforms' ) )
+				'cancelled'              => wp_strip_all_tags( __( 'Cancelled', 'gravityforms' ) ),
+				'error'                  => wp_strip_all_tags( __( 'Error', 'gravityforms' ) ),
+				'message'                => wp_strip_all_tags( __( 'Message', 'gravityforms' ) ),
 			),
 			'vars'    => array(
 				'images_url' => \GFCommon::get_base_url() . '/images'

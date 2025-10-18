@@ -2945,14 +2945,16 @@ function gformValidateFileSize( field, max_file_size ) {
             } else if (err.code === plupload.FILE_SIZE_ERROR) {
                 addMessage(up.settings.gf_vars.message_id, err.file.name + " - " + strings.file_exceeds_limit);
             } else {
-                var m = "Error: " + err.code +
-                    ", Message: " + err.message +
-                    (err.file ? ", File: " + err.file.name : "");
+                const errorResponse = JSON.parse( err.response );
+                const errorCode = errorResponse?.error?.code || err.code;
+                const errorMessage = errorResponse?.error?.message || err.message;
+                const filePart = err.file?.name ? `${ err.file.name } - ` : '';
+                const m = `${ filePart }${ strings.error }: ${ errorCode }, ${ strings.message }: ${ errorMessage }`;
 
                 addMessage(up.settings.gf_vars.message_id, m);
             }
             $('#' + err.file.id ).html('');
-
+            up.removeFile( err.file );
             up.refresh(); // Reposition Flash
         });
 

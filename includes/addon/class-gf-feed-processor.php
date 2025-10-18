@@ -229,45 +229,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	 * @return bool
 	 */
 	public function can_process_feed( $feed, $entry, $form, $addon ) {
-		$entry_id          = (int) rgar( $entry, 'id' );
-		$processed_feeds   = GFAPI::get_processed_feeds_meta( $entry_id, $addon->get_slug() );
-		$already_processed = ! empty( $processed_feeds ) && in_array( (int) rgar( $feed, 'id' ), $processed_feeds );
-
-		if ( ! $already_processed ) {
-			return true;
-		}
-
-		$feed_name = rgars( $feed, 'meta/feed_name' ) ? $feed['meta']['feed_name'] : rgars( $feed, 'meta/feedName' );
-
-		if ( ! $addon->is_reprocessing_supported( $feed, $entry, $form ) ) {
-			$addon->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT supported.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
-
-			return false;
-		}
-
-		/**
-		 * Allows reprocessing of the feed to be enabled.
-		 *
-		 * @since 2.9.2
-		 *
-		 * @param bool        $allow_reprocessing Indicates if the feed can be reprocessed. Default is false.
-		 * @param array       $feed               The feed queued for processing.
-		 * @param array       $entry              The entry being processed.
-		 * @param array       $form               The form the entry belongs to.
-		 * @param GFFeedAddOn $addon              The current instance of the add-on the feed belongs to.
-		 * @param array       $processed_feeds    An array of feed IDs that have already been processed for the given entry.
-		 */
-		$allow_reprocessing = apply_filters( 'gform_allow_async_feed_reprocessing', false, $feed, $entry, $form, $addon, $processed_feeds );
-
-		if ( ! $allow_reprocessing ) {
-			$addon->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT allowed.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
-
-			return false;
-		}
-
-		$addon->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing IS allowed.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
-
-		return true;
+		return $addon->can_process_feed( $feed, $entry, $form );
 	}
 
 	/**

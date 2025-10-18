@@ -503,6 +503,7 @@ class GFEntryDetail {
 
 		?>
 		<script type="text/javascript">
+			var formId = <?php echo absint( $form_id ); ?>;
 
 			jQuery(document).ready(function () {
 				toggleNotificationOverride(true);
@@ -542,6 +543,11 @@ class GFEntryDetail {
 				if ($visiblePreviewFields.length == 0) {
 					jQuery('#preview_' + fieldId).hide();
 					jQuery('#upload_' + fieldId).show('slow');
+				}
+
+				var $multiFileContainer = jQuery( '#gform_multifile_upload_' + formId + '_' + fieldId );
+				if ( ! $multiFileContainer.hasClass( 'gform_fileupload_multifile' ) ) {
+					return;
 				}
 
 				var $input = jQuery( 'input[name="input_' + fieldId + '"]' );

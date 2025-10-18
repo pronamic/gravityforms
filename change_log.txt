@@ -1,3 +1,15 @@
+### 2.9.20 | 2025-10-16
+- Added several performance improvements to the form editor by running large queries asynchronously.
+- Added support for feed conditional logic based on payment status.
+- Fixed the display of admin error messages on mobile devices.
+- Fixed an issue where the multi-file upload handler responds with the wrong Content-Type header.
+- Fixed an issue where the multi-file uploader can display a generic error message instead of the message returned by the upload handler.
+- Fixed an issue where forms with a payment feed can sometimes throw a fatal error on submission.
+- Fixed an issue that prevented the preview action from displaying on the imported Forms list page.
+- Fixed a JavaScript error deleting a file uploaded on the edit entry screen.
+- API: Added the [`gform_post_add_feed`](https://docs.gravityforms.com/gform_post_add_feed/) action hook that fires after a feed is added.
+- API: Added the [`gform_update_feed_active`](https://docs.gravityforms.com/gform_update_feed_active/) action hook that fires when a feed's "active" status is changed.
+
 ### 2.9.19 | 2025-10-02
 - Added Signature Consent Form and Testimonial Form templates to the Template Library.
 - Added an accessibility warning in the form editor when the rich text editor setting is enabled on the Paragraph Text field.

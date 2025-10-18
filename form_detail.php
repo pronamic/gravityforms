@@ -67,14 +67,41 @@ class GFFormDetail {
 
 		<script type="text/javascript">
 
+			var submitted_fields = [];
+			var submitted_fields_loaded = false;
+
 			function has_entry(fieldNumber) {
-				var submitted_fields = [<?php echo RGFormsModel::get_submitted_fields( $form_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>];
+				// Assume fields have entries until AJAX confirms otherwise
+				if (!submitted_fields_loaded) {
+					return true;
+				}
 				for (var i = 0; i < submitted_fields.length; i++) {
 					if (submitted_fields[i] == fieldNumber)
 						return true;
 				}
 				return false;
 			}
+
+			document.addEventListener('DOMContentLoaded', function() {
+				var formData = new FormData();
+				formData.append('action', 'gf_get_submitted_fields');
+				formData.append('form_id', <?php echo intval( $form_id ); ?>);
+				formData.append('nonce', '<?php echo esc_js( wp_create_nonce( 'gf_get_submitted_fields' ) ); ?>');
+
+				fetch(ajaxurl, {
+					method: 'POST',
+					body: formData
+				})
+				.then(function(response) {
+					return response.json();
+				})
+				.then(function(response) {
+					if (response.success && response.data && response.data.fields) {
+						submitted_fields = response.data.fields;
+						submitted_fields_loaded = true;
+					}
+				});
+			});
 
 			function InsertPostImageVariable(element_id, callback) {
 				var variable = jQuery('#' + element_id + '_image_size_select').attr("variable");
@@ -997,17 +1024,9 @@ class GFFormDetail {
 									</fieldset>
 
 									<input type="text" id="field_custom_field_name_text" autocomplete="off"/>
-									<select id="field_custom_field_name_select" onchange="SetFieldProperty( 'postCustomFieldName', jQuery(this).val() );" style="max-width:100%;">
-										<option value=""><?php esc_html_e( 'Select an existing custom field', 'gravityforms' ); ?></option>
-										<?php
-										$custom_field_names = RGFormsModel::get_custom_field_names();
-										foreach ( $custom_field_names as $name ) {
-											?>
-											<option value="<?php echo esc_attr( $name ); ?>"><?php echo esc_html( $name ); ?></option>
-											<?php
-										}
-										?>
-									</select>
+									<div id="gform-post-custom-select-container" style="margin-bottom: 10px;">
+									<!-- populated dynamically in assets/js/admin/form-editor/post-custom-field-select/dropdown.js -->
+									</div>
 								</li>
 								<?php
 								do_action( 'gform_field_standard_settings', 700, $form_id );
@@ -1038,11 +1057,14 @@ class GFFormDetail {
 									<?php esc_html_e( 'Default Post Author', 'gravityforms' ); ?>
 									<?php gform_tooltip( 'form_field_post_author' ); ?>
 								</label>
-								<?php
-								$args = array( 'name' => 'field_post_author' );
-								$args = gf_apply_filters( array( 'gform_author_dropdown_args', rgar( $form, 'id' ) ), $args );
-								wp_dropdown_users( $args );
-								?>
+								<div id="gform-author-select-container" style="margin-bottom: 10px;">
+									<!-- Default author dropdown is populated dynamically in js/src/admin.form/editor/author-select -->
+								</div>
+								<input type="hidden"
+									id="field_post_author"
+									name="field_post_author"
+									value="<?php echo esc_attr( rgar( $form, 'postAuthor' ) ); ?>"
+								/>
 								<div>
 									<input type="checkbox" id="gfield_current_user_as_author"/>
 									<label for="gfield_current_user_as_author" class="inline"><?php esc_html_e( 'Use logged in user as author', 'gravityforms' ); ?><?php gform_tooltip( 'form_field_current_user_as_author' ); ?></label>
@@ -3017,7 +3039,7 @@ class GFFormDetail {
 		if ( empty( $categories ) ) {
 			$args = array( 'hide_empty' => 0 );
 			if ( ! empty( rgpost( 'search' ) ) )
-				$args['search'] = rgpost( 'search' ); 
+				$args['search'] = rgpost( 'search' );
 			$categories = get_categories( $args );
 		}
 

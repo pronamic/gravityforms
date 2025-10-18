@@ -869,19 +869,7 @@ function LoadFieldSettings() {
 	jQuery("#gfield_display_caption").prop("checked", field.displayCaption == true ? true : false);
 	jQuery("#gfield_display_description").prop("checked", field.displayDescription == true ? true : false);
 
-	var customFieldExists = CustomFieldExists(field.postCustomFieldName);
-	jQuery("#field_custom_field_name_select")[0].selectedIndex = 0;
-
-	jQuery("#field_custom_field_name_text").val("");
-	if (customFieldExists)
-		jQuery("#field_custom_field_name_select").val(field.postCustomFieldName);
-	else
-		jQuery("#field_custom_field_name_text").val(field.postCustomFieldName);
-
-	if (customFieldExists)
-		jQuery("#field_custom_existing").prop("checked", true);
-	else
-		jQuery("#field_custom_new").prop("checked", true);
+	jQuery("#field_custom_field_name_text").val( field.postCustomFieldName == undefined ? "" : field.postCustomFieldName );
 
 	ToggleCustomField(true);
 
@@ -1861,10 +1849,15 @@ function SetPageButton(button_name){
 }
 
 function ToggleCustomField( isInit ){
-
 	var isExisting = jQuery("#field_custom_existing").is(":checked");
-	show_element = isExisting ? "#field_custom_field_name_select" : "#field_custom_field_name_text"
-	hide_element = isExisting ? "#field_custom_field_name_text"  : "#field_custom_field_name_select";
+
+  if ( isInit ) {
+    isExisting = true;
+    jQuery("#field_custom_existing").prop("checked", true);
+  }
+
+  show_element = isExisting ? "#gform-post-custom-select-container" : "#field_custom_field_name_text"
+	hide_element = isExisting ? "#field_custom_field_name_text"  : "#gform-post-custom-select-container";
 
 	jQuery(hide_element).hide();
 	jQuery(show_element).show();
@@ -3008,19 +3001,6 @@ function TogglePercentageConfirmationText( isInit ){
 	else{
 		jQuery('.percentage_confirmation_page_name_setting').hide();
 	}
-}
-
-function CustomFieldExists(name){
-	if(!name)
-		return true;
-
-	var options = jQuery("#field_custom_field_name_select option");
-	for(var i=0; i<options.length; i++)
-	{
-		if(options[i].value == name)
-			return true;
-	}
-	return false;
 }
 
 function IsStandardMask(value){

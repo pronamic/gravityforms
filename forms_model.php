@@ -1881,7 +1881,7 @@ class GFFormsModel {
 				WHERE entry_id IN (
 					SELECT id FROM $entry_table WHERE form_id=%d {$status_filter}
 				)", $form_id
-		); 
+		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
@@ -1897,7 +1897,7 @@ class GFFormsModel {
 		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		// Delete from entry
-		$sql = $wpdb->prepare( "DELETE FROM $entry_table WHERE form_id=%d {$status_filter}", $form_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, 
+		$sql = $wpdb->prepare( "DELETE FROM $entry_table WHERE form_id=%d {$status_filter}", $form_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,
 		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
@@ -4843,10 +4843,13 @@ class GFFormsModel {
 	 * Retrieves the custom field names (meta keys) for the custom field select in the form editor.
 	 *
 	 * @since unknown
+	 * @since 2.9.10 Added the $limit parameter.
+	 *
+	 * @param string $limit Optional. Limits the number of custom field names returned. Default is empty (no limit).
 	 *
 	 * @return array
 	 */
-	public static function get_custom_field_names() {
+	public static function get_custom_field_names( $limit = '' ) {
 		$form_id = absint( rgget( 'id' ) );
 
 		/**
@@ -4868,6 +4871,9 @@ class GFFormsModel {
 			WHERE meta_key NOT BETWEEN '_' AND '_z'
 			HAVING meta_key NOT LIKE %s
 			ORDER BY meta_key";
+		if ( ! empty( $limit ) && is_numeric( $limit ) ) {
+			$sql .= $wpdb->prepare( " LIMIT %d", intval( $limit ) );
+		}
 		$keys = $wpdb->get_col( $wpdb->prepare( $sql, $wpdb->esc_like( '_' ) . '%' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $keys;
@@ -6287,7 +6293,7 @@ class GFFormsModel {
 		$notes_table = self::get_entry_notes_table_name();
 
 		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->prepare( 
+			$wpdb->prepare(
 				"SELECT n.id, n.user_id, n.date_created, n.value, n.note_type, n.sub_type, ifnull(u.display_name,n.user_name) as user_name, u.user_email
 					FROM %i n
 					LEFT OUTER JOIN $wpdb->users u ON n.user_id = u.id

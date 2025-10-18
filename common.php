@@ -5907,7 +5907,7 @@ Content-Type: text/html;
 
 		if ( ! empty( $errors ) ) {
 			?>
-			<div class="alert error below-h2">
+			<div class="notice notice-error gf-notice" id="gf-admin-notices-wrapper">
 				<?php if ( count( $errors ) > 1 ) { ?>
 					<ul style="margin: 0.5em 0 0; padding: 2px;">
 						<li><?php echo wp_kses_post( implode( '</li><li>', $errors ) ); ?></li>
