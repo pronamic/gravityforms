@@ -44,7 +44,7 @@ class GF_License_Statuses {
 		$general_invalid_message = sprintf(
 		/* translators: %1s and %2s are link tag markup */
 			__( 'The license key entered is incorrect; please visit the %1$sGravity Forms website%2$s to verify your license. ', 'gravityforms' ),
-			'<a href="https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=purchase-link&utm_campaign=license-enforcement" target="_blank">',
+			'<a href="https://account.gravity.com/?utm_source=gf-admin&utm_medium=purchase-link&utm_campaign=license-enforcement" target="_blank">',
 			'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 		);
 		$error_message = ! empty( $error_message ) ? ' ' . $error_message : '';
@@ -54,7 +54,7 @@ class GF_License_Statuses {
 			self::SITE_REVOKED          => sprintf(
 				/* translators: %1s and %2s are link tag markup */
 				__( 'The license key entered has been revoked; please check its status in your %1$sGravity Forms account.%2$s ', 'gravityforms' ),
-				'<a href="https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=account-link-revoked&utm_campaign=license-enforcement" target="_blank">',
+				'<a href="https://account.gravity.com/?utm_source=gf-admin&utm_medium=account-link-revoked&utm_campaign=license-enforcement" target="_blank">',
 				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 			),
 			self::MAX_SITES_EXCEEDED    => __( 'The license key has already been activated on its maximum number of sites; please upgrade your license. ', 'gravityforms' ),
@@ -62,7 +62,7 @@ class GF_License_Statuses {
 			self::EXPIRED_LICENSE_KEY   => sprintf(
 				/* translators: %1s and %2s are link tag markup */
 				__( 'The license key has expired; please visit your %1$sGravity Forms account%2$s to manage your license. ', 'gravityforms' ),
-				'<a href="https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=account-link-expired&utm_campaign=license-enforcement" target="_blank">',
+				'<a href="https://account.gravity.com/?utm_source=gf-admin&utm_medium=account-link-expired&utm_campaign=license-enforcement" target="_blank">',
 				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
 			),
 			self::NO_LICENSE_KEY        => sprintf(

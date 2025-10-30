@@ -20,9 +20,10 @@ class GF_Honeypot_Handler {
 	 * Target of the gform_entry_is_spam filter. Checks entry for honeypot validation and returns true or false depending on the result.
 	 *
 	 * @since 2.7
+	 * @since 2.9.21 Updated to get the entry note message from `get_cached_result()`.
 	 *
 	 * @param bool  $is_spam Variable being filtered. True for spam, false for non-spam.
-	 * @param array $form Current form object.
+	 * @param array $form    Current form object.
 	 *
 	 * @return bool Returns true if honeypot validation fails. False otherwise.
 	 */
@@ -42,7 +43,10 @@ class GF_Honeypot_Handler {
 
 		// Setting filter that flagged entry as spam so that an entry note is created.
 		if ( $is_spam ) {
-			\GFCommon::set_spam_filter( $form['id'], __( 'Honeypot Spam Filter', 'gravityforms' ), __( 'Failed Honeypot Validation.', 'gravityforms' ) );
+			$form_id = absint( rgar( $form, 'id' ) );
+			$result  = $this->get_cached_result( $form_id );
+			$message = rgar( $result, 'message' ) ?: __( 'Failed Honeypot Validation.', 'gravityforms' );
+			\GFCommon::set_spam_filter( $form_id, __( 'Honeypot Spam Filter', 'gravityforms' ), $message );
 		}
 
 		return $is_spam;
@@ -67,7 +71,7 @@ class GF_Honeypot_Handler {
 		}
 
 		// Do not abort submission if Honeypot should be disabled or if honeypot action is set to create an entry.
-		if ( ! $this->is_honeypot_enabled( $form ) || rgar( $form, 'honeypotAction', 'spam' ) == 'spam' ) {
+		if ( ! $this->is_honeypot_enabled( $form ) || rgar( $form, 'honeypotAction', 'spam' ) === 'spam' ) {
 			return false;
 		}
 
@@ -115,41 +119,110 @@ class GF_Honeypot_Handler {
 	}
 
 	/**
+	 * Returns the cached result for the given form ID.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param int $form_id The current form ID.
+	 *
+	 * @return false|array
+	 */
+	public function get_cached_result( $form_id ) {
+		return \GFCache::get( "honeypot_{$form_id}", $found, false );
+	}
+
+	/**
+	 * Caches the result for the given form ID.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param int   $form_id The current form ID.
+	 * @param array $result  The result to be cached.
+	 *
+	 * @return void
+	 */
+	public function cache_result( $form_id, $result ) {
+		\GFCache::set( "honeypot_{$form_id}", $result );
+	}
+
+	/**
 	 * Validates the submission against the honeypot field.
 	 *
 	 * @since 2.7
+	 * @since 2.9.16 Updated to use `get_input_name()`.
+	 * @since 2.9.21 Updated to perform a submission speed check, return early on invalid checks, and to use `get_cached_result()` and `cache_result()`.
 	 *
 	 * @param array $form The current form object.
 	 *
 	 * @return bool True if form passes the honeypot validation (i.e. Not spam). False if honeypot validation fails (i.e. spam)
 	 */
 	public function validate_honeypot( $form ) {
-
-		// If validation has already been computed for this form, no need to validate it again.
-		$cache_key = "honeypot_{$form['id']}";
-		if ( \GFCache::get( $cache_key ) !== false ) {
-			return (bool) \GFCache::get( $cache_key );
+		$form_id       = absint( rgar( $form, 'id' ) );
+		$cached_result = $this->get_cached_result( $form_id );
+		if ( is_array( $cached_result ) ) {
+			return (bool) rgar( $cached_result, 'is_valid' );
 		}
 
-		$input_name                = $this->get_input_name( $form );
-		$pass_server_side_honeypot = rgempty( $input_name );;
-		\GFCommon::log_debug( __METHOD__ . sprintf( '(): Is honeypot input (name: %s) empty? %s', $input_name, json_encode( $pass_server_side_honeypot ) ) );
+		$result = array(
+			'is_valid' => false,
+			'message'  => '',
+		);
 
-		// Bypass JS field hash validation on GFAPI submissions.
+		$input_name           = $this->get_input_name( $form );
+		$is_field_input_empty = rgempty( $input_name );
+		\GFCommon::log_debug( __METHOD__ . sprintf( '(): Is honeypot input (name: %s) empty? %s', $input_name, ( $is_field_input_empty ? 'Yes.' : 'No.' ) ) );
+
+		if ( ! $is_field_input_empty ) {
+			\GFCommon::log_debug( __METHOD__ . '(): Is submission valid? No.' );
+			$result['message'] = __( 'The honeypot input is not empty.', 'gravityforms' );
+			$this->cache_result( $form_id, $result );
+
+			return false;
+		}
+
 		if ( $this->is_api_submission() ) {
-			$pass_js_honeypot = true;
-			\GFCommon::log_debug( __METHOD__ . '(): Submission initiated by GFAPI. Honeypot JS field hash validation bypassed.' );
-		} else {
-			$pass_js_honeypot = $this->is_valid_version_hash( rgpost( 'version_hash' ) );
-			\GFCommon::log_debug( __METHOD__ . '(): Is version_hash input valid? ' . json_encode( $pass_js_honeypot ) );
+			\GFCommon::log_debug( __METHOD__ . '(): Submission initiated by GFAPI. version_hash validation and speed check bypassed.' );
+			\GFCommon::log_debug( __METHOD__ . '(): Is submission valid? Yes.' );
+			$result['is_valid'] = true;
+			$this->cache_result( $form_id, $result );
+
+			return true;
 		}
 
-		$is_success = $pass_server_side_honeypot && $pass_js_honeypot;
-		\GFCommon::log_debug( __METHOD__ . '(): Are both inputs valid? ' . json_encode( $is_success ) );
+		$version_hash = rgpost( 'version_hash' );
+		if ( empty( $version_hash ) ) {
+			\GFCommon::log_debug( __METHOD__ . '(): Is submission valid? No; version_hash input is empty.' );
+			$result['message'] = __( 'The version_hash was not included in the submission.', 'gravityforms' );
+			$this->cache_result( $form_id, $result );
 
-		\GFCache::set( $cache_key, (int) $is_success );
+			return false;
+		}
 
-		return $is_success;
+		$is_version_hash_valid = $this->is_valid_version_hash( $version_hash );
+		\GFCommon::log_debug( __METHOD__ . '(): Is version_hash input valid? ' . ( $is_version_hash_valid ? 'Yes.' : 'No.' ) );
+
+		if ( ! $is_version_hash_valid ) {
+			\GFCommon::log_debug( __METHOD__ . '(): Is submission valid? No.' );
+			$result['message'] = __( 'The wrong value was submitted for the version_hash.', 'gravityforms' );
+			$this->cache_result( $form_id, $result );
+
+			return false;
+		}
+
+		$speed_check_result = $this->is_valid_submission_speed( $form );
+		if ( ! rgar( $speed_check_result, 'is_valid' ) ) {
+			\GFCommon::log_debug( __METHOD__ . '(): Is submission valid? No.' );
+			$result['message'] = rgar( $speed_check_result, 'message' );
+			$this->cache_result( $form_id, $result );
+
+			return false;
+		}
+
+		\GFCommon::log_debug( __METHOD__ . '(): Is submission valid? Yes.' );
+		$result['is_valid'] = true;
+		$this->cache_result( $form_id, $result );
+
+		return true;
 	}
 
 	/**
@@ -272,6 +345,9 @@ class GF_Honeypot_Handler {
 	 * @return bool Returns true if the hash is validated against the current and previous version of Gravity Forms
 	 */
 	public function is_valid_version_hash( $hash ) {
+		if ( empty( $hash ) ) {
+			return false;
+		}
 
 		// Allow password to validate on current version and previous version.
 		$allowed_hashes = array( wp_hash( \GFForms::$version ) );
@@ -315,4 +391,314 @@ class GF_Honeypot_Handler {
 	public function is_api_submission() {
 		return \GFFormDisplay::$submission_initiated_by == \GFFormDisplay::SUBMISSION_INITIATED_BY_API;
 	}
+
+	/**
+	 * Determines if the submission speed check is enabled.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $form The form being processed.
+	 *
+	 * @return bool
+	 */
+	public function is_speed_check_enabled( $form ) {
+		return (bool) rgar( $form, 'enableSubmitSpeedCheck' );
+	}
+
+	/**
+	 * Returns the submission speed threshold.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $form The form being processed.
+	 *
+	 * @return int
+	 */
+	public function get_submission_speed_threshold( $form ) {
+		return absint( rgar( $form, 'submitSpeedCheckThreshold', 2000 ) );
+	}
+
+	/**
+	 * Determines if strict mode is enabled for the submission speed check.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $form The form being processed.
+	 *
+	 * @return bool
+	 */
+	public function is_strict_submission_speed_mode_enabled( $form ) {
+		return rgar( $form, 'submitSpeedCheckMode', 'normal' ) === 'strict';
+	}
+
+	/**
+	 * Determines if the submission speed check is valid.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $form The current form object.
+	 *
+	 * @return array
+	 */
+	public function is_valid_submission_speed( $form ) {
+		$result = array(
+			'is_valid' => true,
+			'message'  => '',
+		);
+
+		if ( ! $this->is_speed_check_enabled( $form ) ) {
+			\GFCommon::log_debug( __METHOD__ . '(): Submission speed check is disabled.' );
+
+			return $result;
+		}
+
+		$speeds = $this->get_submission_speeds_array( absint( rgar( $form, 'id' ) ) );
+		if ( empty( $speeds ) ) {
+			\GFCommon::log_debug( __METHOD__ . '(): Is speed check valid? No; gform_submission_speeds input is empty or invalid.' );
+			$result['is_valid'] = false;
+			$result['message']  = __( 'The gform_submission_speeds input is empty or invalid.', 'gravityforms' );
+
+			return $result;
+		}
+
+		$threshold = $this->get_submission_speed_threshold( $form );
+		$counts    = $this->check_submission_speeds( $speeds, $threshold );
+		$min_count = $this->is_strict_submission_speed_mode_enabled( $form ) ? $counts['total'] : 1;
+		$is_valid  = $counts['valid_count'] >= $min_count;
+
+		\GFCommon::log_debug( __METHOD__ . sprintf( '(): Is speed check valid? %s; %d of %d submissions met the threshold (%d ms). Min required: %d. All speeds: %s', ( $is_valid ? 'Yes' : 'No' ), $counts['valid_count'], $counts['total'], $threshold, $min_count, json_encode( $speeds ) ) );
+
+		if ( ! $is_valid ) {
+			$result['is_valid'] = false;
+			// translators: %1$d: the number of submissions that met the speed check threshold. %2$d: the total number of submissions. %3$s: the threshold. %4$s: the minimum number of matches required. %5$s: all the recorded speeds.
+			$result['message'] = sprintf( __( '%1$d of %2$d submissions met the speed check threshold (%3$d ms). Min required: %4$d. All speeds (ms): %5$s.', 'gravityforms' ), $counts['valid_count'], $counts['total'], $threshold, $min_count, $this->format_submission_speeds_for_note( $speeds ) );
+
+			return $result;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Formats the submission speeds for the entry note.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $speeds The recorded speeds.
+	 *
+	 * @return string
+	 */
+	public function format_submission_speeds_for_note( $speeds ) {
+		if ( count( $speeds ) === 1 ) {
+			return implode( ', ', rgar( $speeds, 1 ) );
+		}
+
+		$pages = array();
+
+		foreach ( $speeds as $page_number => $page_speeds ) {
+			// translators: %d: the page number. %s: the list of submission speeds for the page.
+			$pages[] = sprintf( 'Page %d: %s', $page_number, implode( ', ', $page_speeds ) );
+		}
+
+		return implode( '; ', $pages );
+	}
+
+	/**
+	 * Checks the submission speeds against the threshold.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $speeds    The recorded speeds.
+	 * @param int   $threshold The submission speed threshold.
+	 *
+	 * @return array
+	 */
+	public function check_submission_speeds( $speeds, $threshold ) {
+		$valid_count = 0;
+		$total       = 0;
+
+		foreach ( $speeds as $page_speeds ) {
+			$total += count( $page_speeds );
+			foreach ( $page_speeds as $speed ) {
+				if ( $speed >= $threshold ) {
+					++$valid_count;
+				}
+			}
+		}
+
+		return array(
+			'total'       => $total,
+			'valid_count' => $valid_count,
+		);
+	}
+
+	/**
+	 * Parses and sanitizes the submission speeds from the gform_submit_speeds input for the current form.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param int $form_id The current form ID.
+	 *
+	 * @return array
+	 */
+	public function get_submission_speeds_array( $form_id ) {
+		if ( rgpost( 'is_submit_' . $form_id ) !== '1' ) {
+			return array();
+		}
+
+		$json = rgpost( 'gform_submission_speeds' );
+		if ( empty( $json ) ) {
+			return array();
+		}
+
+		$array = json_decode( $json, true );
+		if ( empty( $array['pages'] ) ) {
+			return array();
+		}
+
+		$clean_array = array();
+
+		foreach ( $array['pages'] as $page_number => $speeds ) {
+			$page_number = absint( $page_number );
+			if ( empty( $page_number ) || ! is_array( $speeds ) ) {
+				continue;
+			}
+			$clean_array[ $page_number ] = array_map( 'absint', array_values( $speeds ) );
+		}
+
+		return $clean_array;
+	}
+
+	/**
+	 * JSON encodes the submission speeds for the current form markup.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param int $form_id The current form ID.
+	 *
+	 * @return false|string
+	 */
+	public function get_submission_speeds_json( $form_id ) {
+		return json_encode( array( 'pages' => $this->get_submission_speeds_array( $form_id ) ) );
+	}
+
+	/**
+	 * Registers and saves the submission speeds to the entry meta, so the user can display it as an entries list column.
+	 *
+	 * Callback for the gform_entry_meta filter added via GF_Honeypot_Service_Provider::init().
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $entry_meta The registered entry meta.
+	 *
+	 * @return array
+	 */
+	public function submission_speeds_entry_meta( $entry_meta ) {
+		$entry_meta['submission_speeds'] = array(
+			'label'                      => esc_html__( 'Submission Speed (ms)', 'gravityforms' ),
+			'is_numeric'                 => false,
+			'update_entry_meta_callback' => function ( $key, $entry, $form ) {
+				$existing = rgar( $entry, 'submission_speeds' );
+				if ( \GFCommon::is_entry_detail_edit() || ! rgblank( $existing ) ) {
+					return $existing;
+				}
+
+				$speeds = $this->get_submission_speeds_array( absint( rgar( $form, 'id' ) ) );
+				if ( empty( $speeds ) ) {
+					return '';
+				}
+
+				return json_encode( $speeds );
+			},
+			'is_default_column'          => false,
+		);
+
+		return $entry_meta;
+	}
+
+	/**
+	 * Formats the value for display in an entries list column.
+	 *
+	 * Callback for the gform_entries_field_value filter added via GF_Honeypot_Service_Provider::init().
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param mixed|string $value    The escaped value of the field, entry property, or meta-key.
+	 * @param int          $form_id  The ID of the current form.
+	 * @param int|string   $field_id The field ID entry property, or meta-key.
+	 * @param array        $entry    The current entry.
+	 *
+	 * @return mixed|string
+	 */
+	public function submission_speeds_entries_field_value( $value, $form_id, $field_id, $entry ) {
+		if ( $field_id !== 'submission_speeds' || rgblank( $value ) ) {
+			return $value;
+		}
+
+		$value = $this->get_submission_speeds_range( $entry );
+
+		return $value ? esc_html( $value ) : '';
+	}
+
+	/**
+	 * Returns the submission speeds range for the given entry.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $entry The current entry.
+	 *
+	 * @return string
+	 */
+	private function get_submission_speeds_range( $entry ) {
+		$entry_value = rgar( $entry, 'submission_speeds' );
+		if ( empty( $entry_value ) ) {
+			return '';
+		}
+
+		$speeds = json_decode( $entry_value, true );
+		if ( empty( $speeds ) ) {
+			return '';
+		}
+
+		$all = array();
+		foreach ( $speeds as $page_speeds ) {
+			$all = array_merge( $all, $page_speeds );
+		}
+
+		if ( count( $all ) === 1 ) {
+			return $all[0];
+		}
+
+		return min( $all ) . ' - ' . max( $all );
+	}
+
+	/**
+	 * Displays the submission speeds on the entry detail page.
+	 *
+	 * Callback for the gform_entry_detail_meta_boxes filter added via GF_Honeypot_Service_Provider::init().
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param array $meta_boxes The registered meta boxes.
+	 * @param array $entry      The current entry.
+	 *
+	 * @return array
+	 */
+	public function submission_speeds_entry_detail_meta_box( $meta_boxes, $entry ) {
+		$value = $this->get_submission_speeds_range( $entry );
+		if ( empty( $value ) ) {
+			return $meta_boxes;
+		}
+
+		$meta_boxes['submission_speeds'] = array(
+			'title'    => esc_html__( 'Submission Speed (ms)', 'gravityforms' ),
+			'callback' => function ( $args ) use ( $value ) {
+				echo esc_html( $value );
+			},
+			'context'  => 'side',
+		);
+
+		return $meta_boxes;
+	}
+
 }

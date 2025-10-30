@@ -204,7 +204,7 @@ class GF_License_API_Response extends GF_API_Response {
 		$key  = $this->get_data_value( 'license_key_md5' );
 		$type = $this->get_data_value( 'product_code' );
 
-		return sprintf( 'https://www.gravityforms.com/my-account/licenses/?action=upgrade&license_key=%s&license_code=%s&utm_source=gf-admin&utm_medium=upgrade-button&utm_campaign=license-enforcement', $key, $type );
+		return sprintf( 'https://account.gravity.com/?action=upgrade&license_key=%s&license_code=%s&utm_source=gf-admin&utm_medium=upgrade-button&utm_campaign=license-enforcement', $key, $type );
 	}
 
 	/**
@@ -220,7 +220,7 @@ class GF_License_API_Response extends GF_API_Response {
 			return array(
 				'type'  => 'button',
 				'label' => __( 'Manage', 'gravityforms' ),
-				'link'  => 'https://www.gravityforms.com/my-account/licenses/?utm_source=gf-admin&utm_medium=manage-button&utm_campaign=license-enforcement',
+				'link'  => 'https://account.gravity.com/?utm_source=gf-admin&utm_medium=manage-button&utm_campaign=license-enforcement',
 				'class' => 'cog',
 			);
 		} elseif ( $this->max_seats_exceeded() ) {

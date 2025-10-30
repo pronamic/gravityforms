@@ -63,11 +63,11 @@ abstract class GFAddOn {
 	 */
 	protected $_url;
 	/**
-	 * @var string Title of the plugin to be used on the settings page, form settings and plugins page. Example: 'Gravity Forms MailChimp Add-On'
+	 * @var string Title of the plugin to be used on the settings page, form settings and plugins page. Example: 'Gravity Forms Mailchimp Add-On'
 	 */
 	protected $_title;
 	/**
-	 * @var string Short version of the plugin title to be used on menus and other places where a less verbose string is useful. Example: 'MailChimp'
+	 * @var string Short version of the plugin title to be used on menus and other places where a less verbose string is useful. Example: 'Mailchimp'
 	 */
 	protected $_short_title;
 	/**

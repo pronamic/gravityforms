@@ -1931,7 +1931,7 @@ class GFAPI {
 
 		self::normalize_post_keys();
 
-		$_POST[ 'is_submit_' . $form_id ]                = true;
+		$_POST[ 'is_submit_' . $form_id ]                = '1';
 		$_POST['gform_submit']                           = $form_id;
 		$_POST[ 'gform_target_page_number_' . $form_id ] = absint( $target_page );
 		$_POST[ 'gform_source_page_number_' . $form_id ] = absint( $source_page );

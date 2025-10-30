@@ -9302,7 +9302,7 @@ return array(
 							'price'      => '',
 						),
 						array(
-							'text'       => esc_html__( 'MailChimp', 'gravityforms' ),
+							'text'       => esc_html__( 'Mailchimp', 'gravityforms' ),
 							'value'      => 'grank8808bc416',
 							'isSelected' => false,
 							'price'      => '',

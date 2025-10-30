@@ -97,7 +97,8 @@ class GFFormSettings {
 	 * Prepare form settings fields.
 	 *
 	 * @since 2.5
-	 * @since 2.9.8 Updated honeypotAction default to spam.
+	 * @since 2.9.8  Updated honeypotAction default to spam.
+	 * @since 2.9.21 Moved the honeypot fields to a new spam section and added submission speed check fields.
 	 *
 	 * @param array $form Form being edited.
 	 *
@@ -106,8 +107,8 @@ class GFFormSettings {
 	public static function form_settings_fields( $form ) {
 
 		// Handles the deprecation notice for the confirmation ready classes in the CSS class field of form settings.
-		$deprecated_confirmation_classes_field_notice = function( $value, $field ) use ( $form ) {
-			if ( GFCommon::is_legacy_markup_enabled_og( $form ) ){
+		$deprecated_confirmation_classes_field_notice = function ( $value, $field ) use ( $form ) {
+			if ( GFCommon::is_legacy_markup_enabled_og( $form ) ) {
 				return false;
 			}
 
@@ -135,7 +136,7 @@ class GFFormSettings {
 		};
 
 		$fields = array(
-			'form_basics' => array(
+			'form_basics'       => array(
 				'title'  => esc_html__( 'Form Basics', 'gravityforms' ),
 				'fields' => array(
 					array(
@@ -144,11 +145,12 @@ class GFFormSettings {
 						'label'               => esc_html__( 'Form Title', 'gravityforms' ),
 						'tooltip'             => gform_tooltip( 'form_title', '', true ),
 						'required'            => true,
-						'validation_callback' => function( $field, $value ) use ( $form ) {
+						'validation_callback' => function ( $field, $value ) use ( $form ) {
 
 							// If value is empty, set error.
 							if ( rgblank( $value ) ) {
 								$field->set_error( rgobj( $field, 'error_message' ) );
+
 								return;
 							}
 
@@ -187,7 +189,7 @@ class GFFormSettings {
 					),
 				),
 			),
-			'form_layout' => array(
+			'form_layout'       => array(
 				'title'  => esc_html__( 'Form Layout', 'gravityforms' ),
 				'fields' => array(
 					array(
@@ -305,8 +307,8 @@ class GFFormSettings {
 						'label'         => esc_html__( 'Custom Required Indicator', 'gravityforms' ),
 						'default_value' => esc_html__( '(Required)', 'gravityforms' ),
 						'dependency'    => array(
-							'live'      => true,
-							'fields'    => array(
+							'live'   => true,
+							'fields' => array(
 								array(
 									'field'  => 'requiredIndicator',
 									'values' => array( 'custom' ),
@@ -323,7 +325,7 @@ class GFFormSettings {
 					),
 				),
 			),
-			'form_button' => array(
+			'form_button'       => array(
 				'title'  => esc_html__( 'Form Button', 'gravityforms' ),
 				'fields' => array(
 					array(
@@ -362,7 +364,7 @@ class GFFormSettings {
 					),
 				),
 			),
-			'restrictions' => array(
+			'restrictions'      => array(
 				'title'  => esc_html__( 'Restrictions', 'gravityforms' ),
 				'fields' => array(
 					array(
@@ -537,13 +539,13 @@ class GFFormSettings {
 					),
 				),
 			),
-			'form_options' => array(
-				'title'  => esc_html__( 'Form Options', 'gravityforms' ),
+			'spam'              => array(
+				'title'  => esc_html__( 'Spam Detection', 'gravityforms' ),
 				'fields' => array(
 					array(
 						'name'    => 'enableHoneypot',
 						'type'    => 'toggle',
-						'label'   => esc_html__( 'Anti-spam honeypot', 'gravityforms' ),
+						'label'   => esc_html__( 'Honeypot', 'gravityforms' ),
 						'tooltip' => gform_tooltip( 'form_honeypot', '', true ),
 					),
 					array(
@@ -571,6 +573,78 @@ class GFFormSettings {
 							),
 						),
 					),
+					array(
+						'name'          => 'enableSubmitSpeedCheck',
+						'type'          => 'toggle',
+						'label'         => esc_html__( 'Submission Speed Check', 'gravityforms' ),
+						'description'   => esc_html__( 'Flags the submission as spam if the elapsed time between page load and form submission is less than the threshold.', 'gravityforms' ),
+						'default_value' => false,
+						'dependency'    => array(
+							'live'   => true,
+							'fields' => array(
+								array(
+									'field' => 'enableHoneypot',
+								),
+							),
+						),
+					),
+					array(
+						'name'                => 'submitSpeedCheckThreshold',
+						'type'                => 'text',
+						'input_type'          => 'number',
+						'min'                 => 1,
+						'default_value'       => 2000,
+						'label'               => esc_html__( 'Submission Speed Check: Threshold (milliseconds)', 'gravityforms' ),
+						'dependency'          => array(
+							'live'   => true,
+							'fields' => array(
+								array(
+									'field' => 'enableHoneypot',
+								),
+								array(
+									'field' => 'enableSubmitSpeedCheck',
+								),
+							),
+						),
+						'validation_callback' => function ( $field, $value ) {
+							if ( ! ctype_digit( $value ) || (int) $value < 1 ) {
+								$field->set_error( esc_html__( 'Please enter a valid number greater than zero.', 'gravityforms' ) );
+							}
+						},
+					),
+					array(
+						'name'          => 'submitSpeedCheckMode',
+						'type'          => 'radio',
+						'default_value' => 'normal',
+						'label'         => esc_html__( 'Submission Speed Check: Mode', 'gravityforms' ),
+						'description'   => esc_html__( 'Submission speed is captured for each page of a multi-page form and for each submission attempt after a validation error. If there are multiple submission speeds for one submission, which mode should be used to evaluate the submission?', 'gravityforms' ),
+						'dependency'    => array(
+							'live'   => true,
+							'fields' => array(
+								array(
+									'field' => 'enableHoneypot',
+								),
+								array(
+									'field' => 'enableSubmitSpeedCheck',
+								),
+							),
+						),
+						'choices'       => array(
+							array(
+								'label' => esc_html__( 'Normal: at least one speed must be above the threshold.', 'gravityforms' ),
+								'value' => 'normal',
+							),
+							array(
+								'label' => esc_html__( 'Strict: all speeds must be above the threshold.', 'gravityforms' ),
+								'value' => 'strict',
+							),
+						),
+					),
+				),
+			),
+			'form_options'      => array(
+				'title'  => esc_html__( 'Form Options', 'gravityforms' ),
+				'fields' => array(
 					array(
 						'name'    => 'enableAnimation',
 						'type'    => 'toggle',
@@ -795,7 +869,8 @@ class GFFormSettings {
 	 * Initialize Plugin Settings fields renderer.
 	 *
 	 * @since 2.5
-	 * @since 2.9.8 Updated honeypotAction default to spam.
+	 * @since 2.9.8  Updated honeypotAction default to spam.
+	 * @since 2.9.21 Updated to save the submission speed check fields.
 	 */
 	public static function initialize_settings_renderer() {
 
@@ -859,9 +934,27 @@ class GFFormSettings {
 					$form['schedulePendingMessage'] = rgar( $values, 'schedulePendingMessage' );
 					$form['scheduleMessage']        = rgar( $values, 'scheduleMessage' );
 
-					// Form Options
-					$form['enableHoneypot']  = (bool) rgar( $values, 'enableHoneypot' );
-					$form['honeypotAction']  = GFCommon::whitelist( rgar( $values, 'honeypotAction' ), array( 'spam', 'abort' ) );
+					// Spam Detection.
+					$form['enableHoneypot'] = (bool) rgar( $values, 'enableHoneypot' );
+					$form['honeypotAction'] = GFCommon::whitelist(
+						rgar( $values, 'honeypotAction' ),
+						array(
+							'spam',
+							'abort',
+						)
+					);
+
+					$form['enableSubmitSpeedCheck']    = (bool) rgar( $values, 'enableSubmitSpeedCheck' );
+					$form['submitSpeedCheckThreshold'] = absint( rgar( $values, 'submitSpeedCheckThreshold' ) );
+					$form['submitSpeedCheckMode']      = GFCommon::whitelist(
+						rgar( $values, 'submitSpeedCheckMode' ),
+						array(
+							'normal',
+							'strict',
+						)
+					);
+
+					// Form Options.
 					$form['enableAnimation'] = (bool) rgar( $values, 'enableAnimation' );
 					$form['markupVersion']   = rgar( $values, 'markupVersion' ) ? 1 : 2;
 

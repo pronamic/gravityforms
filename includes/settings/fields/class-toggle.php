@@ -68,7 +68,12 @@ class Toggle extends Base {
 
 		// Insert toggle UI.
 		$html .= sprintf( '<label class="gform-field__toggle-container" for="%s">', $input_id );
-		$html .= $this->toggle_label ? sprintf( '<span class="screen-reader-text">%s</span>', rgar( $this, 'label' ) ? esc_html( $this->toggle_label ) : '' ) : '';
+
+		$screen_reader_text = $this->toggle_label ?: $this->label;
+		if ( $screen_reader_text ) {
+			$html .= sprintf( '<span class="screen-reader-text">%s</span>', esc_html( $screen_reader_text ) );
+		}
+
 		$html .= '<span class="gform-field__toggle-switch"></span>';
 		$html .= '</label>';
 

@@ -5487,7 +5487,14 @@ class GFFormsModel {
 
 		// the source path
 		$upload_root_info = GF_Field_FileUpload::get_upload_root_info( $form_id );
-		$path             = str_replace( $upload_root_info['url'], $upload_root_info['path'], $url );
+		if ( ! str_starts_with( $url, $upload_root_info['url'] ) ) {
+			return false;
+		}
+
+		$path = str_replace( $upload_root_info['url'], $upload_root_info['path'], $url );
+		if ( ! file_exists( $path ) ) {
+			return false;
+		}
 
 		// copy the file to the destination path
 		if ( ! copy( $path, $new_file ) ) {

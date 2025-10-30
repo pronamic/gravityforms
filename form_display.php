@@ -1856,6 +1856,13 @@ class GFFormDisplay {
 		$unique_id      = isset( self::$submission[ $form_id ] ) && rgar( self::$submission[ $form_id ], 'resuming_incomplete_submission' ) == true ? rgar( GFFormsModel::$unique_ids, $form_id ) : GFFormsModel::get_form_unique_id( $form_id );
 		$style_settings = $is_valid_json ? esc_attr( $style_settings ) : '';
 
+		/** @var Honeypot\GF_Honeypot_Handler $honeypot_handler */
+		$honeypot_handler = GFForms::get_service_container()->get( Honeypot\GF_Honeypot_Service_Provider::GF_HONEYPOT_HANDLER );
+
+		if ( $honeypot_handler->is_speed_check_enabled( $form ) ) {
+			$footer .= "<input type='hidden' class='gform_hidden' name='gform_submission_speeds' value='" . esc_attr( $honeypot_handler->get_submission_speeds_json( $form_id ) ) . "' />";
+		}
+
 		$footer .= "
             <input type='hidden' class='gform_hidden' name='gform_submission_method' data-js='gform_submission_method_{$form_id}' value='" . self::get_submission_method( $submission_method ) . "' />
             <input type='hidden' class='gform_hidden' name='gform_theme' data-js='gform_theme_{$form_id}' id='gform_theme_{$form_id}' value='" . esc_attr( $theme ) . "' />

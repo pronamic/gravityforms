@@ -1,3 +1,12 @@
+### 2.9.21 | 2025-10-29
+- Added security enhancements.
+- Added a new setting to the Honeypot Field to check the time it takes to submit a form and mark the form as spam if the submission is too fast.
+- Updated account/license links to point to the new Gravity account site at [https://account.gravity.com/](https://account.gravity.com/).
+- Fixed Mailchimp capitalization in Survey Form template and elsewhere.
+- Fixed an issue that can cause the `gform_update_feed_active` action hook to fail if the hooked action calls $wpdb.
+- Fixed an issue where a page with multiple forms including file upload fields will retain and display submitted files from differing forms.
+- Fixed an issue with the timing of the multi-file upload handler sending the headers that prevents the Chained Selects field CSV upload completing.
+
 ### 2.9.20 | 2025-10-16
 - Added several performance improvements to the form editor by running large queries asynchronously.
 - Added support for feed conditional logic based on payment status.
@@ -3193,7 +3202,7 @@ Description Filter which checks whether the operator is valid. Allows …)* filt
 - AF: Added handling of the date_created merge tag to the get_field_value function for instances where this function is used before the entry has been created.
 - AF: Added ability to set a limit on the number of fields that may be added for fields of type dynamic_field_map.
 - AF: Added support for displaying validation errors set for fields created as type dynamic_field_map.
-- AF: Change "get_field_value" to use "get_full_name" and "get_full_address" functions to prevent access level conflict with MailChimp Add-On.
+- AF: Change "get_field_value" to use "get_full_name" and "get_full_address" functions to prevent access level conflict with Mailchimp Add-On.
 - AF: Fixed a bug where an error would be thrown if the function plugin_settings_page was not included in the add-on.
 - AF: Added the ability to exclude certain field types from field mapping in the get_field_map_choices function.
 - AF: Added "get_field_value" helper function to get value of a selected field.
@@ -4405,7 +4414,7 @@ Description Use this filter to prevent the thousand separator being …)* filter
 - AF: Added support for labels, tooltips and default values to text and textarea settings.
 - AF: Added support for tooltips in checkbox choices.
 - AF: Added settings_radio().
-- AF: Moved some MailChimp specific functions back into MailChimp.
+- AF: Moved some Mailchimp specific functions back into Mailchimp.
 - Fixed issue with admin_title filter return false instead of original title when not on form settings page.
 
 

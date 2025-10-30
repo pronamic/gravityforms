@@ -657,12 +657,8 @@ class GF_Field_CAPTCHA extends GF_Field {
 		$word     = $captcha->generate_random_word();
 		$prefix   = mt_rand();
 		$filename = $captcha->generate_image( $prefix, $word );
-		$url      = RGFormsModel::get_upload_url( 'captcha' ) . '/' . $filename;
+		$url      = $this->get_image_url( $filename );
 		$path     = $captcha->tmp_dir . $filename;
-
-		if ( GFCommon::is_ssl() && strpos( $url, 'http:' ) !== false ) {
-			$url = str_replace( 'http:', 'https:', $url );
-		}
 
 		return array( 'path' => $path, 'url' => $url, 'height' => $captcha->img_size[1], 'width' => $captcha->img_size[0], 'prefix' => $prefix );
 	}
@@ -727,12 +723,8 @@ class GF_Field_CAPTCHA extends GF_Field {
 		$word     = $captcha->generate_random_word();
 		$prefix   = mt_rand();
 		$filename = $captcha->generate_image( $prefix, $word );
-		$url      = RGFormsModel::get_upload_url( 'captcha' ) . '/' . $filename;
+		$url      = $this->get_image_url( $filename );
 		$path     = $captcha->tmp_dir . $filename;
-
-		if ( GFCommon::is_ssl() && strpos( $url, 'http:' ) !== false ) {
-			$url = str_replace( 'http:', 'https:', $url );
-		}
 
 		return array( 'path' => $path, 'url' => $url, 'height' => $captcha->img_size[1], 'width' => $captcha->img_size[0], 'prefix' => $prefix );
 	}
@@ -795,6 +787,27 @@ class GF_Field_CAPTCHA extends GF_Field {
 	public function use_stoken() {
 		// 'gform_recaptcha_keys_status' will be set to true if new keys have been entered
 		return ! get_option( 'gform_recaptcha_keys_status', false );
+	}
+
+	/**
+	 * Returns the gf-download URL for the given image filename.
+	 *
+	 * @since 2.9.21
+	 *
+	 * @param string $filename The filename.
+	 *
+	 * @return string The gf-download URL.
+	 */
+	private function get_image_url( $filename ) {
+		return add_query_arg(
+			array(
+				'gf-download' => urlencode( $filename ),
+				'form-id'     => 'captcha',
+				'field-id'    => $this->id,
+				'hash'        => GFCommon::generate_download_hash( 'captcha', $this->id, $filename ),
+			),
+			site_url( 'index.php', GFCommon::is_ssl() ? 'https' : 'http' )
+		);
 	}
 
 }

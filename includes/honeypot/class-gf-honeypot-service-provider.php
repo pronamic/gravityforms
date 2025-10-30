@@ -75,6 +75,9 @@ class GF_Honeypot_Service_Provider extends GF_Service_Provider {
 		// Clear validation cache.
 		add_action( 'gform_after_submission', array( $honeypot_handler, 'handle_after_submission' ), 10, 2 );
 
+		add_filter( 'gform_entry_meta', array( $honeypot_handler, 'submission_speeds_entry_meta' ) );
+		add_filter( 'gform_entries_field_value', array( $honeypot_handler, 'submission_speeds_entries_field_value' ), 10, 4 );
+		add_filter( 'gform_entry_detail_meta_boxes', array( $honeypot_handler, 'submission_speeds_entry_detail_meta_box' ), 10, 2 );
 	}
 
 	/**

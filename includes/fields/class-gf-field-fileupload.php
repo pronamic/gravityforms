@@ -1538,6 +1538,10 @@ class GF_Field_FileUpload extends GF_Field {
 			'new'      => array(),
 		);
 
+		if ( rgpost( "is_submit_{$this->formId}" ) !== '1' ) {
+			return $files;
+		}
+
 		$files_input = rgar( $_FILES, $input_name ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( ! isset( $files_input['error'] ) ) {
 			$this->set_submission_files( $files );
