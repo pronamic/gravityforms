@@ -4172,6 +4172,7 @@ Content-Type: text/html;
 			'js',
 			'lnk',
 			'htaccess',
+			'phar',
 			'phtml',
 			'ps1',
 			'ps2',

@@ -1851,139 +1851,36 @@ function gformInitCurrencyFormatFields(fieldList){
 //------ JS MERGE TAGS -------------------
 //----------------------------------------
 
+/**
+ * @var {Object} GFMergeTag Handles MergeTag Operations.
+ * @remove-in 3.1
+ * @deprecated Use gform.mergeTags instead.
+ */
 var GFMergeTag = function() {
-
 	/**
      * Gets the merge tag value for the specified input Id
 	 * @param formId  The current form Id
 	 * @param inputId The input Id to get the merge tag from. This could be a field id (i.e. 1) or a specific input Id for multi-input fields (i.e. 1.2)
 	 * @param modifier The merge tag modifier to be used. i.e. value, currency, price, etc...
 	 * @returns       Returns a string containing the merge tag value for the specified input Id
+     * @remove-in 3.1
+	 * @deprecated Use gform.mergeTags.getFieldValue() instead.
 	 */
 	GFMergeTag.getMergeTagValue = function( formId, inputId, modifier ) {
 
-		if ( modifier === undefined ) {
-			modifier = '';
-		}
-		modifier = modifier.replace(":", "");
+		const mergeTagInfo = gform.mergeTags.getMergeTagInfo( formId, inputId, modifier );
 
-		var fieldId = parseInt(inputId,10);
-
-		// Check address field's copy value checkbox and reset fieldID to source field if checked
-		var isCopyPreviousAddressChecked = jQuery( '#input_' + formId + '_' + fieldId + '_copy_values_activated:checked' ).length > 0;
-		if ( isCopyPreviousAddressChecked ) {
-			var sourceFieldId = jQuery( '#input_' + formId + '_' + fieldId + '_copy_values_activated' ).data('source_field_id');
-			inputId = inputId == fieldId ? sourceFieldId : inputId.toString().replace( fieldId + '.', sourceFieldId + '.' );
-			fieldId = sourceFieldId;
-		}
-
-		var field = jQuery('#field_' + formId + '_' + fieldId);
-
-		var inputSelector = fieldId == inputId ? 'input[name^="input_' + fieldId + '"]' : 'input[name="input_' + inputId + '"]';
-		var input = field.find( inputSelector + ', select[name^="input_' + inputId + '"], textarea[name="input_' + inputId + '"]');
-
-		// checking conditional logic
-		var isVisible = window['gf_check_field_rule'] ? gf_check_field_rule( formId, fieldId, true, '' ) == 'show' : true,
-			val;
-
-		if ( ! isVisible ) {
+		if ( ! mergeTagInfo.isVisible ) {
 			return '';
 		}
 
-		// Filtering out the email field confirmation input to prevent the values from both inputs being returned.
-		if ( field.find( '.ginput_container_email' ).hasClass( 'ginput_complex' ) ) {
-			input = input.first();
-		}
-
-		//If value has been filtered, use it. Otherwise use default logic
-		var value = gform.applyFilters( 'gform_value_merge_tag_' + formId + '_' + fieldId, false, input, modifier );
-		if ( value !== false ){
+		const inputForFilter = jQuery( mergeTagInfo.input );
+		let value = window.gform.applyFilters( 'gform_value_merge_tag_' + formId + '_' + mergeTagInfo.fieldId, false, inputForFilter, mergeTagInfo.modifier );
+		if ( value !== false ) {
 			return value;
 		}
 
-		value = ''; //Reset value to blank
-
-		switch ( modifier ) {
-			case 'label':
-				// Remove screen reader text from product field label.
-				var label = field.find('.gfield_label');
-				label.find( '.screen-reader-text' ).remove();
-				var labelText = label.text();
-				return labelText;
-			    break;
-			case 'qty':
-				if ( field.hasClass('gfield_price') ){
-					val = gformGetProductQuantity( formId, fieldId );
-					return val === false || val === '' ? 0 : val;
-				}
-				break;
-
-		}
-
-
-
-		// Filter out unselected checkboxes and radio buttons
-		if ( input.prop('type') === 'checkbox' || input.prop('type') === 'radio' ) {
-			input = input.filter(':checked');
-		}
-
-		if ( input.length === 1 ) {
-			if ( ( input.is('select') || input.prop('type') === 'radio' || input.prop('type') === 'checkbox' ) && modifier === '' ) {
-
-				if ( input.is( 'select' ) ) {
-					val = input.find( 'option:selected' );
-				} else if ( input.prop( 'type' ) === 'radio' && input.parent().hasClass( 'gchoice_button' ) ) {
-					val = input.parent().siblings( '.gchoice_label' ).find( 'label' ).clone();
-				} else {
-					val = input.next('label').clone();
-				}
-				val.find('span').remove();
-
-				if ( val.length === 1 ) {
-					val = val.text();
-				} else {
-					var option = [];
-					for(var i=0; i<val.length; i++) {
-						option[i] = jQuery(val[i]).text();
-					}
-
-					val = option;
-				}
-			} else if ( val === undefined ) {
-				val = input.val();
-			}
-
-			if ( jQuery.isArray( val ) ) {
-				// multiple select
-				value = val.join(', ');
-			} else if ( typeof val === 'string' ) {
-
-			    value = GFMergeTag.formatValue( val, modifier );
-
-			} else {
-				// empty multiple select returns null, set it to ''
-				value = '';
-            }
-		} else if ( input.length > 1 ) {
-			val = [];
-			for(var i=0; i<input.length; i++) {
-				if( ( input.prop('type') === 'checkbox' ) && modifier === '' ) {
-
-				    var clone = jQuery(input[i]).next('label').clone();
-					clone.find('span').remove()
-					val[i] = GFMergeTag.formatValue( clone.text(), modifier );
-
-					clone.remove();
-
-				} else {
-					val[i] = GFMergeTag.formatValue( jQuery(input[i]).val(), modifier );
-				}
-			}
-
-			value = val.join(', ');
-		}
-
-		return value;
+		return gform.mergeTags.getFieldValue( formId, inputId, modifier, mergeTagInfo );
 	}
 
 	/**
@@ -1991,62 +1888,19 @@ var GFMergeTag = function() {
 	 * @param formId    The current form Id
 	 * @param text      The text containing merge tags
 	 * @returns         Retuns the original "text" strings with all merge tags replaced with the appropriate merge tag values
+     * @remove-in 3.1
+	 * @deprecated Use gform.mergeTags.replaceMergeTags() instead.
 	 */
 	GFMergeTag.replaceMergeTags = function( formId, text ) {
-
-		var mergeTags = GFMergeTag.parseMergeTags( text );
-
-		for(i in mergeTags) {
-
-			if(! mergeTags.hasOwnProperty(i)) {
-				continue;
-			}
-
-			var inputId = mergeTags[i][1];
-			var fieldId = parseInt(inputId,10);
-			var modifier = mergeTags[i][3] == undefined ? '' : mergeTags[i][3].replace(":", "");
-
-			var value = GFMergeTag.getMergeTagValue( formId, inputId, modifier );
-
-			text = text.replace( mergeTags[i][0], value );
-		}
-
-		return text;
+		return gform.mergeTags.replaceMergeTags( formId, text );
 	}
 
+	/**
+	 * @deprecated Use gform.mergeTags.formatValue() instead.
+     * @remove-in 3.1
+	 */
 	GFMergeTag.formatValue = function( value, modifier ) {
-
-		value = value.split( '|' );
-		var val = '';
-		if( value.length > 1 ) {
-			val = modifier === 'price' || modifier === 'currency' ? gformToNumber( value[1] ) : value[0];
-		} else {
-			val = value[0];
-		}
-
-		switch ( modifier ) {
-
-			case 'price':
-				val = gformToNumber( val );
-				val = val === false ? '' : val;
-				break;
-
-			case 'currency':
-				val = gformFormatMoney( val, false );
-				val = val === false ? '' : val;
-				break;
-
-			case 'numeric':
-				val = gformToNumber( val );
-				return val === false ? 0 : val;
-				break;
-
-			default:
-				val = val.trim();
-				break;
-		}
-
-		return val;
+		return gform.mergeTags.formatValue( value, modifier );
 	}
 
 	/**
@@ -2056,22 +1910,11 @@ var GFMergeTag = function() {
 	 * @param regEx The regular expression to be used to parse for merge tags.
 	 *
 	 * @returns Returns an array with all the merge tags that were matched in the original text
+	 * @deprecated Use gform.mergeTags.parseMergeTags() instead.
+     * @remove-in 3.1
 	 */
 	GFMergeTag.parseMergeTags = function( text, regEx ) {
-
-		if( typeof regEx === 'undefined' ) {
-			regEx = /{[^{]*?:(\d+(\.\d+)?)(:(.*?))?}/i;
-		}
-
-		var matches = [];
-
-		while( regEx.test( text ) ) {
-			var i = matches.length;
-			matches[i] = regEx.exec( text );
-			text = text.replace( '' + matches[i][0], '' );
-		}
-
-		return matches;
+		return gform.mergeTags.parseMergeTags( text, regEx );
 	}
 }
 

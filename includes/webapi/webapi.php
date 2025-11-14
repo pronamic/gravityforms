@@ -304,15 +304,6 @@ if ( class_exists( 'GFForms' ) ) {
 						array( 'admin_page' => array( 'plugin_settings' ) ),
 					)
 				),
-				array(
-					'handle'  => 'gfwebapi_settings.js',
-					'src'     => GFCommon::get_base_url() . "/includes/webapi/js/gfwebapi_settings{$min}.js",
-					'version' => $this->_version,
-					'deps'    => array( 'jquery', 'thickbox' ),
-					'enqueue' => array(
-						array( 'admin_page' => array( 'plugin_settings' ) ),
-					)
-				),
 			);
 
 			add_action( 'admin_footer', array( $this, 'output_webapi_json' ) );
@@ -384,7 +375,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 			?>
 
-			<div id="gform-webapi-edit-container" style="display: none;">
+			<div id="gform-webapi-edit-container" style="display: none;" role="dialog" aria-modal="true">
 				<form id="gform-webapi-edit" class="gform-settings__wrapper">
 					<fieldset class="gform-settings-panel__content">
 
@@ -395,15 +386,16 @@ if ( class_exists( 'GFForms' ) ) {
 						<input id="gform-webapi-key" type="hidden" />
 
 						<!-- Description -->
-						<div class="gform-settings-field gform-settings-field__text">
+						<div class="gform-settings-field gform-settings-field__text" role="group">
 							<label class="gform-settings-label" for="gform-webapi-description"><?php esc_html_e( 'Description', 'gravityforms' ); ?></label>
-							<input id="gform-webapi-description" type="text" value="" />
-						</div>
+							<input id="gform-webapi-description" type="text" value="" aria-describedby="gform-webapi-description-help"/>
+                            <span id="gform-webapi-description-help" class="screen-reader-text"><?php esc_html_e( 'Enter a description for this API key.', 'gravityforms' ); ?></span>
+                        </div>
 
 						<!-- User -->
 						<div class="gform-settings-field gform-settings-field__select">
-							<label class="gform-settings-label" for="gform-webapi-user"><?php esc_html_e( 'User', 'gravityforms' ); ?></label>
-							<select id="gform-webapi-user">
+							<label id="label-user" class="gform-settings-label" for="gform-webapi-user"><?php esc_html_e( 'User', 'gravityforms' ); ?></label>
+							<select id="gform-webapi-user" aria-labelledby="label-user">
 								<?php
 								$users = $this->get_users();
 								foreach ( $users as $user ) {
@@ -419,8 +411,8 @@ if ( class_exists( 'GFForms' ) ) {
 
 						<!-- Permissions -->
 						<div class="gform-settings-field gform-settings-field__select">
-							<label class="gform-settings-label" for="gform-webapi-permissions"><?php esc_html_e( 'Permissions', 'gravityforms' ); ?></label>
-							<select id="gform-webapi-permissions">
+							<label id="label-permissions" class="gform-settings-label" for="gform-webapi-permissions"><?php esc_html_e( 'Permissions', 'gravityforms' ); ?></label>
+							<select id="gform-webapi-permissions" aria-labelledby="label-permissions">
 								<option value="read"><?php esc_html_e( 'Read', 'gravityforms' ); ?></option>
 								<option value="write"><?php esc_html_e( 'Write', 'gravityforms' ); ?></option>
 								<option value="read_write"><?php esc_html_e( 'Read/Write', 'gravityforms' ); ?></option>
@@ -429,25 +421,55 @@ if ( class_exists( 'GFForms' ) ) {
 
 						<!-- Last Updated -->
 						<div class="gform-settings-field gform-settings-field__html">
-							<label class="gform-settings-label"><?php esc_html_e( 'Last Access', 'gravityforms' ); ?></label>
-							<span id="gform-webapi-last-access"></span>
+							<label class="gform-settings-label"><?php esc_html_e( 'Last Access:', 'gravityforms' ); ?></label>
+							<span class="gform-status-indicator gform-status-indicator--size-sm gform-status-indicator--theme-cosmos gform-status--active gform-status--no-icon gform-status--no-hover" id="gform-webapi-last-access">
+                                <span class="gform-status-indicator-status gform-typography--weight-medium gform-typography--size-text-xs"></span>
+                            </span>
 						</div>
 
 						<!-- Consumer Key -->
-						<div class="gform-settings-field gform-settings-field__text">
-							<label class="gform-settings-label" for="gform-webapi-description"><?php esc_html_e( 'Consumer Key', 'gravityforms' ); ?></label>
-							<input id="gform-webapi-consumer-key" type="text" value="" />
-						</div>
+                        <div class="gform-input-wrapper gform-input-wrapper--theme-cosmos gform-input-wrapper--input gform-input-wrapper--with-action gform-input-wrapper--border-default gform-input-wrapper--with-icon" style="margin-bottom: 10px" >
+                            <label for="gform-webapi-consumer-key" class="gform-settings-label" tabindex="0"><?php esc_html_e( 'Consumer Key', 'gravityforms' ); ?></label>
+                            <div class="gform-input__action-wrapper">
+                                <div class="gform-input__wrapper">
+                                    <input class="gform-input gform-typography--size-text-sm gform-input--size-r gform-input--text"
+                                           id="gform-webapi-consumer-key"
+                                           type="text"
+                                           value=""
+                                           aria-describedby="consumer-key-description"
+                                    />
+                                </div>
+                                <button class="gform-button gform-button--size-r gform-button--white gform-button--width-auto gform-button--icon-leading gform-input__action-button">
+                                    <span class="gform-icon gform-icon--copy gform-button__icon"></span>
+                                    <span class="gform-button__text gform-button__text--inactive"><?php echo esc_html__( 'Copy', 'gravityforms' ); ?></span>
+                                </button>
+                                <span id="consumer-key-description" class="screen-reader-text"><?php esc_html_e( 'This is your generated consumer key. Click "Copy" to copy it to the clipboard.', 'gravityforms' ); ?></span>
+                            </div>
+                        </div>
 
 						<!-- Consumer Secret -->
-						<div class="gform-settings-field gform-settings-field__text">
-							<label class="gform-settings-label" for="gform-webapi-description"><?php esc_html_e( 'Consumer Secret', 'gravityforms' ); ?></label>
-							<input id="gform-webapi-consumer-secret" type="text" value="" />
-						</div>
+                        <div class="gform-input-wrapper gform-input-wrapper--theme-cosmos gform-input-wrapper--input gform-input-wrapper--with-action gform-input-wrapper--border-default gform-input-wrapper--with-icon" style="margin-bottom: 10px" >
+                            <label for="gform-webapi-consumer-secret" class="gform-settings-label" tabindex="0"><?php esc_html_e( 'Consumer Secret', 'gravityforms' ); ?></label>
+                            <div class="gform-input__action-wrapper">
+                                <div class="gform-input__wrapper">
+                                    <input class="gform-input gform-typography--size-text-sm gform-input--size-r gform-input--text"
+                                           id="gform-webapi-consumer-secret"
+                                           type="text"
+                                           value=""
+                                           aria-describedby="consumer-secret-description"
+                                    />
+                                </div>
+                                <button class="gform-button gform-button--size-r gform-button--white gform-button--width-auto gform-button--icon-leading gform-input__action-button">
+                                    <span class="gform-icon gform-icon--copy gform-button__icon"></span>
+                                    <span class="gform-button__text gform-button__text--inactive"><?php echo esc_html__( 'Copy', 'gravityforms' ); ?></span>
+                                </button>
+                                <span id="consumer-secret-description" class="screen-reader-text"><?php esc_html_e( 'This is your generated consumer secret. Click "Copy" to copy it to the clipboard.', 'gravityforms' ); ?></span>
+                            </div>
+                        </div>
 
 					</fieldset>
 
-					<button type="submit" class="button" data-add="<?php esc_html_e( 'Add', 'gravityforms' ); ?>" data-edit="<?php esc_html_e( 'Update', 'gravityforms' ); ?>"><?php esc_html_e( 'Update', 'gravityforms' ); ?></button>
+					<button type="submit" class="gform-button gform-button--white" data-add="<?php esc_html_e( 'Add', 'gravityforms' ); ?>" data-edit="<?php esc_html_e( 'Update', 'gravityforms' ); ?>" style=" align-self: flex-start; margin-top: 0.3rem;"><?php esc_html_e( 'Update', 'gravityforms' ); ?></button>
 
 				</form>
 			</div>
@@ -706,8 +728,8 @@ if ( class_exists( 'GFForms' ) ) {
 
 		public function settings_qrcode() {
 			?>
-			<button class="button" id="gfwebapi-qrbutton"><?php esc_html_e( 'Show/hide QR Code', 'gravityforms' ); ?></button>
-			<div id="gfwebapi-qrcode-container" style="display:none;">
+			<button type="button" class="gform-button gform-button--white" id="gfwebapi-qrbutton"><?php esc_html_e( 'Show/hide QR Code', 'gravityforms' ); ?></button>
+			<div id="gfwebapi-qrcode-container" style="display:none; padding-left: unset">
 				<img id="gfwebapi-qrcode" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/spinner.svg"/>
 			</div>
 

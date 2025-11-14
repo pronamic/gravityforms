@@ -338,6 +338,9 @@ class GFEntryDetail {
 
 				$original_entry = $lead;
 
+				// Some field types won't access their submitted values if this is not set.
+				$_POST[ 'is_submit_' . $form_id ] = '1';
+
 				// Set files that have been uploaded to temp folder
 				GFFormsModel::set_uploaded_files( $form_id );
 

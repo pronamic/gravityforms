@@ -1,3 +1,11 @@
+### 2.9.22 | 2025-11-13
+- Added Stripe Membership and Stripe Event Sponsorship templates to the Template Library.
+- Added security enhancements.
+- Added copy buttons to the Consumer Key and Consumer Secret when adding a new REST API Key.
+- API: Deprecated the JS-based GFMergeTag, which will be removed in Gravity Forms 3.1 Use gform.mergeTags instead.
+- Fixed an issue introduced in 2.9.21 where the selected file is not saved for a single File Upload field when editing an existing entry.
+- API: Removed `GFFeedAddon::paypal_fulfillment()` legacy method.
+
 ### 2.9.21 | 2025-10-29
 - Added security enhancements.
 - Added a new setting to the Honeypot Field to check the time it takes to submit a form and mark the form as spam if the submission is too fast.
