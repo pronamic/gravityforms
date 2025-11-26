@@ -310,7 +310,8 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		parent::init_ajax();
 
 		add_action( 'wp_ajax_gaddon_cancel_subscription', array( $this, 'ajax_cancel_subscription' ) );
-	}
+        add_action( 'gform_before_delete_field', array( $this, 'before_delete_field' ), 10, 2 );
+    }
 
 	/**
 	 * Runs the setup of the payment add-on.

@@ -4265,7 +4265,7 @@ class GFFormsModel {
 		$submitted_values = array();
 		foreach ( $form['fields'] as $field ) {
 			/* @var GF_Field $field */
-			if ( $field->type == 'creditcard' ) {
+			if ( $field->is_payment ) {
 				continue;
 			}
 

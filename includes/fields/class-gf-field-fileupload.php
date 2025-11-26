@@ -253,6 +253,24 @@ class GF_Field_FileUpload extends GF_Field {
 	}
 
 	/**
+	 * Returns a hash for the given populated file URL details.
+	 *
+	 * @since 2.9.23
+	 *
+	 * @param array $url_details The populated file URL details
+	 *
+	 * @return string
+	 */
+	private function get_populated_file_url_hash( $url_details ) {
+		unset( $url_details['hash'] );
+
+		$url_details['field_id'] = (int) $this->id;
+		$url_details['form_id']  = (int) $this->formId;
+
+		return wp_hash( json_encode( $url_details ) );
+	}
+
+	/**
 	 * Validates the given file.
 	 *
 	 * @since 2.9.18
@@ -303,7 +321,7 @@ class GF_Field_FileUpload extends GF_Field {
 					return $this->get_invalid_file_result( $file, $check_result->get_error_message(), $name_key );
 				}
 			}
-		} elseif ( isset( $file['url'] ) && ! GFCommon::is_valid_url( $file['url'] ) ) {
+		} elseif ( isset( $file['url'] ) && ( ! GFCommon::is_valid_url( $file['url'] ) || empty( $file_name ) || ! str_contains( $file['url'], $file_name ) || empty( $file['hash'] ) || $this->get_populated_file_url_hash( $file ) !== $file['hash'] ) ) {
 			$message = $this->errorMessage ?: esc_html__( 'The file URL is not valid.', 'gravityforms' );
 
 			return $this->get_invalid_file_result( $file, $message, 'url' );
@@ -2041,6 +2059,7 @@ class GF_Field_FileUpload extends GF_Field {
 				'url'               => $sanitized_url,
 				'id'                => GFFormsModel::get_uuid(),
 			);
+			$details['hash']     = $this->get_populated_file_url_hash( $details );
 			$files['existing'][] = $details;
 		}
 

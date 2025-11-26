@@ -1,3 +1,11 @@
+### 2.9.23 | 2025-11-25
+- Added a check for minimum requirements compatibility when an update is available.
+- Added a hook for [`gform_before_delete_field`](https://docs.gravityforms.com/gform_before_delete_field/) in the init_ajax() function.
+- Added security enhancements.
+- Fixed a bug that prevents the "Embed Form" functionality from pre-selecting the correct form in WordPress 6.9.
+- Fixed a bug that prevents the Results page from displaying in WordPress 6.9.
+- API: Added the GF_Field::$is_payment property, so developers can indicate if a field is used to capture payments. This can be used by features (e.g. Save and Continue) to exclude the field without checking for specific field types.
+
 ### 2.9.22 | 2025-11-13
 - Added Stripe Membership and Stripe Event Sponsorship templates to the Template Library.
 - Added security enhancements.

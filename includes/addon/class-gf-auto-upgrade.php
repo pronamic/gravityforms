@@ -64,7 +64,7 @@ class GFAutoUpgrade {
 
 		if ( ! $this->_is_gravityforms_supported ) {
 			$message = sprintf( esc_html__( 'Gravity Forms %s is required. Activate it now or %spurchase it today!%s', 'gravityforms' ), $this->_min_gravityforms_version, "<a href='https://www.gravityforms.com'>", '</a>' );
-			GFAddOn::display_plugin_message( $message, true );
+			GFAddOn::display_plugin_message( $message, 'error' );
 		}
 	}
 
@@ -140,12 +140,14 @@ class GFAutoUpgrade {
 		$new_version = rgar( $version_info, 'version', '0' );
 
 		$plugin = array(
-			'plugin'      => $this->_path,
-			'url'         => $this->_url,
-			'slug'        => $this->_slug,
-			'package'     => $version_info['url'] ? str_replace( '{KEY}', $key, $version_info['url'] ) : '',
-			'new_version' => $new_version,
-			'id'          => '0',
+			'plugin'               => $this->_path,
+			'url'                  => $this->_url,
+			'slug'                 => $this->_slug,
+			'package'              => $version_info['url'] ? str_replace( '{KEY}', $key, $version_info['url'] ) : '',
+			'new_version'          => $new_version,
+			'id'                   => '0',
+			'minimum_requirements' => $version_info['minimum_requirements'],
+			'version_latest'       => $version_info['version_latest']
 		);
 
 		//Empty response means that the key is invalid. Do not queue for upgrade
@@ -154,6 +156,20 @@ class GFAutoUpgrade {
 			$option->no_update[ $this->_path ] = (object) $plugin;
 		} else {
 			$option->response[ $this->_path ] = (object) $plugin;
+		}
+
+		// Check minimum requirements. If not met, remove from response and add to no_update.
+		$minimum_requirements_evaluation_result = GFCommon::evaluate_minimum_requirements(
+			is_array( $version_info['minimum_requirements'] ?? null )
+			? $version_info['minimum_requirements']
+			: []
+		);
+
+		if ( $minimum_requirements_evaluation_result['block'] == true ) {
+			if ( isset( $option->response[ $this->_path ] ) ) {
+				unset( $option->response[ $this->_path ] );
+			}
+			$option->no_update[ $this->_path ] = (object) $plugin;
 		}
 
 		return $option;
@@ -213,10 +229,12 @@ class GFAutoUpgrade {
 		$version_info = GFCommon::get_version_info( $use_cache );
 
 		$info = array( 
-			'is_valid_key' => rgar( $version_info, 'is_valid_key' ),
-			'version'      => rgars( $version_info, "offerings/{$offering}/version" ),
-			'url'          => rgars( $version_info, "offerings/{$offering}/url" ),
-			'is_available' => rgars( $version_info, "offerings/{$offering}/is_available" ),
+			'is_valid_key'         => rgar( $version_info, 'is_valid_key' ),
+			'version'              => rgars( $version_info, "offerings/{$offering}/version" ),
+			'url'                  => rgars( $version_info, "offerings/{$offering}/url" ),
+			'is_available'         => rgars( $version_info, "offerings/{$offering}/is_available" ),
+			'minimum_requirements' => rgars( $version_info, "offerings/{$offering}/minimum_requirements" ),
+			'version_latest'       => rgars( $version_info, "offerings/{$offering}/version_latest" ),
 		);
 
 		return $info;

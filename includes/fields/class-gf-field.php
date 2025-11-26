@@ -28,6 +28,16 @@ class GF_Field extends stdClass implements ArrayAccess {
 	private $_is_entry_detail = null;
 
 	/**
+	 * Indicates the field is used to capture payments.
+	 *
+	 * @since 2.9.23
+	 *
+	 * @var bool
+	 */
+	public $is_payment = false;
+
+
+	/**
 	 * An array of properties used to help define and determine the context for the field.
 	 * As this is private, it won't be available in any json_encode() output and consequently not saved in the Form array.
 	 *

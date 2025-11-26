@@ -5712,12 +5712,12 @@ abstract class GFAddOn {
 	public function plugin_row( $plugin_name, $plugin_data ) {
 		if ( false === $this->_enable_rg_autoupgrade && ! self::is_gravityforms_supported( $this->_min_gravityforms_version ) ) {
 			$message = $this->plugin_message();
-			self::display_plugin_message( $message, true );
+			self::display_plugin_message( $message, 'error' );
 		}
 
 		if ( self::is_gravityforms_supported( $this->_min_gravityforms_version ) && ! self::is_gravityforms_compatible() ) {
 			$message = $this->compatibility_message();
-			self::display_plugin_message( $message, true );
+			self::display_plugin_message( $message, 'error' );
 		}
 
 		if ( ! $this->_enable_rg_autoupgrade ) {
@@ -5725,6 +5725,37 @@ abstract class GFAddOn {
 		}
 
 		GFForms::maybe_display_update_notification( $plugin_name, $plugin_data, $this->get_slug(), $this->_version );
+
+		// Check for Add-on minimum requirements.
+		$minimum_requirements = isset( $plugin_data['minimum_requirements'] ) && is_array( $plugin_data['minimum_requirements'] )
+				? $plugin_data['minimum_requirements']
+				: array();
+
+		$minimum_requirements_evaluation_result = GFCommon::evaluate_minimum_requirements( $minimum_requirements );
+		if ( $minimum_requirements_evaluation_result['block'] == true ) {
+			$plugin_name = $plugin_data['plugin'] ?? '';
+			if ( $plugin_name !== '' ) {
+				// Remove update notification if minimum requirements are not met.
+				add_filter( 'site_transient_update_plugins', function( $value ) use ( $plugin_name ) {
+					if ( isset( $value->response[ $plugin_name ] ) ) {
+						unset( $value->response[ $plugin_name ] );
+					}
+
+					return $value;
+				});
+			}
+
+			$message = $minimum_requirements_evaluation_result['message'];
+			if ( version_compare( $this->_version, $plugin_data['new_version'], '<' ) ) {
+				$details_url         = self_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . urlencode( $this->_slug ) . '&section=changelog&TB_iframe=true&width=600&height=800' );
+				$message_link_text   = sprintf( esc_html__( 'View version %s details', 'gravityforms' ), $plugin_data['new_version'] );
+				$message_link        = sprintf( '<a href="%s" class="thickbox" title="%s">%s</a>', esc_url( $details_url ), esc_attr( $this->_title ), $message_link_text );
+				$message_new_version = sprintf( esc_html__( 'There is a new version of %s available. %s.', 'gravityforms' ), $this->_title, $message_link );
+				$message             = $message_new_version . ' ' . $message;
+			}
+
+			self::display_plugin_message( $message, 'warning' );
+		}
 	}
 
 	/**
@@ -5752,18 +5783,25 @@ abstract class GFAddOn {
 	}
 
 	/**
-	 * Formats and outs a message for the plugin row.
+	 * Formats and outs a custom message for the plugin row.
 	 *
 	 * Not intended to be overridden or called directly by Add-Ons.
 	 *
-	 * @ignore
+	 * @since Unknown
+	 * @since 2.9.23 Removed $is_error parameter, added $custom_style parameter.
 	 *
-	 * @param      $message
-	 * @param bool $is_error
+	 * @param string $message
+	 * @param string $custom_style
 	 */
-	public static function display_plugin_message( $message, $is_error = false ) {
-		$style = $is_error ? 'style="background-color: #ffebe8;"' : '';
-		echo '</tr><tr class="plugin-update-tr"><td colspan="5" class="plugin-update"><div class="update-message" ' . $style . '>' . $message . '</div></td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	public static function display_plugin_message( $message, $custom_style = '' ) {
+		switch ( $custom_style ) {
+			case 'warning':
+				echo '<tr class="plugin-update-tr update active"><td colspan="4" class="plugin-update colspanchange"><div class="update-message notice inline notice-warning notice-alt"><p>' . $message . '</p></div></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				break;
+			case 'error':
+				echo '<tr class="plugin-update-tr update active"><td colspan="4" class="plugin-update colspanchange"><div class="update-message notice inline notice-error notice-alt"><p>' . $message . '</p></div></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				break;
+		}
 	}
 
 	//--------------- Logging -------------------------------------------------------------

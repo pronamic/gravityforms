@@ -2143,10 +2143,23 @@ class GFCommon {
 
 				self::log_debug( __METHOD__ . '(): Attaching file(s) for field #' . $upload_field->id . '. ' . print_r( $files, true ) );
 
+				$upload_root_url = rgar( GF_Field_FileUpload::get_upload_root_info( absint( rgar( $form, 'id' ) ) ), 'url' );
+
 				// Loop through attachment URLs; replace URL with path and add to attachments.
 				foreach ( $files as $file ) {
 					if ( is_string( $file ) ) {
-						$attachments[] = GFFormsModel::get_physical_file_path( $file, rgar( $lead, 'id' ) );
+						if ( ! str_starts_with( $file, $upload_root_url ) ) {
+							self::log_debug( __METHOD__ . sprintf( '(): Not attaching file from URL: %s', $file ) );
+							continue;
+						}
+
+						$file_path = GFFormsModel::get_physical_file_path( $file, rgar( $lead, 'id' ) );
+						if ( ! file_exists( $file_path ) ) {
+							self::log_error( __METHOD__ . sprintf( '(): Not attaching file; %s does not exist.', $file_path ) );
+							continue;
+						}
+
+						$attachments[] = $file_path;
 					} elseif ( ! empty( $file['tmp_path'] ) && file_exists( $file['tmp_path'] ) ) {
 						$attachments[] = $file['tmp_path'];
 					}
@@ -8256,6 +8269,112 @@ Content-Type: text/html;
 		wp_die( '', '', array( 'response' => null ) );
 	}
 
+	/**
+	 * Logs message only once per request.
+	 *
+	 * @since 2.9.23
+	 *
+	 * @param string $message Message to log.
+	 */
+	public static function log_once_per_request( $message ) {
+		static $cache = array();
+
+		$hash = md5( $message );
+
+		// Already logged in this request?
+		if ( isset( $cache[ $hash ] ) ) {
+			return;
+		}
+
+		GFCommon::log_debug( "GFCommon::evaluate_minimum_requirements(): {$message}" );
+
+		$cache[ $hash ] = true;
+	}
+
+	/**
+	 * Evaluate minimum requirements for an add-on.
+	 *
+	 * @since 2.9.23
+	 *
+	 * @param array $minimum_requirements List of dependency rules.
+	 *
+	 * @return array ['block' => bool, 'message' => string|null] Whether to block installation/activation and the message to show.
+	 */
+	public static function evaluate_minimum_requirements( array $minimum_requirements ) {
+		if ( empty( $minimum_requirements ) ) {
+			return array( 'block' => false, 'message' => null );
+		}
+
+		// Get all installed plugins with their active status.
+		$installed = GFForms::get_installed_plugins();
+
+		foreach ( $minimum_requirements as $requirements ) {
+			$addon_name           = $requirements['minimum_requirements_name'] ?? null;
+			$addon_slug           = $requirements['minimum_requirements_slug'] ?? null;
+			$addon_version        = $requirements['minimum_requirements_version'] ?? null;
+			$addon_version_latest = $requirements['minimum_requirements_version_latest'] ?? null;
+			$parent_title         = $requirements['parent_title'] ?? null;
+
+			// If one of the required fields is missing, skip this requirement.
+			if ( $addon_name === null || $addon_slug === null || $addon_version === null ) {
+				continue;
+			}
+
+			// Set the right version number if the text latest is used.
+			$version_latest_used = false;
+			if ( $addon_version === 'latest' ) {
+				$version_latest_used = true;
+				$addon_version       = $addon_version_latest ?? null;
+			}
+
+			// Check if required add-on is installed.
+			if ( ! isset( $installed[ $addon_slug ] ) ) {
+				// translators: 1: current add-on name, 2: required add-on name, 3: required add-on version.
+				$message = sprintf(
+					esc_html__( 'The Gravity Forms %1$s requires %2$s to be installed. Please install %2$s %3$s.', 'gravityforms' ),
+						$parent_title,
+						$addon_name,
+						$addon_version
+				);
+
+				self::log_once_per_request( $message . json_encode( $minimum_requirements ) );
+				return [ 'block' => true, 'message' => $message ];
+			}
+
+			// Check if required add-on is active.
+			if ( ! $installed[ $addon_slug ]['is_active'] ) {
+				// translators: 1: current add-on name, 2: required add-on name, 3: required add-on version..
+				$message = sprintf(
+					esc_html__( 'The Gravity Forms %1$s requires %2$s to be active. Please activate %2$s %3$s.', 'gravityforms' ),
+				$parent_title,
+						$installed[ $addon_slug ]['name'] ?? null,
+						$addon_version
+				);
+
+				self::log_once_per_request( $message . json_encode( $minimum_requirements ) );
+				return [ 'block' => true, 'message' => $message ];
+			}
+
+			// Check if required add-on meets minimum version.
+			if ( version_compare( $installed[ $addon_slug ]['version'], $addon_version, '<' ) ) {
+
+				// translators: 1: current add-on name, 2: required add-on name, 3: minimum required version, 4: currently installed version. 5: latest version if the text latest is used, version number otherwise.
+				$message = sprintf(
+					esc_html__( 'The Gravity Forms %1$s requires %2$s version %3$s or higher for full compatibility. You are currently using version %4$s. Please update %2$s to %5$s version.', 'gravityforms' ),
+						$parent_title,
+						$installed[ $addon_slug ]['name'],
+						$addon_version,
+						$installed[ $addon_slug ]['version'],
+						$version_latest_used ? 'latest' : $addon_version
+				);
+
+				self::log_once_per_request( $message . json_encode( $minimum_requirements ) );
+				return [ 'block' => true, 'message' => $message ];
+			}
+		}
+
+		return [ 'block' => false, 'message' => null ];
+	}
 }
 
 class GFCategoryWalker extends Walker {

@@ -9,6 +9,15 @@ class GF_Field_CreditCard extends GF_Field {
 
 	public $type = 'creditcard';
 
+	/**
+	 * Indicates the field is used to capture payments.
+	 *
+	 * @since 2.9.23
+	 *
+	 * @var bool
+	 */
+	public $is_payment = true;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Credit Card', 'gravityforms' );
 	}
