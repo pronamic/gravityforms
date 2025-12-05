@@ -661,11 +661,6 @@ parameters:
 			path: includes/fields/class-gf-field-fileupload.php
 
 		-
-			message: "#^Function wp_create_nonce invoked with 2 parameters, 0\\-1 required\\.$#"
-			count: 1
-			path: includes/fields/class-gf-field-fileupload.php
-
-		-
 			message: "#^Variable \\$rules_messages in empty\\(\\) always exists and is not falsy\\.$#"
 			count: 1
 			path: includes/fields/class-gf-field-fileupload.php

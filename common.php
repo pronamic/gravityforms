@@ -2124,6 +2124,7 @@ class GFCommon {
 		if ( rgar( $notification, 'enableAttachments', false ) ) {
 
 			$upload_fields = GFCommon::get_fields_by_type( $form, array( 'fileupload' ) );
+			$entry_id      = (int) rgar( $lead, 'id' );
 
 			foreach ( $upload_fields as $upload_field ) {
 
@@ -2143,12 +2144,11 @@ class GFCommon {
 
 				self::log_debug( __METHOD__ . '(): Attaching file(s) for field #' . $upload_field->id . '. ' . print_r( $files, true ) );
 
-				$upload_root_url = rgar( GF_Field_FileUpload::get_upload_root_info( absint( rgar( $form, 'id' ) ) ), 'url' );
-
 				// Loop through attachment URLs; replace URL with path and add to attachments.
 				foreach ( $files as $file ) {
 					if ( is_string( $file ) ) {
-						if ( ! str_starts_with( $file, $upload_root_url ) ) {
+						$root_url = rgar( GF_Field_FileUpload::get_file_upload_path_info( $file, $entry_id ), 'url' );
+						if ( ! str_starts_with( $file, $root_url ) ) {
 							self::log_debug( __METHOD__ . sprintf( '(): Not attaching file from URL: %s', $file ) );
 							continue;
 						}

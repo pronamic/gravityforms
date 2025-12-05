@@ -64,6 +64,10 @@ class GF_Entry_Meta_Batch_Processor {
 			'entry_id'   => $entry_id,
 		);
 
+		$cache_key = get_current_blog_id() . '_' . $entry_id . '_' . $entry_meta_key;
+		global $_gform_lead_meta;
+		$_gform_lead_meta[ $cache_key ] = $entry_meta_value;
+
 		return true;
 	}
 

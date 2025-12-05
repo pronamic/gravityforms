@@ -1,3 +1,10 @@
+### 2.9.23.2
+- Fixed an issue where some uploaded files are not attached to notifications when stored outside the default form/year/month folders.
+
+### 2.9.23.1
+- Removed the invalid maxlength attribute from class-gf-field-time.php.
+- Added security enhancements.
+
 ### 2.9.23 | 2025-11-25
 - Added a check for minimum requirements compatibility when an update is available.
 - Added a hook for [`gform_before_delete_field`](https://docs.gravityforms.com/gform_before_delete_field/) in the init_ajax() function.

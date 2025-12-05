@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.23
+Version: 2.9.23.2
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.23';
+	public static $version = '2.9.23.2';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -924,13 +924,14 @@ class GFForms {
 
 		$is_legacy_upload_page = $_SERVER['REQUEST_METHOD'] == 'POST' && $page == 'upload'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
-		if ( $is_legacy_upload_page && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
-			_doing_it_wrong( 'gf_page=upload', 'gf_page=upload is now deprecated. Use GFCommon::get_upload_page_slug() instead', '1.9.6.13' );
+		if ( $is_legacy_upload_page ) {
+			// Legacy endpoint was deprecated in 1.9.7, and switched from _doing_it_wrong() to wp_die() in 2.9.24.
+			wp_die( '', '', 400 );
 		}
 
 		$is_upload_page = $_SERVER['REQUEST_METHOD'] == 'POST' && $page == GFCommon::get_upload_page_slug(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
-		if ( $is_upload_page || $is_legacy_upload_page ) {
+		if ( $is_upload_page ) {
 			require_once( GFCommon::get_base_path() . '/includes/upload.php' );
 			exit();
 		}

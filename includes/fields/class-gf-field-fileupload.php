@@ -522,8 +522,9 @@ class GF_Field_FileUpload extends GF_Field {
 					'multipart'           => true,
 					'urlstream_upload'    => false,
 					'multipart_params'    => array(
-						'form_id'  => $form_id,
-						'field_id' => $id,
+						'form_id'                                   => $form_id,
+						'field_id'                                  => $id,
+						"_gform_file_upload_nonce_{$form_id}_{$id}" => wp_create_nonce( "gform_file_upload_{$form_id}_{$id}" ),
 					),
 					'gf_vars'             => array(
 						'max_files'             => $max_files,
@@ -531,10 +532,6 @@ class GF_Field_FileUpload extends GF_Field {
 						'disallowed_extensions' => $disallowed_extensions,
 					),
 				);
-
-				if ( GFCommon::form_requires_login( $form ) ) {
-					$plupload_init['multipart_params'][ '_gform_file_upload_nonce_' . $form_id ] = wp_create_nonce( 'gform_file_upload_' . $form_id, '_gform_file_upload_nonce_' . $form_id );
-				}
 			}
 
 			$plupload_init = gf_apply_filters( array( 'gform_plupload_settings', $form_id ), $plupload_init, $form_id, $this );
