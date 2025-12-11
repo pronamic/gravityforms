@@ -266,7 +266,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	 * Increments the item attempts property and updates the batch in the database.
 	 *
 	 * @depecated 2.9.9
-	 * @remove-in 3.1
+	 * @remove-in 4.0
 	 *
 	 * @since 2.4
 	 * @since 2.9.4 Updated to use get_current_branch() instead of making a db request to get the batch.

@@ -2022,7 +2022,7 @@ class GFFormDisplay {
 			GFCommon::log_debug( __METHOD__ . '(): Completed gform_entry_post_save.' );
 		}
 
-		gf_feed_processor()->save()->dispatch();
+		gf_feed_processor()->save()->dispatch_on_shutdown();
 
 		RGFormsModel::set_current_lead( $lead, false );
 

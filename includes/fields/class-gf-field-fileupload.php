@@ -778,7 +778,7 @@ class GF_Field_FileUpload extends GF_Field {
 	 *
 	 * @since 2.7.4
 	 * @deprecated 2.9.18
-	 * @remove-in 3.1
+	 * @remove-in 4.0
 	 *
 	 * @param $input_name
 	 * @param $key

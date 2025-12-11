@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.23.2
+Version: 2.9.24
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -123,7 +123,7 @@ define( 'GF_SUPPORTED_WP_VERSION', version_compare( get_bloginfo( 'version' ), G
  *
  * @var string GF_MIN_WP_VERSION_SUPPORT_TERMS The version number
  */
-define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '6.7' );
+define( 'GF_MIN_WP_VERSION_SUPPORT_TERMS', '6.8' );
 
 /**
  * Defines the minimum version of PHP that is supported.
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.23.2';
+	public static $version = '2.9.24';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -816,14 +816,13 @@ class GFForms {
 	/**
 	 * Performs Gravity Forms deactivation tasks.
 	 *
-	 * @since  Unknown
-	 * @access public
-	 *
-	 * @uses   GFCache::flush()
+	 * @since Unknown
+	 * @since 2.9.24 Updated to delete the multifile upload page slug, so it will be regenerated on the next activation.
 	 *
 	 * @return void
 	 */
 	public static function deactivation_hook() {
+		delete_option( 'gform_upload_page_slug' );
 		GFCache::flush( true );
 		flush_rewrite_rules();
 	}
@@ -5965,65 +5964,91 @@ class GFForms {
 	/**
 	 * Determines if automatic updating should be processed.
 	 *
-	 * @since   Unknown
-	 * @access  public
+	 * @since Unknown
+	 * @since 2.9.24 Added the optional $slug and $current_version params.
 	 *
 	 * @used-by WP_Automatic_Updater::should_update()
 	 * @uses    GFForms::is_auto_update_disabled()
 	 *
-	 * @param bool|null $update Whether or not to update.
-	 * @param object    $item   The update offer object.
+	 * @param bool|null $update          Whether to update.
+	 * @param object    $item            The update offer object.
+	 * @param string    $slug            The plugin or add-on slug. Optional. Defaults to gravityforms.
+	 * @param string    $current_version The current version. Optional. Defaults to the Gravity Forms version.
 	 *
 	 * @return bool|null
 	 */
-	public static function maybe_auto_update( $update, $item ) {
-
-		if ( ! isset( $item->slug ) || $item->slug !== 'gravityforms' || is_null( $update ) || ( function_exists( 'get_current_screen' ) && rgobj( get_current_screen(), 'id' ) === 'plugins' ) ) {
+	public static function maybe_auto_update( $update, $item, $slug = 'gravityforms', $current_version = null ) {
+		if ( is_null( $update ) || ! isset( $item->slug ) || ( function_exists( 'get_current_screen' ) && rgobj( get_current_screen(), 'id' ) === 'plugins' ) ) {
 			return $update;
 		}
 
-		GFCommon::log_debug( __METHOD__ . '(): Checking if auto-update available.' );
+		if ( $item->slug !== $slug ) {
+			return $update;
+		}
 
-		if ( self::is_auto_update_disabled( $update ) ) {
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Checking if auto-update available for %s.', $slug ) );
+
+		if ( self::is_auto_update_disabled( $update, $slug ) ) {
 			GFCommon::log_debug( __METHOD__ . '(): Aborting. Auto-update is disabled.' );
+
 			return false;
 		}
 
-		if ( version_compare( GFForms::$version, $item->new_version, '>=' ) ) {
-			GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting. Newer version not available. Installed: %s; Available: %s.', GFForms::$version, $item->new_version ) );
+		if ( is_null( $current_version ) ) {
+			if ( $slug === 'gravityforms' ) {
+				$current_version = GFForms::$version;
+			} else {
+				// translators: %s: Add-on slug.
+				_doing_it_wrong( __METHOD__, sprintf( esc_html__( 'The $current_version parameter is required when checking for auto-updates for %s.', 'gravityforms' ), esc_html( $slug ) ), '2.9.24' );
+				GFCommon::log_debug( __METHOD__ . '(): Aborting. $current_version was not provided.' );
+
+				return $update;
+			}
+		}
+
+		if ( version_compare( $current_version, $item->new_version, '>=' ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting. Newer %s version not available. Installed: %s; Available: %s.', $slug, $current_version, $item->new_version ) );
+
 			return false;
 		}
 
-		if ( self::should_update_to_version( $item->new_version ) ) {
-			GFCommon::log_debug( __METHOD__ . sprintf( '(): Updating from %s to %s is supported.', GFForms::$version, $item->new_version ) );
+		if ( ! self::should_update_to_version( $item->new_version, $current_version ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting. Automatically updating %s from %s to %s is not supported.', $slug, $current_version, $item->new_version ) );
 
-			return true;
+			return false;
 		}
 
-		GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting. Automatically updating from %s to %s is not supported.', GFForms::$version, $item->new_version ) );
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Automatically updating %s from %s to %s is supported.', $slug, $current_version, $item->new_version ) );
 
-		return false;
-
+		return true;
 	}
 
 	/**
 	 * Determines if the current version should update to the offered version.
 	 *
-	 * @since 2.4.22.4
+	 * Minor and patch versions should only be installed automatically when the major version component of the offered version is the same as the current version.
 	 *
-	 * @param string $offered_ver The version number to be compared against the installed version number.
+	 * @since 2.4.23
+	 * @since 2.9.24 Added the optional $current_ver param,
+	 *
+	 * @param string      $offered_version The version number to be compared against the installed version number.
+	 * @param null|string $current_version The current version number. If null, the installed Gravity Forms version number will be used.
 	 *
 	 * @return bool
 	 */
-	public static function should_update_to_version( $offered_ver ) {
-		if ( version_compare( GFForms::$version, $offered_ver, '>=' ) ) {
+	public static function should_update_to_version( $offered_version, $current_version = null ) {
+		if ( is_null( $current_version ) ) {
+			$current_version = GFForms::$version;
+		}
+
+		if ( version_compare( $current_version, $offered_version, '>=' ) ) {
 			return false;
 		}
 
-		$current_branch = implode( '.', array_slice( preg_split( '/[.-]/', GFForms::$version ), 0, 2 ) );
-		$new_branch     = implode( '.', array_slice( preg_split( '/[.-]/', $offered_ver ), 0, 2 ) );
+		$current_major = (int) explode( '.', $current_version, 2 )[0];
+		$new_major     = (int) explode( '.', $offered_version, 2 )[0];
 
-		return $current_branch == $new_branch;
+		return $current_major === $new_major;
 	}
 
 	/**
@@ -6036,28 +6061,33 @@ class GFForms {
 	 * @used-by GFForms::maybe_auto_update()
 	 *
 	 * @param bool|null $enabled Indicates if auto updates are enabled.
+	 * @param string    $slug    The plugin or add-on slug. Optional. Default is 'gravityforms'.
 	 *
 	 * @return bool True if auto update is disabled.  False otherwise.
 	 */
-	public static function is_auto_update_disabled( $enabled = null ) {
-		global $wp_version;
-		if ( is_null( $enabled ) || version_compare( $wp_version, '5.5', '<' ) ) {
+	public static function is_auto_update_disabled( $enabled = null, $slug = 'gravityforms' ) {
+		if ( is_null( $enabled ) ) {
 			// Check Gravity Forms Background Update Settings.
-			$enabled = get_option( 'gform_enable_background_updates' );
+			$enabled = (bool) get_option( 'gform_enable_background_updates' );
 		}
-		GFCommon::log_debug( 'GFForms::is_auto_update_disabled() - $enabled: ' . var_export( $enabled, true ) );
+
+		GFCommon::log_debug( __METHOD__ . '(): Enabled by toggle? ' . ( $enabled ? 'Yes.' : 'No.' ) );
 
 		/**
 		 * Filter to disable Gravity Forms Automatic updates
 		 *
-		 * @param bool $enabled Check if automatic updates are enabled, and then disable it
+		 * @since 1.9
+		 * @since 2.9.24 Added the $slug param.
+		 *
+		 * @param bool   $enabled Check if automatic updates are enabled, and then disable it.
+		 * @param string $slug    The plugin or add-on slug.
 		 */
-		$disabled = apply_filters( 'gform_disable_auto_update', ! $enabled );
-		GFCommon::log_debug( 'GFForms::is_auto_update_disabled() - $disabled: ' . var_export( $disabled, true ) );
+		$disabled = apply_filters( 'gform_disable_auto_update', ! $enabled, $slug );
+		GFCommon::log_debug( __METHOD__ . '(): Disabled after gform_disable_auto_update filter? ' . ( $disabled ? 'Yes.' : 'No.' ) );
 
 		if ( ! $disabled ) {
 			$disabled = defined( 'GFORM_DISABLE_AUTO_UPDATE' ) && GFORM_DISABLE_AUTO_UPDATE;
-			GFCommon::log_debug( 'GFForms::is_auto_update_disabled() - GFORM_DISABLE_AUTO_UPDATE: ' . var_export( $disabled, true ) );
+			GFCommon::log_debug( __METHOD__ . '(): Disabled by constant GFORM_DISABLE_AUTO_UPDATE? ' . ( $disabled ? 'Yes.' : 'No.' ) );
 		}
 
 		return $disabled;

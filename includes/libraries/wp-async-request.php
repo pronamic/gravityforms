@@ -1,7 +1,7 @@
 <?php
 /**
  * @depecated 2.9.8
- * @remove-in 3.1
+ * @remove-in 4.0
  */
 _deprecated_file( __FILE__, '2.9.8', GF_PLUGIN_DIR_PATH . 'includes/async/class-wp-async-request.php (Gravity_Forms\Gravity_Forms\Async\WP_Async_Request)' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 if ( ! class_exists( 'WP_Async_Request' ) ) {

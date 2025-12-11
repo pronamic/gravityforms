@@ -191,6 +191,23 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	}
 
 	/**
+	 * Uses the shutdown hook to dispatch the queued tasks so completion of the current request (e.g., form submission) is not delayed.
+	 *
+	 * @since 2.9.24
+	 *
+	 * The `blocking => false` arg set in `get_post_args()` and the 0.01 timeout set in `filter_dispatch_post_args()` don't work as expected: https://github.com/WordPress/Requests/issues/826
+	 *
+	 * @return void
+	 */
+	public function dispatch_on_shutdown() {
+		$this->log_debug( sprintf( '%s(): Dispatch delayed until shutdown for %s.', __METHOD__, $this->action ) );
+		if ( has_action( 'shutdown', array( $this, 'dispatch' ) ) ) {
+			return;
+		}
+		add_action( 'shutdown', array( $this, 'dispatch' ), 0 );
+	}
+
+	/**
 	 * Dispatches the queued tasks to Admin Ajax for processing and schedules a cron job in case processing fails.
 	 *
 	 * @since 2.2
@@ -1612,8 +1629,8 @@ abstract class GF_Background_Process extends WP_Async_Request {
 		// Reducing timeout to help with form submission performance.
 		$args['timeout'] = 0.01;
 
-		// Blocking set to false prevents some issues such as cURL connection errors being reported, but can help with form submission performance, so only removing when debugging is enabled.
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		// Blocking set to false prevents some issues such as cURL connection errors being reported, but can help with form submission performance, so only removing when debugging is enabled, or when the request occurs on shutdown.
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG || doing_action( 'shutdown' ) ) {
 			unset( $args['blocking'] );
 		}
 

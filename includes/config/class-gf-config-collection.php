@@ -63,7 +63,7 @@ class GF_Config_Collection {
 		}
 
 		$args         = json_decode( rgpost( 'args' ), true );
-		$config_path  = rgpost( 'config_path' );
+		$config_path  = wp_strip_all_tags( rgpost( 'config_path' ) );
 		$query_string = rgpost( 'query_string' );
 
 		// Making the query string available for use with form filters.
@@ -76,7 +76,7 @@ class GF_Config_Collection {
 		$configs = $this->get_configs_by_path( $config_path, $args );
 
 		if ( ! $configs ) {
-			GFCommon::send_json_error( sprintf( esc_html__( 'Unable to find config: %s', 'gravityforms' ), $config_path ) );
+			GFCommon::send_json_error( sprintf( esc_html__( 'Unable to find config: %s', 'gravityforms' ), esc_html( $config_path ) ) );
 		}
 
 		$data = $this->get_merged_data_for_object( $configs, $args );

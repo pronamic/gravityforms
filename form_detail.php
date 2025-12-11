@@ -3482,7 +3482,7 @@ class GFFormDetail {
 			></span>
 			<div class="gform-alert__message-wrap">
 				<p class="gform-alert__message"><?php echo esc_html_e( 'This form has legacy markup enabled, which may prevent some new features from functioning.', 'gravityforms' ); ?></p>
-				<p class="gform-alert__message"><?php echo esc_html_e( 'Legacy markup will be removed from Gravity Forms in version 3.1.0, and then all forms will use modern markup.  We recommend updating this form\'s settings to use modern markup.', 'gravityforms' ); ?></p>
+				<p class="gform-alert__message"><?php echo esc_html_e( 'Legacy markup will be removed from Gravity Forms in version 4.0, and then all forms will use modern markup.  We recommend updating this form\'s settings to use modern markup.', 'gravityforms' ); ?></p>
 				<a
 					class="gform-alert__cta gform-button gform-button--white gform-button--size-xs"
 					href="https://docs.gravityforms.com/about-legacy-markup"
@@ -3577,13 +3577,13 @@ class GFFormDetail {
 			<span class="gform-alert__icon gform-icon gform-icon--campaign" aria-hidden="true"></span>
 			<div class="gform-alert__message-wrap">
 				<p class="gform-alert__message" tabindex="0">
-					<?php echo esc_html_e( 'This form uses Ready Classes, which will be removed in Gravity Forms 3.1. You can now use settings or code snippets to achieve the same results.', 'gravityforms' ); ?>
+					<?php echo esc_html_e( 'This form uses Ready Classes, which will be removed in Gravity Forms 4.0. You can now use settings or code snippets to achieve the same results.', 'gravityforms' ); ?>
 				</p>
 				<a
 					class="gform-alert__cta gform-button gform-button--white gform-button--size-xs"
 					href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/"
 					target="_blank"
-					title="<?php esc_attr_e( 'Deprecation of Ready Classes in Gravity Forms 3.1', 'gravityforms' ); ?>"
+					title="<?php esc_attr_e( 'Deprecation of Ready Classes in Gravity Forms 4.0', 'gravityforms' ); ?>"
 				>
 					<?php esc_html_e( 'Learn More', 'gravityforms' ); ?>
 					<span class="screen-reader-text"><?php echo esc_html__('(opens in a new tab)', 'gravityforms'); ?></span>&nbsp;

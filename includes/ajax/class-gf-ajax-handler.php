@@ -24,7 +24,7 @@ class GF_Ajax_Handler {
 	 * @since 2.9.0
 	 *
 	 * @deprecated 2.9.9 Use GFAPI::validate_form() instead.
-	 * @remove-in 3.1.0
+	 * @remove-in 4.0
 	 */
 	public function validate_form() {
 

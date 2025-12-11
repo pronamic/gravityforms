@@ -1853,7 +1853,7 @@ function gformInitCurrencyFormatFields(fieldList){
 
 /**
  * @var {Object} GFMergeTag Handles MergeTag Operations.
- * @remove-in 3.1
+ * @remove-in 4.0
  * @deprecated Use gform.mergeTags instead.
  */
 var GFMergeTag = function() {
@@ -1863,7 +1863,7 @@ var GFMergeTag = function() {
 	 * @param inputId The input Id to get the merge tag from. This could be a field id (i.e. 1) or a specific input Id for multi-input fields (i.e. 1.2)
 	 * @param modifier The merge tag modifier to be used. i.e. value, currency, price, etc...
 	 * @returns       Returns a string containing the merge tag value for the specified input Id
-     * @remove-in 3.1
+     * @remove-in 4.0
 	 * @deprecated Use gform.mergeTags.getFieldValue() instead.
 	 */
 	GFMergeTag.getMergeTagValue = function( formId, inputId, modifier ) {
@@ -1888,7 +1888,7 @@ var GFMergeTag = function() {
 	 * @param formId    The current form Id
 	 * @param text      The text containing merge tags
 	 * @returns         Retuns the original "text" strings with all merge tags replaced with the appropriate merge tag values
-     * @remove-in 3.1
+     * @remove-in 4.0
 	 * @deprecated Use gform.mergeTags.replaceMergeTags() instead.
 	 */
 	GFMergeTag.replaceMergeTags = function( formId, text ) {
@@ -1897,7 +1897,7 @@ var GFMergeTag = function() {
 
 	/**
 	 * @deprecated Use gform.mergeTags.formatValue() instead.
-     * @remove-in 3.1
+     * @remove-in 4.0
 	 */
 	GFMergeTag.formatValue = function( value, modifier ) {
 		return gform.mergeTags.formatValue( value, modifier );
@@ -1911,7 +1911,7 @@ var GFMergeTag = function() {
 	 *
 	 * @returns Returns an array with all the merge tags that were matched in the original text
 	 * @deprecated Use gform.mergeTags.parseMergeTags() instead.
-     * @remove-in 3.1
+     * @remove-in 4.0
 	 */
 	GFMergeTag.parseMergeTags = function( text, regEx ) {
 		return gform.mergeTags.parseMergeTags( text, regEx );

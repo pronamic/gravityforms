@@ -16,7 +16,7 @@ if ( ! gform ) {
 
 		/**
 		 * @deprecated 2.9 the use of initializeOnLoaded in the form editor context is deprecated.
-		 * @remove-in 3.1 this function will not check for gform.isFormEditor().
+		 * @remove-in 4.0 this function will not check for gform.isFormEditor().
 		 */
 		callIfLoaded: function ( fn ) {
 			if ( gform.domLoaded && gform.scriptsLoaded && ( gform.themeScriptsLoaded || gform.isFormEditor() ) ) {

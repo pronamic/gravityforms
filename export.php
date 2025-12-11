@@ -1191,7 +1191,14 @@ class GFExport {
 			$offset += $page_size;
 			$remaining_entry_count -= $page_size;
 
-			if ( ! seems_utf8( $lines ) ) {
+			if( function_exists( 'wp_is_valid_utf8' ) ) {
+				// WP 6.9+
+				$is_valid_utf8 = wp_is_valid_utf8( $lines );
+			} else {
+				$is_valid_utf8 = seems_utf8( $lines );
+			}
+
+			if ( ! $is_valid_utf8 ) {
 				$lines = mb_convert_encoding( $lines, 'UTF-8', 'ISO-8859-1' );
 			}
 

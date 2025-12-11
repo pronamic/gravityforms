@@ -1,9 +1,12 @@
-### 2.9.23.2
-- Fixed an issue where some uploaded files are not attached to notifications when stored outside the default form/year/month folders.
-
-### 2.9.23.1
-- Removed the invalid maxlength attribute from class-gf-field-time.php.
+### 2.9.24 | 2025-12-10
 - Added security enhancements.
+- Updated the background processor to dispatch queued tasks on shutdown to improve performance.
+- Updated messages about functionality that will be removed or deprecated in future versions to 4.0 instead of 3.1, to reflect our new [version numbering system](https://docs.gravityforms.com/version-numbering/).
+- Updated the logic that determines whether an update — including for add-ons — can be installed automatically, to ensure compatibility with the change to the [version numbering system](https://docs.gravityforms.com/version-numbering/).
+- Updated the minimum WordPress version (for support) on the System Status page to 6.8.
+- Fixed deprecation notices for the `seems_utf8()` function in WordPress 6.9.
+- Fixed an issue where some uploaded files are not attached to notifications when stored outside the default form/year/month folders.
+- Removed the invalid maxlength attribute from class-gf-field-time.php.
 
 ### 2.9.23 | 2025-11-25
 - Added a check for minimum requirements compatibility when an update is available.

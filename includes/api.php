@@ -2617,7 +2617,7 @@ class GFAPI {
 				'event'         => $event,
 				'data'          => $data,
 			) );
-			$processor->save()->dispatch();
+			$processor->save()->dispatch_on_shutdown();
 		} else {
 			GFCommon::send_notifications( $notifications_to_send, $form, $entry, true, $event, $data );
 		}

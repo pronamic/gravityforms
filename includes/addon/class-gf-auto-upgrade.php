@@ -46,6 +46,9 @@ class GFAutoUpgrade {
 		// Check for updates. The check might not run the admin context. E.g. from WP-CLI.
 		add_filter( 'transient_update_plugins', array( $this, 'check_update' ) );
 		add_filter( 'site_transient_update_plugins', array( $this, 'check_update' ) );
+		add_filter( 'auto_update_plugin', function ( $update, $item ) {
+			return GFForms::maybe_auto_update( $update, $item, $this->_slug, $this->_version );
+		}, 10, 2 );
 
 		// ManageWP premium update filters
 		add_filter( 'mwp_premium_update_notification', array( $this, 'premium_update_push' ) );

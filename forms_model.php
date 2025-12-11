@@ -1757,7 +1757,7 @@ class GFFormsModel {
 				 * @since 2.3.3.9
 				 */
 				do_action( "gform_post_update_entry_property", $lead_id, $property_name, $property_value, $previous_value );
-				gf_feed_processor()->save()->dispatch();
+				gf_feed_processor()->save()->dispatch_on_shutdown();
 			}
 		}
 
@@ -3931,7 +3931,7 @@ class GFFormsModel {
 	/*
 	 * @deprecated 2.9.1.  Use GFCommon::maybe_format_numeric instead.
 	 *
-	 * @remove-in 3.1
+	 * @remove-in 4.0
 	 */
 	private static function try_convert_float( $text ) {
 		_deprecated_function( __METHOD__, '2.9.1', 'GFCommon::maybe_format_numeric' );
@@ -3962,7 +3962,7 @@ class GFFormsModel {
 	/*
 	 * @deprecated 2.9.1.  Use GFFormsModel::matches_conditional_operation instead.
 	 *
-	 * @remove-in 3.1
+	 * @remove-in 4.0
 	 */
 	public static function matches_operation( $val1, $val2, $operation ) {
 		_deprecated_function( __METHOD__, '2.9.1', 'GFFormsModel::matches_conditional_operation' );
@@ -5058,7 +5058,7 @@ class GFFormsModel {
 
 	/**
 	 * @depecated 2.9.18
-	 * @remove-in 3.1
+	 * @remove-in 4.0
 	 */
 	public static function get_temp_filename( $form_id, $input_name ) {
 		_deprecated_function( __METHOD__, '2.9.18', '$file_upload_field->get_tmp_file_details( $file_or_name )' );

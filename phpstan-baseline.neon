@@ -1290,3 +1290,8 @@ parameters:
 			message: "#^Variable \\$before_widget might not be defined\\.$#"
 			count: 1
 			path: widget.php
+
+		-
+			message: "#^Action callback returns array|WP_Error|false but should not return anything\\.$#"
+			count: 1
+			path: includes/async/class-gf-background-process.php

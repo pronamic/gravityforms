@@ -123,9 +123,9 @@ class GFFormSettings {
 				return '<div id="gfield-warning-deprecated" class="gform-alert gform-alert--notice gform-alert--inline" role="alert" style="margin-block-start: 1rem;">
 					<span class="gform-alert__icon gform-icon gform-icon--circle-notice-fine" aria-hidden="true"></span>
 					<div class="gform-alert__message-wrap">
-						<p class="gform-alert__message">' . esc_html__( 'This form uses the "' . $value . '" Ready Class, which will be removed in Gravity Forms 3.1. You can use a CSS code snippet instead.', 'gravityforms' ) .
+						<p class="gform-alert__message">' . esc_html__( 'This form uses the "' . $value . '" Ready Class, which will be removed in Gravity Forms 4.0. You can use a CSS code snippet instead.', 'gravityforms' ) .
 					   ' <a href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/" target="_blank" title="' .
-					   esc_attr__( 'Deprecation of Ready Classes in Gravity Forms 3.1', 'gravityforms' ) . '">' .
+					   esc_attr__( 'Deprecation of Ready Classes in Gravity Forms 4.0', 'gravityforms' ) . '">' .
 					   esc_html__( 'Learn more', 'gravityforms' ) .
 					   '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;' .
 					   '<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a></p>
@@ -800,7 +800,7 @@ class GFFormSettings {
 		    ></span>
 		    <div class="gform-alert__message-wrap">
 		        <p class="gform-alert__message">' . esc_html__( 'Legacy markup is incompatible with many new features, including the Orbital Theme.', 'gravityforms' ) . '</p>
-		        <p class="gform-alert__message">' . esc_html__( 'Legacy markup will be removed in Gravity Forms 3.1.0, and then all forms will use modern markup.  We recommend using modern markup on all forms.', 'gravityforms' ) . '</p>
+		        <p class="gform-alert__message">' . esc_html__( 'Legacy markup will be removed in Gravity Forms 4.0, and then all forms will use modern markup.  We recommend using modern markup on all forms.', 'gravityforms' ) . '</p>
 			    <a
 		            class="gform-alert__cta gform-button gform-button--white gform-button--size-xs"
 			        href="https://docs.gravityforms.com/about-legacy-markup"
@@ -846,7 +846,7 @@ class GFFormSettings {
 					return '<div class="gform-alert" data-js="gform-alert" style="grid-column: 1/-1;">
 						<span class="gform-alert__icon gform-icon gform-icon--campaign" aria-hidden="true"></span>
 						<div class="gform-alert__message-wrap">
-							<p class="gform-alert__message">' . esc_html__( 'This form uses a deprecated CSS Ready Class, which will be removed in Gravity Forms 3.1.', 'gravityforms' ) . '</p>
+							<p class="gform-alert__message">' . esc_html__( 'This form uses a deprecated CSS Ready Class, which will be removed in Gravity Forms 4.0.', 'gravityforms' ) . '</p>
 							<a class="gform-alert__cta gform-button gform-button--white gform-button--size-xs" href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/" target="_blank">'
 						   	. esc_html__( 'Learn More', 'gravityforms' ) .
 						   	'<span class="screen-reader-text">' . esc_html__('about deprecated ready classes', 'gravityforms') . '</span>
