@@ -546,6 +546,21 @@ class GFLogging extends GFAddOn {
 	 */
 	public static function log_message( $plugin, $message = null, $message_type = KLogger::DEBUG ) {
 
+		$enabled = self::is_enabled( $plugin );
+
+		/**
+		 * Fires before a logging message is recorded regardless of whether logging is enabled. Useful for sending
+		 * logs to other systems outside the file system.
+		 *
+		 * @since next
+		 *
+		 * @param string $plugin       Plugin name.
+		 * @param string $message      The logging message.
+		 * @param int    $message_type The logging message type.
+		 * @param bool   $enabled      Whether logging to file is enabled for this plugin.
+		 */
+		do_action( 'gform_pre_log_message', $plugin, $message, $message_type, $enabled );
+
 		// If message is empty, exit.
 		if ( rgblank( $message ) || ! class_exists( 'GFForms' ) || ! get_option( 'gform_enable_logging' ) ) {
 			return;
@@ -583,6 +598,33 @@ class GFLogging extends GFAddOn {
 			$log->Log( $message, $message_type );
 		}
 
+	}
+
+	/**
+	 * Determines if logging is enabled for a plugin.
+	 *
+	 * @since next
+	 *
+	 * @param string $plugin The plugin slug.
+	 *
+	 * @return bool
+	 */
+	public static function is_enabled( $plugin = 'gravityforms' ) {
+		static $results = array();
+
+		if ( isset( $results[ $plugin ] ) ) {
+			return $results[ $plugin ];
+		}
+
+		if ( ! get_option( 'gform_enable_logging' ) ) {
+			$results[ $plugin ] = false;
+
+			return false;
+		}
+
+		$results[ $plugin ] = (bool) rgar( self::get_instance()->get_plugin_setting( $plugin ), 'enable' );
+
+		return $results[ $plugin ];
 	}
 
 	/**

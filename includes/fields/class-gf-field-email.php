@@ -137,9 +137,9 @@ class GF_Field_Email extends GF_Field {
 	 * @return bool
 	 */
 	public function is_email_rejected( $email ) {
-		$form_id           = absint( $this->formId );
-		$field_id          = absint( $this->id );
-		$field             = $this;
+		$form_id  = absint( $this->formId );
+		$field_id = absint( $this->id );
+		$field    = $this;
 
 		if ( GFCommon::is_preview() ) {
 			$rejectable_values = array();
@@ -170,9 +170,10 @@ class GF_Field_Email extends GF_Field {
 			return false;
 		}
 
-		$pattern = '/' . implode( '|', array_map( 'preg_quote', $rejectable_values ) ) . '/i';
-		if ( preg_match( $pattern, $email ) ) {
-			return true;
+		foreach ( $rejectable_values as $value ) {
+			if ( stripos( $email, $value ) !== false ) {
+				return true;
+			}
 		}
 
 		return false;

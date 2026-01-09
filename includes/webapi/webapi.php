@@ -378,6 +378,7 @@ if ( class_exists( 'GFForms' ) ) {
 			<div id="gform-webapi-edit-container" style="display: none;" role="dialog" aria-modal="true">
 				<form id="gform-webapi-edit" class="gform-settings__wrapper">
 					<fieldset class="gform-settings-panel__content">
+                        <legend class="screen-reader-text"><?php esc_html__( 'Add New Key', 'gravityforms' ); ?></legend>
 
 						<!-- Nonce -->
 						<?php wp_nonce_field( 'gf_restapi_edit_key' ); ?>
@@ -598,9 +599,9 @@ if ( class_exists( 'GFForms' ) ) {
 					'dependency'  => array( $this, 'is_v2_enabled' ),
 					'fields'      => array(
 						array(
+							'name'  => 'api_keys',
 							'type'  => 'api_keys',
 							'label' => esc_html__( 'API Keys', 'gravityforms' ),
-							'name'  => 'api_keys',
 						),
 					),
 				),
@@ -730,7 +731,7 @@ if ( class_exists( 'GFForms' ) ) {
 			?>
 			<button type="button" class="gform-button gform-button--white" id="gfwebapi-qrbutton"><?php esc_html_e( 'Show/hide QR Code', 'gravityforms' ); ?></button>
 			<div id="gfwebapi-qrcode-container" style="display:none; padding-left: unset">
-				<img id="gfwebapi-qrcode" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/spinner.svg"/>
+				<img id="gfwebapi-qrcode" alt="API QR code" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/spinner.svg"/>
 			</div>
 
 			<?php

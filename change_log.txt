@@ -1,3 +1,18 @@
+### 2.9.25 | 2026-01-08
+- Added the [`gform_is_feed_error_retryable`](https://docs.gravityforms.com/gform_is_feed_error_retryable/) filter, which can be used to prevent a feed remaining in the queue for another attempt if an error occurred.
+- Added the [`gform_pre_log_message`](https://docs.gravityforms.com/gform_pre_log_message) action hook to allow developers to do an action before a message is logged, whether or not logging is enabled. Credit: Gravity Wiz Team.
+- Added alt attribute to the QR code image in the REST API settings for improved accessibility.
+- Updated `gf_feed_processor()` to accept an optional `$add_on` parameter.
+- Updated the colors of save buttons and error messages throughout the settings pages for improved accessibility.
+- Updated email notifications to no longer use the 'From' email as the default 'From' name if no name is specified.  `From` name will be empty, which lets other plugins such as Gravity SMTP override it.
+- Fixed an issue where a programmatic submission of a multipage form page progresses to the next page when the next button is hidden/disabled by conditional logic.
+- Fixed PHP warnings that occur when editing a page that includes a scheduled form with an end date in the past.
+- Fixed an issue that causes the €, £, Kč, ₪, ¥, RM, zł, ฿ currency symbols to display as a code in the Shipping and Total fields when conditional logic is enabled.
+- Fixed an issue where the entry list would revert back to "all" filter when using the enter key to search within a filtered view (e.g. Trash or Spam).
+- Fixed a PHP warning that occurs when the [`gform_email_field_rejectable_values`](https://docs.gravityforms.com/gform_email_field_rejectable_values/) filter returns a large array of values.
+- Fixed an issue with payment amount calculation that does not take dynamically-populated product prices into account in certain situations.
+- AF: Updated `GFFeedAddOn::maybe_process_feed()` to use separate background processors for each add-on, so pausing the queue on a feed processing error doesn't impact other add-ons.
+
 ### 2.9.24 | 2025-12-10
 - Added security enhancements.
 - Updated the background processor to dispatch queued tasks on shutdown to improve performance.

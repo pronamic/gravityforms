@@ -2066,7 +2066,9 @@ final class GF_Entry_List_Table extends WP_List_Table {
 				jQuery('#entry_filters').gfFilterUI(gformFieldFilters, gformInitFilter, false);
 				jQuery("#entry_filters").on("keypress", ".gform-filter-value", (function (event) {
 					if (event.keyCode == 13) {
-						Search(<?php echo json_encode( $orderby ); ?>, <?php echo json_encode( $order ); ?>, <?php echo absint( $form_id ) ?>, jQuery('.gform-filter-value').val(), <?php echo json_encode( $filter ); ?>, jQuery('.gform-filter-field').val(), jQuery('.gform-filter-operator').val());
+						var urlParams = new URLSearchParams(window.location.search);
+						var currentFilter = urlParams.get('filter') || '';
+						Search(<?php echo json_encode( $orderby ); ?>, <?php echo json_encode( $order ); ?>, <?php echo absint( $form_id ) ?>, jQuery('.gform-filter-value').val(), currentFilter, jQuery('.gform-filter-field').val(), jQuery('.gform-filter-operator').val());
 						event.preventDefault();
 					}
 				}));

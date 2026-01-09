@@ -1713,14 +1713,20 @@ class GFAPI {
 
 		remove_filter( 'gform_pre_validation', array( 'GFAPI', 'submit_form_filter_gform_pre_validation' ), 50 );
 
-
-		if ( empty( GFFormDisplay::$submission ) ) {
-			return new WP_Error( 'error_processing_form', __( 'There was an error while processing the form:', 'gravityforms' ) );
+		$submission_details = rgar( GFFormDisplay::$submission, $form_id );
+		if ( empty( $submission_details ) ) {
+			return new WP_Error( 'error_processing_form', __( 'There was an error while processing the form.', 'gravityforms' ) );
 		}
 
-		$submissions_array = GFFormDisplay::$submission;
+		$form_restriction_error = rgar( $submission_details, 'form_restriction_error' );
+		if ( $form_restriction_error ) {
+			return new WP_Error( 'form_restriction_error', $form_restriction_error );
+		}
 
-		$submission_details = $submissions_array[ $form_id ];
+		$button_logic_error = rgar( $submission_details, 'button_logic_error' );
+		if ( $button_logic_error ) {
+			return new WP_Error( 'button_logic_error', $button_logic_error );
+		}
 
 		$result = array();
 
@@ -1741,15 +1747,15 @@ class GFAPI {
 
 			if ( is_array( $confirmation_message ) ) {
 				if ( isset( $confirmation_message['redirect'] ) ) {
-					$result['confirmation_message'] = '';
+					$result['confirmation_message']  = '';
 					$result['confirmation_redirect'] = $confirmation_message['redirect'];
-					$result['confirmation_type'] = 'redirect';
+					$result['confirmation_type']     = 'redirect';
 				} else {
 					$result['confirmation_message'] = $confirmation_message;
 				}
 			} else {
 				$result['confirmation_message'] = $confirmation_message;
-				$result['confirmation_type'] = 'message';
+				$result['confirmation_type']    = 'message';
 			}
 
 			$result['entry_id'] = rgars( $submission_details, 'lead/id' );
@@ -1827,6 +1833,11 @@ class GFAPI {
 		$form_restriction_error = rgars( GFFormDisplay::$submission, $form_id . '/form_restriction_error' );
 		if ( $form_restriction_error ) {
 			return new WP_Error( 'form_restriction_error', $form_restriction_error );
+		}
+
+		$button_logic_error = rgars( GFFormDisplay::$submission, $form_id . '/button_logic_error' );
+		if ( $button_logic_error ) {
+			return new WP_Error( 'button_logic_error', $button_logic_error );
 		}
 
 		$result['validation_messages'] = self::get_field_validation_errors( $form );
@@ -2354,7 +2365,7 @@ class GFAPI {
 			}
 		}
 
-		gf_feed_processor()->save()->dispatch();
+		gf_feed_processor()->save()->dispatch_on_shutdown();
 
 		return $entry;
 	}

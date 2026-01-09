@@ -559,6 +559,12 @@ function gf_hide_button( $target ) {
 
 function gf_reset_to_default(targetId, defaultValue){
 
+	var $target = jQuery( targetId );
+    if( $target.hasClass('gfield_shipping') || $target.hasClass('gfield_total') || 
+        $target.hasClass('gfield--type-shipping') || $target.hasClass('gfield--type-total') ) {
+        return;
+    }
+
 	var dateFields = jQuery( targetId ).find( '.gfield_date_month input, .gfield_date_day input, .gfield_date_year input, .gfield_date_dropdown_month select, .gfield_date_dropdown_day select, .gfield_date_dropdown_year select' );
 	if( dateFields.length > 0 ) {
 

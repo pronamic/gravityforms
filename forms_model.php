@@ -3812,17 +3812,36 @@ class GFFormsModel {
 	 * Determines if the submit button was supposed to be hidden by conditional logic. This function helps ensure that
 	 *  the form doesn't get submitted when the submit button is hidden by conditional logic.
 	 *
-	 * @param $form The Form object
+	 * @param array $form The Form object
 	 *
 	 * @return bool Returns true if the submit button is hidden by conditional logic, false otherwise.
 	 */
 	public static function is_submit_button_hidden( $form ) {
-
-		if( ! isset( $form['button']['conditionalLogic'] ) ){
+		if ( ! isset( $form['button']['conditionalLogic'] ) ) {
 			return false;
 		}
 
 		$is_visible = self::evaluate_conditional_logic( $form, $form['button']['conditionalLogic'], array() );
+
+		return ! $is_visible;
+	}
+
+	/**
+	 * Determines if the next button was supposed to be hidden by conditional logic.
+	 *
+	 * @since next
+	 *
+	 * @param GF_Field $field The page field containing the next button logic.
+	 * @param array    $form  The current form.
+	 *
+	 * @return bool
+	 */
+	public static function is_next_button_hidden( $field, $form ) {
+		if ( ! $field instanceof GF_Field_Page || ! rgars( $field->nextButton, 'conditionalLogic/enabled' ) ) {
+			return false;
+		}
+
+		$is_visible = self::evaluate_conditional_logic( $form, $field->nextButton['conditionalLogic'], array() );
 
 		return ! $is_visible;
 	}
@@ -7159,7 +7178,7 @@ class GFFormsModel {
 	public static function get_field( $form_or_id, $field_id ) {
 		$form = is_numeric( $form_or_id ) ? self::get_form_meta( $form_or_id ) : $form_or_id;
 
-		if ( ! isset( $form['fields'] ) || ! isset( $form['id'] ) || ! is_array( $form['fields'] ) ) {
+		if ( ! isset( $form['fields'] ) || ! isset( $form['id'] ) || ! is_array( $form['fields'] ) || empty( $field_id ) ) {
 			return null;
 		}
 

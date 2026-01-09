@@ -117,7 +117,13 @@ class GF_Ajax_Handler {
 		$result = \GFAPI::submit_form( $form_id, array(), $field_values, $target_page, $source_page, \GFFormDisplay::SUBMISSION_INITIATED_BY_WEBFORM );
 
 		if ( is_wp_error( $result ) ) {
-			GFCommon::send_json_error( $result->get_error_message() );
+			if ( $result->get_error_code() === 'button_logic_error' ) {
+				$message = esc_html__( 'There was a problem with your submission.', 'gravityforms' ) . ' ' . $result->get_error_message();
+			} else {
+				$message = $result->get_error_message();
+			}
+
+			GFCommon::send_json_error( $message );
 		}
 
 		$form = $result['form'];

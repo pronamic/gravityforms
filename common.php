@@ -2419,7 +2419,7 @@ class GFCommon {
 
 		$message = self::format_email_message( $message, $message_format, $subject );
 
-		$name = empty( $from_name ) ? $from : $from_name;
+		$name = empty( $from_name ) ? '' : $from_name;
 
 		$headers         = array();
 		$headers['From'] = 'From: "' . wp_strip_all_tags( $name, true ) . '" <' . $from . '>';

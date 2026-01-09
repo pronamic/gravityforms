@@ -73,27 +73,4 @@ class GF_Background_Process_Service_Provider extends GF_Service_Provider {
 		}
 	}
 
-	/**
-	 * Initializing hooks.
-	 *
-	 * @since 2.6.9
-	 *
-	 * @param GF_Service_Container $container
-	 */
-	public function init( GF_Service_Container $container ) {
-		$processors = array_keys( $this->processors );
-
-		add_action( 'gform_uninstalling', function () use ( $processors, $container ) {
-			foreach ( $processors as $name ) {
-				/**
-				 * @var GF_Background_Process $processor
-				 */
-				$processor = $container->get( $name );
-				$processor->clear_scheduled_events();
-				$processor->clear_queue( true );
-				$processor->unlock_process();
-			}
-		} );
-	}
-
 }

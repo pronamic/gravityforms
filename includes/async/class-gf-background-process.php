@@ -188,6 +188,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 		add_action( 'make_spam_blog', array( $this, 'delete_site_batches' ) );
 		add_action( 'archive_blog', array( $this, 'delete_site_batches' ) );
 		add_action( 'make_delete_blog', array( $this, 'delete_site_batches' ) );
+		add_action( 'gform_uninstalling', array( $this, 'uninstall' ) );
 	}
 
 	/**
@@ -200,7 +201,13 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 * @return void
 	 */
 	public function dispatch_on_shutdown() {
-		$this->log_debug( sprintf( '%s(): Dispatch delayed until shutdown for %s.', __METHOD__, $this->action ) );
+		if ( $this->is_queue_empty() ) {
+			$this->log_debug( sprintf( '%s(): Aborting. Queue is empty%s.', __METHOD__, $this->get_action_for_log() ) );
+
+			return;
+		}
+
+		$this->log_debug( sprintf( '%s(): Dispatch delayed until shutdown%s.', __METHOD__, $this->get_action_for_log() ) );
 		if ( has_action( 'shutdown', array( $this, 'dispatch' ) ) ) {
 			return;
 		}
@@ -217,16 +224,16 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 * @return array|\WP_Error|false HTTP Response array, WP_Error on failure, or false if not attempted.
 	 */
 	public function dispatch() {
-		$this->log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
+		$this->log_debug( sprintf( '%s(): Running%s.', __METHOD__, $this->get_action_for_log() ) );
 
 		if ( $this->is_processing() ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Already processing for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Already processing%s.', __METHOD__, $this->get_action_for_log() ) );
 			// Process already running.
 			return false;
 		}
 
 		if ( $this->is_queue_empty() ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Queue is empty for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Queue is empty%s.', __METHOD__, $this->get_action_for_log() ) );
 
 			return false;
 		}
@@ -242,7 +249,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 		$cancel = apply_filters( $this->identifier . '_pre_dispatch', false, $this->get_chain_id() );
 
 		if ( $cancel ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Cancelled using the %s_pre_dispatch filter for %s.', __METHOD__, $this->identifier, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Cancelled using the %s_pre_dispatch filter%s.', __METHOD__, $this->identifier, $this->get_action_for_log() ) );
 
 			return false;
 		}
@@ -254,7 +261,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 		$dispatched = parent::dispatch();
 
 		if ( is_wp_error( $dispatched ) ) {
-			$this->log_debug( sprintf( '%s(): Unable to dispatch tasks to Admin Ajax: %s', __METHOD__, $dispatched->get_error_message() ) );
+			$this->log_debug( sprintf( '%s(): Unable to dispatch tasks to Admin Ajax%s: %s', __METHOD__, $this->get_action_for_log(), $dispatched->get_error_message() ) );
 		}
 
 		return $dispatched;
@@ -441,7 +448,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 * @param bool $set_timestamp Indicates of the timestamp option should be set, so it can be used by the cron healthcheck to automatically resume processing.
 	 */
 	public function pause( $set_timestamp = false ) {
-		$this->log_debug( sprintf( '%s(): Pausing processing for %s.', __METHOD__, $this->action ) );
+		$this->log_debug( sprintf( '%s(): Pausing processing%s.', __METHOD__, $this->get_action_for_log() ) );
 		update_site_option( $this->get_status_key(), $set_timestamp ? self::STATUS_PAUSED : self::STATUS_PAUSED_NO_TS );
 		if ( $set_timestamp ) {
 			update_site_option( $this->get_identifier() . '_pause_timestamp', microtime( true ) );
@@ -476,7 +483,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 * @param bool $dispatch Indicates if the Ajax request to trigger processing of the queue should be sent.
 	 */
 	public function resume( $dispatch = true ) {
-		$this->log_debug( sprintf( '%s(): Resuming processing for %s.', __METHOD__, $this->action ) );
+		$this->log_debug( sprintf( '%s(): Resuming processing%s.', __METHOD__, $this->get_action_for_log() ) );
 		delete_site_option( $this->get_status_key() );
 		delete_site_option( $this->get_identifier() . '_pause_timestamp' );
 
@@ -528,13 +535,14 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 *
 	 * @since 2.2
 	 * @since 2.9.7 Added the $key param.
+	 * @since next Increased the default length by 20 characters to account for the add-on slug being included in the feed processor identifier.
 	 *
-	 * @param int    $length Optional max length to trim key to, defaults to 64 characters.
+	 * @param int    $length Optional max length to trim key to, defaults to 84 characters.
 	 * @param string $key    Optional string to append to identifier before hash, defaults to "batch".
 	 *
 	 * @return string
 	 */
-	protected function generate_key( $length = 64, $key = 'batch' ) {
+	protected function generate_key( $length = 84, $key = 'batch' ) {
 		$unique  = md5( microtime() . wp_rand() );
 		$prepend = $this->identifier . '_' . $key . '_blog_id_' . get_current_blog_id() . '_';
 
@@ -593,23 +601,23 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 * @return void|mixed
 	 */
 	public function maybe_handle() {
-		$this->log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
-
 		// Don't lock up other requests while processing
 		session_write_close();
 
 		check_ajax_referer( $this->identifier, 'nonce' );
 
+		$this->log_debug( sprintf( '%s(): Running%s.', __METHOD__, $this->get_action_for_log() ) );
+
 		// Background process already running.
 		if ( $this->is_processing() ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Already processing for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Already processing%s.', __METHOD__, $this->get_action_for_log() ) );
 
 			return $this->maybe_wp_die();
 		}
 
 		// Cancel requested.
 		if ( $this->is_cancelled() ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Processing has been cancelled for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Processing has been cancelled%s.', __METHOD__, $this->get_action_for_log() ) );
 			$this->clear_scheduled_event();
 			$this->delete_all();
 
@@ -621,7 +629,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 			if ( $this->is_pause_expired() ) {
 				$this->resume( false );
 			} else {
-				$this->log_debug( sprintf( '%s(): Aborting. Processing is paused for %s.', __METHOD__, $this->action ) );
+				$this->log_debug( sprintf( '%s(): Aborting. Processing is paused%s.', __METHOD__, $this->get_action_for_log() ) );
 				// Not clearing; we use it to resume when the pause duration has expired.
 				//$this->clear_scheduled_event();
 				$this->paused();
@@ -632,7 +640,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 
 		// No data to process.
 		if ( $this->is_queue_empty() ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Queue is empty for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Queue is empty%s.', __METHOD__, $this->get_action_for_log() ) );
 
 			return $this->maybe_wp_die();
 		}
@@ -945,7 +953,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 			$method = '';
 		}
 
-		$this->log_debug( sprintf( '%s(): Running%s for %s.', __METHOD__, $method, $this->action ) );
+		$this->log_debug( sprintf( '%s(): Running%s%s.', __METHOD__, $method, $this->get_action_for_log() ) );
 		$this->lock_process();
 
 		/**
@@ -1004,7 +1012,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 			foreach ( $batch->data as $key => $task ) {
 				$this->increment_task_attempts( $batch, $key, $task );
 				$attempt_num = $this->supports_attempts ? sprintf( ' Attempt number: %d.', rgar( $task, 'attempts', 1 ) ) : '';
-				$this->log_debug( sprintf( '%s(): Processing task %d.%s', __METHOD__, ++ $task_num, $attempt_num ) );
+				$this->log_debug( sprintf( '%s(): Processing task %d.%s', __METHOD__, ++$task_num, $attempt_num ) );
 
 				// Setting or refreshing the current batch before processing the task.
 				$this->set_current_batch( $batch );
@@ -1038,7 +1046,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 			}
 			remove_action( 'shutdown', array( $this, 'shutdown_error_handler' ), 0 );
 
-			$this->log_debug( sprintf( '%s(): Batch completed for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Batch completed%s.', __METHOD__, $this->get_action_for_log() ) );
 
 			// Delete current batch if fully processed.
 			if ( empty( $batch->data ) ) {
@@ -1051,18 +1059,20 @@ abstract class GF_Background_Process extends WP_Async_Request {
 
 		// Start next batch or complete process.
 		if ( $this->is_paused() ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Processing is paused for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Processing is paused%s.', __METHOD__, $this->get_action_for_log() ) );
 			$this->paused();
 		} elseif ( ! $this->is_queue_empty() ) {
-			$this->log_debug( sprintf( '%s(): Batches remain in the queue for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Batches remain in the queue%s.', __METHOD__, $this->get_action_for_log() ) );
 			$this->dispatch();
 		} else {
-			$this->log_debug( sprintf( '%s(): All batches completed for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): All batches completed%s.', __METHOD__, $this->get_action_for_log() ) );
 			$this->complete();
 		}
 
 		if ( $is_cron ) {
 			exit;
+		} elseif ( wp_doing_ajax() ) {
+			wp_send_json_success();
 		}
 
 		return $this->maybe_wp_die();
@@ -1355,17 +1365,17 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 * @since 2.2
 	 */
 	public function handle_cron_healthcheck() {
-		$this->log_debug( sprintf( '%s(): Running for %s.', __METHOD__, $this->action ) );
+		$this->log_debug( sprintf( '%s(): Running%s.', __METHOD__, $this->get_action_for_log() ) );
 		GFCommon::record_cron_event( $this->cron_hook_identifier );
 
 		if ( $this->is_processing() ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Already processing for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Already processing%s.', __METHOD__, $this->get_action_for_log() ) );
 			// Background process already running.
 			exit;
 		}
 
 		if ( $this->is_queue_empty() ) {
-			$this->log_debug( sprintf( '%s(): Aborting. Queue is empty for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Aborting. Queue is empty%s.', __METHOD__, $this->get_action_for_log() ) );
 			// No data to process.
 			$this->clear_scheduled_event();
 			exit;
@@ -1375,7 +1385,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 			if ( $this->is_pause_expired() ) {
 				$this->resume( false );
 			} else {
-				$this->log_debug( sprintf( '%s(): Aborting. Processing is paused for %s.', __METHOD__, $this->action ) );
+				$this->log_debug( sprintf( '%s(): Aborting. Processing is paused%s.', __METHOD__, $this->get_action_for_log() ) );
 				exit;
 			}
 		}
@@ -1423,7 +1433,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 */
 	protected function schedule_event() {
 		if ( ! wp_next_scheduled( $this->cron_hook_identifier ) ) {
-			$this->log_debug( sprintf( '%s(): Scheduling cron event for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Scheduling cron event%s.', __METHOD__, $this->get_action_for_log() ) );
 			wp_schedule_event(
 				time() + ( $this->get_cron_interval() * MINUTE_IN_SECONDS ),
 				$this->cron_interval_identifier,
@@ -1441,7 +1451,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 		$timestamp = wp_next_scheduled( $this->cron_hook_identifier );
 
 		if ( $timestamp ) {
-			$this->log_debug( sprintf( '%s(): Clearing cron event for %s.', __METHOD__, $this->action ) );
+			$this->log_debug( sprintf( '%s(): Clearing cron event%s.', __METHOD__, $this->get_action_for_log() ) );
 			wp_unschedule_event( $timestamp, $this->cron_hook_identifier );
 		}
 	}
@@ -1784,6 +1794,32 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 */
 	public function log_error( $message ) {
 		GFCommon::log_error( $message );
+	}
+
+	/**
+	 * Returns the action portion of logging statements.
+	 *
+	 * @since next
+	 *
+	 * @return string
+	 */
+	protected function get_action_for_log() {
+		return ' for ' . $this->action;
+	}
+
+	/**
+	 * Performs some cleanup when the plugin is uninstalled.
+	 *
+	 * @since next
+	 *
+	 * @return void
+	 */
+	public function uninstall() {
+		$this->clear_scheduled_events();
+		$this->clear_queue( true );
+		$this->unlock_process();
+		delete_site_option( $this->get_status_key() );
+		delete_site_option( $this->get_identifier() . '_pause_timestamp' );
 	}
 
 }

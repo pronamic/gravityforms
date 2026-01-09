@@ -18,13 +18,14 @@ if ( ! class_exists( 'Gravity_Forms\Gravity_Forms\Async\GF_Background_Process' )
 class GF_Feed_Processor extends GF_Background_Process {
 
 	/**
-	 * Contains an instance of this class, if available.
+	 * Contains instances of this class, if available.
 	 *
 	 * @since  2.2
-	 * @access private
-	 * @var    object $_instance If available, contains an instance of this class.
+	 * @since  next Changed to an array.
+	 *
+	 * @var   self[] $_instances If available, contains instances of this class.
 	 */
-	private static $_instance = null;
+	private static $_instances = array();
 
 	/**
 	 * The action name.
@@ -45,22 +46,67 @@ class GF_Feed_Processor extends GF_Background_Process {
 	protected $supports_attempts = true;
 
 	/**
+	 * Null or the add-on instance.
+	 *
+	 * @since next
+	 *
+	 * @var null|GFFeedAddOn
+	 */
+	protected $add_on = null;
+
+	/**
+	 * Instantiates the class.
+	 *
+	 * @since next
+	 *
+	 * @param bool|array       $allowed_batch_data_classes Optional. Array of class names that can be unserialized. Default true (any class).
+	 * @param null|GFFeedAddOn $add_on                     Optional. The add-on instance.
+	 */
+	public function __construct( $allowed_batch_data_classes = true, $add_on = null ) {
+		if ( $add_on instanceof GFFeedAddOn ) {
+			$this->action = str_replace( 'gf', 'gf_' . $add_on->get_short_slug(), $this->action );
+			$this->add_on = $add_on;
+		}
+		parent::__construct( $allowed_batch_data_classes );
+	}
+
+	/**
 	 * Get instance of this class.
 	 *
 	 * @since  2.2
-	 * @access public
-	 * @static
+	 * @since  next Added the $add_on param.
+	 *
+	 * @param null|GFFeedAddOn $add_on Optional. The add-on instance.
 	 *
 	 * @return GF_Feed_Processor
 	 */
-	public static function get_instance() {
+	public static function get_instance( $add_on = null ) {
+		$key = $add_on instanceof GFFeedAddOn ? $add_on->get_slug() : 0;
 
-		if ( null === self::$_instance ) {
-			self::$_instance = new self;
+		if ( empty( self::$_instances[ $key ] ) ) {
+			self::$_instances[ $key ] = new self( true, $add_on );
 		}
 
-		return self::$_instance;
+		return self::$_instances[ $key ];
+	}
 
+	/**
+	 * Push to queue
+	 *
+	 * @since next
+	 * @remove-in 3.0
+	 *
+	 * @param mixed $data Data.
+	 *
+	 * @return $this
+	 */
+	public function push_to_queue( $data ) {
+		if ( ! is_string( rgar( $data, 'addon' ) ) ) {
+			_doing_it_wrong( __METHOD__, "Support for passing an add-on instance to `\$data['addon']` is deprecated since v2.7.15 and will be removed in v3.0. Please pass the add-on’s fully qualified class name (including its namespace) instead.", '' );
+			$data['addon'] = get_class( $data['addon'] );
+		}
+
+		return parent::push_to_queue( $data );
 	}
 
 	/**
@@ -84,23 +130,36 @@ class GF_Feed_Processor extends GF_Background_Process {
 	 * @return bool|array
 	 */
 	protected function task( $item ) {
-
-		$addon     = $item['addon'];
 		$feed      = $item['feed'];
 		$feed_name = GFAPI::get_feed_name( $feed );
+		$feed_id   = (int) rgar( $feed, 'id' );
+		$entry_id  = (int) rgar( $item, 'entry_id' );
 
-		$callable = array( is_string( $addon ) ? $addon : get_class( $addon ), 'get_instance' );
-		if ( is_callable( $callable ) ) {
-			$addon = call_user_func( $callable );
-		}
+		if ( $this->add_on instanceof GFFeedAddOn ) {
+			$addon     = $this->add_on;
+			$feed_slug = rgar( $feed, 'addon_slug' );
+			if ( $feed_slug !== $addon->get_slug() ) {
+				$this->log_error( __METHOD__ . "(): Aborting. Feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id} belongs to a different add-on ({$feed_slug})." );
 
-		$feed_id  = (int) rgar( $feed, 'id' );
-		$entry_id = (int) rgar( $item, 'entry_id' );
+				return false;
+			}
+		} else {
+			/**
+			 * Passing an instance of the add-on.
+			 * @deprecated 2.7.15
+			 * @remove-in  3.0
+			 */
+			$addon    = $item['addon'];
+			$callable = array( is_string( $addon ) ? $addon : get_class( $addon ), 'get_instance' );
+			if ( is_callable( $callable ) ) {
+				$addon = call_user_func( $callable );
+			}
 
-		if ( ! $addon instanceof GFFeedAddOn ) {
-			GFCommon::log_error( __METHOD__ . "(): Aborting. Add-on ({$feed['addon_slug']}) not found for feed (#{$feed_id} - {$feed_name}) and entry #{$entry_id}." );
+			if ( ! $addon instanceof GFFeedAddOn ) {
+				GFCommon::log_error( __METHOD__ . "(): Aborting. Add-on ({$feed['addon_slug']}) not found for feed (#{$feed_id} - {$feed_name}) and entry #{$entry_id}." );
 
-			return false;
+				return false;
+			}
 		}
 
 		$addon->log_debug( __METHOD__ . "(): Preparing to process feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
@@ -160,8 +219,9 @@ class GF_Feed_Processor extends GF_Background_Process {
 			$addon->save_entry_feed_status( $e, $entry_id, $feed_id, $form_id );
 			$addon->log_error( __METHOD__ . "(): Aborting. Error occurred during processing of feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}: {$e->getMessage()}" );
 
-			// Return the item for another attempt
-			return $item;
+			$error = new WP_Error( $e->getCode(), $e->getMessage() );
+
+			return $addon->is_feed_error_retryable( true, $error, $feed, $entry, $form ) ? $item : false;
 		}
 
 		$addon->save_entry_feed_status( $result, $entry_id, $feed_id, $form_id );
@@ -170,8 +230,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 			/** @var WP_Error $result */
 			$addon->log_error( __METHOD__ . "(): Aborting. Error occurred during processing of feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}: {$result->get_error_message()}" );
 
-			// Return the item for another attempt
-			return $item;
+			return $addon->is_feed_error_retryable( true, $result, $feed, $entry, $form ) ? $item : false;
 		}
 
 
@@ -249,15 +308,19 @@ class GF_Feed_Processor extends GF_Background_Process {
 			return;
 		}
 
-		$callable = array( $task['addon'], 'get_instance' );
-		if ( ! is_callable( $callable ) ) {
-			return;
+		if ( $this->add_on ) {
+			$addon = $this->add_on;
+		} else {
+			$callable = array( $task['addon'], 'get_instance' );
+			if ( ! is_callable( $callable ) ) {
+				return;
+			}
+			$addon = call_user_func( $callable );
 		}
 
 		$feed     = $task['feed'];
 		$feed_id  = (int) rgar( $feed, 'id' );
 		$entry_id = (int) rgar( $task, 'entry_id' );
-		$addon    = call_user_func( $callable );
 		$addon->log_error( __METHOD__ . "(): Aborting. Error occurred during processing of feed (#{$feed_id} - {$addon->get_feed_name( $feed )}) for entry #{$entry_id}: {$error['message']}" );
 		$addon->save_entry_feed_status( new WP_Error( $error['type'], $error['message'] ), $entry_id, $feed_id, (int) rgar( $task, 'form_id' ) );
 	}
@@ -303,14 +366,64 @@ class GF_Feed_Processor extends GF_Background_Process {
 
 		return $item;
 	}
+
+	/**
+	 * Writes a message to the add-on or core log.
+	 *
+	 * @since next
+	 *
+	 * @param string $message The message to be logged.
+	 *
+	 * @return void
+	 */
+	public function log_debug( $message ) {
+		if ( $this->add_on ) {
+			$this->add_on->log_debug( $message );
+		} else {
+			parent::log_debug( $message );
+		}
+	}
+
+	/**
+	 * Writes an error message to the add-on or core log.
+	 *
+	 * @since next
+	 *
+	 * @param string $message The message to be logged.
+	 *
+	 * @return void
+	 */
+	public function log_error( $message ) {
+		if ( $this->add_on ) {
+			$this->add_on->log_error( $message );
+		} else {
+			parent::log_error( $message );
+		}
+	}
+
+	/**
+	 * Returns the action portion of logging statements.
+	 *
+	 * @since next
+	 *
+	 * @return string
+	 */
+	protected function get_action_for_log() {
+		return $this->add_on ? '' : parent::get_action_for_log();
+	}
+
 }
 
 /**
  * Returns an instance of the GF_Feed_Processor class
  *
- * @see    GF_Feed_Processor::get_instance()
+ * @since 2.2
+ * @since next Added the $add_on param.
+ *
+ * @param null|GFFeedAddOn $add_on Optional. The add-on instance.
+ *
  * @return GF_Feed_Processor
  */
-function gf_feed_processor() {
-	return GF_Feed_Processor::get_instance();
+function gf_feed_processor( $add_on = null ) {
+	return GF_Feed_Processor::get_instance( $add_on );
 }

@@ -127,6 +127,13 @@ abstract class GFFeedAddOn extends GFAddOn {
 	 * @since 2.5.2
 	 */
 	public function bootstrap() {
+		if ( ! $this instanceof GFPaymentAddOn ) {
+			if ( ! function_exists( 'gf_feed_processor' ) ) {
+				require_once GF_PLUGIN_DIR_PATH . 'includes/addon/class-gf-feed-processor.php';
+			}
+			gf_feed_processor( $this );
+		}
+
 		parent::bootstrap();
 
 		if ( $this->is_feed_edit_page() ) {
@@ -300,11 +307,22 @@ abstract class GFFeedAddOn extends GFAddOn {
 		return array_merge( parent::scripts(), $scripts );
 	}
 
+	/**
+	 * Deletes the feeds and clears queued background tasks on uninstall.
+	 *
+	 * @since unknown
+	 * @since next Updated to clear queued background tasks.
+	 *
+	 * @return void
+	 */
 	public function uninstall() {
 		global $wpdb;
 		$sql = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}gf_addon_feed WHERE addon_slug=%s", $this->get_slug() );
 		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
+		if ( ! $this instanceof GFPaymentAddOn ) {
+			gf_feed_processor( $this )->uninstall();
+		}
 	}
 
 	//-------- Front-end methods ---------------------------
@@ -366,6 +384,8 @@ abstract class GFFeedAddOn extends GFAddOn {
 		// Initialize array of feeds that have been processed.
 		$processed_feeds = array();
 
+		$background_processor = gf_feed_processor( $this );
+
 		// Loop through feeds.
 		foreach ( $feeds as $feed ) {
 
@@ -379,10 +399,10 @@ abstract class GFFeedAddOn extends GFAddOn {
 				continue;
 			}
 
-            if ( ! $this->can_process_feed( $feed, $entry, $form ) ) {
-	            $this->log_debug( __METHOD__ . "(): Feed can't be re-processed. Not processing feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
-                continue;
-            }
+			if ( ! $this->can_process_feed( $feed, $entry, $form ) ) {
+				$this->log_debug( __METHOD__ . "(): Feed can't be re-processed. Not processing feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
+				continue;
+			}
 
 			// If this feed's condition is not met, log that it's not being processed and skip it.
 			if ( ! $this->is_feed_condition_met( $feed, $form, $entry ) ) {
@@ -400,7 +420,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 					$this->log_debug( __METHOD__ . "(): Adding feed (#{$feed_id} - {$feed_name}) to the processing queue for entry #{$entry_id}." );
 
 					// Add feed to processing queue.
-					gf_feed_processor()->push_to_queue(
+					$background_processor->push_to_queue(
 						array(
 							'addon'    => get_class( $this ),
 							'feed'     => $feed,
@@ -444,6 +464,8 @@ abstract class GFFeedAddOn extends GFAddOn {
 		if ( ! empty( $processed_feeds ) ) {
 			GFAPI::update_processed_feeds_meta( $entry_id, $this->get_slug(), $processed_feeds, $form_id );
 		}
+
+		$background_processor->save()->dispatch_on_shutdown();
 
 		// Return the entry object.
 		return $entry;
@@ -655,75 +677,108 @@ abstract class GFFeedAddOn extends GFAddOn {
 		return $this->_supports_feed_reprocessing;
 	}
 
-    /**
-     * Determines if the feed can be processed based on the contents of the processed feeds entry meta.
-     *
-     * @since 2.9.19
-     *
-     * @param array $feed  The feed being processing.
-     * @param array $entry The entry being processed.
-     * @param array $form  The form the entry belongs to.
-     *
-     * @return bool Returns true if the feed can be processed, otherwise false.
-     */
-    public function can_process_feed( $feed, $entry, $form ) {
-	    $entry_id          = (int) rgar( $entry, 'id' );
-	    $processed_feeds   = GFAPI::get_processed_feeds_meta( $entry_id, $this->get_slug() );
-	    $already_processed = ! empty( $processed_feeds ) && in_array( (int) rgar( $feed, 'id' ), $processed_feeds );
+	/**
+	 * Determines if the feed can be processed based on the contents of the processed feeds entry meta.
+	 *
+	 * @since 2.9.19
+	 *
+	 * @param array $feed  The feed being processing.
+	 * @param array $entry The entry being processed.
+	 * @param array $form  The form the entry belongs to.
+	 *
+	 * @return bool Returns true if the feed can be processed, otherwise false.
+	 */
+	public function can_process_feed( $feed, $entry, $form ) {
+		$entry_id          = (int) rgar( $entry, 'id' );
+		$processed_feeds   = GFAPI::get_processed_feeds_meta( $entry_id, $this->get_slug() );
+		$already_processed = ! empty( $processed_feeds ) && in_array( (int) rgar( $feed, 'id' ), $processed_feeds );
 
-	    if ( ! $already_processed ) {
-		    return true;
-	    }
+		if ( ! $already_processed ) {
+			return true;
+		}
 
-	    $feed_name = rgars( $feed, 'meta/feed_name' ) ? $feed['meta']['feed_name'] : rgars( $feed, 'meta/feedName' );
+		$feed_name = rgars( $feed, 'meta/feed_name' ) ? $feed['meta']['feed_name'] : rgars( $feed, 'meta/feedName' );
 
-	    if ( ! $this->is_reprocessing_supported( $feed, $entry, $form ) ) {
-		    $this->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT supported.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
+		if ( ! $this->is_reprocessing_supported( $feed, $entry, $form ) ) {
+			$this->log_debug( __METHOD__ . sprintf( '(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT supported.', rgar( $feed, 'id' ), $feed_name, $entry_id ) );
 
-		    return false;
-	    }
+			return false;
+		}
 
-	    /**
-	     * Allows reprocessing of the feed to be enabled.
-	     *
-	     * @since 2.9.2
-	     *
-         * @deprecated 2.9.19 Use gform_allow_feed_reprocessing instead.
-         *
-	     * @param bool        $allow_reprocessing Indicates if the feed can be reprocessed. Default is false.
-	     * @param array       $feed               The feed queued for processing.
-	     * @param array       $entry              The entry being processed.
-	     * @param array       $form               The form the entry belongs to.
-	     * @param GFFeedAddOn $addon              The current instance of the add-on the feed belongs to.
-	     * @param array       $processed_feeds    An array of feed IDs that have already been processed for the given entry.
-	     */
-	    $allow_reprocessing = apply_filters_deprecated( 'gform_allow_async_feed_reprocessing', array( false, $feed, $entry, $form, $this, $processed_feeds ), '2.9.19', 'gform_allow_feed_reprocessing' );
+		/**
+		 * Allows reprocessing of the feed to be enabled.
+		 *
+		 * @since      2.9.2
+		 *
+		 * @param bool        $allow_reprocessing Indicates if the feed can be reprocessed. Default is false.
+		 * @param array       $feed               The feed queued for processing.
+		 * @param array       $entry              The entry being processed.
+		 * @param array       $form               The form the entry belongs to.
+		 * @param GFFeedAddOn $addon              The current instance of the add-on the feed belongs to.
+		 * @param array       $processed_feeds    An array of feed IDs that have already been processed for the given entry.
+		 *
+		 * @deprecated 2.9.19 Use gform_allow_feed_reprocessing instead.
+		 *
+		 */
+		$allow_reprocessing = apply_filters_deprecated( 'gform_allow_async_feed_reprocessing', array( false, $feed, $entry, $form, $this, $processed_feeds ), '2.9.19', 'gform_allow_feed_reprocessing' );
 
-	    /**
-	     * Allows reprocessing of the feed to be enabled. This applies to both synchronous and asynchronous feed processing.
-         * By default, feeds are prevented from being sent multipe times for the same entry. Using this filter, reprocessing can be enabled.
-	     *
-	     * @since 2.9.20
-	     *
-	     * @param bool        $allow_reprocessing Indicates if the feed can be reprocessed. Default is false.
-	     * @param array       $feed               The feed queued for processing.
-	     * @param array       $entry              The entry being processed.
-	     * @param array       $form               The form the entry belongs to.
-	     * @param GFFeedAddOn $addon              The current instance of the add-on the feed belongs to.
-	     * @param array       $processed_feeds    An array of feed IDs that have already been processed for the given entry.
-	     */
-	    $allow_reprocessing = apply_filters( 'gform_allow_feed_reprocessing', false, $feed, $entry, $form, $this, $processed_feeds );
+		/**
+		 * Allows reprocessing of the feed to be enabled. This applies to both synchronous and asynchronous feed processing.
+		 * By default, feeds are prevented from being sent multipe times for the same entry. Using this filter, reprocessing can be enabled.
+		 *
+		 * @since 2.9.20
+		 *
+		 * @param bool        $allow_reprocessing Indicates if the feed can be reprocessed. Default is false.
+		 * @param array       $feed               The feed queued for processing.
+		 * @param array       $entry              The entry being processed.
+		 * @param array       $form               The form the entry belongs to.
+		 * @param GFFeedAddOn $addon              The current instance of the add-on the feed belongs to.
+		 * @param array       $processed_feeds    An array of feed IDs that have already been processed for the given entry.
+		 */
+		$allow_reprocessing = apply_filters( 'gform_allow_feed_reprocessing', false, $feed, $entry, $form, $this, $processed_feeds );
 
-	    if ( ! $allow_reprocessing ) {
-		    $this->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT allowed.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
+		if ( ! $allow_reprocessing ) {
+			$this->log_debug( __METHOD__ . sprintf( '(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT allowed.', rgar( $feed, 'id' ), $feed_name, $entry_id ) );
 
-		    return false;
-	    }
+			return false;
+		}
 
-	    $this->log_debug( __METHOD__ . sprintf( "(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing IS allowed.", rgar( $feed, 'id' ), $feed_name, $entry_id ) );
+		$this->log_debug( __METHOD__ . sprintf( '(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing IS allowed.', rgar( $feed, 'id' ), $feed_name, $entry_id ) );
 
-	    return true;
-    }
+		return true;
+	}
+
+	/**
+	 * Determines if the feed should remain in the queue for another attempt based on the error that occurred during processing.
+	 *
+	 * If overriding in an add-on, call the parent method last to trigger the filter.
+	 *
+	 * @since next
+	 *
+	 * @param bool     $retry Indicates if the feed can be retried following an error. Default is true.
+	 * @param WP_Error $error The error that occurred during feed processing.
+	 * @param array    $feed  The feed that was processed.
+	 * @param array    $entry The entry the feed was processed for.
+	 * @param array    $form  The form the entry and feed belong to.
+	 *
+	 * @return bool
+	 */
+	public function is_feed_error_retryable( $retry, $error, $feed, $entry, $form ) {
+
+		/**
+		 * Determines if the feed should remain in the queue for another attempt based on the error that occurred during processing.
+		 *
+		 * @since next
+		 *
+		 * @param bool     $retry Indicates if the feed can be retried following an error. Default is true.
+		 * @param WP_Error $error The error that occurred during feed processing.
+		 * @param array    $feed  The feed that was processed.
+		 * @param array    $entry The entry the feed was processed for.
+		 * @param array    $form  The form the entry and feed belong to.
+		 */
+		return (bool) apply_filters( 'gform_is_feed_error_retryable', $retry, $error, $feed, $entry, $form );
+	}
+
 	/**
 	 * Processes feed action.
 	 *
