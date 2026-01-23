@@ -23,11 +23,23 @@ function gf_apply_rules(formId, fields, isInit){
 		gf_apply_field_rule(formId, fields[i], isInit, function(){
 			var is_last_field = ( i >= fields.length - 1 );
 			if( is_last_field ) {
+
+				// Gather the fields that are dependents of the processed fields (inside pages/sections).
+				var dependentFields = [];
+				var dependents = window["gf_form_conditional_logic"][formId]["dependents"][fields[i]];
+				if ( dependents ) {
+					dependents.forEach( function ( dependentFieldId ) {
+						if ( dependentFields.indexOf( dependentFieldId ) === -1 ) {
+							dependentFields.push( dependentFieldId );
+						}
+					});
+				}
+
 				jQuery(document).trigger('gform_post_conditional_logic', [formId, fields, isInit]);
 				gform.utils.trigger( {
 					event: 'gform/conditionalLogic/applyRules/end',
 					native: false,
-					data: { formId: formId, fields: fields, isInit: isInit },
+					data: { formId: formId, fields: fields, dependentFields: dependentFields, isInit: isInit },
 				} );
 				if( window.gformCalculateTotalPrice ) {
 					window.gformCalculateTotalPrice( formId );
@@ -560,7 +572,7 @@ function gf_hide_button( $target ) {
 function gf_reset_to_default(targetId, defaultValue){
 
 	var $target = jQuery( targetId );
-    if( $target.hasClass('gfield_shipping') || $target.hasClass('gfield_total') || 
+    if( $target.hasClass('gfield_shipping') || $target.hasClass('gfield_total') ||
         $target.hasClass('gfield--type-shipping') || $target.hasClass('gfield--type-total') ) {
         return;
     }

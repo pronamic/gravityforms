@@ -411,6 +411,7 @@ function GFConditionalLogic( fieldId, objectType ) {
 	// State and Flyout data
 	this.fieldId    = fieldId;
 	this.form       = form;
+	this.pointerDownInside = false;
 	this.objectType = objectType;
 	this.els        = this.gatherElements();
 	this.state      = this.getStateForField( fieldId );
@@ -1252,7 +1253,7 @@ GFConditionalLogic.prototype.handleFlyoutChange = function( e ) {
  * @param {Event} e
  */
 GFConditionalLogic.prototype.handleBodyClick = function( e ) {
-	if ( isValidFlyoutClick( e ) ) {
+	if ( isValidFlyoutClick( e ) || this.pointerDownInside ) {
 		return;
 	}
 
@@ -1286,6 +1287,9 @@ GFConditionalLogic.prototype.addEventListeners = function() {
 	this.els.flyouts[ this.objectType ].addEventListener( 'change', this._handleFlyoutChange );
 	document.body.addEventListener( 'click', this._handleBodyClick );
 	gform.addAction( 'formEditorNullClick', this._handleAccordionClick );
+	this.els.flyouts[ this.objectType ].addEventListener( 'mousedown', ( event ) => {
+		this.pointerDownInside = this.els.flyouts[ this.objectType ].contains( event.target );
+	} );
 }
 
 /**

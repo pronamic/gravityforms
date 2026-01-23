@@ -1090,7 +1090,12 @@ abstract class GFAddOn {
 			),
 			array(
 				'handle'  => 'gform_gravityforms',
-				'enqueue' => array( array( 'admin_page' => array( 'form_settings' ) ) )
+				'enqueue' => array(
+					array(
+						'admin_page' => array( 'plugin_settings' ),
+						'tab'        => 'recaptcha',
+					),
+				),
 			),
 			array(
 				'handle'  => 'google_charts',

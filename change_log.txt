@@ -1,3 +1,16 @@
+### 2.9.26 | 2026-01-22
+- Added Support Request and Square Course Registration form templates to the templates library.
+- Added a hidden input to the form footer with a value of the form's currency code.
+- Updated the `gform/conditionalLogic/applyRules/end` JS action so that if the field being processed is a page or section, the action passes the IDs of the fields within the page or section.
+- Updated CLI detection to ensure JS hooks are loaded when necessary.
+- Fixed a JS console error on the reCAPTCHA settings page in No-Conflict mode.
+- Fixed an issue where the conditional logic and edit choices flyout closes unexpectedly when you release the mouse button outside it.
+- Deprecated the `gform_input_mask_script` filter, which will be removed in Gravity Forms 3.0.
+- API: Updated the frontend feed data to include the product ID mapped to a subscription's setup fee.
+- API: Fixed a layout issue so that the "Card" field type in the Settings API fills the width of the settings page.
+- API: Fixed an issues with the gform.product.getPaymentAmount() method where a dynamically populated hidden product quantity is not taken into account when calculating the amount.
+- API: Added client side logging functionality.
+
 ### 2.9.25 | 2026-01-08
 - Added the [`gform_is_feed_error_retryable`](https://docs.gravityforms.com/gform_is_feed_error_retryable/) filter, which can be used to prevent a feed remaining in the queue for another attempt if an error occurred.
 - Added the [`gform_pre_log_message`](https://docs.gravityforms.com/gform_pre_log_message) action hook to allow developers to do an action before a message is logged, whether or not logging is enabled. Credit: Gravity Wiz Team.

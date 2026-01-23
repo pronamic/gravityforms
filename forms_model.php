@@ -3124,7 +3124,7 @@ class GFFormsModel {
 			 * @param array $form The form currently being processed.
 			 *
 			 */
-			$currency = gf_apply_filters( array( 'gform_currency_pre_save_entry', $form['id'] ), GFCommon::get_currency(), $form );
+			$currency = gf_apply_filters( array( 'gform_currency_pre_save_entry', $form['id'] ), GFCommon::get_submission_currency(), $form );
 
 			$ip        = rgars( $form, 'personalData/preventIP' ) ? '' : self::get_ip();
 			$source_id = self::get_source_id( $form );
@@ -3535,7 +3535,7 @@ class GFFormsModel {
 		 * @param array $form The form currently being processed.
 		 *
 		 */
-		$lead['currency'] = gf_apply_filters( array( 'gform_currency_pre_save_entry', $form_id ), GFCommon::get_currency(), $form );
+		$lead['currency'] = gf_apply_filters( array( 'gform_currency_pre_save_entry', $form_id ), GFCommon::get_submission_currency(), $form );
 
 		foreach ( $form['fields'] as $field ) {
 			/* @var $field GF_Field */
@@ -3829,7 +3829,7 @@ class GFFormsModel {
 	/**
 	 * Determines if the next button was supposed to be hidden by conditional logic.
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 *
 	 * @param GF_Field $field The page field containing the next button logic.
 	 * @param array    $form  The current form.

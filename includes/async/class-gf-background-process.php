@@ -535,7 +535,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	 *
 	 * @since 2.2
 	 * @since 2.9.7 Added the $key param.
-	 * @since next Increased the default length by 20 characters to account for the add-on slug being included in the feed processor identifier.
+	 * @since 2.9.25 Increased the default length by 20 characters to account for the add-on slug being included in the feed processor identifier.
 	 *
 	 * @param int    $length Optional max length to trim key to, defaults to 84 characters.
 	 * @param string $key    Optional string to append to identifier before hash, defaults to "batch".
@@ -1799,7 +1799,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	/**
 	 * Returns the action portion of logging statements.
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 *
 	 * @return string
 	 */
@@ -1810,7 +1810,7 @@ abstract class GF_Background_Process extends WP_Async_Request {
 	/**
 	 * Performs some cleanup when the plugin is uninstalled.
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 *
 	 * @return void
 	 */

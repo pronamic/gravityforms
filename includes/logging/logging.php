@@ -181,6 +181,8 @@ class GFLogging extends GFAddOn {
 		remove_filter( 'ure_capabilities_groups_tree', array( $this, 'filter_ure_capabilities_groups_tree' ), 11 );
 		remove_filter( 'ure_custom_capability_groups', array( $this, 'filter_ure_custom_capability_groups' ), 10 );
 
+        // Registering config for client side logger
+        $this->register_config();
 	}
 
 	/**
@@ -552,7 +554,7 @@ class GFLogging extends GFAddOn {
 		 * Fires before a logging message is recorded regardless of whether logging is enabled. Useful for sending
 		 * logs to other systems outside the file system.
 		 *
-		 * @since next
+		 * @since 2.9.26
 		 *
 		 * @param string $plugin       Plugin name.
 		 * @param string $message      The logging message.
@@ -603,7 +605,7 @@ class GFLogging extends GFAddOn {
 	/**
 	 * Determines if logging is enabled for a plugin.
 	 *
-	 * @since next
+	 * @since 2.9.26
 	 *
 	 * @param string $plugin The plugin slug.
 	 *
@@ -789,6 +791,17 @@ class GFLogging extends GFAddOn {
 
 		return $size;
 
+	}
+    /**
+     * Register config for client side logger
+     *
+     * @since 2.9.26
+     */
+	protected static function register_config() {
+        require_once 'config/class-gf-logging-config.php';
+		$container = GFForms::get_service_container();
+        $config_collection = $container->get( Gravity_Forms\Gravity_Forms\Config\GF_Config_Service_Provider::CONFIG_COLLECTION );
+        $config_collection->add_config( new Gravity_Forms\Gravity_Forms\Logging\Config\GF_Logging_Config( $container->get( Gravity_Forms\Gravity_Forms\Config\GF_Config_Service_Provider::DATA_PARSER ) ) );
 	}
 
 	/**

@@ -168,7 +168,19 @@ function initLayoutEditor( $ ) {
 	} );
 
 	// Clear field selection when clicking off of any field.
-	$editorContainer.on( 'click', function () {
+	// Track mousedown target to prevent clearing selection when user clicks
+	// inside a flyout and drags to release over the editor.
+	var mousedownTarget = null;
+	$editorContainer.on( 'mousedown', function ( event ) {
+		mousedownTarget = event.target;
+	} );
+	$editorContainer.on( 'click', function ( event ) {
+		// Don't clear if mousedown originated inside any flyout
+		if ( mousedownTarget && $( mousedownTarget ).closest( '.gform-flyout, [id$="_flyout_container"]' ).length ) {
+			mousedownTarget = null;
+			return;
+		}
+		mousedownTarget = null;
 		clearFieldSelection();
 	} );
 

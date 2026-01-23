@@ -48,7 +48,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	/**
 	 * Null or the add-on instance.
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 *
 	 * @var null|GFFeedAddOn
 	 */
@@ -57,7 +57,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	/**
 	 * Instantiates the class.
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 *
 	 * @param bool|array       $allowed_batch_data_classes Optional. Array of class names that can be unserialized. Default true (any class).
 	 * @param null|GFFeedAddOn $add_on                     Optional. The add-on instance.
@@ -93,7 +93,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	/**
 	 * Push to queue
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 * @remove-in 3.0
 	 *
 	 * @param mixed $data Data.
@@ -370,7 +370,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	/**
 	 * Writes a message to the add-on or core log.
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 *
 	 * @param string $message The message to be logged.
 	 *
@@ -387,7 +387,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	/**
 	 * Writes an error message to the add-on or core log.
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 *
 	 * @param string $message The message to be logged.
 	 *
@@ -404,7 +404,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	/**
 	 * Returns the action portion of logging statements.
 	 *
-	 * @since next
+	 * @since 2.9.25
 	 *
 	 * @return string
 	 */
@@ -418,7 +418,7 @@ class GF_Feed_Processor extends GF_Background_Process {
  * Returns an instance of the GF_Feed_Processor class
  *
  * @since 2.2
- * @since next Added the $add_on param.
+ * @since 2.9.25 Added the $add_on param.
  *
  * @param null|GFFeedAddOn $add_on Optional. The add-on instance.
  *
