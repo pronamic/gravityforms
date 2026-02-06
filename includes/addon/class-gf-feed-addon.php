@@ -2593,7 +2593,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function add_feed_error( $error_message, $feed, $entry, $form ) {
 
 		/* Log debug error before we prepend the error name. */
-		$backtrace = debug_backtrace();
+		$backtrace = debug_backtrace(); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 		$method    = $backtrace[1]['class'] . '::' . $backtrace[1]['function'];
 		$this->log_error( $method . '(): ' . $error_message );
 

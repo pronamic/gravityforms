@@ -320,7 +320,7 @@ class GF_Forms_Model_Legacy {
 		 */
 
 		if ( has_action( 'gform_delete_lead' ) ) {
-			trigger_error( 'The gform_delete_lead action is deprecated and will be removed in version 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED );
+			trigger_error( 'The gform_delete_lead action is deprecated and will be removed in version 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 		}
 		do_action( 'gform_delete_lead', $lead_id );
 
@@ -696,7 +696,7 @@ class GF_Forms_Model_Legacy {
 
 		$lead_detail_id = GFFormsModel::get_lead_detail_id( $current_fields, $input_id );
 		$result         = GFFormsModel::update_lead_field_value( $form, $lead, $field, $lead_detail_id, $input_id, $value );
-		GFCommon::log_debug( __METHOD__ . "(): Saving: {$field->label}(#{$input_id} - {$field->type}). Result: " . var_export( $result, 1 ) );
+		GFCommon::log_debug( __METHOD__ . "(): Saving: {$field->label}(#{$input_id} - {$field->type}). Result: " . var_export( $result, 1 ) ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 
 	}
 

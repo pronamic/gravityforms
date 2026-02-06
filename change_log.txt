@@ -1,3 +1,11 @@
+### 2.9.27 | 2026-02-05
+- Fixed an issue that causes incorrect error messages about version requirements when updating network-activated add-ons.
+- Fixed an issue that prevents the merge tag drop down from rendering on the form settings notifications.
+- Fixed an issue that causes console errors when switching from compact view in the form editor.
+- Fixed a PHP fatal error that occurs on submission if the currency input value is modified to an array.
+- Fixed an issue where `gform_is_delayed_pre_process_feed` does not work correctly with the Stripe Payment Element.
+- Fixed an issue where denying all capabilities to admin user role doesn't work with the Members plugin.
+
 ### 2.9.26 | 2026-01-22
 - Added Support Request and Square Course Registration form templates to the templates library.
 - Added a hidden input to the form footer with a value of the form's currency code.

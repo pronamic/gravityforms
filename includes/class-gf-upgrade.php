@@ -1098,7 +1098,7 @@ LIMIT {$limit}";
 			$lead_detail_ids = $wpdb->get_col( $lead_detail_ids_sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 			if ( $wpdb->last_error ) {
-				error_log( 'error: ' . $wpdb->last_error );
+				error_log( 'error: ' . $wpdb->last_error ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 				/* translators: %s: the database error */
 				$this->update_upgrade_status( sprintf( esc_html__( 'Error Migrating Entry Details: %s', 'gravityforms' ), $wpdb->last_error ) );
 				// wp_die() is not used here because it would trigger another async task
@@ -1123,7 +1123,7 @@ WHERE ld.id IN ( {$lead_detail_ids_in} )";
 				$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 				if ( $wpdb->last_error ) {
-					error_log( 'error: ' . $wpdb->last_error );
+					error_log( 'error: ' . $wpdb->last_error ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 					/* translators: %s: the database error */
 					$this->update_upgrade_status( sprintf( esc_html__( 'Error Migrating Entry Details: %s', 'gravityforms' ), $wpdb->last_error ) );
 					// wp_die() is not used here because it would trigger another async task

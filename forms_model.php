@@ -1863,7 +1863,7 @@ class GFFormsModel {
 				 */
 
 			if ( has_action( 'gform_delete_lead' ) ) {
-				trigger_error( 'The gform_delete_lead action is deprecated and will be removed in 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED );
+				trigger_error( 'The gform_delete_lead action is deprecated and will be removed in 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 			}
 				do_action( 'gform_delete_lead', $entry_id );
 
@@ -2097,7 +2097,7 @@ class GFFormsModel {
          */
 
 		if ( has_action( 'gform_after_duplicate_form' ) ) {
-			trigger_error( 'The gform_after_duplicate_form action is deprecated and will be removed in 3.0. Use gform_post_form_duplicated instead.', E_USER_DEPRECATED );
+			trigger_error( 'The gform_after_duplicate_form action is deprecated and will be removed in 3.0. Use gform_post_form_duplicated instead.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 		}
         do_action( 'gform_after_duplicate_form', $form_id, $new_id );
 
@@ -2810,7 +2810,7 @@ class GFFormsModel {
 		 */
 
 		if ( has_action( 'gform_delete_lead' ) ) {
-			trigger_error( 'The gform_delete_lead action is deprecated and will be removed in version 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED );
+			trigger_error( 'The gform_delete_lead action is deprecated and will be removed in version 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 		}
 		do_action( 'gform_delete_lead', $entry_id );
 
@@ -5257,7 +5257,7 @@ class GFFormsModel {
 					$field = RGFormsModel::get_field( $form, $image['field_id'] );
 					if ( $field->postFeaturedImage ) {
 						$result = set_post_thumbnail( $post_id, $media_id );
-						GFCommon::log_debug( __METHOD__ . '(): Setting the featured image. Result from set_post_thumbnail(): ' . var_export( $result, 1 ) );
+						GFCommon::log_debug( __METHOD__ . '(): Setting the featured image. Result from set_post_thumbnail(): ' . var_export( $result, 1 ) ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 					}
 				}
 			}
@@ -5611,7 +5611,7 @@ class GFFormsModel {
 					if ( intval( $current_field->meta_key ) == $sub_field->id && ! isset( $current_field->update ) ) {
 						$current_field->delete = true;
 						$result = self::queue_batch_field_operation( $form, $lead, $sub_field, $current_field->id, $current_field->meta_key, '', $current_field->item_index );
-						GFCommon::log_debug( __METHOD__ . "(): Deleting: {$field->label}(#{$sub_field->id}{$current_field->item_index} - {$field->type}). Result: " . var_export( $result, 1 ) );
+						GFCommon::log_debug( __METHOD__ . "(): Deleting: {$field->label}(#{$sub_field->id}{$current_field->item_index} - {$field->type}). Result: " . var_export( $result, 1 ) ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 					}
 				}
 			}
@@ -5687,7 +5687,7 @@ class GFFormsModel {
 
 				$lead_detail_id               = self::get_lead_detail_id( $current_fields, $input_id, $new_item_index );
 				$result                       = self::queue_batch_field_operation( $form, $lead, $field, $lead_detail_id, $input_id, $v, $new_item_index );
-				GFCommon::log_debug( __METHOD__ . "(): Saving: {$field->label}(#{$input_id}{$item_index} - {$field->type}). Result: " . var_export( $result, 1 ) );
+				GFCommon::log_debug( __METHOD__ . "(): Saving: {$field->label}(#{$input_id}{$item_index} - {$field->type}). Result: " . var_export( $result, 1 ) ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 				foreach ( $current_fields as $current_field ) {
 					if ( (string) $current_field->meta_key === (string) $input_id && $current_field->item_index == $new_item_index ) {
 						$current_field->update = true;

@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.26
+Version: 2.9.27
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -13,7 +13,7 @@ Text Domain: gravityforms
 Domain Path: /languages
 
 ------------------------------------------------------------------------
-Copyright 2009-2025 Rocketgenius, Inc.
+Copyright 2009-2026 Rocketgenius, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.26';
+	public static $version = '2.9.27';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -1575,7 +1575,7 @@ class GFForms {
 				}
 			}
 
-			if ( ! $has_gf_cap ) {
+			if ( ! $has_gf_cap && ! isset( $all_caps['gform_full_access'] ) ) {
 				//give full access to administrators if none of the GF permissions are active by the Members plugin
 				$all_caps['gform_full_access'] = true;
 			}
@@ -7102,27 +7102,57 @@ class GFForms {
 	* @return array Array of plugin information.
 	*/
 	public static function get_installed_plugins() {
-		static $plugins_info = null;
+		// Cache plugin data per blog.
+		static $cache = array();
 
-		if ( $plugins_info !== null ) {
-			return $plugins_info;
+		$blog_id = function_exists( 'get_current_blog_id' ) ? get_current_blog_id() : 0;
+
+		// Disable cache when running in development mode.
+		$use_cache = ! ( defined( 'WP_DEBUG' ) && WP_DEBUG );
+
+		if ( $use_cache && isset( $cache[ $blog_id ] ) ) {
+			return $cache[ $blog_id ];
 		}
 
-		// List all installed plugins with their active status.
+		// Get all installed plugins.
 		$all_plugins    = get_plugins();
-		$active_plugins = get_option( 'active_plugins' );
+		// Plugins active on the current site.
+		$active_plugins = (array) get_option( 'active_plugins', array() );
+
+		// Plugins active network-wide.
+		$network_active = array();
+		if ( is_multisite() ) {
+			$network_active = array_keys(
+				(array) get_site_option( 'active_sitewide_plugins', array() )
+			);
+		}
+
+		// Build the final list of active plugins.
+		$active_set = array_fill_keys(
+			array_merge( $active_plugins, $network_active ),
+		true
+		);
 
 		$plugins_info = array();
 
 		foreach ( $all_plugins as $plugin_path => $plugin ) {
-			$is_active = in_array( $plugin_path, $active_plugins, true );
+			$slug = dirname( $plugin_path );
+			// Handle single-file plugins.
+			if ( $slug === '.' ) {
+				$slug = preg_replace( '/\.php$/', '', basename( $plugin_path ) );
+			}
 
-			$plugins_info[ dirname( $plugin_path ) ] = array(
+			$plugins_info[ $slug ] = array(
 				'name'      => $plugin['Name'],
 				'version'   => $plugin['Version'],
 				'path'      => $plugin_path,
-				'is_active' => $is_active,
+				'is_active' => isset( $active_set[ $plugin_path ] ),
 			);
+		}
+
+		// Store cached results only outside of development mode.
+		if ( $use_cache ) {
+			$cache[ $blog_id ] = $plugins_info;
 		}
 
 		return $plugins_info;

@@ -172,7 +172,7 @@ class GF_Field_Total extends GF_Field {
 			return;
 		}
 
-		GFCommon::log_debug( __METHOD__ . sprintf( '(): Amount mismatch (%s - #%d). Submitted: %s. Clean (int): %s. Expected (int): %s.', $this->label, $this->id, var_export( $value, true ), var_export( $clean_value_int, true ), var_export( $expected_value_int, true ) ) );
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Amount mismatch (%s - #%d). Submitted: %s. Clean (int): %s. Expected (int): %s.', $this->label, $this->id, var_export( $value, true ), var_export( $clean_value_int, true ), var_export( $expected_value_int, true ) ) ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 
 		$this->failed_validation  = true;
 		$this->validation_message = sprintf( esc_html__( 'Submitted value (%s) does not match expected value (%s).', 'gravityforms' ), $clean_value ? GFCommon::to_money( $clean_value, $currency_code ) : esc_html( $value ), GFCommon::to_money( $expected_value, $currency_code ) );

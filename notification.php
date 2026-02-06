@@ -539,7 +539,7 @@ Class GFNotification {
 		$legacy_settings = apply_filters( 'gform_notification_ui_settings', array(), $notification, $form, null );
 
 		if ( has_filter( 'gform_notification_ui_settings' ) ) {
-			trigger_error( 'gform_notification_ui_settings is deprecated and will be removed in version 3.0.', E_USER_DEPRECATED );
+			trigger_error( 'gform_notification_ui_settings is deprecated and will be removed in version 3.0.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 		}
 
 		if ( empty( $legacy_settings ) ) {

@@ -2367,7 +2367,7 @@ if ( class_exists( 'GFForms' ) ) {
 			}
 
 			$is_valid = $signature == $calculated_sig || $signature == rawurlencode( $calculated_sig );
-			$this->log_debug( __METHOD__ . '(): result = ' . var_export( $is_valid, 1 ) );
+			$this->log_debug( __METHOD__ . '(): result = ' . var_export( $is_valid, 1 ) ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 
 			return $is_valid;
 		}

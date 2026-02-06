@@ -327,7 +327,7 @@ class GFAsyncUpload {
 			$action = "gform_file_upload_{$form_id}";
 		}
 
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, $action ) ) {
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, $action ) ) { // nosemgrep scanner.php.wp.security.csrf.nonce-check-not-dying
 			self::die_error( 403, __( 'Your session has expired. Please refresh the page and try again.', 'gravityforms' ) );
 		}
 	}

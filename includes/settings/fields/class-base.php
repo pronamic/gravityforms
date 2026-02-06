@@ -481,14 +481,14 @@ class Base implements ArrayAccess {
 		// Prepare attributes as strings.
 		$return = array();
 		foreach ( $atts as $att => $value ) {
-			if ( ! in_array( $value, array( 'disabled', 'readonly' ) ) && ( is_callable( $value ) || empty( $value ) ) ) {
+			$allow_callable_string = ( $att === 'id' && $value === 'event' );
+			if ( ! $allow_callable_string && ! in_array( $value, array( 'disabled', 'readonly' ) ) && ( is_callable( $value ) || empty( $value ) ) ) {
 				continue;
 			}
 			$return[ $att ] = "{$att}='" . esc_attr( $value ) . "'";
 		}
 
 		return $return;
-
 	}
 
 	/**

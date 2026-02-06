@@ -226,7 +226,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			add_filter( 'gform_form_args', array( $this, 'force_ajax_for_creditcard_tokens' ), 10, 1 );
 		}
 
-		add_filter( 'gform_is_delayed_pre_process_feed', array( $this, 'maybe_delay_feed_processing' ), 20, 4 );
+		add_filter( 'gform_is_delayed_pre_process_feed', array( $this, 'maybe_delay_feed_processing' ), 1, 4 );
 
 		// Maybe support payment status in Confirmation conditional logic.
 		add_filter( 'gform_entry_meta_conditional_logic_confirmations', function( $entry_meta, $form ) {
@@ -1960,13 +1960,13 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		global $wpdb;
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			"{$wpdb->prefix}gf_addon_payment_callback", 
+			"{$wpdb->prefix}gf_addon_payment_callback",
 			array(
 				'addon_slug'   => $this->get_slug(),
 				'callback_id'  => $callback_id,
 				'lead_id'      => $entry_id,
 				'date_created' => gmdate( 'Y-m-d H:i:s' )
-			) 
+			)
 		);
 	}
 
@@ -2367,7 +2367,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		 */
 		do_action( 'gform_subscription_payment_failed', $entry, $action['subscription_id'] );
 		if ( has_filter( 'gform_subscription_payment_failed' ) ) {
-			trigger_error( 'gform_subscription_payment_failed is deprecated and will be removed in version 3.0. Use gform_post_fail_subscription_payment.', E_USER_DEPRECATED );
+			trigger_error( 'gform_subscription_payment_failed is deprecated and will be removed in version 3.0. Use gform_post_fail_subscription_payment.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 			$this->log_debug( __METHOD__ . '(): Executing functions hooked to gform_subscription_payment_failed.' );
 		}
 		/**
@@ -3370,10 +3370,10 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
                                 ", $form_id, $form_id
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		
+
 		GFCommon::log_debug( "sales sql: {$sql}" );
 
-		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching 
+		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 
 		if ( isset( $search['start_date'] ) || isset( $search['end_date'] ) ) {
