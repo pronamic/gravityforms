@@ -192,10 +192,10 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		// Intercepting callback requests.
 		add_action( 'parse_request', array( $this, 'maybe_process_callback' ) );
 
+        // Setting up check_status cron if this payment add-on supports it.
 		if ( $this->payment_method_is_overridden( 'check_status' ) ) {
 			$this->setup_cron();
 		}
-
 	}
 
 	/**
@@ -474,6 +474,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
      * @param int    $entry_id        The entry ID whose payment status has changed.
      * @param string $previous_status The previous payment status.
      *
+     * return void
      */
     public function payment_status_changed( $entry_id, $previous_status ) {
 
@@ -495,10 +496,12 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
              * Fired every time the entry payment status changes.
              *
              * @since 2.9.20
+             * @since 2.9.29 Added the $previous_status parameter.
              *
-             * @param array $entry The entry whose payment status has changed.
+             * @param array  $entry           The entry whose payment status has changed.
+             * @param string $previous_status The previous status of the entry before the change.
              */
-            do_action( 'gform_post_payment_status_change', $entry );
+            do_action( 'gform_post_payment_status_change', $entry, $previous_status );
         }
     }
 
@@ -2526,7 +2529,6 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		}
 	}
 
-
     /**
      * Reprocesses feeds that are configured with Payment Status conditional logic.
      *
@@ -2597,13 +2599,9 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		if ( ! wp_next_scheduled( $cron_name ) ) {
 			wp_schedule_event( time(), 'hourly', $cron_name );
 		}
-
-
 	}
 
-	public function check_status() {
-
-	}
+	public function check_status() {}
 
 	//--------- List Columns ------------
 	public function feed_list_columns() {

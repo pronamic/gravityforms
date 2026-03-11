@@ -159,8 +159,11 @@ class GFFormDisplay {
 			$abort_with_confirmation = gf_apply_filters( array( 'gform_abort_submission_with_confirmation', $form['id'] ), false, $form );
 
 			if ( $abort_with_confirmation ) {
-
-				GFCommon::log_debug( 'GFFormDisplay::process_form(): Aborting early via gform_abort_submission_with_confirmation filter.' );
+				if ( $saving_for_later ) {
+					GFCommon::log_debug( __METHOD__ . '(): Aborting save for later via gform_abort_submission_with_confirmation filter.' );
+				} else {
+					GFCommon::log_debug( __METHOD__ . '(): Aborting early via gform_abort_submission_with_confirmation filter.' );
+				}
 
 				// Display confirmation but doesn't process the form. Useful for spam filters.
 				$confirmation = self::handle_confirmation( $form, $lead, $ajax );

@@ -206,25 +206,24 @@ class GF_Field_MultiSelect extends GF_Field {
 	 * Format the entry value for display on the entry detail page and for the {all_fields} merge tag.
 	 *
 	 * @since  Unknown
-	 * @access public
-	 *
-	 * @uses GFCommon::selection_display()
+	 * @since  2.9.29 Changed the second parameter $currency (string) to $entry (array).
 	 *
 	 * @param string|array $value    The field value.
-	 * @param string       $currency The entry currency code.
+	 * @param array        $entry    The entry.
 	 * @param bool|false   $use_text When processing choice based fields should the choice text be returned instead of the value.
 	 * @param string       $format   The format requested for the location the merge is being used. Possible values: html, text or url.
 	 * @param string       $media    The location where the value will be displayed. Possible values: screen or email.
 	 *
 	 * @return string The list items, stored within an unordered list.
 	 */
-	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
+	public function get_value_entry_detail( $value, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
 
 		if ( empty( $value ) || ( $format == 'text' && $this->storageType !== 'json' ) ) {
 			return $value;
 		}
 
-		$items = $this->to_array( $value );
+		$items    = $this->to_array( $value );
+		$currency = rgar( $entry, 'currency' );
 
 		foreach ( $items as &$item ) {
 			$item = esc_html( GFCommon::selection_display( $item, $this, $currency, $use_text ) );

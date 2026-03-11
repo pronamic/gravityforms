@@ -191,18 +191,33 @@ class GFCommon {
 		return $text;
 	}
 
-	public static function format_number( $number, $number_format, $currency = '', $include_thousands_sep = false ) {
+	/**
+	 * Formats the given value using currency or number formatting.
+	 *
+	 * @since unknown
+	 * @since 2.9.29 Updated the third parameter to accept the currency code or entry object.
+	 *
+	 * @param int|float|string $number                 The number to format.
+	 * @param string           $number_format          The field number format: decimal_comma, decimal_dot, or currency.
+	 * @param string|array     $currency_code_or_entry The currency code or entry object. Optional.
+	 * @param bool             $include_thousands_sep  Indicates if the thousands separator should be included. Optional.
+	 *
+	 * @return string
+	 */
+	public static function format_number( $number, $number_format, $currency_code_or_entry = '', $include_thousands_sep = false ) {
 		if ( ! is_numeric( $number ) ) {
 			return $number;
 		}
 
 		//replacing commas with dots and dots with commas
-		if ( $number_format == 'currency' ) {
-			if ( empty( $currency ) ) {
-				$currency = GFCommon::get_submission_currency();
+		if ( $number_format === 'currency' ) {
+			$currency_code = is_array( $currency_code_or_entry ) ? rgar( $currency_code_or_entry, 'currency' ) : $currency_code_or_entry;
+
+			if ( empty( $currency_code ) ) {
+				$currency_code = GFCommon::get_submission_currency();
 			}
 
-			$currency = new RGCurrency( $currency );
+			$currency = new RGCurrency( $currency_code );
 			$number   = $currency->to_money( $number );
 		} else {
 			if ( $number_format == 'decimal_comma' ) {
@@ -1746,7 +1761,7 @@ class GFCommon {
 
 					$field->set_modifiers( $options_array );
 					$raw_field_value = RGFormsModel::get_lead_field_value( $lead, $field );
-					$field_value     = GFCommon::get_lead_field_display( $field, $raw_field_value, rgar( $lead, 'currency' ), $use_text, $format, 'email' );
+					$field_value     = GFCommon::get_lead_field_display( $field, $raw_field_value, $lead, $use_text, $format, 'email' );
 
 					$display_field = true;
 					//depending on parameters, don't display adminOnly or hidden fields
@@ -3780,7 +3795,7 @@ Content-Type: text/html;
 		foreach ( $fields as $field ) {
 
 			$value = GFFormsModel::get_lead_field_value( $entry, $field );
-			$value = GFCommon::get_lead_field_display( $field, $value, rgar( $entry, 'currency' ) );
+			$value = GFCommon::get_lead_field_display( $field, $value, $entry );
 
 			if ( rgblank( $value ) ) {
 				continue;
@@ -4261,7 +4276,20 @@ Content-Type: text/html;
 		return true;
 	}
 
-	public static function to_money( $number, $currency_code = '' ) {
+	/**
+	 * Returns the given number using currency formatting.
+	 *
+	 * @since unknown
+	 * @since 2.9.29 Updated the second parameter to accept the currency code or entry object.
+	 *
+	 * @param int|float|string $number                 The number to be formatted.
+	 * @param string|array     $currency_code_or_entry The currency code or entry object. Optional.
+	 *
+	 * @return string
+	 */
+	public static function to_money( $number, $currency_code_or_entry = '' ) {
+		$currency_code = is_array( $currency_code_or_entry ) ? rgar( $currency_code_or_entry, 'currency' ) : $currency_code_or_entry;
+
 		if ( empty( $currency_code ) ) {
 			$currency_code = self::get_submission_currency();
 		}
@@ -4271,7 +4299,20 @@ Content-Type: text/html;
 		return $currency->to_money( $number );
 	}
 
-	public static function to_number( $text, $currency_code = '' ) {
+	/**
+	 * Removes currency formatting from a value.
+	 *
+	 * @since unknown
+	 * @since 2.9.29 Updated the second parameter to accept the currency code or entry object.
+	 *
+	 * @param int|float|string $text                   The value to be cleaned of currency formatting.
+	 * @param string|array     $currency_code_or_entry The currency code or entry object. Optional.
+	 *
+	 * @return false|float|int
+	 */
+	public static function to_number( $text, $currency_code_or_entry = '' ) {
+		$currency_code = is_array( $currency_code_or_entry ) ? rgar( $currency_code_or_entry, 'currency' ) : $currency_code_or_entry;
+
 		if ( empty( $currency_code ) ) {
 			$currency_code = self::get_submission_currency();
 		}
@@ -4348,26 +4389,36 @@ Content-Type: text/html;
 	}
 
 	/**
-	 * @param GF_Field $field
-	 * @param          $value
-	 * @param string   $currency
-	 * @param bool     $use_text
-	 * @param string   $format
-	 * @param string   $media
+	 * Returns the value to be displayed on the entry detail page and for the {all_fields} merge tag.
 	 *
-	 * @return array|mixed|string
+	 * @since unknown
+	 * @since 2.9.29 Changed the third parameter $currency (string) to $entry (array).
+	 *
+	 * @param GF_Field     $field    The field.
+	 * @param string|array $value    The field value.
+	 * @param array        $entry    The entry.
+	 * @param bool|false   $use_text When processing choice based fields should the choice text be returned instead of the value.
+	 * @param string       $format   The format requested for the location the merge is being used. Possible values: html, text or url.
+	 * @param string       $media    The location where the value will be displayed. Possible values: screen or email.
+	 *
+	 * @return string|false
 	 */
-	public static function get_lead_field_display( $field, $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
+	public static function get_lead_field_display( $field, $value, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
 
 		if ( ! $field instanceof GF_Field ) {
 			$field = GF_Fields::create( $field );
 		}
 
-		if ( $field->type == 'post_category' ) {
+		if ( $field->type === 'post_category' ) {
 			$value = self::prepare_post_category_value( $value, $field );
 		}
 
-		return $field->get_value_entry_detail( $value, $currency, $use_text, $format, $media );
+		if ( ! is_array( $entry ) ) {
+			trigger_error( 'Since version 2.9.29 GFCommon::get_lead_field_display() expects the entry array as the third parameter. Trace: ' . esc_html( wp_debug_backtrace_summary( null, 1 ) ), E_USER_WARNING );
+			$entry = array( 'currency' => $entry );
+		}
+
+		return $field->get_value_entry_detail( $value, $entry, $use_text, $format, $media );
 	}
 
 	public static function get_product_fields( $form, $lead, $use_choice_text = false, $use_admin_label = false ) {
@@ -7330,15 +7381,24 @@ Content-Type: text/html;
 	 *
 	 * May return false if the algorithm is not available.
 	 *
+	 * @since 2.0
+	 * @since 2.9.29 Added the $entry_id param.
+	 *
 	 * @param int    $form_id  The Form ID.
 	 * @param int    $field_id The ID of the field used to upload the file.
 	 * @param string $file     The file url relative to the form's upload folder. E.g. 2016/04/my-file.pdf
+	 * @param int    $entry_id The entry ID. Optional.
 	 *
 	 * @return string|bool
 	 */
-	public static function generate_download_hash( $form_id, $field_id, $file ) {
+	public static function generate_download_hash( $form_id, $field_id, $file, $entry_id = 0 ) {
 
 		$key = absint( $form_id ) . ':' . absint( $field_id ) . ':' . urlencode( $file );
+
+		$entry_id = absint( $entry_id );
+		if ( $entry_id ) {
+			$key .= ':' . $entry_id;
+		}
 
 		$algo = 'sha256';
 

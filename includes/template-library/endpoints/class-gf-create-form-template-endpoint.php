@@ -3,6 +3,7 @@
 namespace Gravity_Forms\Gravity_Forms\Template_Library\Endpoints;
 
 use GFForms;
+use GFCommon;
 use Gravity_Forms\Gravity_Forms\Save_Form\GF_Save_Form_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Template_Library\Config\GF_Template_Library_Config;
 use Gravity_Forms\Gravity_Forms\Template_Library\Templates\GF_Template_Library_Template;
@@ -76,6 +77,10 @@ class GF_Create_Form_Template_Library_Endpoint {
 	 * @return void
 	 */
 	public function handle() {
+		check_ajax_referer( 'create_from_template', 'nonce' );
+		if ( ! GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) {
+			wp_send_json_error( 'Unauthorized', 403 );
+		}
 
 		$this->template_id      = sanitize_text_field( rgpost( 'templateId' ) );
 		$this->form_title       = sanitize_text_field( rgpost( 'form_title' ) );

@@ -70,8 +70,16 @@ class GF_Honeypot_Handler {
 			return true;
 		}
 
-		// Do not abort submission if Honeypot should be disabled or if honeypot action is set to create an entry.
-		if ( ! $this->is_honeypot_enabled( $form ) || rgar( $form, 'honeypotAction', 'spam' ) === 'spam' ) {
+		// Do not abort submission if Honeypot should be disabled.
+		if ( ! $this->is_honeypot_enabled( $form ) ) {
+			return false;
+		}
+
+		$honeypot_action  = rgar( $form, 'honeypotAction', 'spam' );
+		$saving_for_later = (bool) rgpost( 'gform_save' );
+
+		// Do not abort submission if honeypot action is set to create an entry and the user is not saving their progress via save & continue.
+		if ( $honeypot_action === 'spam' && ! $saving_for_later ) {
 			return false;
 		}
 

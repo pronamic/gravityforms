@@ -911,7 +911,7 @@ class GF_Personal_Data {
 					$value  = GFFormsModel::get_lead_field_value( $entry, $field );
 					$data[] = array(
 						'name'  => $field->get_field_label( false, $value ),
-						'value' => $field->get_value_entry_detail( $value, rgar( $entry, 'currency' ), true, 'text' ),
+						'value' => $field->get_value_entry_detail( $value, $entry, true, 'text' ),
 					);
 				}
 			}
@@ -1004,7 +1004,7 @@ class GF_Personal_Data {
 					$value  = GFFormsModel::get_lead_field_value( $entry, $field );
 					$data[] = array(
 						'name'  => $field->get_field_label( false, $value ),
-						'value' => $field->get_value_entry_detail( $value, rgar( $entry, 'currency' ), true, 'text' ),
+						'value' => $field->get_value_entry_detail( $value, $entry, true, 'text' ),
 					);
 				}
 			}

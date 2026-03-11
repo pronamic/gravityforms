@@ -620,7 +620,7 @@ class GF_Field_FileUpload extends GF_Field {
 				$file_index         = intval( $file_index );
 				$file_url           = esc_attr( $file_url );
 				$display_file_url   = GFCommon::truncate_url( $file_url );
-				$file_url           = $this->get_download_url( $file_url );
+				$file_url           = $this->get_download_url( $file_url, false, $lead_id );
 
 				$preview .= "<div id='preview_file_{$file_index}' class='ginput_preview'>
 								<a href='{$file_url}' target='_blank' aria-label='{$view_file_text}'>{$display_file_url}</a>
@@ -1149,7 +1149,7 @@ class GF_Field_FileUpload extends GF_Field {
 		if ( ! empty( $file_path ) ) {
 			//displaying thumbnail (if file is an image) or an icon based on the extension
 			$thumb     = GFEntryList::get_icon_url( $file_path );
-			$file_path = $this->get_download_url( $file_path );
+			$file_path = $this->get_download_url( $file_path, false, rgar( $entry, 'id' ) );
 			$file_path = esc_attr( $file_path );
 			$value = "<a href='$file_path' target='_blank'><span class='screen-reader-text'>" . esc_html__( 'View the image', 'gravityforms' ) . "</span><span class='screen-reader-text'>" . esc_html__( '(opens in a new tab)', 'gravityforms' ) . "</span><img src='$thumb' alt='' /></a>";
 		}
@@ -1160,16 +1160,17 @@ class GF_Field_FileUpload extends GF_Field {
 	 * Format the entry value for display on the entry detail page and for the {all_fields} merge tag.
 	 *
 	 * @since 2.9.18 Updated to use $this->get_file_name_from_url().
+	 * @since 2.9.29 Changed the second parameter $currency (string) to $entry (array).
 	 *
 	 * @param string|array $value    The field value.
-	 * @param string       $currency The entry currency code.
+	 * @param array        $entry    The entry.
 	 * @param bool|false   $use_text When processing choice based fields should the choice text be returned instead of the value.
 	 * @param string       $format   The format requested for the location the merge is being used. Possible values: html, text, or url.
 	 * @param string       $media    The location where the value will be displayed. Possible values: screen or email.
 	 *
 	 * @return string|false
 	 */
-	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
+	public function get_value_entry_detail( $value, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
 		if ( empty( $value ) ) {
 			return '';
 		}
@@ -1182,9 +1183,10 @@ class GF_Field_FileUpload extends GF_Field {
 			$files = array_filter( array( $value ) );
 		}
 
-		$force_download = in_array( 'download', $this->get_modifiers() );
-
 		if ( ! empty( $files ) ) {
+			$force_download = in_array( 'download', $this->get_modifiers() );
+			$entry_id       = rgar( $entry, 'id' );
+
 			foreach ( $files as $file_path ) {
 				if ( is_array( $file_path ) ) {
 					$basename  = rgar( $file_path, 'uploaded_name' );
@@ -1193,7 +1195,7 @@ class GF_Field_FileUpload extends GF_Field {
 					$basename = rgar( $this->get_file_name_from_url( $file_path ), 'sanitized', $file_path );
 				}
 
-				$file_path = $this->get_download_url( $file_path, $force_download );
+				$file_path = $this->get_download_url( $file_path, $force_download, $entry_id );
 
 				/**
 				 * Allow for override of SSL replacement
@@ -1261,6 +1263,7 @@ class GF_Field_FileUpload extends GF_Field {
 		}
 
 		$force_download = in_array( 'download', $this->get_modifiers() );
+		$entry_id       = rgar( $entry, 'id' );
 
 		$files = json_decode( $raw_value, true );
 		if ( ! is_array( $files ) ) {
@@ -1271,7 +1274,7 @@ class GF_Field_FileUpload extends GF_Field {
 			if ( is_array( $file ) ) {
 				$file = rgar( $file, 'tmp_url' );
 			}
-			$file = str_replace( ' ', '%20', $this->get_download_url( $file, $force_download ) );
+			$file = str_replace( ' ', '%20', $this->get_download_url( $file, $force_download, $entry_id ) );
 			if ( $esc_html ) {
 				$file = esc_html( $file );
 			}
@@ -1350,15 +1353,16 @@ class GF_Field_FileUpload extends GF_Field {
 	/**
 	 * Returns the download URL for a file. The URL is not escaped for output.
 	 *
-	 * @since  2.0
-	 * @access public
+	 * @since 2.0
+	 * @since 2.9.29 Added the $entry_id param.
 	 *
 	 * @param string $file           The complete file URL.
 	 * @param bool   $force_download If the download should be forced. Defaults to false.
+	 * @param int    $entry_id       The entry ID. Optional.
 	 *
 	 * @return string
 	 */
-	public function get_download_url( $file, $force_download = false ) {
+	public function get_download_url( $file, $force_download = false, $entry_id = 0 ) {
 		$download_url = $file;
 
 		$secure_download_location = true;
@@ -1405,11 +1409,17 @@ class GF_Field_FileUpload extends GF_Field {
 				'gf-download' => urlencode( $file ),
 				'form-id'     => $this->formId,
 				'field-id'    => $this->id,
-				'hash'        => GFCommon::generate_download_hash( $this->formId, $this->id, $file ),
+				'entry-id'    => absint( $entry_id ),
+				'hash'        => GFCommon::generate_download_hash( $this->formId, $this->id, $file, $entry_id ),
 			);
 			if ( $force_download ) {
 				$args['dl'] = 1;
 			}
+
+			if ( empty( $args['entry-id'] ) ) {
+				unset( $args['entry-id'] );
+			}
+
 			$download_url = add_query_arg( $args, $download_url );
 		}
 

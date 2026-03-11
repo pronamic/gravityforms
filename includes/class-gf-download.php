@@ -23,10 +23,12 @@ class GF_Download {
 				return;
 			}
 
-			$hash = rgget( 'hash' );
+			$hash     = rgget( 'hash' );
+			$entry_id = rgget( 'entry-id' );
+
 			GFCommon::log_debug( __METHOD__ . "(): Starting file download process. file: {$file}, hash: {$hash}." );
 
-			$permission_granted = self::validate_download( $form_id, $field_id, $file, $hash );
+			$permission_granted = self::validate_download( $form_id, $field_id, $file, $hash, $entry_id );
 
 			if ( has_filter( 'gform_permission_granted_pre_download' ) ) {
 				GFCommon::log_debug( __METHOD__ . '(): Executing functions hooked to gform_permission_granted_pre_download.' );
@@ -37,15 +39,15 @@ class GF_Download {
 			 *
 			 * @since 2.4.3.2
 			 *
-			 * @param bool $permission_granted Indicates if access to the file has been granted. Default is the result of the hash validation.
-			 * @param int  $form_id            The ID of the form used to upload the requested file.
-			 * @param int  $field_id           The ID of the field used to upload the requested file.
+			 * @param bool   $permission_granted Indicates if access to the file has been granted. Default is the result of the hash validation.
+			 * @param string $form_id            The ID of the form used to upload the requested file.
+			 * @param string $field_id           The ID of the field used to upload the requested file.
 			 */
 			$permission_granted = apply_filters( 'gform_permission_granted_pre_download', $permission_granted, $form_id, $field_id );
 
 			if ( $permission_granted ) {
 				GFCommon::log_debug( __METHOD__ . '(): Download validated. Proceeding.' );
-				self::deliver( $form_id, $file );
+				self::deliver( $form_id, $file, $entry_id );
 			} else {
 				GFCommon::log_debug( __METHOD__ . '(): Download validation failed. Aborting with 401.' );
 				self::die_401();
@@ -56,14 +58,18 @@ class GF_Download {
 	/**
 	 * Verifies the hash for the download.
 	 *
-	 * @param int $form_id
-	 * @param int $field_id
-	 * @param string $file
-	 * @param string $hash
+	 * @since 2.0
+	 * @since 2.9.29 Added the $entry_id param.
+	 *
+	 * @param string $form_id  The form ID from the query string.
+	 * @param string $field_id The field ID from the query string.
+	 * @param string $file     The file name from the query string.
+	 * @param string $hash     The hash from the query string.
+	 * @param string $entry_id The entry ID from the query string.
 	 *
 	 * @return bool
 	 */
-	private static function validate_download( $form_id, $field_id, $file, $hash ) {
+	private static function validate_download( $form_id, $field_id, $file, $hash, $entry_id ) {
 		if ( empty( $hash ) ) {
 			return false;
 		}
@@ -77,29 +83,46 @@ class GF_Download {
 		 *
 		 * @since 2.2.3.16
 		 *
-		 * @param bool $require_login Does the user need to be logged in to access the file? Default false.
-		 * @param int  $form_id       The ID of the form used to upload the requested file.
-		 * @param int  $field_id      The ID of the field used to upload the requested file.
+		 * @param bool   $require_login Does the user need to be logged in to access the file? Default false.
+		 * @param string $form_id       The ID of the form used to upload the requested file.
+		 * @param string $field_id      The ID of the field used to upload the requested file.
 		 */
 		$require_login = apply_filters( 'gform_require_login_pre_download', false, $form_id, $field_id );
 
 		if ( $require_login && ! is_user_logged_in() ) {
+			GFCommon::log_debug( __METHOD__ . '(): Login required to access file.' );
+
 			return false;
 		}
 
-		$hash_check = GFCommon::generate_download_hash( $form_id, $field_id, $file );
+		$hash_check = GFCommon::generate_download_hash( $form_id, $field_id, $file, $entry_id );
 		$valid      = hash_equals( $hash, $hash_check );
 
-		return $valid;
+		if ( ! $valid ) {
+			GFCommon::log_debug( __METHOD__ . '(): Hash failed validation.' );
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
 	 * Send the file.
 	 *
-	 * @param $form_id
-	 * @param $file
+	 * @since 2.0
+	 * @since 2.9.29 Added the $entry_id param.
+	 *
+	 * @param string $form_id  The form ID from the query string.
+	 * @param string $file     The file name from the query string.
+	 * @param string $entry_id The entry ID from the query string.
 	 */
-	private static function deliver( $form_id, $file ) {
+	private static function deliver( $form_id, $file, $entry_id ) {
+		if ( $entry_id && ! GFAPI::entry_exists( $entry_id ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Entry ID %d has been deleted. Aborting with 404', $entry_id ) );
+			self::die_404();
+		}
+
 		$path      = GFFormsModel::get_upload_path( $form_id );
 		$file_path = trailingslashit( $path ) . $file;
 
@@ -117,8 +140,8 @@ class GF_Download {
 			 * @since 2.9.15
 			 *
 			 * @param bool   $enable  If the nocache_headers() should be called. Default true.
-			 * @param int    $form_id The ID of the form used to download files.
-			 * @param string $file     The file to be downloaded.
+			 * @param string $form_id The ID of the form used to download files.
+			 * @param string $file    The file to be downloaded.
 			 */
 			if ( apply_filters( 'gform_enable_download_nocache_headers', true, $form_id, $file ) ) {
 				nocache_headers();

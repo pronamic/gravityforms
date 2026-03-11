@@ -428,7 +428,7 @@ class GF_Field_Repeater extends GF_Field {
 
 		if ( $format == 'html' ) {
 			$media = $esc_html ? 'screen' :'email';
-			$merge_tag = $this->get_value_entry_detail( $raw_value, $entry['currency'], $use_text, $format, $media );
+			$merge_tag = $this->get_value_entry_detail( $raw_value, $entry, $use_text, $format, $media );
 		} else {
 			$merge_tag = $this->get_value_export_recursive( $entry, $input_id, $use_text, false, 0, '&nbsp;&nbsp;&nbsp;&nbsp;' );
 		}
@@ -461,16 +461,17 @@ class GF_Field_Repeater extends GF_Field {
 	 * Format the entry value safe for displaying on the entry detail page and for the {all_fields} merge tag.
 	 *
 	 * @since 2.4
+	 * @since 2.9.29 Changed the second parameter $currency (string) to $entry (array).
 	 *
 	 * @param string|array $item_values The field value.
-	 * @param string $currency The entry currency code.
-	 * @param bool|false $use_text When processing choice based fields should the choice text be returned instead of the value.
-	 * @param string $format The format requested for the location the merge is being used. Possible values: html, text or url.
-	 * @param string $media The location where the value will be displayed. Possible values: screen or email.
+	 * @param array        $entry       The entry.
+	 * @param bool|false   $use_text    When processing choice based fields should the choice text be returned instead of the value.
+	 * @param string       $format      The format requested for the location the merge is being used. Possible values: html, text or url.
+	 * @param string       $media       The location where the value will be displayed. Possible values: screen or email.
 	 *
 	 * @return string
 	 */
-	public function get_value_entry_detail( $item_values, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
+	public function get_value_entry_detail( $item_values, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
 
 		if ( $format == 'text' ) {
 			return $this->get_value_export_recursive( array( $this->id => $item_values ), $this->id, $use_text, false, 0, '&nbsp;&nbsp;&nbsp;&nbsp;' );
@@ -496,7 +497,7 @@ class GF_Field_Repeater extends GF_Field {
 				}
 				$label = $sub_field->get_field_label( true, $item_values );
 				$label = empty( $sub_field->fields ) ? "<div class='gfield_repeater_label' {$sub_field_label_style}>{$label}</div>" : '';
-				$value = $sub_field->get_value_entry_detail( $sub_field_value, $currency, $use_text, 'html', $media );
+				$value = $sub_field->get_value_entry_detail( $sub_field_value, $entry, $use_text, 'html', $media );
 				$value = "<div class='gfield_repeater_value' style='color:rgba(117, 117, 117, 1);font-size: 14px'>{$value}</div>";
 				$html .= '<div class="gfield_repeater_cell">' . $label . $value . '</div>';
 			}

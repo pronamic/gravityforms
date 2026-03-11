@@ -1,3 +1,15 @@
+### 2.9.29 | 2026-03-10
+- Added security enhancements.
+- Added support for a new notification event (Payment Processing - stale) that allows notifications to be sent when payments are taking an unusually long time to process. This will be initially available in the upcoming Stripe Add-on v.7.0.
+- Added [`gform/ajax/pre_display_confirmation`](https://docs.gravityforms.com/gform-ajax-pre_display_confirmation/) filter to displayConfirmation() in ajax.js.
+- Fixed some display issues in the dashboard with WordPress 7.0-beta.
+- Fixed an issue where saving for later via the save and continue feature is not aborted when honeypot validation fails and the honeypot is set to "Create an entry and mark it as spam".
+- Updated the multi-file upload field trash icon to meet the WCAG 2.1 color contrast standards.
+- Updated form title handling in the form switcher to prevent issues with special characters.
+- API: Fixed field map default choices not populating on new feeds and empty value selection not saving on existing feeds.
+- API: Changed the third parameter of `GFCommon::get_lead_field_display()` from `$currency` (string) to `$entry` (array).
+- API: Changed the second parameter of `GF_Field::get_value_entry_detail()` from `$currency` (string) to `$entry` (array).
+
 ### 2.9.28 | 2026-02-19
 - Fixed an issue where the File Upload field includes `gform_hidden` class even when the input is not hidden.
 - Fixed an issue that prevents svgs from displaying in the Orbital theme.

@@ -559,20 +559,17 @@ class GF_Field_Name extends GF_Field {
 	 * Gets the field value to be displayed on the entry detail page.
 	 *
 	 * @since  Unknown
-	 * @access public
-	 *
-	 * @used-by GFCommon::get_lead_field_display()
-	 * @uses    GF_Field_Name::$id
+	 * @since  2.9.29 Changed the second parameter $currency (string) to $entry (array).
 	 *
 	 * @param array|string $value    The value of the field input.
-	 * @param string       $currency Not used.
+	 * @param array        $entry    Not used.
 	 * @param bool         $use_text Not used.
 	 * @param string       $format   The format to output the value. Defaults to 'html'.
 	 * @param string       $media    Not used.
 	 *
 	 * @return array|string The value to be displayed on the entry detail page.
 	 */
-	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
+	public function get_value_entry_detail( $value, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
 
 		if ( is_array( $value ) ) {
 			$prefix = trim( rgget( $this->id . '.2', $value ) );

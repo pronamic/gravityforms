@@ -1087,7 +1087,7 @@ class GFEntryDetail {
 							$field->nestingLevel = 0;
 						}
 
-						$display_value = GFCommon::get_lead_field_display( $field, $value, $lead['currency'] );
+						$display_value = GFCommon::get_lead_field_display( $field, $value, $lead );
 
 						/**
 						 * Filters a field value displayed within an entry.

@@ -643,10 +643,10 @@ class GF_Field_List extends GF_Field {
 	 * Gets the field value HTML markup to be used on the entry detail page.
 	 *
 	 * @since  Unknown
-	 * @access public
+	 * @since  2.9.29 Changed the second parameter $currency (string) to $entry (array).
 	 *
 	 * @param array  $value    The submitted entry value.
-	 * @param string $currency Not used.
+	 * @param array  $entry    Not used.
 	 * @param bool   $use_text Not used.
 	 * @param string $format   The format to be used when building the items.
 	 *                         Accepted values are text, url, or html. Defaults to html.
@@ -655,7 +655,7 @@ class GF_Field_List extends GF_Field {
 	 *
 	 * @return string The HTML markup to be displayed.
 	 */
-	public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
+	public function get_value_entry_detail( $value, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
 		if ( empty( $value ) ) {
 			return '';
 		}
@@ -852,7 +852,7 @@ class GF_Field_List extends GF_Field {
 			$output_format = $format;
 		}
 
-		return GFCommon::get_lead_field_display( $this, $raw_value, $entry['currency'], true, $output_format );
+		return GFCommon::get_lead_field_display( $this, $raw_value, $entry, true, $output_format );
 	}
 
 	/**
@@ -873,7 +873,7 @@ class GF_Field_List extends GF_Field {
 	 * @return string
 	 */
 	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
-		return GFCommon::get_lead_field_display( $this, $value, $entry['currency'], true, 'html' );
+		return GFCommon::get_lead_field_display( $this, $value, $entry, true, 'html' );
 	}
 
 	/**
