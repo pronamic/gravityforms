@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms 2.9.29\n"
+"Project-Id-Version: Gravity Forms 2.9.30\n"
 "Report-Msgid-Bugs-To: https://gravityforms.com/support\n"
 "Last-Translator: Gravity Forms <support@gravityforms.com>\n"
 "Language-Team: Gravity Forms <support@gravityforms.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-03-10T17:53:27+00:00\n"
+"POT-Creation-Date: 2026-03-19T17:27:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: gravityforms\n"
@@ -89,7 +89,7 @@ msgstr ""
 #: entry_detail.php:1365
 #: entry_list.php:870
 #: export.php:1352
-#: forms_model.php:6963
+#: forms_model.php:6956
 #: select_columns.php:196
 msgid "Entry Id"
 msgstr ""
@@ -208,7 +208,7 @@ msgstr ""
 #: form_detail.php:1657
 #: form_display.php:3931
 #: includes/blocks/config/class-gf-blocks-config.php:139
-#: includes/fields/class-gf-field.php:2772
+#: includes/fields/class-gf-field.php:2784
 msgid "Medium"
 msgstr ""
 
@@ -228,7 +228,7 @@ msgstr ""
 #: form_detail.php:952
 #: form_detail.php:1657
 #: includes/blocks/config/class-gf-blocks-config.php:138
-#: includes/fields/class-gf-field.php:2773
+#: includes/fields/class-gf-field.php:2785
 msgid "Large"
 msgstr ""
 
@@ -539,7 +539,7 @@ msgstr ""
 
 #: common.php:5737
 #: common.php:5788
-#: forms_model.php:7382
+#: forms_model.php:7375
 msgid "Thanks for contacting us! We will get in touch with you shortly."
 msgstr ""
 
@@ -995,8 +995,8 @@ msgid "This form has an Option field without a Product field. You must add a Pro
 msgstr ""
 
 #: common.php:5866
-#: includes/webapi/webapi.php:1568
-#: includes/webapi/webapi.php:1599
+#: includes/webapi/webapi.php:1570
+#: includes/webapi/webapi.php:1601
 msgid "Success"
 msgstr ""
 
@@ -1059,7 +1059,7 @@ msgstr ""
 
 #: common.php:6480
 #: export.php:1353
-#: forms_model.php:6969
+#: forms_model.php:6962
 #: includes/addon/class-gf-addon.php:3201
 #: includes/settings/fields/class-generic-map.php:538
 #: includes/settings/fields/class-generic-map.php:582
@@ -1090,21 +1090,21 @@ msgstr ""
 
 #: common.php:6508
 #: export.php:1359
-#: forms_model.php:6975
+#: forms_model.php:6968
 #: select_columns.php:200
 msgid "Payment Status"
 msgstr ""
 
 #: common.php:6513
 #: export.php:1358
-#: forms_model.php:6981
+#: forms_model.php:6974
 #: select_columns.php:203
 msgid "Payment Date"
 msgstr ""
 
 #: common.php:6519
 #: export.php:1357
-#: forms_model.php:6984
+#: forms_model.php:6977
 #: includes/addon/class-gf-payment-addon.php:2782
 #: includes/addon/class-gf-payment-addon.php:2787
 #: select_columns.php:202
@@ -1117,7 +1117,7 @@ msgstr ""
 
 #: common.php:6527
 #: entry_detail.php:1381
-#: forms_model.php:6987
+#: forms_model.php:6980
 #: includes/webapi/includes/class-gf-api-keys-table.php:28
 #: includes/webapi/webapi.php:398
 #: select_columns.php:204
@@ -1158,16 +1158,16 @@ msgstr ""
 msgid "Voided"
 msgstr ""
 
-#: common.php:7429
+#: common.php:7434
 #: form_detail.php:2269
 msgid "Visible"
 msgstr ""
 
-#: common.php:7431
+#: common.php:7436
 msgid "Default option. The field is visible when viewing the form."
 msgstr ""
 
-#: common.php:7434
+#: common.php:7439
 #: form_detail.php:705
 #: form_detail.php:787
 #: form_detail.php:895
@@ -1179,39 +1179,39 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#: common.php:7436
+#: common.php:7441
 msgid "The field is hidden when viewing the form. Useful when you require the functionality of this field but do not want the user to be able to see this field."
 msgstr ""
 
-#: common.php:7439
+#: common.php:7444
 msgid "Administrative"
 msgstr ""
 
-#: common.php:7441
+#: common.php:7446
 msgid "The field is only visible when administering submitted entries. The field is not visible or functional when viewing the form."
 msgstr ""
 
-#: common.php:7472
+#: common.php:7477
 #: form_detail.php:2681
 msgid "Visibility"
 msgstr ""
 
-#: common.php:7472
+#: common.php:7477
 msgid "Select the visibility for this field."
 msgstr ""
 
 #. translators: 1: current add-on name, 2: required add-on name, 3: required add-on version.
-#: common.php:8418
+#: common.php:8423
 msgid "The Gravity Forms %1$s requires %2$s to be installed. Please install %2$s %3$s."
 msgstr ""
 
 #. translators: 1: current add-on name, 2: required add-on name, 3: required add-on version..
-#: common.php:8432
+#: common.php:8437
 msgid "The Gravity Forms %1$s requires %2$s to be active. Please activate %2$s %3$s."
 msgstr ""
 
 #. translators: 1: current add-on name, 2: required add-on name, 3: minimum required version, 4: currently installed version. 5: latest version if the text latest is used, version number otherwise.
-#: common.php:8447
+#: common.php:8452
 msgid "The Gravity Forms %1$s requires %2$s version %3$s or higher for full compatibility. You are currently using version %4$s. Please update %2$s to %5$s version."
 msgstr ""
 
@@ -1431,7 +1431,7 @@ msgstr ""
 #: includes/addon/class-gf-feed-addon.php:2253
 #: includes/class-confirmation.php:1093
 #: includes/editor-button/config/class-gf-editor-config.php:56
-#: includes/fields/class-gf-field.php:1754
+#: includes/fields/class-gf-field.php:1765
 #: includes/settings/config/class-gf-settings-config-i18n.php:37
 #: includes/settings/config/class-gf-settings-config-i18n.php:61
 #: js.php:1608
@@ -1487,7 +1487,7 @@ msgstr ""
 
 #: entry_detail.php:1242
 #: export.php:1356
-#: forms_model.php:6978
+#: forms_model.php:6971
 #: select_columns.php:201
 msgid "Transaction Id"
 msgstr ""
@@ -1523,7 +1523,7 @@ msgstr ""
 
 #: entry_detail.php:1375
 #: export.php:1362
-#: forms_model.php:6966
+#: forms_model.php:6959
 #: includes/addon/class-gf-addon.php:3202
 #: includes/settings/fields/class-generic-map.php:542
 #: select_columns.php:198
@@ -2108,7 +2108,7 @@ msgid "Date Updated"
 msgstr ""
 
 #: export.php:1355
-#: forms_model.php:6972
+#: forms_model.php:6965
 #: includes/addon/class-gf-addon.php:3203
 #: includes/settings/fields/class-generic-map.php:546
 #: select_columns.php:199
@@ -2145,7 +2145,7 @@ msgstr ""
 #: forms_model.php:1991
 #: forms_model.php:2024
 #: forms_model.php:2060
-#: forms_model.php:8671
+#: forms_model.php:8664
 #: includes/api.php:131
 #: includes/api.php:158
 #: includes/api.php:180
@@ -2203,69 +2203,69 @@ msgstr ""
 msgid "Error while saving total field values: %s"
 msgstr ""
 
-#: forms_model.php:7074
-#: forms_model.php:7082
-#: forms_model.php:7087
+#: forms_model.php:7067
+#: forms_model.php:7075
+#: forms_model.php:7080
 #: form_settings.php:308
 #: includes/template-library/templates/templates.php:13322
 msgid "(Required)"
 msgstr ""
 
-#: forms_model.php:7315
-#: forms_model.php:7379
+#: forms_model.php:7308
+#: forms_model.php:7372
 msgid "Default Confirmation"
 msgstr ""
 
-#: forms_model.php:7344
+#: forms_model.php:7337
 msgid "Save and Continue Confirmation"
 msgstr ""
 
-#: forms_model.php:7349
+#: forms_model.php:7342
 msgid "Link to continue editing later"
 msgstr ""
 
-#: forms_model.php:7350
+#: forms_model.php:7343
 msgid "Please use the following link to return and complete this form from any computer."
 msgstr ""
 
-#: forms_model.php:7351
+#: forms_model.php:7344
 msgid "Note: This link will expire after 30 days."
 msgstr ""
 
-#: forms_model.php:7352
+#: forms_model.php:7345
 msgid "Enter your email address if you would like to receive the link via email."
 msgstr ""
 
-#: forms_model.php:7363
+#: forms_model.php:7356
 msgid "Save and Continue Email Sent Confirmation"
 msgstr ""
 
-#: forms_model.php:7368
+#: forms_model.php:7361
 msgid "Success!"
 msgstr ""
 
-#: forms_model.php:7369
+#: forms_model.php:7362
 msgid "The link was sent to the following email address:"
 msgstr ""
 
-#: forms_model.php:8663
+#: forms_model.php:8656
 msgid "Updating the id property is not supported"
 msgstr ""
 
-#: forms_model.php:8667
+#: forms_model.php:8660
 msgid "%s is not a valid feed property"
 msgstr ""
 
-#: forms_model.php:8677
+#: forms_model.php:8670
 msgid "Feed meta should be an associative array or JSON"
 msgstr ""
 
-#: forms_model.php:8694
+#: forms_model.php:8687
 #: includes/api.php:2230
 msgid "There was an error while updating feed id %s"
 msgstr ""
 
-#: forms_model.php:8698
+#: forms_model.php:8691
 #: includes/api.php:2186
 msgid "Feed id %s not found"
 msgstr ""
@@ -2793,7 +2793,7 @@ msgstr ""
 #: form_detail.php:950
 #: form_detail.php:1657
 #: includes/blocks/config/class-gf-blocks-config.php:155
-#: includes/fields/class-gf-field.php:2771
+#: includes/fields/class-gf-field.php:2783
 msgid "Small"
 msgstr ""
 
@@ -5113,7 +5113,7 @@ msgstr ""
 #: includes/addon/class-gf-feed-addon.php:2252
 #: includes/class-confirmation.php:1092
 #: includes/editor-button/config/class-gf-editor-config.php:55
-#: includes/fields/class-gf-field.php:1733
+#: includes/fields/class-gf-field.php:1744
 #: notification.php:1540
 msgid "Duplicate"
 msgstr ""
@@ -5624,7 +5624,7 @@ msgstr ""
 #: includes/addon/class-gf-addon.php:5165
 #: includes/addon/class-gf-addon.php:5598
 #: includes/class-gf-osdxp.php:27
-#: includes/fields/class-gf-field.php:1778
+#: includes/fields/class-gf-field.php:1789
 #: includes/system-status/class-gf-update.php:81
 #: settings.php:1344
 msgid "Settings"
@@ -6272,7 +6272,7 @@ msgstr ""
 #: includes/fields/class-gf-field-repeater.php:656
 #: includes/fields/class-gf-field-singleproduct.php:57
 #: includes/fields/class-gf-field-website.php:69
-#: includes/fields/class-gf-field.php:918
+#: includes/fields/class-gf-field.php:929
 #: includes/settings/fields/class-base.php:793
 msgid "This field is required."
 msgstr ""
@@ -10468,7 +10468,7 @@ msgstr ""
 
 #: includes/fields/class-gf-field-quantity.php:29
 #: includes/fields/class-gf-field-singleproduct.php:133
-#: includes/fields/class-gf-field.php:2896
+#: includes/fields/class-gf-field.php:2908
 #: includes/template-library/templates/templates.php:2171
 #: includes/template-library/templates/templates.php:2232
 #: includes/template-library/templates/templates.php:3040
@@ -10594,43 +10594,43 @@ msgid "Please enter a valid Website URL (e.g. https://gravityforms.com)."
 msgstr ""
 
 #. Translators: comma-separated list of the labels of missing fields.
-#: includes/fields/class-gf-field.php:974
+#: includes/fields/class-gf-field.php:985
 msgid "Please complete the following fields: %s."
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1213
+#: includes/fields/class-gf-field.php:1224
 msgid "Field value cannot be displayed. Please activate the add-on that includes the `%s` field type."
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1215
+#: includes/fields/class-gf-field.php:1226
 msgid "Field value cannot be displayed. If you are the developer of the `%s` field type, please implement `%s::get_value_entry_detail()` to define how the value is displayed."
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1717
+#: includes/fields/class-gf-field.php:1728
 msgid "duplicate this field"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1744
+#: includes/fields/class-gf-field.php:1755
 msgid "delete this field"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1768
+#: includes/fields/class-gf-field.php:1779
 msgid "jump to this field's settings"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1791
+#: includes/fields/class-gf-field.php:1802
 msgid "Move"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1800
+#: includes/fields/class-gf-field.php:1811
 msgid "ID: %s"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1817
+#: includes/fields/class-gf-field.php:1829
 msgid "This field has an issue"
 msgstr ""
 
-#: includes/fields/class-gf-field.php:1858
+#: includes/fields/class-gf-field.php:1870
 msgid "This field is hidden when viewing the form"
 msgstr ""
 
@@ -14178,17 +14178,17 @@ msgid "Form not found."
 msgstr ""
 
 #: includes/webapi/v2/includes/controllers/class-controller-entry-properties.php:54
-#: includes/webapi/webapi.php:1604
+#: includes/webapi/webapi.php:1606
 msgid "No property values were found in the request body"
 msgstr ""
 
 #: includes/webapi/v2/includes/controllers/class-controller-entry-properties.php:57
-#: includes/webapi/webapi.php:1606
+#: includes/webapi/webapi.php:1608
 msgid "Property values should be sent as an array"
 msgstr ""
 
 #: includes/webapi/v2/includes/controllers/class-controller-entry-properties.php:74
-#: includes/webapi/webapi.php:1539
+#: includes/webapi/webapi.php:1541
 msgid "Entry updated successfully"
 msgstr ""
 
@@ -14323,11 +14323,11 @@ msgstr ""
 msgid "Missing feed meta"
 msgstr ""
 
-#: includes/webapi/v2/includes/controllers/class-controller-form-submissions.php:145
+#: includes/webapi/v2/includes/controllers/class-controller-form-submissions.php:147
 msgid "The input values."
 msgstr ""
 
-#: includes/webapi/v2/includes/controllers/class-controller-form-submissions.php:149
+#: includes/webapi/v2/includes/controllers/class-controller-form-submissions.php:151
 msgid "The field values."
 msgstr ""
 
@@ -14496,51 +14496,51 @@ msgstr ""
 msgid "Feeds updated: %d"
 msgstr ""
 
-#: includes/webapi/webapi.php:1477
+#: includes/webapi/webapi.php:1479
 msgid "Forms deleted successfully: %d"
 msgstr ""
 
-#: includes/webapi/webapi.php:1539
+#: includes/webapi/webapi.php:1541
 msgid "Entries updated successfully"
 msgstr ""
 
-#: includes/webapi/webapi.php:1660
+#: includes/webapi/webapi.php:1662
 msgid "Forms updated successfully"
 msgstr ""
 
-#: includes/webapi/webapi.php:1660
+#: includes/webapi/webapi.php:1662
 msgid "Form updated successfully"
 msgstr ""
 
-#: includes/webapi/webapi.php:1697
+#: includes/webapi/webapi.php:1699
 msgid "Entries deleted successfully: %d"
 msgstr ""
 
-#: includes/webapi/webapi.php:2400
+#: includes/webapi/webapi.php:2402
 msgid "Not authorized"
 msgstr ""
 
-#: includes/webapi/webapi.php:2405
+#: includes/webapi/webapi.php:2407
 msgid "Permission denied"
 msgstr ""
 
-#: includes/webapi/webapi.php:2410
+#: includes/webapi/webapi.php:2412
 msgid "Forbidden"
 msgstr ""
 
-#: includes/webapi/webapi.php:2415
+#: includes/webapi/webapi.php:2417
 msgid "Bad request"
 msgstr ""
 
-#: includes/webapi/webapi.php:2420
+#: includes/webapi/webapi.php:2422
 msgid "Not found"
 msgstr ""
 
-#: includes/webapi/webapi.php:2425
+#: includes/webapi/webapi.php:2427
 msgid "Not implemented"
 msgstr ""
 
-#: includes/webapi/webapi.php:2430
+#: includes/webapi/webapi.php:2432
 msgid "Internal Error"
 msgstr ""
 

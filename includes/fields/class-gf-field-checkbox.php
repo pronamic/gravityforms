@@ -716,12 +716,12 @@ class GF_Field_Checkbox extends GF_Field {
 			switch (true) {
 				// If the 'value' modifier was passed.
 				case $use_value:
-					list( $val, $price ) = rgexplode( '|', $item, 2 );
+					list( $val, $price ) = rgexplode( '|', $item, 2, true );
 					break;
 
 				// If the 'price' or 'currency' modifiers were passed.
 				case $use_price:
-					list( $name, $val ) = rgexplode( '|', $item, 2 );
+					list( $name, $val ) = rgexplode( '|', $item, 2, true );
 					if ( $format_currency ) {
 						$val = GFCommon::to_money( $val, rgar( $entry, 'currency' ) );
 					}

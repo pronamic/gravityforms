@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.9.29
+Version: 2.9.30
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '2.9.29';
+	public static $version = '2.9.30';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -7382,18 +7382,32 @@ if ( ! function_exists( 'rgexplode' ) ) {
 	/**
 	 * Converts a delimiter separated string to an array.
 	 *
-	 * @since  Unknown
-	 * @access public
+	 * @since Unknown
+	 * @since 2.9.30 Added the optional $on_last_sep param.
 	 *
-	 * @param string $sep The delimiter between values
-	 * @param string $string The string to convert
-	 * @param int $count The expected number of items in the resulting array
+	 * @param string $sep         The delimiter between values
+	 * @param string $string      The string to convert
+	 * @param int    $min_count   The minimum number of items in the resulting array
+	 * @param bool   $on_last_sep Optional. If true, the split occurs on the last instance of the delimiter. Defaults to false.
 	 *
 	 * @return array $ary The exploded array
 	 */
-	function rgexplode( $sep, $string, $count ) {
-		$ary = explode( (string) $sep, (string) $string );
-		while ( count( $ary ) < $count ) {
+	function rgexplode( $sep, $string, $min_count, $on_last_sep = false ) {
+		if ( $on_last_sep ) {
+			$last_sep_pos = strrpos( (string) $string, (string) $sep );
+			if ( $last_sep_pos === false ) {
+				$ary = [ (string) $string ];
+			} else {
+				$ary = [
+					substr( (string) $string, 0, $last_sep_pos ),
+					substr( (string) $string, $last_sep_pos + 1 ),
+				];
+			}
+		} else {
+			$ary = explode( (string) $sep, (string) $string );
+		}
+
+		while ( count( $ary ) < $min_count ) {
 			$ary[] = '';
 		}
 

@@ -1435,6 +1435,8 @@ if ( class_exists( 'GFForms' ) ) {
 					unset( $result['entry_id'] );
 				}
 
+				unset( $result['form'] );
+
 				$status   = 200;
 				$response = $result;
 			}

@@ -595,6 +595,17 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		// Get the field sidebar messages, this could be an array of messages or a warning message string.
 		$field_sidebar_messages  = GFCommon::is_form_editor() ? $this->get_field_sidebar_messages() : '';
+
+		/**
+		 * Allows the field sidebar messages to be modified.
+		 *
+		 * @since 2.9.30
+		 *
+		 * @param array|string $field_sidebar_messages The field sidebar messages.
+		 * @param GF_Field     $field                  The field object.
+		 */
+		$field_sidebar_messages = $is_form_editor ? apply_filters( 'gform_field_sidebar_messages', $field_sidebar_messages, $this ) : $field_sidebar_messages;
+
 		$sidebar_message_type    = 'warning';
 		$sidebar_message_content = $field_sidebar_messages;
 
@@ -813,7 +824,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 				return false;
 			} elseif ( $this->enablePrice ) {
-				list( $label, $price ) = rgexplode( '|', $value, 2 );
+				list( $label, $price ) = rgexplode( '|', $value, 2, true );
 				$is_empty = ( strlen( trim( $price ) ) <= 0 );
 
 				return $is_empty;
@@ -1319,7 +1330,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		$price = '';
 
 		if ( $this->enablePrice ) {
-			$parts = explode( '|', $value );
+			$parts = rgexplode( '|', $value, 2, true );
 			$value = $parts[0];
 
 			if ( ! empty( $parts[1] ) ) {
@@ -1803,6 +1814,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		$conditional         = "<span class='gfield-compact-icon--conditional' id='gfield_{$this->id}-conditional-logic-icon' title='" . esc_attr( 'Conditional Logic', 'gravityforms' ) . "' style='display: {$conditional_display}' aria-label=" . esc_html( 'Conditional Logic', 'gravityforms' ) . ">" . GFCommon::get_icon_markup( array( 'icon' => 'gform-icon--conditional-logic' ) ) . "<span class='screen-reader-text'>" . esc_attr( 'This field has conditional logic enabled.', 'gravityforms' ) . "</span></span>";
 
 		$field_sidebar_messages    = $this->get_field_sidebar_messages();
+		$field_sidebar_messages    = GFCommon::is_form_editor() ? apply_filters( 'gform_field_sidebar_messages', $field_sidebar_messages, $this ) : $field_sidebar_messages;
 		$sidebar_message           = is_array( rgar( $field_sidebar_messages, '0' ) ) ? array_shift( $field_sidebar_messages ) : $field_sidebar_messages;
 		$compact_view_sidebar_message_icon = '';
 		if ( ! empty( $sidebar_message ) ) {

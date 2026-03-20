@@ -149,9 +149,9 @@ class GF_Field_Select extends GF_Field {
 
 		foreach ( $items as $input_id => $item ) {
 			if ( $use_value ) {
-				list( $val, $price ) = rgexplode( '|', $item, 2 );
+				list( $val, $price ) = rgexplode( '|', $item, 2, true );
 			} elseif ( $use_price ) {
-				list( $name, $val ) = rgexplode( '|', $item, 2 );
+				list( $name, $val ) = rgexplode( '|', $item, 2, true );
 				if ( $format_currency ) {
 					$val = GFCommon::to_money( $val, rgar( $entry, 'currency' ) );
 				}

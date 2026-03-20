@@ -1,3 +1,11 @@
+### 2.9.30 | 2026-03-19
+- Added [`gform_field_sidebar_messages`](https://docs.gravityforms.com/gform_field_sidebar_messages/) filter to allow customization of the field sidebar messages in the form editor.
+- Fixed some display issues in the dashboard with WordPress 7.0-beta.
+- Fixed a PHP fatal error that occurs when a payment add-on processes a submission with a choice-based pricing field where the selected choice value includes a pipe character followed by non-numeric characters.
+- Fixed an issue where gravityforms.js could reset the gform.instances object, usually when scripts are optimized by the theme or another plugin, resulting in a JS error on form display or submission.
+- AF: Fixed duplicate `SHOW TABLES LIKE 'wp_gf_addon_feed'` queries.
+- API: Fixed an issue where the form object is included in the REST API form submission response.
+
 ### 2.9.29 | 2026-03-10
 - Added security enhancements.
 - Added support for a new notification event (Payment Processing - stale) that allows notifications to be sent when payments are taking an unusually long time to process. This will be initially available in the upcoming Stripe Add-on v.7.0.

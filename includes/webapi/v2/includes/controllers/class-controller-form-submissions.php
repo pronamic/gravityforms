@@ -71,6 +71,8 @@ class GF_REST_Form_Submissions_Controller extends GF_REST_Controller {
 			return new WP_Error( $result->get_error_code(), $result->get_error_message(), array( 'status' => 400 ) );
 		}
 
+		unset( $result['form'] );
+
 		if ( ! current_user_can( 'gravityforms_view_entries' ) && ! current_user_can( 'gravityforms_edit_entries' ) ) {
 			unset( $result['entry_id'] );
 		}

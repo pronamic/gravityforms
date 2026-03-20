@@ -4480,7 +4480,7 @@ Content-Type: text/html;
 								$name  = $field_label;
 								$price = $lead_value;
 							} else {
-								list( $name, $price ) = explode( '|', $lead_value );
+								list( $name, $price ) = rgexplode( '|', $lead_value, 2, true );
 
 								if ( $use_choice_text ) {
 									$name = RGFormsModel::get_choice_text( $field, $name );
@@ -4552,7 +4552,7 @@ Content-Type: text/html;
 				$shipping_name     = $use_admin_label && ! empty( $shipping_fields[0]->adminLabel ) ? $shipping_fields[0]->adminLabel : $shipping_fields[0]->label;
 				$shipping_field_id = $shipping_fields[0]->id;
 				if ( $shipping_fields[0]->inputType != 'singleshipping' && ! empty( $shipping_price ) ) {
-					list( $shipping_method, $shipping_price ) = explode( '|', $shipping_price );
+					list( $shipping_method, $shipping_price ) = rgexplode( '|', $shipping_price, 2, true );
 					if ( $use_choice_text ) {
 						$shipping_method = RGFormsModel::get_choice_text( $shipping_fields[0], $shipping_method );
 					}
@@ -4631,7 +4631,7 @@ Content-Type: text/html;
 			return array();
 		}
 
-		list( $name, $price ) = explode( '|', $value );
+		list( $name, $price ) = rgexplode( '|', $value, 2, true );
 		if ( $use_choice_text ) {
 			$name = RGFormsModel::get_choice_text( $option, $name );
 		}
@@ -7112,23 +7112,28 @@ Content-Type: text/html;
 	/**
 	 * Checks for the existence of a MySQL table.
 	 *
-	 * @since  2.2
-	 * @access public
+	 * @since 2.2
+	 * @since 2.9.30 Added static caching and $bypass_cache param.
 	 *
-	 * @param string $table_name Table to check for.
-	 *
-	 * @uses wpdb::get_var()
+	 * @param string $table_name   Table to check for.
+	 * @param bool   $bypass_cache Whether to bypass the statically cached results of previous checks.
 	 *
 	 * @return bool
 	 */
-	public static function table_exists( $table_name ) {
+	public static function table_exists( $table_name, $bypass_cache = false ) {
+		$found  = false;
+		$result = ! $bypass_cache && (bool) GFCache::get( 'table_exists_' . $table_name, $found, false );
 
-		global $wpdb;
+		if ( ! $found ) {
+			global $wpdb;
 
-		$count = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$count = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-		return ! empty( $count );
+			$result = ! empty( $count );
+			GFCache::set( 'table_exists_' . $table_name, $result );
+		}
 
+		return $result;
 	}
 
 	/**

@@ -29,7 +29,7 @@ function gformBindFormatPricingFields(){
  * Namespace to store our JavaScript class instances
  */
 
-gform.instances = {};
+gform.instances = gform.instances || {};
 
 //----------------------------------------
 //------ CONSOLE FUNCTIONS ---------------
@@ -1058,8 +1058,9 @@ function gformGetBasePrice(formId, productFieldId){
         productField = jQuery(".gfield_product" + suffix + " select, .gfield_product" + suffix + " input:checked, .gfield_donation" + suffix + " select, .gfield_donation" + suffix + " input:checked");
         var val = productField.val();
         if(val){
-            val = val.split("|");
-            price = val.length > 1 ? val[1] : 0;
+            const value = gformParseChoiceValue( val );
+            val = value.name;
+            price = value.price || 0;
         }
 
         //If field is hidden by conditional logic, don't count it for the total
@@ -1071,6 +1072,36 @@ function gformGetBasePrice(formId, productFieldId){
     var c = new gform.Currency(gf_global.gf_currency_config);
     price = c.toNumber(price);
     return price === false ? 0 : price;
+}
+
+/**
+ * @function gformParseChoiceValue
+ * @description Parse a choice value into its name and price components.
+ *
+ * @since 2.9.30
+ *
+ * @param {string} value The choice value string in the format "name|price".
+ *
+ * @return {object} Returns an object in the format: { price: PRODUCT_PRICE, name: PRODUCT_NAME }
+ */
+function gformParseChoiceValue( value ) {
+	if ( window.gform?.products?.parser?.parseChoiceValue ) {
+		return window.gform.products.parser.parseChoiceValue( value );
+	}
+
+	if ( ! value ) {
+		return { name: null, price: null };
+	}
+
+	const idx = value.lastIndexOf( '|' );
+	if ( idx === -1 ) {
+		return { name: value, price: null };
+	}
+
+	const name = value.slice( 0, idx );
+	const price = gformToNumber( value.slice( idx + 1 ) );
+
+	return { name, price };
 }
 
 function gformFormatMoney(text, isNumeric){
@@ -1136,11 +1167,10 @@ function gformGetProductIds(parent_class, element){
 }
 
 function gformGetPrice(text){
-    var val = text.split("|");
-    var currency = new gform.Currency(gf_global.gf_currency_config);
+    var val = gformParseChoiceValue( text );
 
-    if(val.length > 1 && currency.toNumber(val[1]) !== false)
-         return currency.toNumber(val[1]);
+    if(val.price)
+         return val.price;
 
     return 0;
 }

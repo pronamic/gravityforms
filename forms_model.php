@@ -4976,9 +4976,7 @@ class GFFormsModel {
 
 		//do not save price fields with blank price
 		if ( $field->enablePrice ) {
-			$ary   = explode( '|', $value );
-			$label = count( $ary ) > 0 ? $ary[0] : '';
-			$price = count( $ary ) > 1 ? $ary[1] : '';
+			list( $label, $price ) = rgexplode( '|', $value, 2, true );
 
 			$is_empty = ( strlen( trim( $price ) ) <= 0 );
 			if ( $is_empty ) {
@@ -5005,9 +5003,7 @@ class GFFormsModel {
 							if ( $choice['value'] == $lead[ $field_id ] ) {
 								return $choice['value'];
 							} else if ( $field->enablePrice ) {
-								$ary   = explode( '|', $lead[ $field_id ] );
-								$val   = count( $ary ) > 0 ? $ary[0] : '';
-								$price = count( $ary ) > 1 ? $ary[1] : '';
+								list( $val, $price ) = rgexplode( '|', $lead[ $field_id ], 2, true );
 
 								if ( $val == $choice['value'] ) {
 									return $choice['value'];
@@ -5129,12 +5125,9 @@ class GFFormsModel {
 		if ( $choice_value == $value || $choice_value == $sanitized_value ) {
 			return true;
 		} else if ( $field->enablePrice ) {
-			$ary = explode( '|', $value );
+			list( $val, $price ) = rgexplode( '|', $value, 2, true );
 
-			$val           = count( $ary ) > 0 ? $ary[0] : '';
 			$sanitized_val = wp_kses( $val, $allowed_html );
-
-			$price = count( $ary ) > 1 ? $ary[1] : '';
 
 			if ( $choice['value'] == $val || $choice['value'] == $sanitized_val ) {
 				return true;
