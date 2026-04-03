@@ -162,7 +162,7 @@ class GF_Field_Calculation extends GF_Field {
 
 			$product = $product_name . ', ' . esc_html__( 'Qty: ', 'gravityforms' ) . $quantity . ', ' . esc_html__( 'Price: ', 'gravityforms' ) . $price;
 
-			return $product;
+			return wp_kses( $product, wp_kses_allowed_html( 'data' ) );
 		} else {
 			return '';
 		}

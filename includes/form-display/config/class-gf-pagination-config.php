@@ -21,14 +21,18 @@ class GF_Pagination_Config extends GF_Config {
 	 */
 	public function data() {
 
-		if ( ! rgar( $this->args, 'form_ids' ) ) {
+		$form_ids = $this->get_form_ids_arg();
+		if ( empty( $form_ids ) ) {
 			return array();
 		}
 
 		$pagination = array();
-		foreach ( $this->args['form_ids'] as $form_id ) {
-			$form = \GFFormDisplay::gform_pre_render( \GFAPI::get_form( $form_id ), 'form_config' );
-			$pagination[ $form_id ] = rgar( $form, 'pagination' );
+		foreach ( $form_ids as $form_id ) {
+			$form = \GFAPI::get_form( $form_id );
+			if ( ! $form ) {
+				continue;
+			}
+			$pagination[ $form_id ] = rgar( \GFFormDisplay::gform_pre_render( $form, 'form_config' ), 'pagination' );
 		}
 
 		return array(

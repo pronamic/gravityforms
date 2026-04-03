@@ -852,7 +852,7 @@ class GF_Field_List extends GF_Field {
 			$output_format = $format;
 		}
 
-		return GFCommon::get_lead_field_display( $this, $raw_value, $entry, true, $output_format );
+		return $this->get_value_entry_detail( $raw_value, $entry, true, $output_format, 'screen' );
 	}
 
 	/**
@@ -873,7 +873,7 @@ class GF_Field_List extends GF_Field {
 	 * @return string
 	 */
 	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
-		return GFCommon::get_lead_field_display( $this, $value, $entry, true, 'html' );
+		return $this->get_value_entry_detail( $value, $entry, true, 'html', 'screen' );
 	}
 
 	/**

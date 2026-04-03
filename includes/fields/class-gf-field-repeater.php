@@ -495,9 +495,9 @@ class GF_Field_Repeater extends GF_Field {
 				} else {
 					$sub_field_value = $this->get_field_value( $sub_field, $item_value );
 				}
-				$label = $sub_field->get_field_label( true, $item_values );
+				$label = wp_kses( $sub_field->get_field_label( true, $item_values ), wp_kses_allowed_html( 'post' ) );
 				$label = empty( $sub_field->fields ) ? "<div class='gfield_repeater_label' {$sub_field_label_style}>{$label}</div>" : '';
-				$value = $sub_field->get_value_entry_detail( $sub_field_value, $entry, $use_text, 'html', $media );
+				$value = wp_kses( $sub_field->get_value_entry_detail( $sub_field_value, $entry, $use_text, 'html', $media ), wp_kses_allowed_html( 'post' ) );
 				$value = "<div class='gfield_repeater_value' style='color:rgba(117, 117, 117, 1);font-size: 14px'>{$value}</div>";
 				$html .= '<div class="gfield_repeater_cell">' . $label . $value . '</div>';
 			}

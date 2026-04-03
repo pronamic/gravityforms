@@ -636,36 +636,9 @@ class GF_Field_FileUpload extends GF_Field {
 			$files = $this->get_submission_files_for_preview();
 
 			if ( ! empty( $files ) ) {
-				$preview   = sprintf( "<div id='%s' class='ginput_preview_list'>", $file_list_id );
+				$preview = sprintf( "<div id='%s' class='ginput_preview_list'>", $file_list_id );
 				foreach ( $files as $file_info ) {
-
-					if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
-						$file_upload_markup = "<img alt='" . esc_attr__( 'Delete file', 'gravityforms' ) . "' class='gform_delete' src='" . GFCommon::get_base_url() . "/images/delete.png' onclick='gformDeleteUploadedFile({$form_id}, {$id}, this);' onkeypress='gformDeleteUploadedFile({$form_id}, {$id}, this);' /> <strong>" . esc_html( $file_info['uploaded_filename'] ) . '</strong>';
-					} else {
-						$file_upload_markup = sprintf( '<span class="gfield_fileupload_filename">%s</span>', esc_html( $file_info['uploaded_filename'] ) );
-						// TODO: get file size $file_upload_markup .= sprintf( '<span class="gfield_fileupload_filesize">%s</span>', esc_html( $file_info['uploaded_filesize'] ) );
-						$file_upload_markup .= '<span class="gfield_fileupload_progress gfield_fileupload_progress_complete"><span class="gfield_fileupload_progressbar"><span class="gfield_fileupload_progressbar_progress" style="width: 100%;"></span></span><span class="gfield_fileupload_percent">100%</span></span>';
-						$file_upload_markup .= sprintf(
-							'<button class="gform_delete_file gform-theme-button gform-theme-button--simple" onclick="gformDeleteUploadedFile( %d, %d, this );"><span class="dashicons dashicons-trash" aria-hidden="true"></span><span class="screen-reader-text">%s: %s</span></button>',
-							$form_id,
-							$id,
-							esc_html__( 'Delete this file', 'gravityforms' ),
-							esc_html( $file_info['uploaded_filename'] )
-						);
-					}
-
-					/**
-					 * Modify the HTML for the Multi-File Upload "preview."
-					 *
-					 * @since Unknown
-					 *
-					 * @param string $file_upload_markup The current HTML for the field.
-					 * @param array  $file_info          Details about the file uploaded.
-					 * @param int    $form_id            The current Form ID.
-					 * @param int    $id                 The current Field ID.
-					 */
-					$file_upload_markup = apply_filters( 'gform_file_upload_markup', $file_upload_markup, $file_info, $form_id, $id );
-					$preview           .= sprintf( "<div id='%s' class='ginput_preview'>%s</div>", esc_attr( rgar( $file_info, 'id' ) ), $file_upload_markup );
+					$preview .= $this->get_file_preview_markup( $file_info, $form );
 				}
 				$preview .= '</div>';
 
@@ -677,6 +650,50 @@ class GF_Field_FileUpload extends GF_Field {
 				return "<div class='ginput_container ginput_container_fileupload'>$upload $preview</div>";
 			}
 		}
+	}
+
+	/**
+	 * Returns the file preview HTML for the given uploaded file.
+	 *
+	 * @since 2.9.31
+	 *
+	 * @param array $file The uploaded file details.
+	 * @param array $form The current form.
+	 *
+	 * @return string
+	 */
+	public function get_file_preview_markup( $file, $form ) {
+		$form_id = absint( rgar( $form, 'id' ) );
+		$id      = absint( $this->id );
+
+		if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
+			$markup = "<img alt='" . esc_attr__( 'Delete file', 'gravityforms' ) . "' class='gform_delete' src='" . GFCommon::get_base_url() . "/images/delete.png' onclick='gformDeleteUploadedFile({$form_id}, {$id}, this);' onkeypress='gformDeleteUploadedFile({$form_id}, {$id}, this);' /> <strong>" . esc_html( rgar( $file, 'uploaded_filename' ) ) . '</strong>';
+		} else {
+			$markup = sprintf( '<span class="gfield_fileupload_filename">%s</span>', esc_html( rgar( $file, 'uploaded_filename' ) ) );
+			// TODO: get file size $markup .= sprintf( '<span class="gfield_fileupload_filesize">%s</span>', esc_html( rgar( $file, 'uploaded_filesize' ) ) );
+			$markup .= '<span class="gfield_fileupload_progress gfield_fileupload_progress_complete"><span class="gfield_fileupload_progressbar"><span class="gfield_fileupload_progressbar_progress" style="width: 100%;"></span></span><span class="gfield_fileupload_percent">100%</span></span>';
+			$markup .= sprintf(
+				'<button class="gform_delete_file gform-theme-button gform-theme-button--simple" onclick="gformDeleteUploadedFile( %d, %d, this );"><span class="dashicons dashicons-trash" aria-hidden="true"></span><span class="screen-reader-text">%s: %s</span></button>',
+				$form_id,
+				$id,
+				esc_html__( 'Delete this file', 'gravityforms' ),
+				esc_html( rgar( $file, 'uploaded_filename' ) )
+			);
+		}
+
+		/**
+		 * Modify the HTML for the uploaed file preview.
+		 *
+		 * @since Unknown
+		 *
+		 * @param string $markup  The file preview HTML.
+		 * @param array  $file    Details about the uploaded file.
+		 * @param int    $form_id The current Form ID.
+		 * @param int    $id      The current Field ID.
+		 */
+		$markup = apply_filters( 'gform_file_upload_markup', $markup, $file, $form_id, $id );
+
+		return sprintf( "<div id='%s' class='ginput_preview'>%s</div>", esc_attr( rgar( $file, 'id' ) ), $markup );
 	}
 
 	/**

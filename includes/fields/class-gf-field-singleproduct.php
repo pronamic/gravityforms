@@ -235,7 +235,7 @@ class GF_Field_SingleProduct extends GF_Field {
 				$product_details .= ', ' . esc_html__( 'Price: ', 'gravityforms' ) . GFCommon::format_number( $price, 'currency', rgar( $entry, 'currency' ) );
 			}
 
-			return $product_details;
+			return wp_kses( $product_details, wp_kses_allowed_html( 'data' ) );
 		} else {
 			return '';
 		}

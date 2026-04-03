@@ -145,6 +145,9 @@ class GF_Ajax_Handler {
 
 			// Getting the field markup for the target page if the form is a multipage form.
 			$result['page_markup'] = \GFFormDisplay::get_page( $form_id, $page_number, $field_values, $theme, $style, $submission_method );
+
+			// Ensure the form UUID is maintained on page changes.
+			$result['form_unique_id'] = \GFFormsModel::get_form_unique_id( $form_id );
 		}
 
 		$result['submission_type'] = $this->get_submission_type( $target_page, $source_page );

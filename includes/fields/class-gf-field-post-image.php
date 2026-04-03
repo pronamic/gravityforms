@@ -119,13 +119,15 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 		$invalid_attribute  = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
 		$aria_describedby   = $this->get_aria_describedby( array( $extensions_message_id ) );
 
-		$hidden_class = $preview = '';
-		$file_info    = rgar( $this->get_submission_files_for_preview(), 0 );
+		$preview   = '';
+		$file_info = rgar( $this->get_submission_files_for_preview(), 0 );
 
 		if ( ! empty( $file_info ) ) {
-			$hidden_class     = ' gform_hidden';
 			$file_label_style = $hidden_style;
-			$preview          = "<span class='ginput_preview'><strong>" . esc_html( $file_info['uploaded_filename'] ) . "</strong> | <a href='javascript:;' onclick='gformDeleteUploadedFile({$form_id}, {$id});' onkeypress='gformDeleteUploadedFile({$form_id}, {$id});'>" . __( 'delete', 'gravityforms' ) . '</a></span>';
+			$file_preview     = $this->get_file_preview_markup( $file_info, $form );
+			// Escape the progress percentages before the string is used in the sprintf.
+			$file_preview = str_replace( '100%', '100%%', $file_preview );
+			$preview      = sprintf( "<div id='gform_preview_%d_%d' class='ginput_preview_list'>%s</div>", $form_id, $id, $file_preview );
 		}
 
 		//in admin, render all meta fields to allow for immediate feedback, but hide the ones not selected
@@ -134,9 +136,9 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 		$tabindex = $this->get_tabindex();
 
 		if( $is_sub_label_above ){
-			$upload = sprintf( "<span class='ginput_full$class_suffix gform-grid-col'>$file_label{$preview}<input name='input_%d' id='%s' type='file' class='%s' $tabindex $required_attribute $invalid_attribute $aria_describedby %s/>{$extensions_message}</span>", $id, $field_id, esc_attr( $class . $hidden_class ), $disabled_text );
+			$upload = sprintf( "<span class='ginput_full$class_suffix gform-grid-col'>$file_label<input name='input_%d' id='%s' type='file' class='%s' $tabindex $required_attribute $invalid_attribute $aria_describedby %s/>{$extensions_message}{$preview}</span>", $id, $field_id, esc_attr( $class ), $disabled_text );
 		} else {
-			$upload = sprintf( "<span class='ginput_full$class_suffix gform-grid-col'>{$preview}<input name='input_%d' id='%s' type='file' class='%s' $tabindex $required_attribute $invalid_attribute $aria_describedby %s/>{$extensions_message}$file_label</span>", $id, $field_id, esc_attr( $class . $hidden_class ), $disabled_text );
+			$upload = sprintf( "<span class='ginput_full$class_suffix gform-grid-col'><input name='input_%d' id='%s' type='file' class='%s' $tabindex $required_attribute $invalid_attribute $aria_describedby %s/>{$extensions_message}$file_label{$preview}</span>", $id, $field_id, esc_attr( $class ), $disabled_text );
 		}
 
 		$tabindex = $this->get_tabindex();

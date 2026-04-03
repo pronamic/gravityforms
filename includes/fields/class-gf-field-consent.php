@@ -406,7 +406,7 @@ class GF_Field_Consent extends GF_Field {
 		switch ( $input_id ) {
 			case '1':
 				$value  = ! rgblank( $value ) ? $this->checked_indicator_markup : '';
-				$value .= ! rgblank( $value ) ? ' ' . trim( $entry[ $this->id . '.2' ] ) : '';
+				$value .= ! rgblank( $value ) ? ' ' . wp_kses( trim( $entry[ $this->id . '.2' ] ), wp_kses_allowed_html( 'data' ) ) : '';
 				break;
 		}
 
@@ -437,7 +437,7 @@ class GF_Field_Consent extends GF_Field {
 
 			if ( ! rgblank( $consent ) ) {
 				$return  = $this->checked_indicator_markup;
-				$return .= ' ' . wp_kses_post( $text );
+				$return .= ' ' . wp_kses( $text, wp_kses_allowed_html( 'data' ) );
 
 				if ( $media === 'screen' ) {
 					// checking revisions.

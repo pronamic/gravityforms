@@ -218,6 +218,10 @@ class GF_Field_MultiSelect extends GF_Field {
 	 */
 	public function get_value_entry_detail( $value, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
 
+		if ( $this->type === 'post_category' ) {
+			$value = GFCommon::prepare_post_category_value( $value, $this, 'entry_detail' );
+		}
+
 		if ( empty( $value ) || ( $format == 'text' && $this->storageType !== 'json' ) ) {
 			return $value;
 		}

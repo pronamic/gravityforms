@@ -1174,6 +1174,30 @@ class GF_Field_Date extends GF_Field {
 
 		$this->inputs = $inputs;
 	}
+
+	/**
+	 * Gets a property value from an input.
+	 *
+	 * @since  next
+	 * @access public
+	 *
+	 * @used-by GF_Field::complex_validation_message()
+	 * @uses    GFFormsModel::get_input()
+	 *
+	 * @param int    $input_id      The input ID to obtain the property from.
+	 * @param string $property_name The property name to search for.
+	 *
+	 * @return null|string The property value if found. Otherwise, null.
+	 */
+	public function get_input_property( $input_id, $property_name ) {
+		$input = GFFormsModel::get_input( $this, $this->id . '.' . (string) $input_id );
+
+		if ( 'customLabel' === $property_name || 'label' === $property_name ){
+			return $this->get_input_placeholder_value( $input );
+		}
+
+		return rgar( $input, $property_name );
+	}
 }
 
 GF_Fields::register( new GF_Field_Date() );

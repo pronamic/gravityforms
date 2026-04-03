@@ -124,14 +124,14 @@ class GF_Field_HiddenProduct extends GF_Field {
 			$price        = trim( $value[ $this->id . '.2' ] );
 			$quantity     = trim( $value[ $this->id . '.3' ] );
 
-			$product_details = $product_name;
+			$product_details = wp_kses( $product_name, wp_kses_allowed_html( 'data' ) );
 
 			if ( ! rgblank( $quantity ) ) {
-				$product_details .= ', ' . esc_html__( 'Qty: ', 'gravityforms' ) . $quantity;
+				$product_details .= ', ' . esc_html__( 'Qty: ', 'gravityforms' ) . wp_kses( $quantity, wp_kses_allowed_html( 'data' ) );
 			}
 
 			if ( ! rgblank( $price ) ) {
-				$product_details .= ', ' . esc_html__( 'Price: ', 'gravityforms' ) . GFCommon::format_number( $price, 'currency', rgar( $entry, 'currency' ) );
+				$product_details .= ', ' . esc_html__( 'Price: ', 'gravityforms' ) . wp_kses( GFCommon::format_number( $price, 'currency', rgar( $entry, 'currency' ) ), wp_kses_allowed_html( 'data' ) );
 			}
 
 			return $product_details;

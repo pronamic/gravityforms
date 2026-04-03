@@ -1195,6 +1195,23 @@ class GF_Field extends stdClass implements ArrayAccess {
 	}
 
 	/**
+	 * Returns the field value formatted for the {all_fields} merge tag (email output).
+	 *
+	 * @since 2.9.31
+	 *
+	 * @param string|array $value    The field value.
+	 * @param array        $entry    The entry.
+	 * @param bool|false   $use_text When processing choice based fields should the choice text be returned instead of the value.
+	 * @param string       $format   The format requested for the location the merge is being used. Possible values: html, text or url.
+	 *
+	 * @return string|false
+	 */
+	public function get_value_all_fields_merge_tag( $value, $entry, $use_text, $format ) {
+
+		return $this->get_value_entry_detail( $value, $entry, $use_text, $format, 'email' );
+	}
+
+	/**
 	 * Format the entry value for display on the entry detail page and for the {all_fields} merge tag.
 	 *
 	 * Return a value that's safe to display for the context of the given $format.

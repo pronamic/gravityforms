@@ -1087,7 +1087,7 @@ class GFEntryDetail {
 							$field->nestingLevel = 0;
 						}
 
-						$display_value = GFCommon::get_lead_field_display( $field, $value, $lead );
+						$display_value = $field->get_value_entry_detail( $value, $lead, false, 'html', 'screen' );
 
 						/**
 						 * Filters a field value displayed within an entry.

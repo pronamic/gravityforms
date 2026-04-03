@@ -526,11 +526,13 @@ class GF_Field_CreditCard extends GF_Field {
 			$card_number = trim( rgget( $this->id . '.1', $value ) );
 			$card_type   = trim( rgget( $this->id . '.4', $value ) );
 			$separator   = $format == 'html' ? '<br/>' : "\n";
-
+			if ( $format === 'html' ) {
+				$card_type   = esc_html( $card_type );
+				$card_number = esc_html( $card_number );
+			}
 			return empty( $card_number ) ? '' : $card_type . $separator . $card_number;
-		} else {
-			return '';
 		}
+		return '';
 	}
 
 	public function get_form_inline_script_on_page_render( $form ) {
@@ -587,13 +589,12 @@ class GF_Field_CreditCard extends GF_Field {
 			$value              = substr( $value, - 4, 4 );
 			$value              = str_pad( $value, $card_number_length, 'X', STR_PAD_LEFT );
 		} elseif ( $input_id == '4' ) {
-
 			$value = rgpost( "input_{$field_id_token}_4" );
 
 			if ( ! $value ) {
 				$card_number = rgpost( "input_{$field_id_token}_1" );
 				$card_type   = GFCommon::get_card_type( $card_number );
-				$value       = $card_type ? $card_type['name'] : '';
+				$value       = $card_type ? strip_tags( $card_type['name'] ) : '';
 			}
 		} else {
 			$value = '';

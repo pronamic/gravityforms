@@ -21,13 +21,18 @@ class GF_Product_Meta_Config extends GF_Config {
 	 */
 	public function data() {
 
-		if ( ! rgar( $this->args, 'form_ids' ) ) {
+		$form_ids = $this->get_form_ids_arg();
+		if ( empty( $form_ids ) ) {
 			return array();
 		}
 
 		$product_metas = array();
-		foreach ( $this->args['form_ids'] as $form_id ) {
-			$product_metas[ $form_id ] = $this->get_product_meta( $form_id );
+		foreach ( $form_ids as $form_id ) {
+			$meta = $this->get_product_meta( $form_id );
+			if ( empty( $meta ) ) {
+				continue;
+			}
+			$product_metas[ $form_id ] = $meta;
 		}
 
 		return array(
@@ -66,10 +71,14 @@ class GF_Product_Meta_Config extends GF_Config {
 	 * @return array|null Returns the product meta for the form. Returns null if the form does not contain any product fields.
 	 */
 	private function get_product_meta( $form_id ) {
+		$form = \GFAPI::get_form( $form_id );
+		if ( ! $form ) {
+			return null;
+		}
 
 		$product_meta   = array();
 		$products       = array();
-		$form           = \GFFormDisplay::gform_pre_render( \GFAPI::get_form( $form_id ), 'form_config' );
+		$form           = \GFFormDisplay::gform_pre_render( $form, 'form_config' );
 		$product_fields = \GFAPI::get_fields_by_type( $form, array( 'product' ) );
 		if ( empty( $product_fields ) ) {
 			return null;
@@ -108,7 +117,7 @@ class GF_Product_Meta_Config extends GF_Config {
 	/**
 	 * Cleans the field metadata so that it only contains a set of whitelisted properties.
 	 *
-	 * @param array $data Metadata to be cleaned.
+	 * @param array|\GF_Field $data Metadata to be cleaned.
 	 *
 	 * @return array Returns the clean metadata, only containing a set of whitelisted keys.
 	 * @since 2.9.0

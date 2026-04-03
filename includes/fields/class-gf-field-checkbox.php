@@ -625,6 +625,10 @@ class GF_Field_Checkbox extends GF_Field {
 	 * @return string
 	 */
 	public function get_value_entry_detail( $value, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
+		if ( $this->type === 'post_category' ) {
+			$value = GFCommon::prepare_post_category_value( $value, $this, 'entry_detail' );
+		}
+
 		if ( is_array( $value ) ) {
 
 			$items    = '';

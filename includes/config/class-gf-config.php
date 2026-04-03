@@ -228,6 +228,22 @@ abstract class GF_Config {
 	}
 
 	/**
+	 * Returns a sanitized array of form ids from the args.
+	 *
+	 * @since 2.9.31
+	 *
+	 * @return array
+	 */
+	public function get_form_ids_arg() {
+		$form_ids = rgar( $this->args, 'form_ids' );
+		if ( empty( $form_ids ) || ! is_array( $form_ids ) ) {
+			return array();
+		}
+
+		return array_filter( array_map( 'absint', $form_ids ) );
+	}
+
+	/**
 	 * Validates the config data against a hash to ensure it has not been tampered with.
 	 * This method is called via AJAX, initiated by the gform.config.isValid() JS method.
 	 *
