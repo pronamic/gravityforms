@@ -1032,7 +1032,7 @@ function LoadFieldSettings() {
 		this.checked = false;
 	});
 
-	if (has_entry(field.id))
+	if (field?.storageType !== 'json' && has_entry(field.id))
 		jQuery("#field_type, #field_multiple_files").prop("disabled", true);
 	else
 		jQuery("#field_type, #field_multiple_files").prop("disabled", false);

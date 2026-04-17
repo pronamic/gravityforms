@@ -2636,6 +2636,58 @@ class GFAPI {
 		return $notifications_to_send;
 	}
 
+	/**
+	 * Triggers sending of the given notification.
+	 *
+	 * @since 2.10.0
+	 *
+	 * @param array $notification The notification to be sent.
+	 * @param array $form         The form the notification belongs to.
+	 * @param array $entry        The entry the notification is being sent for.
+	 * @param array $data         Optional. Array of data which can be used in the notifications via the generic {object:property} merge tag. Defaults to empty array.
+	 *
+	 * @return void
+	 */
+	public static function send_notification( $notification, $form, $entry, $data = array() ) {
+		if ( empty( $notification ) || empty( $form ) || empty( $entry ) ) {
+			return;
+		}
+
+		$notification_id = rgar( $notification, 'id', 'custom' );
+		$event           = rgar( $notification, 'event', 'custom' );
+
+		/**
+		 * @var Async\GF_Notifications_Processor $processor
+		 */
+		$processor       = GFForms::get_service_container()->get( Async\GF_Background_Process_Service_Provider::NOTIFICATIONS );
+		$is_asynchronous = $processor->is_enabled( array( $notification_id ), $form, $entry, $event, $data );
+
+		if ( $is_asynchronous ) {
+			$task = array(
+				'notification' => $notification,
+				'form_id'      => absint( rgar( $form, 'id' ) ),
+				'event'        => $event,
+				'data'         => $data,
+			);
+
+			$entry_id = absint( rgar( $entry, 'id' ) );
+			if ( $entry_id ) {
+				// Entry with an integer ID, so we only store the ID in the task. The task processor will retrieve the latest version of the entry from the db.
+				$for_entry        = ' for entry #' . $entry_id;
+				$task['entry_id'] = $entry_id;
+			} else {
+				// The entry for a draft submission doesn't have an ID, so we need to pass the draft entry to the task processor.
+				$for_entry     = '';
+				$task['entry'] = $entry;
+			}
+
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Adding notification (#%s - %s) to the async processing queue%s.', $notification_id, rgar( $notification, 'name', 'custom' ), $for_entry ) );
+			$processor->push_to_queue( $task )->save()->dispatch_on_shutdown();
+		} else {
+			GFCommon::send_notification( $notification, $form, $entry, $data );
+		}
+	}
+
 
 	// PERMISSIONS ------------------------------------------------
 	/**

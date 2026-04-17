@@ -2052,8 +2052,10 @@ class GFCommon {
 	}
 
 	public static function send_notification( $notification, $form, $lead, $data = array() ) {
+		$entry_id  = absint( rgar( $lead, 'id' ) );
+		$for_entry = $entry_id ? ' for entry #' . $entry_id : '';
 
-		GFCommon::log_debug( "GFCommon::send_notification(): Starting to process notification (#{$notification['id']} - {$notification['name']})." );
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Starting to process notification (#%s - %s)%s.', rgar( $notification, 'id', 'custom' ), rgar( $notification, 'name', 'custom' ), $for_entry ) );
 
 		$notification = gf_apply_filters( array( 'gform_notification', $form['id'] ), $notification, $form, $lead );
 
@@ -7664,6 +7666,7 @@ Content-Type: text/html;
 		if ( ! rgblank( $icon_namespace ) ) {
 			return sprintf( '<i class="'. $icon_namespace .'-icon %s"%s></i>', esc_attr( $icon ), $aria_hidden_attr );
 		} else if ( strpos( $icon, '<svg' ) !== false ) {
+			$icon = str_contains( $icon, 'aria-hidden' ) ? $icon : str_replace( '<svg', "<svg$aria_hidden_attr", $icon );
 			return $icon;
 		} else if ( filter_var( $icon, FILTER_VALIDATE_URL ) ) {
 			return sprintf( '<img src="%s"%s />', esc_attr( $icon ), $aria_hidden_attr );

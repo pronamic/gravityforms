@@ -99,6 +99,7 @@ class GFFormSettings {
 	 * @since 2.5
 	 * @since 2.9.8  Updated honeypotAction default to spam.
 	 * @since 2.9.21 Moved the honeypot fields to a new spam section and added submission speed check fields.
+	 * @since 2.10.0   Added the enableSpamConfirmation toggle to the spam section.
 	 *
 	 * @param array $form Form being edited.
 	 *
@@ -640,6 +641,13 @@ class GFFormSettings {
 							),
 						),
 					),
+					array(
+						'name'          => 'enableSpamConfirmation',
+						'type'          => 'toggle',
+						'label'         => esc_html__( 'Custom Spam Confirmation', 'gravityforms' ),
+						'description'   => esc_html__( 'Allows customization of the confirmation used for spam submissions in the Confirmations area of the form.', 'gravityforms' ),
+						'default_value' => false,
+					),
 				),
 			),
 			'form_options'      => array(
@@ -871,6 +879,7 @@ class GFFormSettings {
 	 * @since 2.5
 	 * @since 2.9.8  Updated honeypotAction default to spam.
 	 * @since 2.9.21 Updated to save the submission speed check fields.
+	 * @since 2.10.0   Updated to handle the enableSpamConfirmation toggle.
 	 */
 	public static function initialize_settings_renderer() {
 
@@ -953,6 +962,9 @@ class GFFormSettings {
 							'strict',
 						)
 					);
+
+					$form['enableSpamConfirmation'] = (bool) rgar( $values, 'enableSpamConfirmation' );
+					$form = self::toggle_spam_confirmation( $form );
 
 					// Form Options.
 					$form['enableAnimation'] = (bool) rgar( $values, 'enableAnimation' );
@@ -1580,6 +1592,47 @@ class GFFormSettings {
 		if ( $changed ) {
 			GFFormsModel::save_form_confirmations( $form_id, $form['confirmations'] );
 		}
+
+		return $form;
+	}
+
+	/**
+	 * Adds or removes the custom spam confirmation based on the value of the enableSpamConfirmation toggle.
+	 *
+	 * @since 2.10.0
+	 *
+	 * @param array $form The form being edited.
+	 *
+	 * @return array
+	 */
+	public static function toggle_spam_confirmation( $form ) {
+		$form_id          = rgar( $form, 'id' );
+		$enabled          = (bool) rgar( $form, 'enableSpamConfirmation' );
+		$confirmation_key = false;
+
+		if ( ! empty( $form['confirmations'] ) ) {
+			foreach ( $form['confirmations'] as $key => $confirmation ) {
+				if ( rgar( $confirmation, 'event' ) === 'spam' ) {
+					$confirmation_key = $key;
+					break;
+				}
+			}
+		}
+
+		if ( ( $enabled && $confirmation_key ) || ( ! $enabled && ! $confirmation_key ) ) {
+			return $form;
+		}
+
+		if ( $enabled ) {
+			$confirmation                                 = GFFormsModel::get_default_confirmation( 'spam' );
+			$form['confirmations'][ $confirmation['id'] ] = $confirmation;
+			GFFormsModel::save_form_confirmations( $form_id, $form['confirmations'] );
+
+			return $form;
+		}
+
+		unset( $form['confirmations'][ $confirmation_key ] );
+		GFFormsModel::save_form_confirmations( $form_id, $form['confirmations'] );
 
 		return $form;
 	}

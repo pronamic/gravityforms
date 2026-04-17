@@ -152,6 +152,9 @@ class Field_Select extends Select {
 			__( 'Country', 'gravityforms' )    => array( __( 'Address (Country)', 'gravityforms' ) ),
 		);
 
+		// Normalize $field_label to avoid deprecated notices in PHP 8.5+
+		$field_label = $field_label === null ? '' : (string) $field_label;
+
 		// If one or more global aliases are defined for this particular field label, merge them into auto-population choices.
 		if ( isset( $global_aliases[ $field_label ] ) ) {
 			$default_value_choices = array_merge( $default_value_choices, $global_aliases[ $field_label ] );

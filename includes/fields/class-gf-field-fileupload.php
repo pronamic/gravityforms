@@ -579,19 +579,13 @@ class GF_Field_FileUpload extends GF_Field {
 		}
 
 		if ( $is_entry_detail && ! empty( $value ) ) { // edit entry
-			if ( $multiple_files ) {
-				$file_urls = json_decode( $value, true );
-				if ( ! is_array( $file_urls ) ) {
-					$file_urls = array();
-				}
-			} else {
-				$file_urls = array( $value );
-			}
-
 			$upload_display = $multiple_files ? '' : "style='display:none'";
 			$preview        = "<div id='upload_$id' {$upload_display}>$upload</div>";
+
 			$preview .= sprintf( "<div id='%s' class='ginput_preview_list'></div>", $file_list_id );
 			$preview .= sprintf( "<div id='preview_existing_files_%d'>", $id );
+
+			$file_urls = $this->to_array( $value );
 
 			foreach ( $file_urls as $file_index => $file_url ) {
 
@@ -823,7 +817,7 @@ class GF_Field_FileUpload extends GF_Field {
 		$this->set_context_property( 'form', $form );
 
 		if ( ! $this->multipleFiles ) {
-			return $this->get_single_file_value( $form['id'], $input_name );
+			return $this->to_string( $this->get_single_file_value( $form['id'], $input_name ) );
 		}
 
 		if ( $this->is_entry_detail() && empty( $lead ) ) {
@@ -927,13 +921,13 @@ class GF_Field_FileUpload extends GF_Field {
 		if ( ! empty( $value ) ) {
 			// Merge with existing files (entry detail edit page or an add-on edit entry page).
 			if ( ! empty( $uploaded_files ) ) {
-				$array = json_decode( $value, true );
-				if ( empty( $array ) || ! is_array( $array ) ) {
+				$array = $this->to_array( $value );
+				if ( empty( $array ) ) {
 					$value = $uploaded_files;
 				} else {
 					$value = array_unique( array_merge( $array, $uploaded_files ) );
 				}
-				$value = json_encode( $value );
+				$value = $this->to_string( $value );
 			}
 		} else {
 			if ( empty( $uploaded_files ) ) {
@@ -941,7 +935,7 @@ class GF_Field_FileUpload extends GF_Field {
 
 				return '';
 			}
-			$value = json_encode( $uploaded_files );
+			$value = $this->to_string( $uploaded_files );
 		}
 
 		$_gf_uploaded_files[ $input_name ] = $value;
@@ -969,10 +963,10 @@ class GF_Field_FileUpload extends GF_Field {
 		}
 
 		$input_id          = str_replace( 'input_', '', $input_name );
-		$existing_files    = GFCommon::maybe_decode_json( rgar( $existing_entry, $input_id ) );
+		$existing_files    = $this->to_array( rgar( $existing_entry, $input_id ) );
 		$existing_file_url = null;
 
-		if ( ! is_array( $existing_files ) ) {
+		if ( empty( $existing_files ) ) {
 			return $file_info;
 		}
 
@@ -1141,28 +1135,17 @@ class GF_Field_FileUpload extends GF_Field {
 	}
 
 	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
-		if ( $this->multipleFiles ) {
-			if ( is_array( $value ) ) {
-				$uploaded_files_arr = $value;
-			} else {
-				$uploaded_files_arr = json_decode( $value, true );
-				if ( ! is_array( $uploaded_files_arr ) ) {
-					return '';
-				}
-			}
-
-			$file_count = count( $uploaded_files_arr );
-			if ( $file_count > 1 ) {
-				/* translators: %d: Number of files */
-				return sprintf( esc_html__( '%d files', 'gravityforms' ), $file_count );
-			} elseif ( $file_count === 1 ) {
-				$value = current( $uploaded_files_arr );
-			} else {
-				return '';
-			}
+		$files = $this->to_array( $value );
+		if ( empty( $files ) ) {
+			return '';
 		}
 
-		$file_path = $value;
+		$count = count( $files );
+		if ( $count > 1 ) {
+			return sprintf( esc_html__( '%d files', 'gravityforms' ), $count );
+		}
+
+		$file_path = rgar( $files, 0 );
 		if ( ! empty( $file_path ) ) {
 			//displaying thumbnail (if file is an image) or an icon based on the extension
 			$thumb     = GFEntryList::get_icon_url( $file_path );
@@ -1170,6 +1153,7 @@ class GF_Field_FileUpload extends GF_Field {
 			$file_path = esc_attr( $file_path );
 			$value = "<a href='$file_path' target='_blank'><span class='screen-reader-text'>" . esc_html__( 'View the image', 'gravityforms' ) . "</span><span class='screen-reader-text'>" . esc_html__( '(opens in a new tab)', 'gravityforms' ) . "</span><img src='$thumb' alt='' /></a>";
 		}
+
 		return $value;
 	}
 
@@ -1195,10 +1179,7 @@ class GF_Field_FileUpload extends GF_Field {
 		$output     = '';
 		$output_arr = array();
 
-		$files = json_decode( $value, true );
-		if ( ! is_array( $files ) ) {
-			$files = array_filter( array( $value ) );
-		}
+		$files = $this->to_array( $value );
 
 		if ( ! empty( $files ) ) {
 			$force_download = in_array( 'download', $this->get_modifiers() );
@@ -1282,10 +1263,7 @@ class GF_Field_FileUpload extends GF_Field {
 		$force_download = in_array( 'download', $this->get_modifiers() );
 		$entry_id       = rgar( $entry, 'id' );
 
-		$files = json_decode( $raw_value, true );
-		if ( ! is_array( $files ) ) {
-			$files = array( $raw_value );
-		}
+		$files = $this->to_array( $raw_value );
 
 		foreach ( $files as &$file ) {
 			if ( is_array( $file ) ) {
@@ -1334,6 +1312,12 @@ class GF_Field_FileUpload extends GF_Field {
 		GFFormsModel::set_permissions( $path );
 	}
 
+	/**
+	 * Forces settings into expected values while saving the form object.
+	 *
+	 * @since 1.9.7
+	 * @since 2.10.0 Added storageType property.
+	 */
 	public function sanitize_settings() {
 		parent::sanitize_settings();
 		if ( $this->maxFileSize ) {
@@ -1347,6 +1331,8 @@ class GF_Field_FileUpload extends GF_Field {
 		$this->multipleFiles = (bool) $this->multipleFiles;
 
 		$this->allowedExtensions = sanitize_text_field( $this->allowedExtensions );
+
+		$this->storageType = empty( $this->storageType ) || $this->storageType === 'json' ? $this->storageType : 'json';
 	}
 
 	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
@@ -1354,17 +1340,7 @@ class GF_Field_FileUpload extends GF_Field {
 			$input_id = $this->id;
 		}
 
-		$value = rgar( $entry, $input_id );
-		if ( $this->multipleFiles && ! empty( $value ) ) {
-			$decoded = json_decode( $value, true );
-			if ( ! is_array( $decoded ) ) {
-				return $value;
-			}
-
-			return implode( ' , ', $decoded );
-		}
-
-		return $value;
+		return implode( ' , ', $this->to_array( rgar( $entry, $input_id ) ) );
 	}
 
 	/**
@@ -1469,15 +1445,8 @@ class GF_Field_FileUpload extends GF_Field {
 			return array();
 		}
 
-		$extra_meta = array();
-		if ( $this->multipleFiles ) {
-			$file_values = json_decode( $value, true );
-			if ( empty( $file_values ) ) {
-				return array();
-			}
-		} else {
-			$file_values = array( $value );
-		}
+		$file_values = $this->to_array( $value );
+		$extra_meta  = array();
 
 		$form_id  = absint( rgar( $form, 'id' ) );
 		$entry_id = absint( rgar( $entry, 'id' ) );
@@ -2124,6 +2093,64 @@ class GF_Field_FileUpload extends GF_Field {
 			'original'  => $file_name,
 			'sanitized' => sanitize_file_name( $file_name ),
 		);
+	}
+
+
+	/**
+	 * Actions to be performed after the field has been converted to an object.
+	 *
+	 * @since 2.10.0
+	 */
+	public function post_convert_field() {
+		parent::post_convert_field();
+
+		if ( $this->storageType === 'json' ) {
+			return;
+		}
+
+		if ( $this->multipleFiles ) {
+			$this->storageType = 'json';
+		}
+	}
+
+	/**
+	 * Converts an array to a string.
+	 *
+	 * @since 2.10.0
+	 *
+	 * @param string|array $value The file URL or array of URLs being saved.
+	 *
+	 * @return string
+	 */
+	public function to_string( $value ) {
+		if ( $this->storageType === 'json' || $this->multipleFiles || is_array( $value ) ) {
+			return empty( $value ) ? '' : json_encode( is_array( $value ) ? array_values( $value ) : array( $value ) );
+		} else {
+			return $value;
+		}
+	}
+
+	/**
+	 * Converts a string to an array.
+	 *
+	 * @since 2.10.0
+	 *
+	 * @param string|array $value The file URL or JSON encoded array of file URLs to convert.
+	 *
+	 * @return array
+	 */
+	public function to_array( $value ) {
+		if ( empty( $value ) ) {
+			return array();
+		} elseif ( is_array( $value ) ) {
+			return $value;
+		} elseif ( $this->storageType === 'json' || $this->multipleFiles || GFCommon::is_json( $value ) ) {
+			$array = json_decode( $value, true );
+
+			return is_array( $array ) ? $array : array();
+		} else {
+			return array( $value );
+		}
 	}
 
 }

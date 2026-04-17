@@ -64,7 +64,9 @@ class GF_Splash_Page {
 	public function is_splash_page() {
 		$screen = get_current_screen();
 
-		return ( 'forms_page_gf_system_status' === $screen->base ) && ( 'about' === rgget( 'subview' ) );
+		$is_system_status = ( 'forms_page_gf_system_status' === $screen->base ) || ( 'gf_system_status' === rgget( 'page' ) );
+
+		return ( $is_system_status ) && ( 'about' === rgget( 'subview' ) );
 	}
 
 	/**
@@ -164,7 +166,7 @@ class GF_Splash_Page {
 	public function system_status_link( $subviews ) {
 		$subviews[19] = array(
 			'name'  => 'about',
-			'label' => sprintf( __( 'About %s', 'gravityforms' ), $this->about_version ),
+			'label' => __( 'About', 'gravityforms' ),
 		);
 
 		return $subviews;

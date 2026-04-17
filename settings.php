@@ -221,6 +221,7 @@ class GFSettings {
 			delete_option( 'gform_custom_choices' );
 			delete_option( 'gform_recaptcha_keys_status' );
 			delete_option( 'gform_upload_page_slug' );
+			delete_option( 'gform_enable_async_notifications' );
 
 			delete_option( 'gravityformsaddon_gravityformswebapi_version' );
 			delete_option( 'gravityformsaddon_gravityformswebapi_settings' );
@@ -424,6 +425,7 @@ class GFSettings {
 	 * Prepare Plugin Settings fields.
 	 *
 	 * @since 2.5
+	 * @since 2.10.0 Added the background notifications setting.
 	 *
 	 * @return array
 	 */
@@ -530,6 +532,24 @@ class GFSettings {
 						'after_select'  => self::currency_message_callback(),
 						'save_callback' => function( $field, $value ) {
 							update_option( 'rg_gforms_currency', $value );
+
+							return $value;
+						},
+					),
+				),
+			),
+			'async_notifications' => array(
+				'id'          => 'section_enable_async_notifications',
+				'title'       => esc_html__( 'Background Notifications', 'gravityforms' ),
+				'description' => esc_html__( 'Enable background (asynchronous) notifications to improve form submission performance by using a separate request to send the notifications, so the user can see the confirmation before notification sending has completed.', 'gravityforms' ),
+				'class'       => 'gform-settings-panel--half',
+				'fields'      => array(
+					array(
+						'name'          => 'enable_async_notifications',
+						'type'          => 'toggle',
+						'toggle_label'  => esc_html__( 'Enable Background Notifications', 'gravityforms' ),
+						'save_callback' => function ( $field, $value ) {
+							update_option( 'gform_enable_async_notifications', $value ? 1 : 0, false );
 
 							return $value;
 						},
@@ -978,21 +998,23 @@ class GFSettings {
 	 * Initialize Plugin Settings fields renderer.
 	 *
 	 * @since 2.5
+	 * @since 2.10.0 Added the background notifications setting.
 	 */
 	public static function initialize_plugin_settings() {
 
 		require_once( GFCommon::get_base_path() . '/tooltips.php' );
 
 		$initial_values = array(
-			'license_key'               => GFCommon::get_key(),
-			'default_theme'             => get_option( 'rg_gforms_default_theme', 'gravity-theme' ),
-			'currency'                  => GFCommon::get_currency(),
-			'disable_css'               => ! (bool) get_option( 'rg_gforms_disable_css' ),
-			'enable_noconflict'         => (bool) get_option( 'gform_enable_noconflict' ),
-			'enable_akismet'            => (bool) get_option( 'rg_gforms_enable_akismet', true ),
-			'enable_background_updates' => (bool) get_option( 'gform_enable_background_updates' ),
-			'enable_toolbar'            => (bool) get_option( 'gform_enable_toolbar_menu' ),
-			'enable_logging'            => (bool) get_option( 'gform_enable_logging' ),
+			'license_key'                => GFCommon::get_key(),
+			'default_theme'              => get_option( 'rg_gforms_default_theme', 'gravity-theme' ),
+			'currency'                   => GFCommon::get_currency(),
+			'disable_css'                => ! (bool) get_option( 'rg_gforms_disable_css' ),
+			'enable_noconflict'          => (bool) get_option( 'gform_enable_noconflict' ),
+			'enable_akismet'             => (bool) get_option( 'rg_gforms_enable_akismet', true ),
+			'enable_background_updates'  => (bool) get_option( 'gform_enable_background_updates' ),
+			'enable_toolbar'             => (bool) get_option( 'gform_enable_toolbar_menu' ),
+			'enable_logging'             => (bool) get_option( 'gform_enable_logging' ),
+			'enable_async_notifications' => (bool) get_option( 'gform_enable_async_notifications' ),
 		);
 
 		$renderer = new Settings(

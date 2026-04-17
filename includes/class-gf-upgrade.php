@@ -219,6 +219,7 @@ class GF_Upgrade {
 	 * Performs initial install of Gravity Forms.
 	 *
 	 * @since  2.2
+	 * @since 2.10.0 Enabled background notifications by default for new installs.
 	 */
 	public function install() {
 		$this->flush_versions();
@@ -239,6 +240,8 @@ class GF_Upgrade {
 
 		// Setting the version of Gravity Forms that was installed initially
 		update_option( 'rg_form_original_version', GFForms::$version, false );
+
+		update_option( 'gform_enable_async_notifications', true, false );
 
 		// Auto-setting and auto-validating license key based on value configured via the GF_LICENSE_KEY constant or the gf_license_key variable
 		// Auto-populating reCAPTCHA keys base on constant

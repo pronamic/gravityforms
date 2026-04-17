@@ -940,6 +940,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 					field.label = <?php echo json_encode( esc_html__( 'Password', 'gravityforms' ) ); ?>;
 				break;
 			case "fileupload" :
+				field.storageType = 'json';
 				field.inputs = null;
 				if (!field.label)
 					field.label = <?php echo json_encode( esc_html__( 'File', 'gravityforms' ) ); ?>;

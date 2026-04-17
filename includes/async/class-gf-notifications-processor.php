@@ -48,16 +48,21 @@ class GF_Notifications_Processor extends GF_Background_Process {
 	 * @return bool
 	 */
 	protected function task( $item ) {
-		$notifications = rgar( $item, 'notifications' );
-		if ( empty( $notifications ) || ! is_array( $notifications ) ) {
+		$key                 = isset( $item['notification'] ) ? 'notification' : 'notifications';
+		$notification_or_ids = rgar( $item, $key );
+		if ( empty( $notification_or_ids ) || ! is_array( $notification_or_ids ) ) {
 			return false;
 		}
 
-		$entry = GFAPI::get_entry( rgar( $item, 'entry_id' ) );
-		if ( is_wp_error( $entry ) ) {
-			GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting; Entry #%d not found.', rgar( $item, 'entry_id' ) ) );
+		if ( ! empty( $item['entry'] ) ) {
+			$entry = $item['entry'];
+		} else {
+			$entry = GFAPI::get_entry( rgar( $item, 'entry_id' ) );
+			if ( is_wp_error( $entry ) ) {
+				GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting; Entry #%d not found.', rgar( $item, 'entry_id' ) ) );
 
-			return false;
+				return false;
+			}
 		}
 
 		$form = GFAPI::get_form( rgar( $item, 'form_id' ) );
@@ -74,6 +79,12 @@ class GF_Notifications_Processor extends GF_Background_Process {
 			$data = array();
 		}
 
+		if ( $key === 'notification' ) {
+			$notifications = array( rgar( $notification_or_ids, 'id', 'custom' ) );
+		} else {
+			$notifications = $notification_or_ids;
+		}
+
 		/**
 		 * Allows custom actions to be performed before notifications are sent asynchronously.
 		 *
@@ -87,7 +98,11 @@ class GF_Notifications_Processor extends GF_Background_Process {
 		 */
 		do_action( 'gform_pre_process_async_notifications', $event, $notifications, $form, $entry, $data );
 
-		GFCommon::send_notifications( $notifications, $form, $entry, true, $event, $data );
+		if ( $key === 'notification' ) {
+			GFCommon::send_notification( $notification_or_ids, $form, $entry, $data );
+		} else {
+			GFCommon::send_notifications( $notifications, $form, $entry, true, $event, $data );
+		}
 
 		/**
 		 * Allows custom actions to be performed after notifications are sent asynchronously.
@@ -109,6 +124,7 @@ class GF_Notifications_Processor extends GF_Background_Process {
 	 * Determines if async (background) processing of notifications is enabled.
 	 *
 	 * @since 2.7.1
+	 * @since 2.10.0 Background notifications enabled by default for new installs.
 	 *
 	 * @param array  $notifications An array containing the IDs of the notifications to be sent.
 	 * @param array  $form          The form being processed.
@@ -120,14 +136,15 @@ class GF_Notifications_Processor extends GF_Background_Process {
 	 */
 	public function is_enabled( $notifications, $form, $entry, $event = 'form_submission', $data = array() ) {
 		$form_id    = absint( rgar( $form, 'id' ) );
-		$is_enabled = false;
+		$is_enabled = (bool) get_option( 'gform_enable_async_notifications' );
 
 		/**
 		 * Allows async (background) processing of notifications to be enabled or disabled.
 		 *
 		 * @since 2.6.9
+		 * @since 2.10.0 Updated to use the gform_enable_async_notifications option value as the default.
 		 *
-		 * @param bool   $is_enabled    Is async (background) processing of notifications enabled? Default is false.
+		 * @param bool   $is_enabled    Is async (background) processing of notifications enabled? Defaults to the value of the gform_enable_async_notifications option.
 		 * @param string $event         The event the notifications are to be sent for.
 		 * @param array  $notifications An array containing the IDs of the notifications to be sent.
 		 * @param array  $form          The form currently being processed.

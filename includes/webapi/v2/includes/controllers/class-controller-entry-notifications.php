@@ -39,6 +39,7 @@ class GF_REST_Entry_Notifications_Controller extends GF_REST_Controller {
 	 * Re-sends notifications for an entry.
 	 *
 	 * @since 2.4-beta-1
+	 * @since 2.10.0 Updated to use GFAPI::send_notification().
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
@@ -79,7 +80,7 @@ class GF_REST_Entry_Notifications_Controller extends GF_REST_Controller {
 					return new WP_Error( __( sprintf( 'Notification %s not found.', $notification_id ), 'gravityforms' ) );
 				}
 
-				GFCommon::send_notification( $form['notifications'][ $notification_id ], $form, $entry );
+				GFAPI::send_notification( $form['notifications'][ $notification_id ], $form, $entry );
 			}
 		}
 

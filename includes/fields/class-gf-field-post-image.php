@@ -337,6 +337,27 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 		return parent::get_extra_entry_metadata( $form, $entry );
 
 	}
+
+	/**
+	 * Forces settings into expected values while saving the form object.
+	 *
+	 * @since 2.10.0 Added storageType property.
+	 */
+	public function sanitize_settings() {
+		parent::sanitize_settings();
+		$this->storageType = null;
+	}
+
+	/**
+	 * Actions to be performed after the field has been converted to an object.
+	 *
+	 * @since 2.10.0
+	 */
+	public function post_convert_field() {
+		parent::post_convert_field();
+		$this->storageType = null;
+	}
+
 }
 
 

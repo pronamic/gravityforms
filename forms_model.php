@@ -2321,8 +2321,12 @@ class GFFormsModel {
 
 		if ( is_array( $fields ) ) {
 			foreach ( $fields as $field ) {
-
-				if ( $field->multipleFiles ) {
+				if ( $field instanceof GF_Field_FileUpload ) {
+					$files = $field->to_array( self::get_lead_field_value( $lead, $field ) );
+					foreach ( $files as $file ) {
+						self::delete_physical_file( $file, $lead_id );
+					}
+				} elseif ( $field->multipleFiles ) {
 					$value_json = self::get_lead_field_value( $lead, $field );
 					if ( ! empty( $value_json ) ) {
 						$files = json_decode( $value_json, true );
@@ -2441,19 +2445,34 @@ class GFFormsModel {
 			return;
 		}
 
-		$entry          = self::get_lead( $entry_id );
+		$entry = self::get_lead( $entry_id );
+		if ( empty( $entry ) ) {
+			return;
+		}
+
+		$entry_value = rgar( $entry, $field_id );
+		if ( empty( $entry_value ) ) {
+			return;
+		}
+
 		$form_id        = $entry['form_id'];
 		$form           = self::get_form_meta( $form_id );
 		$field          = self::get_field( $form, $field_id );
 		$multiple_files = $field->multipleFiles;
-		if ( $multiple_files ) {
-			$file_urls = json_decode( $entry[ $field_id ], true );
+
+		if ( $field instanceof GF_Field_FileUpload ) {
+			$files    = $field->to_array( $entry_value );
+			$file_url = rgar( $files, $file_index );
+			unset( $files[ $file_index ] );
+			$field_value = $field->to_string( $files );
+		} elseif ( $multiple_files ) {
+			$file_urls = json_decode( $entry_value, true );
 			$file_url  = $file_urls[ $file_index ];
 			unset( $file_urls[ $file_index ] );
 			$file_urls   = array_values( $file_urls );
 			$field_value = empty( $file_urls ) ? '' : json_encode( $file_urls );
 		} else {
-			$file_url    = $entry[ $field_id ];
+			$file_url    = $entry_value;
 			$field_value = '';
 		}
 
@@ -2489,11 +2508,18 @@ class GFFormsModel {
 		$file_path = apply_filters( 'gform_file_path_pre_delete_file', $file_path, $url );
 
 		if ( file_exists( $file_path ) ) {
-			unlink( $file_path );
+			$result = unlink( $file_path );
+
+			if ( $result ) {
+				GFCommon::log_debug( __METHOD__ . "(): File {$file_path} for entry #{$entry_id} was successfully deleted." );
+			} else {
+				GFCommon::log_debug( __METHOD__ . "(): File {$file_path} for entry #{$entry_id} could not be deleted even though it exists. This is likely due to server permissions, ownership, or another file system error." );
+			}
+
 			gform_delete_meta( $entry_id, GF_Field_FileUpload::get_file_upload_path_meta_key_hash( $url ) );
+		} else {
+			GFCommon::log_debug( __METHOD__ . "(): File {$file_path} for entry #{$entry_id} is inaccessible, likely because it no longer exists or due to issues with server permissions or ownership, or another file system error." );
 		}
-
-
 	}
 
 	/**
@@ -4810,9 +4836,11 @@ class GFFormsModel {
 
 				case 'post_custom_field' :
 
-					$type = self::get_input_type( $field );
-					if ( 'fileupload' === $type && $field->multipleFiles ) {
-						$value = json_decode( $value, true );
+					if ( $field instanceof GF_Field_FileUpload ) {
+						$value = $field->to_array( $value );
+						if ( ! $field->multipleFiles ) {
+							$value = rgar( $value, 0 );
+						}
 					}
 
 					$meta_name = $field->postCustomFieldName;
@@ -7323,8 +7351,9 @@ class GFFormsModel {
 	 * Returns a default confirmation.
 	 *
 	 * @since 2.4.15
+	 * @since 2.10.0 Updated to include the default spam confirmation.
 	 *
-	 * @param string $event The confirmation event. form_saved, form_save_email_sent, or an empty string for the default form submission event.
+	 * @param string $event The confirmation event. form_saved, form_save_email_sent, spam, or an empty string for the default form submission event.
 	 *
 	 * @return array
 	 */
@@ -7366,6 +7395,12 @@ class GFFormsModel {
 					'queryString' => '',
 				);
 
+			case 'spam':
+				$confirmation          = self::get_default_confirmation();
+				$confirmation['name']  = __( 'Spam Confirmation', 'gravityforms' );
+				$confirmation['event'] = 'spam';
+
+				return $confirmation;
 			default:
 				return array(
 					'id'          => uniqid(),

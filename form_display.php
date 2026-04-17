@@ -37,6 +37,7 @@ class GFFormDisplay {
 	 *
 	 * @since unknown
 	 * @since 2.6.4 Added the $initiated_by param.
+	 * @since 2.10.0 Updated to use GFAPI::send_notification() for the form_saved notification.
 	 *
 	 * @param int $form_id      The form ID being submitted.
 	 * @param int $initiated_by What process initiated the form submission. Possible options are self::SUBMISSION_INITIATED_BY_WEBFORM = 1 or self::SUBMISSION_INITIATED_BY_API = 2.
@@ -248,7 +249,7 @@ class GFFormDisplay {
 						continue;
 					}
 					$notification['message'] = self::replace_save_variables( $notification['message'], $form, $resume_token );
-					GFCommon::send_notification( $notification, $form, $lead );
+					GFAPI::send_notification( $notification, $form, $lead );
 				}
 				self::set_submission_if_null( $form_id, 'saved_for_later', true );
 				self::set_submission_if_null( $form_id, 'resume_token', $resume_token );
@@ -2723,9 +2724,18 @@ class GFFormDisplay {
 			GFCommon::log_debug( __METHOD__ . '(): reflecting methods' );
 			$to_reflect = array( 'check_ascii', 'strip_invalid_text' );
 
+			// Only call setAccessible on PHP versions where it still has effect.
+			$call_set_accessible = false;
+			if ( version_compare( PHP_VERSION, '8.1', '<' ) ) {
+				$call_set_accessible = true;
+			}
+
 			foreach ( $to_reflect as $name ) {
 				$reflected[ $name ] = new ReflectionMethod( $wpdb, $name );
-				$reflected[ $name ]->setAccessible( true );
+
+				if ( $call_set_accessible ) {
+					$reflected[ $name ]->setAccessible( true );
+				}
 			}
 		}
 
@@ -4794,6 +4804,7 @@ class GFFormDisplay {
 	 * Populates the form confirmation property with the confirmation to be used for the current submission.
 	 *
 	 * @since unknown
+	 * @since 2.10.0 Updated to support using a custom confirmation for spam submissions.
 	 *
 	 * @param array      $form  The form being processed.
 	 * @param null|array $entry Null, the entry being processed, or an empty array when the submission fails honeypot validation.
@@ -4802,14 +4813,29 @@ class GFFormDisplay {
 	 * @return array
 	 */
 	public static function update_confirmation( $form, $entry = null, $event = '' ) {
-		if ( ( is_array( $entry ) && ( empty( $entry ) || rgar( $entry, 'status' ) === 'spam' ) ) || empty( $form['confirmations'] ) || ! is_array( $form['confirmations'] ) ) {
+		if ( empty( $form['confirmations'] ) || ! is_array( $form['confirmations'] ) ) {
 			$form['confirmation'] = GFFormsModel::get_default_confirmation();
 
 			return $form;
 		}
 
+		if ( is_array( $entry ) && ( empty( $entry ) || rgar( $entry, 'status' ) === 'spam' ) ) {
+			if ( ! rgar( $form, 'enableSpamConfirmation' ) ) {
+				$form['confirmation'] = GFFormsModel::get_default_confirmation();
+
+				return $form;
+			}
+
+			$event = 'spam';
+		}
+
 		if ( ! empty( $event ) ) {
 			$confirmations = wp_filter_object_list( $form['confirmations'], array( 'event' => $event ) );
+			if ( empty( $confirmations ) && $event === 'spam' ) {
+				$form['confirmation'] = GFFormsModel::get_default_confirmation();
+
+				return $form;
+			}
 		} else {
 			$confirmations = $form['confirmations'];
 		}
@@ -4829,12 +4855,7 @@ class GFFormDisplay {
 		GFCommon::log_debug( __METHOD__ . '(): Evaluating conditional logic.' );
 
 		foreach ( $confirmations as $confirmation ) {
-
-			if ( rgar( $confirmation, 'event' ) != $event ) {
-				continue;
-			}
-
-			if ( rgar( $confirmation, 'isDefault' ) ) {
+			if ( rgar( $confirmation, 'isDefault' ) || rgar( $confirmation, 'event' ) !== $event ) {
 				continue;
 			}
 
@@ -4907,7 +4928,7 @@ class GFFormDisplay {
 				$notification['to'] = $email;
 			}
 			$notification['message'] = self::replace_save_variables( $notification['message'], $form, $resume_token, $email );
-			GFCommon::send_notification( $notification, $form, $partial_entry );
+			GFAPI::send_notification( $notification, $form, $partial_entry );
 		}
 
 		GFFormsModel::add_email_to_draft_sumbmission( $resume_token, $email );

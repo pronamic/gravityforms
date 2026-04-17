@@ -300,6 +300,18 @@ class GFEntryDetail {
 			return;
 		}
 
+		$mode = rgpost( 'screen_mode' );
+		if ( empty( $mode ) ) {
+			$mode = rgget( 'screen_mode' ) === 'edit' ? 'edit' : 'view';
+		} else {
+			$mode = sanitize_key( $mode );
+		}
+
+		if ( $mode === 'edit' && ! GFCommon::current_user_can_any( 'gravityforms_edit_entries' ) ) {
+			GFCommon::add_error_message( esc_html__( "You don't have adequate permission to edit entries.", 'gravityforms' ) );
+			$mode = 'view';
+		}
+
 		GFForms::admin_header();
 
 		$lead_id = rgar( $lead, 'id' );
@@ -500,8 +512,6 @@ class GFEntryDetail {
 				break;
 		} // End switch().
 
-		$mode = empty( rgpost( 'screen_mode' ) ) ? 'view' : rgpost( 'screen_mode' );
-
 		$screen = get_current_screen();
 
 		?>
@@ -669,10 +679,10 @@ class GFEntryDetail {
 		}
 
 		?>
-		<form method="post" id="entry_form" enctype='multipart/form-data'>
+		<form method="post" id="entry_form" enctype='multipart/form-data' action="<?php echo esc_url( remove_query_arg( 'screen_mode' ) ) ?>">
 			<?php wp_nonce_field( 'gforms_save_entry', 'gforms_save_entry' ) ?>
 			<input type="hidden" name="action" id="action" value="" />
-			<input type="hidden" name="screen_mode" id="screen_mode" value="<?php echo esc_attr( rgpost( 'screen_mode' ) ) ?>" />
+			<input type="hidden" name="screen_mode" id="screen_mode" value="<?php echo esc_attr( $mode ) ?>" />
 
 			<input type="hidden" name="entry_id" id="entry_id" value="<?php echo absint( $lead['id'] ) ?>" />
 
@@ -1164,7 +1174,7 @@ class GFEntryDetail {
 	}
 
 	public static function entry_detail_pagination_link( $pos, $label = '', $class = '', $icon = '' ) {
-		$url = add_query_arg( array( 'pos' => $pos ), remove_query_arg( array( 'pos', 'lid' ) ) );
+		$url = add_query_arg( array( 'pos' => $pos ), remove_query_arg( array( 'pos', 'lid', 'screen_mode' ) ) );
 
 		$href = ! rgblank( $pos ) ? 'href="' . esc_url( $url ) . '"' : '';
 		$class .= ' gf_entry_pagination_link';

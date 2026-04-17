@@ -1,3 +1,24 @@
+### 2.10.0 | 2026-04-16
+- Note: Under the new [versioning system](https://docs.gravityforms.com/version-numbering/) this is a minor release.
+- Added Agency Project Inquiry Form and School Enrollment Form templates to the templates library.
+- Added edit action links to the Entries list table.
+- Added logging when personal data is exported or deleted and when uploaded files are deleted.
+- Added support for configuring custom confirmations to be used for spam submissions.
+- Added support for toggling the Multiple Files setting on File Upload fields (only those added to forms from this point onwards) even when the field has entry values.
+- Added the Background Notifications setting to the Forms > Settings page. Enabled by default for new installs, it sends notifications via a separate request, improving form submission performance, so the confirmation can be displayed before sending is completed.
+- Fixed an issue where the default data is shown instead of the saved data when you edit an existing API key.
+- Fixed an issue with the Simple Contact form template that could result in column layout problems.
+- Fixed a JavaScript error that occurs when a form has pricing fields and is using page conditional logic.
+- Fixed a bug that prevents the About page from loading correctly when the site's language is not English.
+- Fixed an incorrect calculation result when the formula includes the merge tag for a choice-based pricing field and the selected choice has a price of zero.
+- Fixed deprecation notices on the entry list page and feed settings page with PHP 8.5+.
+- Fixed the accessibility of add-on icons on settings pages.
+- Updated save and continue and resending entry notifications to support background notifications.
+- API: Added `GFAPI::send_notification()` for sending a given notification (supports background notifications).
+- API: Set the `storageType` property of new File Upload fields and existing fields with Multiple Files enabled to `json`, so both the single and multi-file uploaders store their values in the same way.
+- API: Updated the new AJAX submission process to allow the submission result to be modified before markup is reloaded via the new [gform/ajax/post_submission_request](https://docs.gravityforms.com/gform-ajax-post_submission_request/) filter.
+
+
 ### 2.9.31 | 2026-04-02
 - Added security enhancements.
 - Fixed an issue with new AJAX and multi-page forms where the gform_unique_id input is not populated when the value is generated server-side during pagination.
