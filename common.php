@@ -547,6 +547,58 @@ class GFCommon {
 	}
 
 	/**
+	 * Converts a relative path and any path symbols to the full resolved path.
+	 *
+	 * @since 2.10.1
+	 *
+	 * @param string $path - The path to process.
+	 *
+	 * @return string	
+	 */
+	public static function get_absolute_path( $path ) {
+		$path      = str_replace( array( '/', '\\' ), DIRECTORY_SEPARATOR, $path );
+		$path      = str_replace( '://', '|%%protocol%%|', $path );
+		$parts     = array_filter( explode( DIRECTORY_SEPARATOR, $path ), 'strlen' );
+		$absolutes = array();
+
+		foreach ( $parts as $part ) {
+			if ( '.' == $part ) {
+				continue;
+			}
+
+			if ( '..' == $part ) {
+				array_pop( $absolutes );
+			} else {
+				$absolutes[] = $part;
+			}
+		}
+
+		$path = implode( DIRECTORY_SEPARATOR, $absolutes );
+
+		return str_replace( '|%%protocol%%|', '://', $path );
+	}
+
+	/**
+	 * Checks if the given file path is within the canonical uploads folder.
+	 *
+	 * @since 2.10.1
+	 *
+	 * @param string $file The file to check.
+	 *
+	 * @return bool 
+	 */
+	public static function is_file_in_uploads( $file ) {
+		$file_path = self::get_absolute_path( $file );
+		$root_url  = rgar( GF_Field_FileUpload::get_file_upload_path_info( '' ), 'url' );
+			
+		if ( ! str_starts_with( $file_path, $root_url ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Returns an array of files/directories which match the supplied pattern.
 	 *
 	 * @since 2.4.15

@@ -455,7 +455,7 @@ class GF_Confirmation {
 			$count = (int) $count_exists_in_name[2][0] + 1;
 
 			// Remove existing count from title.
-			$confirmation['name'] = preg_replace( '/(\\(([0-9])*\\))$/mi', null, $confirmation['name'] );
+			$confirmation['name'] = preg_replace( '/(\\(([0-9])*\\))$/mi', '', $confirmation['name'] );
 
 		}
 

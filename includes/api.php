@@ -1819,7 +1819,6 @@ class GFAPI {
 			'validation_messages' => array(),
 			'page_number'         => $is_valid ? $target_page : $failed_validation_page,
 			'source_page_number'  => $source_page,
-			'form'                => $form,
 		);
 
 		if ( $is_valid ) {

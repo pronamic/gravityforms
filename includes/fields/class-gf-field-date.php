@@ -1178,7 +1178,7 @@ class GF_Field_Date extends GF_Field {
 	/**
 	 * Gets a property value from an input.
 	 *
-	 * @since  next
+	 * @since  2.9.31
 	 * @access public
 	 *
 	 * @used-by GF_Field::complex_validation_message()

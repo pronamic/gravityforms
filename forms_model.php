@@ -2507,6 +2507,12 @@ class GFFormsModel {
 		 */
 		$file_path = apply_filters( 'gform_file_path_pre_delete_file', $file_path, $url );
 
+		// If the file is outside the uploads folder, something nefarious is up, so bail.
+		if ( ! GFCommon::is_file_in_uploads( $url ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Not deleting file from URL: %s', $file_path ) );
+			return;
+		}
+
 		if ( file_exists( $file_path ) ) {
 			$result = unlink( $file_path );
 

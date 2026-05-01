@@ -1,3 +1,11 @@
+### 2.10.1 | 2026-04-30
+- Added security enhancements.
+- Fixed a PHP deprecation notice that occurs when duplicating a duplicate confirmation.
+- Fixed an acessibility issue where the Post Image field does not have a label in the frontend when no Image Metadata option is selected.
+- Updated the default error message displayed when the new AJAX submission process encounters a 403 error.
+- Updated the system report to indicate if Background Notifications is enabled.
+- API: Added the [gform/ajax/pre_display_error](https://docs.gravityforms.com/gform-ajax-pre_display_error/) filter allowing customization of the error message displayed when the new AJAX submission process encounters an error.
+
 ### 2.10.0 | 2026-04-16
 - Note: Under the new [versioning system](https://docs.gravityforms.com/version-numbering/) this is a minor release.
 - Added Agency Project Inquiry Form and School Enrollment Form templates to the templates library.

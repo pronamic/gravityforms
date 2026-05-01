@@ -21,7 +21,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	 * Contains instances of this class, if available.
 	 *
 	 * @since  2.2
-	 * @since  next Changed to an array.
+	 * @since  2.9.25 Changed to an array.
 	 *
 	 * @var   self[] $_instances If available, contains instances of this class.
 	 */
@@ -74,7 +74,7 @@ class GF_Feed_Processor extends GF_Background_Process {
 	 * Get instance of this class.
 	 *
 	 * @since  2.2
-	 * @since  next Added the $add_on param.
+	 * @since  2.9.25 Added the $add_on param.
 	 *
 	 * @param null|GFFeedAddOn $add_on Optional. The add-on instance.
 	 *
