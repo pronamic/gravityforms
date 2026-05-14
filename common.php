@@ -553,7 +553,7 @@ class GFCommon {
 	 *
 	 * @param string $path - The path to process.
 	 *
-	 * @return string	
+	 * @return string
 	 */
 	public static function get_absolute_path( $path ) {
 		$path      = str_replace( array( '/', '\\' ), DIRECTORY_SEPARATOR, $path );
@@ -585,12 +585,17 @@ class GFCommon {
 	 *
 	 * @param string $file The file to check.
 	 *
-	 * @return bool 
+	 * @return bool
 	 */
 	public static function is_file_in_uploads( $file ) {
+		if ( strpos( $file, "\0" ) !== false ) {
+			return false;
+		}
+
+		$file      = rawurldecode( rawurldecode( rawurldecode( $file ) ) );
 		$file_path = self::get_absolute_path( $file );
-		$root_url  = rgar( GF_Field_FileUpload::get_file_upload_path_info( '' ), 'url' );
-			
+		$root_url  = trailingslashit( self::get_absolute_path( rgar( GF_Field_FileUpload::get_file_upload_path_info( '' ), 'url' ) ) );
+
 		if ( ! str_starts_with( $file_path, $root_url ) ) {
 			return false;
 		}
@@ -716,6 +721,75 @@ class GFCommon {
 		$is_valid = apply_filters( 'gform_is_valid_url', $is_valid, $url );
 
 		return $is_valid;
+	}
+
+	/**
+	 * Validates a file URL for security concerns including scheme, traversal, null bytes, and file extension.
+	 *
+	 * Returns a WP_Error on failure with a specific error code, or true on success.
+	 *
+	 * @since 2.10.2
+	 *
+	 * @param string $url                The URL to validate.
+	 * @param array  $args {
+	 *     Optional. Validation arguments.
+	 *
+	 *     @type string[] $allowed_extensions  Array of allowed file extensions. If empty, disallowed extensions are checked instead.
+	 *     @type bool     $check_extensions    Whether to check file extensions. Default true.
+	 *     @type string   $file_name           The file name to use for extension checks. If not provided, the file name is derived from the URL path.
+	 * }
+	 *
+	 * @return true|WP_Error True if the URL passes all checks, WP_Error otherwise.
+	 */
+	public static function validate_file_url( $url, $args = array() ) {
+		// Null byte injection check on the original URL before sanitization, since esc_url_raw() may strip null bytes.
+		if ( str_contains( $url, '%00' ) || str_contains( $url, "\0" ) ) {
+			return new WP_Error( 'null_byte', __( 'The URL contains a null byte.', 'gravityforms' ) );
+		}
+
+		$sanitized_url = esc_url_raw( $url );
+
+		if ( empty( $sanitized_url ) || ! self::is_valid_url( $sanitized_url ) ) {
+			return new WP_Error( 'invalid_url', __( 'The URL is not valid.', 'gravityforms' ) );
+		}
+
+		// Scheme whitelist: only allow http and https.
+		$scheme = parse_url( $sanitized_url, PHP_URL_SCHEME );
+		if ( ! in_array( $scheme, array( 'http', 'https' ), true ) ) {
+			return new WP_Error( 'invalid_scheme', __( 'The URL scheme is not allowed.', 'gravityforms' ) );
+		}
+
+		// Directory traversal check on decoded URL to catch encoded variants (%2e%2e, %2f.., double-encoding, etc.).
+		$decoded_url = rawurldecode( rawurldecode( rawurldecode( $sanitized_url ) ) );
+		if ( str_contains( $decoded_url, '..' ) ) {
+			if ( ! GFCommon::is_file_in_uploads( $decoded_url ) ) {
+				return new WP_Error( 'directory_traversal', __( 'The URL contains directory traversal characters.', 'gravityforms' ) );
+			}
+		}
+
+		// File extension validation.
+		$check_extensions = isset( $args['check_extensions'] ) ? $args['check_extensions'] : true;
+
+		if ( $check_extensions ) {
+			$file_name          = isset( $args['file_name'] ) ? sanitize_file_name( $args['file_name'] ) : sanitize_file_name( wp_basename( parse_url( $sanitized_url, PHP_URL_PATH ) ) );
+			$allowed_extensions = isset( $args['allowed_extensions'] ) ? $args['allowed_extensions'] : array();
+
+			// Reject files with no extension.
+			$extension = pathinfo( $file_name, PATHINFO_EXTENSION );
+			if ( empty( $extension ) ) {
+				return new WP_Error( 'missing_extension', __( 'The file URL does not contain a file extension.', 'gravityforms' ) );
+			}
+
+			if ( empty( $allowed_extensions ) ) {
+				if ( self::file_name_has_disallowed_extension( $file_name ) ) {
+					return new WP_Error( 'disallowed_extension', __( 'The file has a disallowed extension.', 'gravityforms' ) );
+				}
+			} elseif ( ! self::match_file_extension( $file_name, $allowed_extensions ) ) {
+				return new WP_Error( 'extension_not_allowed', __( 'The file extension is not allowed.', 'gravityforms' ) );
+			}
+		}
+
+		return true;
 	}
 
 	public static function is_valid_email( $email ) {
@@ -2219,6 +2293,17 @@ class GFCommon {
 						$root_url = rgar( GF_Field_FileUpload::get_file_upload_path_info( $file, $entry_id ), 'url' );
 						if ( ! str_starts_with( $file, $root_url ) ) {
 							self::log_debug( __METHOD__ . sprintf( '(): Not attaching file from URL: %s', $file ) );
+							continue;
+						}
+
+						$args = array(
+							'allowed_extensions' => GFCommon::clean_extensions( $upload_field->allowedExtensions ),
+						);
+
+						$validation = GFCommon::validate_file_url( $file, $args );
+
+						if ( is_wp_error( $validation ) ) {
+							self::log_error( __METHOD__ . sprintf( '(): Not attaching file; %s: %s', $validation->get_error_code(), $validation->get_error_message() ) );
 							continue;
 						}
 

@@ -1,7 +1,14 @@
+### 2.10.2 | 2026-05-13
+- Added security enhancements.
+- Added background processing for entry bulk actions.
+- Fixed an issue with the REST API user setting that can cause timeout errors on sites with lots of users.
+- Fixed a JS error that occurs when the Delete quick action link text for a confirmation contains special characters.
+- Fixed a JS error that is sometimes displayed when loading the Rest API page.
+
 ### 2.10.1 | 2026-04-30
 - Added security enhancements.
 - Fixed a PHP deprecation notice that occurs when duplicating a duplicate confirmation.
-- Fixed an acessibility issue where the Post Image field does not have a label in the frontend when no Image Metadata option is selected.
+- Fixed an accessibility issue where the Post Image field does not have a label in the frontend when no Image Metadata option is selected.
 - Updated the default error message displayed when the new AJAX submission process encounters a 403 error.
 - Updated the system report to indicate if Background Notifications is enabled.
 - API: Added the [gform/ajax/pre_display_error](https://docs.gravityforms.com/gform-ajax-pre_display_error/) filter allowing customization of the error message displayed when the new AJAX submission process encounters an error.

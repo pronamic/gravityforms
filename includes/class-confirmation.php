@@ -1084,13 +1084,19 @@ class GFConfirmationTable extends WP_List_Table {
 	 */
 	public function column_name( $item ) {
 
-		$edit_url      = add_query_arg( array( 'cid' => $item['id'] ) );
-		$duplicate_url = add_query_arg( array( 'cid' => 0, 'duplicatedcid' => $item['id'] ) );
+		$edit_url        = add_query_arg( array( 'cid' => $item['id'] ) );
+		$duplicate_url   = add_query_arg( array( 'cid' => 0, 'duplicatedcid' => $item['id'] ) );
+		$confirm_message = esc_js(
+			__( 'WARNING: You are about to delete this confirmation.', 'gravityforms' ) .
+			' ' .
+			__( "'Cancel' to stop, 'OK' to delete.", 'gravityforms' )
+		);
+
 		$actions       = apply_filters(
 			'gform_confirmation_actions', array(
 				'edit'      => '<a href="' . esc_url( $edit_url ) . '">' . __( 'Edit', 'gravityforms' ) . '</a>',
 				'duplicate' => '<a href="' . esc_url( $duplicate_url ) . '">' . __( 'Duplicate', 'gravityforms' ) . '</a>',
-				'delete'    => '<a class="submitdelete" onclick="javascript: if(confirm(\'' . __( 'WARNING: You are about to delete this confirmation.', 'gravityforms' ) . __( "\'Cancel\' to stop, \'OK\' to delete.", 'gravityforms' ) . '\')){ DeleteConfirmation(\'' . esc_js( $item['id'] ) . '\'); }" onkeypress="javascript: if(confirm(\'' . __( 'WARNING: You are about to delete this confirmation.', 'gravityforms' ) . __( "\'Cancel\' to stop, \'OK\' to delete.", 'gravityforms' ) . '\')){ DeleteConfirmation(\'' . esc_js( $item['id'] ) . '\'); }" style="cursor:pointer;">' . __( 'Delete', 'gravityforms' ) . '</a>',
+				'delete'    => '<a class="submitdelete" onclick="javascript: if(confirm(\'' . $confirm_message . '\')){ DeleteConfirmation(\'' . esc_js( $item['id'] ) . '\'); }" onkeypress="javascript: if(confirm(\'' . $confirm_message . '\')){ DeleteConfirmation(\'' . esc_js( $item['id'] ) . '\'); }" style="cursor:pointer;">' . esc_html__( 'Delete', 'gravityforms' ) . '</a>',
 			)
 		);
 

@@ -92,7 +92,7 @@ gform.adminUtils = {
 
 		// Standalone logic for the web api settings page. Trigger unsaved changes if the setting doesn't match the checkbox state.
 		if ( this.getUrlParameter( 'subview' ) === 'gravityformswebapi' ) {
-			if ( gf_webapi_vars.api_enabled !== gf_webapi_vars.enable_api_checkbox_checked ) {
+			if ( window.gf_webapi_vars && window.gf_webapi_vars.api_enabled !== window.gf_webapi_vars.enable_api_checkbox_checked ) {
 				hasUnsavedChanges = true;
 			}
 		}

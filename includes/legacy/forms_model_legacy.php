@@ -433,7 +433,7 @@ class GF_Forms_Model_Legacy {
 		}
 
 		$status_filter = empty( $status ) ? '' : $wpdb->prepare( 'AND status=%s', $status );
-		$results       = $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}rg_lead WHERE form_id=%d {$status_filter}", $form_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery 
+		$results       = $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}rg_lead WHERE form_id=%d {$status_filter}", $form_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		foreach ( $results as $result ) {
 			GFFormsModel::delete_files( $result['id'], $form );
@@ -482,7 +482,35 @@ class GF_Forms_Model_Legacy {
 			return;
 		}
 
+		$validation = GFCommon::validate_file_url( $url );
+
+		if ( is_wp_error( $validation ) ) {
+			GFCommon::log_error( __METHOD__ . sprintf( '(): Not deleting file; %s: %s', $validation->get_error_code(), $validation->get_error_message() ) );
+			return;
+		}
+
+		// If the file URL is outside the uploads folder, bail.
+		if ( ! GFCommon::is_file_in_uploads( $url ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Not deleting file from URL: %s', $url ) );
+			return;
+		}
+
 		$file_path = GFFormsModel::get_physical_file_path( $url );
+
+		// Verify the resolved file path is within the uploads root.
+		$resolved_path = GFCommon::get_absolute_path( $file_path );
+		$upload_root   = trailingslashit( GFCommon::get_absolute_path( GFFormsModel::get_upload_root() ) );
+		if ( ! str_starts_with( $resolved_path, $upload_root ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Not deleting file; resolved path is outside the uploads root: %s', $file_path ) );
+			return;
+		}
+
+		// If file path contains traversal characters or null bytes, bail.
+		$path_validation = GF_Download::validate_file_path( $file_path );
+		if ( is_wp_error( $path_validation ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Not deleting file (%s): %s', $path_validation->get_error_code(), $file_path ) );
+			return;
+		}
 
 		if ( file_exists( $file_path ) ) {
 			unlink( $file_path );
@@ -771,8 +799,8 @@ class GF_Forms_Model_Legacy {
 		global $wpdb;
 		$notes_table = self::get_lead_notes_table_name();
 
-		
-		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, 
+
+		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching,
 			$wpdb->prepare(
 				"  SELECT n.id, n.user_id, n.date_created, n.value, n.note_type, ifnull(u.display_name,n.user_name) as user_name, u.user_email
                                                     FROM %i n

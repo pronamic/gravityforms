@@ -2507,9 +2507,24 @@ class GFFormsModel {
 		 */
 		$file_path = apply_filters( 'gform_file_path_pre_delete_file', $file_path, $url );
 
-		// If the file is outside the uploads folder, something nefarious is up, so bail.
+		// If the file URL is outside the uploads folder, something nefarious is up, so bail.
 		if ( ! GFCommon::is_file_in_uploads( $url ) ) {
 			GFCommon::log_debug( __METHOD__ . sprintf( '(): Not deleting file from URL: %s', $file_path ) );
+			return;
+		}
+
+		// Verify the resolved file path is within the uploads root (defense-in-depth against filter manipulation).
+		$resolved_path = GFCommon::get_absolute_path( $file_path );
+		$upload_root   = trailingslashit( GFCommon::get_absolute_path( self::get_upload_root() ) );
+		if ( ! str_starts_with( $resolved_path, $upload_root ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Not deleting file; resolved path is outside the uploads root: %s', $file_path ) );
+			return;
+		}
+
+		// if file path contains traversal characters or null bytes, something nefarious is up, so bail.
+		$path_validation = GF_Download::validate_file_path( $file_path );
+		if ( is_wp_error( $path_validation ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Not deleting file (%s): %s', $path_validation->get_error_code(), $file_path ) );
 			return;
 		}
 
