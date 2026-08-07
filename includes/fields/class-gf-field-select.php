@@ -73,6 +73,38 @@ class GF_Field_Select extends GF_Field {
 		return true;
 	}
 
+	/**
+	 * Indicates if state validation should be skipped if the submitted value is blank.
+	 *
+	 * Value will be blank when the placeholder is selected.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|int $key The field or input ID.
+	 *
+	 * @return bool
+	 */
+	public function skip_state_validation_if_blank( $key ) {
+		return ! rgblank( $this->placeholder );
+	}
+
+	/**
+	 * Prepares the value that will be hashed on form display as part of the state.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The default value.
+	 *
+	 * @return null|array
+	 */
+	public function get_values_for_state_hash( $value ) {
+		$id = $this->id;
+
+		return array(
+			$id => $this->get_choices_for_state_hash(),
+		);
+	}
+
 	public function get_field_input( $form, $value = '', $entry = null ) {
 		$form_id         = absint( $form['id'] );
 		$is_entry_detail = $this->is_entry_detail();
@@ -218,7 +250,30 @@ class GF_Field_Select extends GF_Field {
 			return parent::sanitize_entry_value( $value, $form_id );
 		}
 
-		return wp_strip_all_tags( $value );
+		$sanitized = wp_strip_all_tags( $value );
+		$this->post_entry_value_sanitization( $value, $sanitized, 'wp_strip_all_tags' );
+
+		return $sanitized;
+	}
+
+	/**
+	 * Sanitize and format the value before it is saved to the Entry Object.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The Form object currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id       The ID of the entry currently being processed.
+	 * @param array  $entry          The entry currently being processed.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
+	 *
+	 * @return array|string The sanitized and formatted input value to be saved.
+	 */
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
+		$value = parent::get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index );
+
+		return $this->clear_blank_price_value( $value );
 	}
 
 	/**

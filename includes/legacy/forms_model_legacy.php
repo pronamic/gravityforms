@@ -311,18 +311,6 @@ class GF_Forms_Model_Legacy {
 
 		GFCommon::log_debug( __METHOD__ . "(): Deleting entry #{$lead_id}." );
 
-		/**
-		 * Fires before a lead is deleted
-		 * @param $lead_id
-		 * @deprecated
-		 * @see gform_delete_entry
-		 * @remove-in 3.0
-		 */
-
-		if ( has_action( 'gform_delete_lead' ) ) {
-			trigger_error( 'The gform_delete_lead action is deprecated and will be removed in version 3.0. Use gform_delete_entry instead.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
-		}
-		do_action( 'gform_delete_lead', $lead_id );
 
 		$lead_table             = self::get_lead_table_name();
 		$lead_notes_table       = self::get_lead_notes_table_name();
@@ -700,9 +688,9 @@ class GF_Forms_Model_Legacy {
 		$multiple_files = $field->multipleFiles;
 		$uploaded_files = GFFormsModel::$uploaded_files;
 		$form_id        = $form['id'];
-		if ( RG_CURRENT_VIEW == 'entry' && $type == 'fileupload' && ( ( ! $multiple_files && empty( $_FILES[ $input_name ]['name'] ) ) || ( $multiple_files && ! isset( $uploaded_files[ $form_id ][ $input_name ] ) ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( GFForms::get( 'view' ) == 'entry' && $type == 'fileupload' && ( ( ! $multiple_files && empty( $_FILES[ $input_name ]['name'] ) ) || ( $multiple_files && ! isset( $uploaded_files[ $form_id ][ $input_name ] ) ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return;
-		} else if ( RG_CURRENT_VIEW == 'entry' && in_array( $field->type, array( 'post_category', 'post_title', 'post_content', 'post_excerpt', 'post_tags', 'post_custom_field', 'post_image' ) ) ) {
+		} else if ( GFForms::get( 'view' ) == 'entry' && in_array( $field->type, array( 'post_category', 'post_title', 'post_content', 'post_excerpt', 'post_tags', 'post_custom_field', 'post_image' ) ) ) {
 			return;
 		}
 
@@ -715,7 +703,7 @@ class GF_Forms_Model_Legacy {
 		}
 
 		//processing values so that they are in the correct format for each input type
-		$value = GFFormsModel::prepare_value( $form, $field, $value, $input_name, rgar( $lead, 'id' ) );
+		$value = $field->get_value_save_input( $value, $form, $input_name, rgar( $lead, 'id' ), $lead );
 
 		//ignore fields that have not changed
 		if ( $lead != null && isset( $lead[ $input_id ] ) && $value === rgget( (string) $input_id, $lead ) ) {
@@ -741,7 +729,7 @@ class GF_Forms_Model_Legacy {
 
 		$lead_detail_table_name = self::get_lead_details_table_name();
 		$lead_table_name        = self::get_lead_table_name();
-
+		$sql_comparison         = 'ld.value = %s';
 
 		switch ( GFFormsModel::get_input_type( $field ) ) {
 			case 'time':
@@ -754,6 +742,15 @@ class GF_Forms_Model_Legacy {
 				$value = GFCommon::clean_number( $value, $field->numberFormat );
 				break;
 			case 'phone':
+				if ( $field->phoneFormat === 'formatted' && GFCommon::is_json( $value ) ) {
+					$decoded = json_decode( $value, true );
+					if ( $decoded && isset( $decoded['e164'] ) ) {
+						$e164_escaped   = $wpdb->esc_like( '"e164":"' . $decoded['e164'] . '"' );
+						$value          = '%' . $e164_escaped . '%';
+						$sql_comparison = 'ld.value LIKE %s';
+						break;
+					}
+				}
 				$value          = str_replace( array( ')', '(', '-', ' ' ), '', $value );
 				$sql_comparison = 'replace( replace( replace( replace( ld.value, ")", "" ), "(", "" ), "-", "" ), " ", "" ) = %s';
 				break;
@@ -769,7 +766,7 @@ class GF_Forms_Model_Legacy {
 
 		$inner_sql_template .= "WHERE l.form_id=%d AND ld.form_id=%d
                                 AND ld.meta_key = %s
-                                AND status='active' AND ld.value = %s";
+                                AND status='active' AND {$sql_comparison}";
 
 		$sql = "SELECT count(distinct input) as match_count FROM ( ";
 

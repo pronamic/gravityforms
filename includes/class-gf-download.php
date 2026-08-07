@@ -26,6 +26,13 @@ class GF_Download {
 			$hash     = rgget( 'hash' );
 			$entry_id = rgget( 'entry-id' );
 
+			$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+			$referer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
+			// IP address with the last octet removed for privacy reasons.
+			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? preg_replace('/([0-9a-fA-F]+|\d+)$/', '*', sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) ) : '';
+
+			GFCommon::log_debug( __METHOD__ . "(): File requested from IP '{$ip}', User Agent '{$user_agent}', Referer '{$referer}'" );
+
 			GFCommon::log_debug( __METHOD__ . "(): Starting file download process. file: {$file}, hash: {$hash}." );
 
 			$file_validation = self::validate_file_path( $file );

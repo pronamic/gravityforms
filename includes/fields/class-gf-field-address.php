@@ -8,6 +8,15 @@ class GF_Field_Address extends GF_Field {
 
 	public $type = 'address';
 
+	/**
+	 * Indicates if this field supports state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	protected $_supports_state_validation = true;
+
 	function get_form_editor_field_settings() {
 		return array(
 			'conditional_logic_field_setting',
@@ -139,11 +148,9 @@ class GF_Field_Address extends GF_Field {
 		$disabled_text      = $is_form_editor ? "disabled='disabled'" : '';
 		$class_suffix       = $is_entry_detail ? '_admin' : '';
 
+		$is_sub_label_above = $this->is_sub_label_above( $form );
 
-		$form_sub_label_placement = rgar( $form, 'subLabelPlacement' );
-		$field_sub_label_placement = $this->subLabelPlacement;
-		$is_sub_label_above       = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
-		$sub_label_class          = $field_sub_label_placement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
+		$sub_label_class = $this->subLabelPlacement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
 
 		$street_value  = '';
 		$street2_value = '';
@@ -175,9 +182,7 @@ class GF_Field_Address extends GF_Field {
 		$city_placeholder_attribute    = GFCommon::get_input_placeholder_attribute( $address_city_field_input );
 		$zip_placeholder_attribute     = GFCommon::get_input_placeholder_attribute( $address_zip_field_input );
 
-		$address_types = $this->get_address_types( $form_id );
-		$addr_type     = empty( $this->addressType ) ? $this->get_default_address_type( $form_id ) : $this->addressType;
-		$address_type  = rgar( $address_types, $addr_type );
+		$address_type = $this->get_selected_address_type();
 
 		$state_label  = empty( $address_type['state_label'] ) ? esc_html__( 'State', 'gravityforms' ) : $address_type['state_label'];
 		$zip_label    = empty( $address_type['zip_label'] ) ? esc_html__( 'Zip Code', 'gravityforms' ) : $address_type['zip_label'];
@@ -461,26 +466,44 @@ class GF_Field_Address extends GF_Field {
 	}
 
 	public function get_address_types( $form_id ) {
-
 		$addressTypes = array(
-			'international' => array( 'label'       => esc_html__( 'International', 'gravityforms' ),
-			                          'zip_label'   => gf_apply_filters( array( 'gform_address_zip', $form_id ), esc_html__( 'ZIP / Postal Code', 'gravityforms' ), $form_id ),
-			                          'state_label' => gf_apply_filters( array( 'gform_address_state', $form_id ), esc_html__( 'State / Province / Region', 'gravityforms' ), $form_id )
+			'international' => array(
+				'label'       => esc_html__( 'International', 'gravityforms' ),
+				'zip_label'   => gf_apply_filters( array(
+					'gform_address_zip',
+					$form_id,
+				), esc_html__( 'ZIP / Postal Code', 'gravityforms' ), $form_id ),
+				'state_label' => gf_apply_filters( array(
+					'gform_address_state',
+					$form_id,
+				), esc_html__( 'State / Province / Region', 'gravityforms' ), $form_id ),
 			),
 			'us'            => array(
 				'label'       => esc_html__( 'United States', 'gravityforms' ),
-				'zip_label'   => gf_apply_filters( array( 'gform_address_zip', $form_id ), esc_html__( 'ZIP Code', 'gravityforms' ), $form_id ),
-				'state_label' => gf_apply_filters( array( 'gform_address_state', $form_id ), esc_html__( 'State', 'gravityforms' ), $form_id ),
+				'zip_label'   => gf_apply_filters( array(
+					'gform_address_zip',
+					$form_id,
+				), esc_html__( 'ZIP Code', 'gravityforms' ), $form_id ),
+				'state_label' => gf_apply_filters( array(
+					'gform_address_state',
+					$form_id,
+				), esc_html__( 'State', 'gravityforms' ), $form_id ),
 				'country'     => 'United States',
-				'states'      => array_merge( array( '' ), $this->get_us_states() )
+				'states'      => array_merge( array( '' ), $this->get_us_states() ),
 			),
 			'canadian'      => array(
 				'label'       => esc_html__( 'Canadian', 'gravityforms' ),
-				'zip_label'   => gf_apply_filters( array( 'gform_address_zip', $form_id ), esc_html__( 'Postal Code', 'gravityforms' ), $form_id ),
-				'state_label' => gf_apply_filters( array( 'gform_address_state', $form_id ), esc_html__( 'Province', 'gravityforms' ), $form_id ),
+				'zip_label'   => gf_apply_filters( array(
+					'gform_address_zip',
+					$form_id,
+				), esc_html__( 'Postal Code', 'gravityforms' ), $form_id ),
+				'state_label' => gf_apply_filters( array(
+					'gform_address_state',
+					$form_id,
+				), esc_html__( 'Province', 'gravityforms' ), $form_id ),
 				'country'     => 'Canada',
-				'states'      => array_merge( array( '' ), $this->get_canadian_provinces() )
-			)
+				'states'      => array_merge( array( '' ), $this->get_canadian_provinces() ),
+			),
 		);
 
 		/**
@@ -507,11 +530,28 @@ class GF_Field_Address extends GF_Field {
 		/**
 		 * Allow the default address type to be overridden.
 		 *
+		 * @since 2.0.4
+		 *
 		 * @param string $default_address_type The default address type of international.
 		 */
-		$default_address_type = apply_filters( 'gform_default_address_type', $default_address_type, $form_id );
+		return gf_apply_filters( array( 'gform_default_address_type', $form_id ), $default_address_type, $form_id );
+	}
 
-		return apply_filters( 'gform_default_address_type_' . $form_id, $default_address_type, $form_id );
+	/**
+	 * Returns the properties of the selected address type.
+	 *
+	 * @since 3.0
+	 *
+	 * @return array
+	 */
+	public function get_selected_address_type() {
+		$form_id       = absint( $this->formId );
+		$types         = $this->get_address_types( $form_id );
+		$default_type  = $this->get_default_address_type( $form_id );
+		$selected_type = empty( $this->addressType ) ? $default_type : $this->addressType;
+		$type          = rgar( $types, $selected_type, array() );
+
+		return ( empty( $type ) && $default_type !== $selected_type ) ? rgar( $types, $default_type, array() ) : $type;
 	}
 
 	/**
@@ -546,9 +586,8 @@ class GF_Field_Address extends GF_Field {
 			}
 		}
 
-		$address_type        = empty( $this->addressType ) ? $this->get_default_address_type( $form_id ) : $this->addressType;
-		$address_types       = $this->get_address_types( $form_id );
-		$has_state_drop_down = isset( $address_types[ $address_type ]['states'] ) && is_array( $address_types[ $address_type ]['states'] );
+		$address_type        = $this->get_selected_address_type();
+		$has_state_drop_down = isset( $address_type['states'] ) && is_array( $address_type['states'] );
 
 		if ( $is_admin && rgget('view') != 'entry' ) {
 			$state_dropdown_class = "class='state_dropdown'";
@@ -565,7 +604,7 @@ class GF_Field_Address extends GF_Field {
 		$state_input        = GFFormsModel::get_input( $this, $this->id . '.4' );
 		$state_placeholder  = GFCommon::get_input_placeholder_value( $state_input );
 		$state_autocomplete = $this->enableAutocomplete ? $this->get_input_autocomplete_attribute( $state_input ) : '';
-		$states             = empty( $address_types[ $address_type ]['states'] ) ? array() : $address_types[ $address_type ]['states'];
+		$states             = empty( $address_type['states'] ) ? array() : $address_type['states'];
 		$state_dropdown     = sprintf( "<select name='input_%d.4' %s {$tabindex} %s {$state_dropdown_class} {$state_style} {$aria_attributes} {$state_autocomplete} {$this->maybe_add_aria_describedby( $address_state_field_input, $field_id, $this['formId'] )}>%s</select>", $id, $state_field_id, $disabled_text, $this->get_state_dropdown( $states, $state_value, $state_placeholder ) );
 
 		$tabindex                    = $this->get_tabindex();
@@ -1069,7 +1108,7 @@ class GF_Field_Address extends GF_Field {
 			__( 'Prince Edward Island', 'gravityforms' ),
 			__( 'Quebec', 'gravityforms' ),
 			__( 'Saskatchewan', 'gravityforms' ),
-			__( 'Yukon', 'gravityforms' )
+			__( 'Yukon', 'gravityforms' ),
 		);
 	}
 
@@ -1359,6 +1398,79 @@ class GF_Field_Address extends GF_Field {
 
 		return $operators;
 	}
+
+	/**
+	 * Indicates if state validation should be skipped if the submitted value is blank.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|int $key The field or input ID.
+	 *
+	 * @return bool
+	 */
+	public function skip_state_validation_if_blank( $key ) {
+		$id = $this->id;
+		switch ( $key ) {
+			case "{$id}.4":
+				return ! $this->get_input_property( 4, 'isHidden' );
+			case "{$id}.6":
+				return ! ( rgar( $this->get_selected_address_type(), 'country' ) || $this->get_input_property( 6, 'isHidden' ) );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Prepares the value that will be hashed on form display as part of the state.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The default value.
+	 *
+	 * @return null|array
+	 */
+	public function get_values_for_state_hash( $value ) {
+		$id     = $this->id;
+		$type   = $this->get_selected_address_type();
+		$return = array();
+
+		if ( ! empty( $type['states'] ) && is_array( $type['states'] ) ) {
+			$state_id            = "{$id}.4";
+			$state_input         = GFFormsModel::get_input( $this, $state_id );
+			$return[ $state_id ] = rgar( $state_input, 'isHidden' ) ? rgar( $value, $state_id, $this->defaultState ) : $this->get_choices_for_state_hash( $type['states'] );
+		}
+
+		$country_id    = "{$id}.6";
+		$country_input = GFFormsModel::get_input( $this, $country_id );
+		if ( ! empty( $type['country'] ) ) {
+			$return[ $country_id ] = rgar( $value, $country_id, $type['country'] );
+		} elseif ( rgar( $country_input, 'isHidden' ) ) {
+			$return[ $country_id ] = rgar( $value, $country_id, $this->defaultCountry );
+		} else {
+			$return[ $country_id ] = $this->get_choices_for_state_hash( $this->get_countries() );
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Prepares the array of choice values for the state hash.
+	 *
+	 * @since 3.0
+	 *
+	 * @param null|array $choices Optional. The choices to parse or null to use the field choices property.
+	 *
+	 * @return array
+	 */
+	protected function get_choices_for_state_hash( $choices = null ) {
+		$values = array();
+		foreach ( $choices as $key => $choice ) {
+			$values[] = is_numeric( $key ) ? $choice : $key;
+		}
+
+		return $values;
+	}
+
 }
 
 GF_Fields::register( new GF_Field_Address() );

@@ -19,6 +19,15 @@ class GF_Field_MultiSelect extends GF_Field {
 	public $type = 'multiselect';
 
 	/**
+	 * Indicates if this field supports state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	protected $_supports_state_validation = true;
+
+	/**
 	 * Returns the field title.
 	 *
 	 * @since  Unknown
@@ -241,22 +250,20 @@ class GF_Field_MultiSelect extends GF_Field {
 	}
 
 	/**
-	 * Format the value before it is saved to the Entry Object.
+	 * Sanitize and format the value before it is saved to the Entry Object.
 	 *
-	 * @since  Unknown
-	 * @access public
+	 * @since 3.0.0
 	 *
-	 * @uses GF_Field_MultiSelect::sanitize_entry_value()
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The Form object currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id        The ID of the entry currently being processed.
+	 * @param array  $entry           The entry currently being processed.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
 	 *
-	 * @param array|string $value      The value to be saved.
-	 * @param array        $form       The Form Object currently being processed.
-	 * @param string       $input_name The input name used when accessing the $_POST.
-	 * @param int          $lead_id    The ID of the Entry currently being processed.
-	 * @param array        $lead       The Entry Object currently being processed.
-	 *
-	 * @return string $value The field value. Comma separated if an array.
+	 * @return array|string The sanitized and formatted input value to be saved.
 	 */
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
 
 		if ( is_array( $value ) ) {
 			foreach ( $value as &$v ) {
@@ -447,6 +454,45 @@ class GF_Field_MultiSelect extends GF_Field {
 	 */
 	public function get_filter_operators() {
 		return array( 'contains' );
+	}
+
+	/**
+	 * Indicates if state validation should be skipped if the submitted value is blank.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|int $key The field or input ID.
+	 *
+	 * @return bool
+	 */
+	public function skip_state_validation_if_blank( $key ) {
+		return true;
+	}
+
+	/**
+	 * Prepares the value that will be hashed on form display as part of the state.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The default value.
+	 *
+	 * @return null|array
+	 */
+	public function get_values_for_state_hash( $value ) {
+		return array( $this->id => $this->get_choices_for_state_hash() );
+	}
+
+	/**
+	 * Returns the value to use when the state is validated.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The submitted value.
+	 *
+	 * @return array
+	 */
+	public function get_value_for_state_validation( $value ) {
+		return array( $this->id => $value );
 	}
 
 }

@@ -47,9 +47,10 @@ class Date_Time extends Base {
 		unset( $props['description'] );
 
 		// Prepare Date input.
-		$this->inputs['date']         = $props;
-		$this->inputs['date']['type'] = 'text';
-		$this->inputs['date']['name'] .= '[date]';
+		$this->inputs['date']           = $props;
+		$this->inputs['date']['type']   = 'text';
+		$this->inputs['date']['class']  = 'gform-datepicker mdy';
+		$this->inputs['date']['name']  .= '[date]';
 
 		// Prepare hours as choices.
 		$hour_choices = array();
@@ -109,40 +110,24 @@ class Date_Time extends Base {
 	 * @return string
 	 */
 	public function markup() {
-
 		$html = $this->get_description();
 
 		$html .= '<span class="' . esc_attr( $this->get_container_classes() ) . '">';
 
+		$date_id   = $this->inputs['date']->name;
+		$button    = "<button type='button' id='datepicker_toggle_{$date_id}' class='gform-datepicker-toggle gform-datepicker-toggle--default accCalendar aria-date-picker gform-button gform-button--simple' aria-expanded='false' aria-controls='_gform_setting_{$date_id}'>
+							<span class='gform-datepicker-toggle-icon gform-datepicker-toggle-icon--default gform-icon gform-icon--date' aria-hidden='true'></span>
+						</button>";
+
+		$date_markup = '<div class="gform-settings-datepicker-wrapper">' . $this->inputs['date']->markup() . $button . "</div>";
+
 		// Display Date input, Time drop downs.
 		$html .= sprintf(
 			'%s %s<span class="gform-settings-input__separator">:</span>%s %s',
-			$this->inputs['date']->markup(),
+			$date_markup,
 			$this->inputs['hour']->markup(),
 			$this->inputs['minute']->markup(),
 			$this->inputs['ampm']->markup()
-		);
-
-		// Insert jQuery Datepicker script.
-		$html .= sprintf(
-			"<script type='text/javascript'>
-				jQuery( function() {
-					jQuery( 'input[name=\"%s_%s\"]' ).datepicker(
-						{
-							showOn: 'both',
-							changeMonth: true,
-							changeYear: true, 
-							buttonImage: '%s',
-							buttonText: '%s',
-							dateFormat: 'mm/dd/yy'
-						}
-					);
-				} )
-			</script>",
-			$this->settings->get_input_name_prefix(),
-			$this->inputs['date']->name,
-			GFCommon::get_image_url( 'datepicker/datepicker.svg' ),
-			esc_html__( 'Open Date Picker', 'gravityforms' )
 		);
 
 		$html .= '</span>';
@@ -151,12 +136,7 @@ class Date_Time extends Base {
 		$html .= $this->get_error_icon();
 
 		return $html;
-
 	}
-
-
-
-
 
 	// # VALIDATION METHODS --------------------------------------------------------------------------------------------
 

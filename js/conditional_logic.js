@@ -41,9 +41,6 @@ function gf_apply_rules(formId, fields, isInit){
 					native: false,
 					data: { formId: formId, fields: fields, dependentFields: dependentFields, isInit: isInit },
 				} );
-				if( window.gformCalculateTotalPrice ) {
-					window.gformCalculateTotalPrice( formId );
-				}
 			}
 		});
 	}

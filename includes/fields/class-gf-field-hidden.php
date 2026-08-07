@@ -9,6 +9,15 @@ class GF_Field_Hidden extends GF_Field {
 
 	public $type = 'hidden';
 
+	/**
+	 * Indicates if this field supports state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	protected $_supports_state_validation = true;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Hidden', 'gravityforms' );
 	}
@@ -69,17 +78,37 @@ class GF_Field_Hidden extends GF_Field {
 		return sprintf( "<div class='ginput_container ginput_container_text'>%s</div>", $input );
 	}
 
+	/**
+	 * Returns the field markup.
+	 *
+	 * @since 1.9
+	 * @since 3.0 Using the parent method on validation failure, so the error message will be displayed.
+	 *
+	 * @param string|array $value                The field value. From default/dynamic population, $_POST, or a resumed incomplete submission.
+	 * @param bool         $force_frontend_label Should the frontend label be displayed in the admin even if an admin label is configured.
+	 * @param array        $form                 The Form Object currently being processed.
+	 *
+	 * @return string
+	 */
 	public function get_field_content( $value, $force_frontend_label, $form ) {
-		$form_id         = $form['id'];
-		$admin_buttons   = $this->get_admin_buttons();
+		if ( $this->failed_validation ) {
+			return parent::get_field_content( $value, $force_frontend_label, $form );
+		}
+
 		$is_entry_detail = $this->is_entry_detail();
 		$is_form_editor  = $this->is_form_editor();
 		$is_admin        = $is_entry_detail || $is_form_editor;
-		$field_label     = $this->get_field_label( $force_frontend_label, $value );
-		$field_id        = $is_admin || $form_id == 0 ? "input_{$this->id}" : 'input_' . $form_id . "_{$this->id}";
-		$field_content   = ! $is_admin ? '{FIELD}' : $field_content = sprintf( "%s<label class='gfield_label gform-field-label' for='%s'>%s</label>{FIELD}", $admin_buttons, $field_id, esc_html( $field_label ) );
 
-		return $field_content;
+		if ( ! $is_admin ) {
+			return '{FIELD}';
+		}
+
+		$admin_buttons = $this->get_admin_buttons();
+		$form_id       = absint( rgar( $form, 'id' ) );
+		$field_id      = $form_id === 0 ? "input_{$this->id}" : 'input_' . $form_id . "_{$this->id}";
+		$field_label   = $this->get_field_label( $force_frontend_label, $value );
+
+		return sprintf( "%s<label class='gfield_label gform-field-label' for='%s'>%s</label>{FIELD}", $admin_buttons, $field_id, esc_html( $field_label ) );
 	}
 
 	// # FIELD FILTER UI HELPERS ---------------------------------------------------------------------------------------
@@ -96,6 +125,17 @@ class GF_Field_Hidden extends GF_Field {
 		$operators[] = 'contains';
 
 		return $operators;
+	}
+
+	/**
+	 * Returns the validation message to be applied when the field has failed state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @return string
+	 */
+	public function get_state_validation_message() {
+		return esc_html__( 'The value of this hidden field has been reset to default because the submitted value does not match the expected value.', 'gravityforms' );
 	}
 
 }

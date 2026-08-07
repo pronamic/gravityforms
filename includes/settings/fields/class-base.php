@@ -188,6 +188,27 @@ class Base implements ArrayAccess {
 	protected $description;
 
 	/**
+	 * Descriptions to display conditionally based on the field's current value.
+	 *
+	 * Each entry is an array with:
+	 *   - 'values'      => (array) The field value(s) that trigger this description.
+	 *   - 'description' => (string) The HTML string to display.
+	 *
+	 * Example:
+	 *   array(
+	 *     array(
+	 *       'values'      => array( 'left_label', 'right_label' ),
+	 *       'description' => '<span class="gform-alert">Warning message here.</span>',
+	 *     ),
+	 *   )
+	 *
+	 * @since 3.0
+	 *
+	 * @var array
+	 */
+	public $conditional_descriptions = array();
+
+	/**
 	 * Field tooltip.
 	 *
 	 * @since 2.5
@@ -446,7 +467,8 @@ class Base implements ArrayAccess {
 				'validation_callback', 'hidden', 'tooltip', 'dependency', 'messages', 'name', 'args',
 				'exclude_field_types', 'field_type', 'after_input', 'input_type', 'icon', 'save_callback',
 				'enable_custom_value', 'enable_custom_key', 'merge_tags', 'key_field', 'value_field', 'callback', 'labels',
-				'input_types', 'settings', 'inputs', 'fields', 'no_choices', 'enhanced_ui', 'description'
+				'input_types', 'settings', 'inputs', 'fields', 'no_choices', 'enhanced_ui', 'description',
+				'conditional_descriptions'
 			), $this
 		);
 
@@ -552,14 +574,14 @@ class Base implements ArrayAccess {
 
 		// Prepare error and description IDs.
 		$error_id       = sprintf( 'error-%s', esc_attr( $this->name ) );
-		$description_id = $this->get_description() ? sprintf( 'description-%s', esc_attr( $this->name ) ) : '';
+		$description_id = isset( $this->description ) ? sprintf( 'description-%s', esc_attr( $this->name ) ) : '';
 
 		return $this->get_error() ? implode( ', ', array( $error_id, $description_id ) ) : $description_id;
 
 	}
 
 	/**
-	 * Renders the description text for a field.
+	 * Renders the description text for a field, followed by any conditional descriptions.
 	 *
 	 * @since 2.5
 	 *
@@ -567,7 +589,82 @@ class Base implements ArrayAccess {
 	 */
 	public function get_description() {
 
-		return isset( $this->description ) ? sprintf( '<span class="gform-settings-description" id="description-%s">%s</span>', $this->name, $this->description ) : '';
+		$html  = isset( $this->description ) ? sprintf( '<span class="gform-settings-description" id="description-%s">%s</span>', $this->name, $this->description ) : '';
+		$html .= $this->get_conditional_descriptions();
+
+		return $html;
+
+	}
+
+	/**
+	 * Renders conditional descriptions that show/hide based on the field's current value.
+	 *
+	 * Used to display the `conditional_descriptions` property. Works for select, radio, and
+	 * checkbox/toggle field types.
+	 *
+	 * @since 3.0
+	 *
+	 * @return string
+	 */
+	public function get_conditional_descriptions() {
+
+		if ( empty( $this->conditional_descriptions ) ) {
+			return '';
+		}
+
+		$current_value = (string) $this->get_value();
+		$html          = '';
+
+		foreach ( $this->conditional_descriptions as $cond ) {
+			$values    = is_array( $cond['values'] ) ? $cond['values'] : array( $cond['values'] );
+			$is_active = in_array( $current_value, array_map( 'strval', $values ), true );
+
+			$html .= sprintf(
+				'<span class="gform-settings-description gform-settings-description--conditional"%s data-show-for-values="%s">%s</span>',
+				$is_active ? '' : ' style="display:none"',
+				esc_attr( implode( ',', $values ) ),
+				$cond['description']
+			);
+		}
+
+		$input_name   = sprintf( '%s_%s', $this->settings->get_input_name_prefix(), $this->name );
+		$container_id = 'gform_setting_' . $this->name;
+
+		$html .= sprintf(
+			'<script type="text/javascript">
+(function() {
+	document.addEventListener("DOMContentLoaded", function() {
+		var inputs = document.querySelectorAll("[name=\"%1$s\"]");
+		if (!inputs.length) return;
+		function update() {
+			var container = document.getElementById("%2$s");
+			if (!container) return;
+			var val;
+			if (inputs[0].type === "checkbox") {
+				val = inputs[0].checked ? "1" : "";
+			} else if (inputs[0].type === "radio") {
+				var checked = document.querySelector("[name=\"%1$s\"]:checked");
+				val = checked ? checked.value : "";
+			} else {
+				val = inputs[0].value;
+			}
+			var spans = container.querySelectorAll(".gform-settings-description--conditional");
+			for (var i = 0; i < spans.length; i++) {
+				var forValues = spans[i].getAttribute("data-show-for-values").split(",");
+				spans[i].style.display = (forValues.indexOf(val) !== -1) ? "" : "none";
+			}
+		}
+		for (var i = 0; i < inputs.length; i++) {
+			inputs[i].addEventListener("change", update);
+		}
+	});
+})();
+</script>',
+			esc_js( $input_name ),
+			esc_js( $container_id )
+		);
+
+		return $html;
 
 	}
 

@@ -47,8 +47,8 @@ if ( ! class_exists( 'GFWidget' ) ) {
 		 *
 		 * @see WP_Widget::widget
 		 * @see RGFormsModel::get_form_meta
-		 * @see RGForms::print_form_scripts
-		 * @see RGForms::get_form
+		 * @see GFForms::print_form_scripts
+		 * @see GFForms::get_form
 		 *
 		 * @param array $args     Arguments provided to the widget
 		 * @param array $instance Saved database values for the widget
@@ -92,10 +92,10 @@ if ( ! class_exists( 'GFWidget' ) ) {
 				$form = RGFormsModel::get_form_meta( $instance['form_id'] );
 			}
 			if ( empty( $instance['disable_scripts'] ) && ! is_admin() ) {
-				RGForms::print_form_scripts( $form, $instance['ajax'] );
+				GFForms::print_form_scripts( $form, $instance['ajax'] );
 			}
 
-			$form_markup = RGForms::get_form( $instance['form_id'], $instance['showtitle'], $instance['showdescription'], false, null, $instance['ajax'], $tabindex );
+			$form_markup = GFForms::get_form( $instance['form_id'], $instance['showtitle'], $instance['showdescription'], false, null, $instance['ajax'], $tabindex );
 
 			// Display form
 			echo $form_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

@@ -120,6 +120,13 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 			}
 		}, 9999 );
 
+		add_action( 'enqueue_block_assets', function () use ( $container ) {
+			// Only localize during enqueue_block_assets if none of the other more specific events have been fired.
+			if ( is_admin() && ! self::$is_localized ) {
+				$container->get( self::CONFIG_COLLECTION )->handle();
+			}
+		}, 9999 );
+
 		add_action( 'gform_output_config', function ( $form_ids = null ) use ( $container ) {
 			$container->get( self::CONFIG_COLLECTION )->handle( true, $form_ids );
 			self::$is_localized = true;

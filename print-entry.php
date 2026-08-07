@@ -134,18 +134,6 @@ if ( 0 == $entry_ids ) {
 	$paging = array();
 
 	/**
-	 * Allow the entry list search criteria to be overridden.
-	 *
-	 * @deprecated 2.3 Use "gform_search_criteria_entry_list" instead.
-	 * @remove-in 3.0
-	 * @since  1.9.14.30
-	 *
-	 * @param array $search_criteria An array containing the search criteria.
-	 * @param int   $form_id         The ID of the current form.
-	 */
-	$search_criteria = gf_apply_filters( array( 'gform_search_criteria_entry_list', $form_id ), $search_criteria, $form_id );
-
-	/**
 	 * Filter the arguments that will be used to fetch entries for display on the Entry List view.
 	 *
 	 * @since 2.2.3.4

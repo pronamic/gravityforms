@@ -94,6 +94,7 @@ class Select extends Base {
 		// Display description.
 		$html = $this->get_description();
 
+
 		$html .= '<span class="' . esc_attr( $this->get_container_classes() ) . '">';
 
 		// Get choices.

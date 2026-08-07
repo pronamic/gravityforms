@@ -6,6 +6,7 @@ use Gravity_Forms\Gravity_Forms\Config\GF_Config_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Choices_UI\Config\GF_Choices_UI_Config;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Choices_UI\Config\GF_Choices_UI_Config_I18N;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Choices_UI\Config\GF_Dialog_Config_I18N;
+use Gravity_Forms\Gravity_Forms\Form_Editor\Fields\Config\GF_Form_Editor_Fields_Config;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Save_Form\Config\GF_Form_Editor_Form_Save_Config;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Save_Form\Endpoints\GF_Save_Form_Endpoint_Form_Editor;
 use Gravity_Forms\Gravity_Forms\Form_Editor\Submitted_Fields\Endpoints\GF_Submitted_Fields_Endpoint;
@@ -28,6 +29,7 @@ class GF_Form_Editor_Service_Provider extends GF_Service_Provider {
 	const CHOICES_UI_CONFIG       = 'embed_config';
 	const CHOICES_UI_CONFIG_I18N  = 'embed_config_i18n';
 	const DIALOG_CONFIG_I18N      = 'dialog_config_i18n';
+	const FORM_EDITOR_FIELDS_CONFIG = 'form_editor_fields_config';
 	const FORM_EDITOR_SAVE_CONFIG = 'form_editor_save_config';
 	const FORM_EDITOR_RENDERER    = 'form_editor_renderer';
 
@@ -39,10 +41,11 @@ class GF_Form_Editor_Service_Provider extends GF_Service_Provider {
 	 * @var string[]
 	 */
 	protected $configs = array(
-		self::CHOICES_UI_CONFIG       => GF_Choices_UI_Config::class,
-		self::CHOICES_UI_CONFIG_I18N  => GF_Choices_UI_Config_I18N::class,
-		self::DIALOG_CONFIG_I18N      => GF_Dialog_Config_I18N::class,
-		self::FORM_EDITOR_SAVE_CONFIG => GF_Form_Editor_Form_Save_Config::class,
+		self::CHOICES_UI_CONFIG         => GF_Choices_UI_Config::class,
+		self::CHOICES_UI_CONFIG_I18N    => GF_Choices_UI_Config_I18N::class,
+		self::DIALOG_CONFIG_I18N        => GF_Dialog_Config_I18N::class,
+		self::FORM_EDITOR_FIELDS_CONFIG => GF_Form_Editor_Fields_Config::class,
+		self::FORM_EDITOR_SAVE_CONFIG   => GF_Form_Editor_Form_Save_Config::class,
 	);
 
 	// Configs names, used as keys for the configuration classes in the service container.
@@ -80,6 +83,9 @@ class GF_Form_Editor_Service_Provider extends GF_Service_Provider {
 
 		// Submitted Fields Endpoint
 		require_once plugin_dir_path( __FILE__ ) . 'submitted-fields/endpoints/class-gf-submitted-fields-endpoint.php';
+
+		// Field Configs
+		require_once plugin_dir_path( __FILE__ ) . 'fields/config/class-gf-form-editor-fields-config.php';
 
 		// Editor Renderers.
 		require_once plugin_dir_path( __FILE__ ) . 'renderer/class-gf-form-editor-renderer.php';

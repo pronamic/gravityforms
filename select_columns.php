@@ -2,7 +2,7 @@
 
 // For backwards compatibility, load WordPress if it hasn't been loaded yet
 // Will be used if this file is being called directly
-if ( ! class_exists( 'RGForms' ) ) {
+if ( ! class_exists( 'GFForms' ) ) {
 	for ( $i = 0; $i < $depth = 10; $i ++ ) {
 		$wp_root_path = str_repeat( '../', $i );
 

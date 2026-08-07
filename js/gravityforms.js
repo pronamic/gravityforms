@@ -7,20 +7,6 @@ if( typeof jQuery.fn.prop === 'undefined' ) {
     jQuery.fn.prop = jQuery.fn.attr;
 }
 
-//Formatting free form currency fields to currency
-jQuery( document ).on( 'gform_post_render', gformBindFormatPricingFields );
-
-function gformBindFormatPricingFields(){
-	// Namespace the event and remove before adding to prevent double binding.
-    jQuery(".ginput_amount, .ginput_donation_amount").off('change.gform').on("change.gform", function(){
-        gformFormatPricingField(this);
-    });
-
-    jQuery(".ginput_amount, .ginput_donation_amount").each(function(){
-        gformFormatPricingField(this);
-    });
-}
-
 //----------------------------------------
 //------ INSTANCES -----------------------
 //----------------------------------------
@@ -750,12 +736,16 @@ function gformDeleteUploadedFile(formId, fieldId, deleteButton){
     }
 }
 
+function gformGetFieldId(element){
+	var id = jQuery(element).attr("id");
+	var pieces = id.split("_");
+	if(pieces.length <=0)
+		return 0;
 
-//------------------------------------------------
-//---------- PRICE -------------------------------
-//------------------------------------------------
-var _gformPriceFields = new Array();
-var _anyProductSelected;
+	var fieldId = pieces[pieces.length-1];
+	return fieldId;
+
+}
 
 function gformIsHidden(element){
 	isHidden = element.parents('.gfield').not(".gfield_hidden_product").css("display") == "none";
@@ -772,13 +762,57 @@ function gformIsHidden(element){
 
 }
 
+function gformFormatMoney(text, isNumeric){
+	if(!gf_global.gf_currency_config)
+		return text;
+
+	var currency = new gform.Currency(gf_global.gf_currency_config);
+	return currency.toMoney(text, isNumeric);
+}
+
+function gformToNumber(text){
+	var currency = new gform.Currency(gf_global.gf_currency_config);
+	return currency.toNumber(text);
+}
+
+function gformRoundPrice(price){
+
+	var currency = new gform.Currency(gf_global.gf_currency_config);
+	var roundedPrice = currency.numberFormat( price, currency.currency['decimals'], '.', '' );
+
+	return parseFloat( roundedPrice );
+}
+
+//------------------------------------------------
+//---------- PRICE -------------------------------
+//------------------------------------------------
+var _gformPriceFields = new Array();
+var _anyProductSelected;
+
 /**
  * Calculate total price when input is updated.
  *
  * @since 2.5.2 - This method is run through debounce() to avoid recursions.
+ * @since 3.0.0 - Deprecated
  *
+ * @deprecated next - No replacement. Total price calculation is now handled by the products module in assets and will automatically be updated when product fields change.
+ *
+ * @remove-in 4.0
  */
 var gformCalculateTotalPrice =  gform.tools.debounce(function(formId){
+
+	console.warn( 'gformCalculateTotalPrice() has been deprecated with no replacement. Price fields are now automatically initialized and calculated by the products module in assets.' );
+
+	// For backwards compatibility, we need to ensure fields have been registered.
+	// This was previously handled by gformInitPriceFields, but since that method is no longer called and deprecated, we need to register fields here.
+	if ( _gformPriceFields.length === 0 ) {
+		const priceFields = gform.tools.getNodes( '.gfield_price', true, document, true );
+		priceFields.forEach( ( field ) => {
+			const productIds = gformGetProductIds( 'gfield_price', field );
+			gformRegisterPriceField( productIds );
+		} );
+	}
+
 	if(!_gformPriceFields[formId]) {
 		return;
 	}
@@ -809,13 +843,21 @@ var gformCalculateTotalPrice =  gform.tools.debounce(function(formId){
  * Updates the value of the total field with a new price if it has changed.
  *
  * @since 2.5.5
+ * @since 3.0.0 - Deprecated
  *
  * @param {string|number} formId The ID of the form with the total field.
  * @param {int} price The new price to apply.
  *
+ * @deprecated next - No replacement. Total field price calculation is now handled by the products module in assets.
+ *
+ * @remove-in 4.0
+ *
  * @return {void}
  */
 function gformUpdateTotalFieldPrice( formId, price ) {
+
+	console.warn( 'gformUpdateTotalFieldPrice() has been deprecated with no replacement. Price fields are now automatically initialized and calculated by the products module in assets.' );
+
 	var $totalElement = jQuery( '.ginput_total_' + formId );
 	if ( ! $totalElement.length > 0 ) {
 		return;
@@ -869,7 +911,15 @@ function gformUpdateTotalFieldPrice( formId, price ) {
 	$totalInput.val( priceData.newFormatted );
 }
 
+/**
+ * @deprecated next - Use gform.state.get( FORM_ID, 'products' ); to get access to the shipping amount.
+ *
+ * @remove-in 4.0
+ */
 function gformGetShippingPrice(formId){
+
+	console.warn( 'gformGetShippingPrice() has been deprecated. Use gform.state.get( FORM_ID, \'products\' ); to get access to the shipping amount.' );
+
     var shippingField = jQuery(".gfield_shipping_" + formId + " input[readonly], .gfield_shipping_" + formId + " select, .gfield_shipping_" + formId + " input:checked");
     var shipping = 0;
     if(shippingField.length == 1 && !gformIsHidden(shippingField)){
@@ -882,18 +932,13 @@ function gformGetShippingPrice(formId){
     return gformToNumber(shipping);
 }
 
-function gformGetFieldId(element){
-    var id = jQuery(element).attr("id");
-    var pieces = id.split("_");
-    if(pieces.length <=0)
-        return 0;
-
-    var fieldId = pieces[pieces.length-1];
-    return fieldId;
-
-}
-
+/**
+ * @deprecated next - No replacement. Product price calculation is now handled by the products module in assets.
+ *
+ * @remove-in 4.0
+ */
 function gformCalculateProductPrice(form_id, productFieldId){
+	console.warn( 'gformCalculateProductPrice() has been deprecated with no replacement.' );
 
     var suffix = '_' + form_id + '_' + productFieldId;
 
@@ -969,8 +1014,14 @@ function gformCalculateProductPrice(form_id, productFieldId){
     return price;
 }
 
-
+/**
+ * @deprecated next - Use gform.state.get( FORM_ID, 'products' ); to get access to the product quantity.
+ *
+ * @remove-in 4.0
+ */
 function gformGetProductQuantity(formId, productFieldId) {
+	console.warn( 'gformGetProductQuantity() has been deprecated. Use gform.state.get( FORM_ID, \'products\' ); to get access to the product quantity.' );
+
     //If product is not selected
     if (!gformIsProductSelected(formId, productFieldId)) {
         return 0;
@@ -1021,8 +1072,13 @@ function gformGetProductQuantity(formId, productFieldId) {
     return quantity;
 }
 
-
+/**
+ * @deprecated next - Use gform.state.get( FORM_ID, 'products' ); to get access to selected products.
+ *
+ * @remove-in 4.0
+ */
 function gformIsProductSelected( formId, productFieldId ) {
+	console.warn( 'gformIsProductSelected() has been deprecated. Use gform.state.get( FORM_ID, \'products\' ); to get access to selected products.' );
 
 	var suffix = "_" + formId + "_" + productFieldId;
 
@@ -1040,7 +1096,13 @@ function gformIsProductSelected( formId, productFieldId ) {
 	return false;
 }
 
+/**
+ * @deprecated next - Use gform.state.get( FORM_ID, 'products' ); to get access to the product base price.
+ *
+ * @remove-in 4.0
+ */
 function gformGetBasePrice(formId, productFieldId){
+	console.warn( 'gformGetBasePrice() has been deprecated. Use gform.state.get( FORM_ID, \'products\' ); to get access to the product base price.' );
 
     var suffix = "_" + formId + "_" + productFieldId;
     var price = 0;
@@ -1104,15 +1166,13 @@ function gformParseChoiceValue( value ) {
 	return { name, price };
 }
 
-function gformFormatMoney(text, isNumeric){
-    if(!gf_global.gf_currency_config)
-        return text;
-
-    var currency = new gform.Currency(gf_global.gf_currency_config);
-    return currency.toMoney(text, isNumeric);
-}
-
+/**
+ * @deprecated next - No replacement. Price fields are now automatically formatted by the products module in assets.
+ *
+ * @remove-in 4.0
+ */
 function gformFormatPricingField(element){
+	console.warn( 'gformFormatPricingField() has been deprecated with no replacement. Price fields are now automatically formatted by the products module in assets.' );
     if(gf_global.gf_currency_config){
         var currency = new gform.Currency(gf_global.gf_currency_config);
         var price = currency.toMoney(jQuery(element).val());
@@ -1120,11 +1180,11 @@ function gformFormatPricingField(element){
     }
 }
 
-function gformToNumber(text){
-    var currency = new gform.Currency(gf_global.gf_currency_config);
-    return currency.toNumber(text);
-}
-
+/**
+ * @deprecated next - No replacement. Product price calculation is now handled by the products module in assets.
+ *
+ * @remove-in 4.0
+ */
 function gformGetPriceDifference(currentPrice, newPrice){
 
     //getting price difference
@@ -1136,7 +1196,13 @@ function gformGetPriceDifference(currentPrice, newPrice){
     return price;
 }
 
+/**
+ * @deprecated next - No replacement. Product price calculation is now handled by the products module in assets.
+ *
+ * @remove-in 4.0
+ */
 function gformGetOptionLabel(element, selected_value, current_price, form_id, field_id){
+	console.warn('gformGetOptionLabel() has been deprecated with no replacement. Product price calculation is now handled by the products module in assets.' );
     element = jQuery(element);
     var price = gformGetPrice(selected_value);
     var current_diff = element.attr('price');
@@ -1157,7 +1223,13 @@ function gformGetOptionLabel(element, selected_value, current_price, form_id, fi
     return label;
 }
 
+/**
+ * @deprecated next - No replacement. Product price calculation is now handled by the products module in assets.
+ *
+ * @remove-in 4.0
+ */
 function gformGetProductIds(parent_class, element){
+	console.warn('gformGetProductIds() has been deprecated with no replacement. Product price calculation is now handled by the products module in assets.' );
     var classes = jQuery(element).hasClass(parent_class) ? jQuery(element).attr("class").split(" ") : jQuery(element).parents("." + parent_class).attr("class").split(" ");
     for(var i=0; i<classes.length; i++){
         if(classes[i].substr(0, parent_class.length) == parent_class && classes[i] != parent_class)
@@ -1166,7 +1238,13 @@ function gformGetProductIds(parent_class, element){
     return {formId:0, fieldId:0};
 }
 
+/**
+ * @deprecated next - No replacement. Product price calculation is now handled by the products module in assets.
+ *
+ * @remove-in 4.0
+ */
 function gformGetPrice(text){
+	console.warn('gformGetPrice() has been deprecated with no replacement. Product price calculation is now handled by the products module in assets.' );
     var val = gformParseChoiceValue( text );
 
     if(val.price)
@@ -1175,15 +1253,13 @@ function gformGetPrice(text){
     return 0;
 }
 
-function gformRoundPrice(price){
-
-	var currency = new gform.Currency(gf_global.gf_currency_config);
-    var roundedPrice = currency.numberFormat( price, currency.currency['decimals'], '.', '' );
-
-    return parseFloat( roundedPrice );
-}
-
+/**
+ * @deprecated next - No replacement. Price fields are now automatically registered by the products module in assets.
+ *
+ * @remove-in 4.0
+ */
 function gformRegisterPriceField(item){
+	console.warn( 'gformRegisterPriceField() has been deprecated with no replacement. Price fields are now automatically registered by the products module in assets.' );
 
 	if( ! item.formId ) {
 		return;
@@ -1202,7 +1278,13 @@ function gformRegisterPriceField(item){
     _gformPriceFields[item.formId].push(item.productFieldId);
 }
 
+/**
+ * @deprecated next - No replacement. Price fields are now automatically initialized by the products module in assets.
+ *
+ * @remove-in 4.0
+ */
 function gformInitPriceFields(){
+	console.warn( 'gformInitPriceFields() has been deprecated with no replacement. Price fields are now automatically initialized by the products module in assets.' );
 
 	// Getting all product fields and registering them.
     const priceFields = gform.tools.getNodes('.gfield_price', true, document, true );
@@ -1215,41 +1297,65 @@ function gformInitPriceFields(){
 	// Getting all forms that have product fields.
 	const formIds = Object.keys( _gformPriceFields );
 	formIds.forEach( ( formId ) => {
-
 		gformCalculateTotalPrice( formId );
-
-		gform.state.watch( formId, ['products', 'feeds'], gformHandleProductChange );
-		bindProductChangeEvent();
 	} );
+
+	bindProductChangeEvent();
 }
 
+/**
+ * @deprecated next - No replacement. gform_price_change will be removed in 3.0 in favor of gform/products/product_field_changed, so this method isn't needed.
+ *
+ * @remove-in 3.0
+ */
 function bindProductChangeEvent() {
 	// For backwards compatibility, fire jQuery gform_price_change event.
 	document.addEventListener( 'gform/products/product_field_changed', function( event ) {
 		const productIds = { formId : event.detail.formId, productFieldId : event.detail.productFieldId }
 
+		/**
+		 * @deprecated next. Use gform/products/product_field_changed instead.
+		 *
+		 * @remove-in 3.0
+		 */
 		jQuery( document ).trigger( 'gform_price_change', [ productIds, event.detail.htmlInput, this ] );
 	} );
-}
-
-
-function gformHandleProductChange( formId, key, data ) {
-	gformCalculateTotalPrice( formId );
 }
 
 //-------------------------------------------
 //---------- PASSWORD -----------------------
 //-------------------------------------------
-function gformShowPasswordStrength(fieldId){
-    var password = document.getElementById( fieldId ).value,
-        confirm = document.getElementById( fieldId + '_2' ) ? document.getElementById( fieldId + '_2' ).value : '';
+function gformShowPasswordStrength(fieldEl){
+	if ( ! fieldEl || typeof fieldEl.closest !== 'function' ) {
+		return;
+	}
+
+	var wrapper = fieldEl.closest('.gfield--type-password');
+	if ( ! wrapper ) {
+		return;
+	}
+
+	var passwordEl = wrapper.querySelector('.password_input_container input');
+	var confirmEl = wrapper.querySelectorAll('.password_input_container input')[1] || null;
+	var strengthEl = wrapper.querySelector('input[name*="strength"]');
+	var strengthIndicatorEl = wrapper.querySelector('.gfield_password_strength');
+
+    var password = passwordEl.value;
+    var confirm = confirmEl !== null ? confirmEl.value : '';
 
     var result = gformPasswordStrength( password, confirm ),
-        text = window[ 'gf_text' ][ "password_" + result ],
         resultClass = result === 'unknown' ? 'blank' : result;
 
-    jQuery("#" + fieldId + "_strength").val(result);
-    jQuery("#" + fieldId + "_strength_indicator").removeClass("blank mismatch short good bad strong").addClass(resultClass).html(text);
+    if (strengthEl) {
+        strengthEl.value = result;
+    }
+    if (strengthIndicatorEl) {
+        strengthIndicatorEl.classList.remove("blank", "mismatch", "short", "good", "bad", "strong");
+        strengthIndicatorEl.classList.add(resultClass);
+		var key = "password_" + result;
+		var text = ( window.gf_text && key in window.gf_text ) ? window.gf_text[ key ] : '';
+        strengthIndicatorEl.innerHTML = text;
+    }
 }
 
 // Password strength meter
@@ -1286,22 +1392,28 @@ function gformPasswordStrength( password1, password2 ) {
 
 }
 
-function gformToggleShowPassword( fieldId ) {
-    var $password = jQuery( '#' + fieldId ),
-        $button = $password.parent().find( 'button' ),
-        $icon = $button.find( 'span' ),
-        currentType = $password.attr( 'type' );
+function gformToggleShowPassword(buttonEl) {
+    var passwordContainer = buttonEl.closest('.password_input_container');
+    if (!passwordContainer) return;
 
-    switch ( currentType ) {
+    var passwordInput = passwordContainer.querySelector('input');
+    if (!passwordInput) return;
+
+    var icon = buttonEl.querySelector('span');
+    var currentType = passwordInput.getAttribute('type');
+
+    switch (currentType) {
         case 'password':
-            $password.attr( 'type', 'text' );
-            $button.attr( 'aria-label', $button.attr( 'data-label-hide' ) );
-            $icon.removeClass( 'dashicons-hidden' ).addClass( 'dashicons-visibility' );
+            passwordInput.setAttribute('type', 'text');
+            buttonEl.setAttribute('aria-label', buttonEl.getAttribute('data-label-hide'));
+            icon.classList.remove('dashicons-hidden');
+            icon.classList.add('dashicons-visibility');
             break;
         case 'text':
-            $password.attr( 'type', 'password' );
-            $button.attr( 'aria-label', $button.attr( 'data-label-show' ) );
-            $icon.removeClass( 'dashicons-visibility' ).addClass( 'dashicons-hidden' );
+            passwordInput.setAttribute('type', 'password');
+            buttonEl.setAttribute('aria-label', buttonEl.getAttribute('data-label-show'));
+            icon.classList.remove('dashicons-visibility');
+            icon.classList.add('dashicons-hidden');
             break;
     }
 }
@@ -1555,230 +1667,6 @@ function gformToggleIcons( $container, max ) {
 }
 
 //-----------------------------------
-//--------- REPEATER FIELD ----------
-//-----------------------------------
-
-function gformAddRepeaterItem( addButton, max ) {
-
-	var $addButton = jQuery( addButton );
-
-	if( $addButton.hasClass( 'gfield_icon_disabled' ) ) {
-		return;
-	}
-
-	var $item     = $addButton.closest( '.gfield_repeater_item' ),
-		$clone     = $item.clone(),
-		$container = $item.closest( '.gfield_repeater_container' ),
-		tabindex   = $clone.find( ':input:last' ).attr( 'tabindex' );
-
-	// reset all inputs to empty state
-	$clone
-		.find( 'input[type!="hidden"], select, textarea' ).attr( 'tabindex', tabindex )
-		.not( ':checkbox, :radio' ).each( function( index ){
-			// if the field has a value pre-populated, use that value in the cloned field
-			if( jQuery( this ).attr( 'value' ) ) {
-				jQuery( this ).val( jQuery( this ).attr( 'value' ) );
-			} else if ( jQuery( this ).is( 'textarea' ) ) {
-				jQuery( this ).val( this.innerHTML );
-			} else {
-				jQuery( this ).val( '' );
-			}
-	} );
-	$clone.find( ':checkbox, :radio' ).prop( 'checked', false );
-	$clone.find('.validation_message').remove();
-	$clone.find('.gform-datepicker.initialized').removeClass('initialized');
-
-	$clone = gform.applyFilters( 'gform_repeater_item_pre_add', $clone, $item );
-
-	$item.after( $clone );
-
-	var $cells = $clone.children('.gfield_repeater_cell');
-	$cells.each(function () {
-		var $subContainer = jQuery(this).find('.gfield_repeater_container').first();
-		if ($subContainer.length > 0) {
-			resetContainerItems = function ($c) {
-				$c.children('.gfield_repeater_items').children('.gfield_repeater_item').each(function (i) {
-					var $children = jQuery(this).children('.gfield_repeater_cell');
-					$children.each(function () {
-						var $subSubContainer = jQuery(this).find('.gfield_repeater_container').first();
-						if ($subSubContainer.length > 0) {
-							resetContainerItems($subSubContainer);
-						}
-					})
-				})
-				$c.children('.gfield_repeater_items').children('.gfield_repeater_item').not(':first').remove();
-			}
-			resetContainerItems($subContainer);
-		}
-	})
-
-	gformResetRepeaterAttributes($container);
-
-	if ( typeof gformInitDatepicker == 'function' ) {
-		$container.find('.ui-datepicker-trigger').remove();
-		$container.find('.hasDatepicker').removeClass('hasDatepicker');
-		gformInitDatepicker();
-	}
-
-	gformBindFormatPricingFields();
-
-	gformToggleRepeaterButtons( $container, max );
-
-	gform.doAction('gform_repeater_post_item_add', $clone, $container);
-
-}
-
-function gformDeleteRepeaterItem(deleteButton, max) {
-
-	var $deleteButton = jQuery(deleteButton),
-		$group = $deleteButton.closest('.gfield_repeater_item'),
-		$container = $group.closest('.gfield_repeater_container');
-
-	$group.remove();
-
-	gformResetRepeaterAttributes($container);
-	gformToggleRepeaterButtons($container, max);
-
-	gform.doAction('gform_repeater_post_item_delete', $container);
-
-}
-
-function gformResetRepeaterAttributes($container, depth, row) {
-
-	var cachedRadioSelection = null;
-
-	if (typeof depth === 'undefined') {
-		depth = 0;
-	}
-
-	if (typeof row === 'undefined') {
-		row = 0;
-	}
-
-	$container.children('.gfield_repeater_items').children('.gfield_repeater_item').each(function () {
-		var $children = jQuery(this).children('.gfield_repeater_cell');
-		$children.each(function () {
-			var $cell = jQuery(this);
-			var $subContainer = jQuery(this).find('.gfield_repeater_container').first();
-
-			if ($subContainer.length > 0) {
-				var newDepth = depth + 1;
-				gformResetRepeaterAttributes($subContainer, newDepth, row);
-				return;
-			}
-
-			jQuery(this).find('input, select, textarea, :checkbox, :radio').each(function () {
-				var $this = jQuery(this);
-				var name = $this.attr('name');
-
-				if ( typeof name == 'undefined' ) {
-					return;
-				}
-
-				var regEx = /^(input_[^\[]*)((\[[0-9]+\])+)/,
-					parts = regEx.exec(name);
-
-				if (!parts) {
-					return;
-				}
-				var inputName = parts[1],
-					arayParts = parts[2],
-					regExIndex = /\[([0-9]+)\]/g,
-					indexes = [],
-					match = regExIndex.exec(arayParts);
-
-				while (match != null) {
-					indexes.push(match[1]);
-					match = regExIndex.exec(arayParts);
-				}
-				var newNameIndex = parts[1];
-				indexes = indexes.reverse();
-				var newId = '';
-				for (var n = indexes.length - 1; n >= 0; n--) {
-					if (n == depth) {
-						newNameIndex += '[' + row + ']';
-						newId += '-' + row;
-					} else {
-						newNameIndex += '[' + indexes[n] + ']';
-						newId += '-' + indexes[n];
-					}
-				}
-
-				var currentId = $this.attr('id');
-				var $label = $cell.find("label[for='" + currentId + "']");
-
-				if ( currentId ) {
-					var matches = currentId.match(/((choice|input)_[0-9|_]*)-/);
-					if ( matches && matches[2] ) {
-						newId = matches[1] + newId;
-						$label.attr('for', newId);
-						$this.attr('id', newId);
-					}
-				}
-				var newName = name.replace(parts[0], newNameIndex),
-					newNameIsChecked = jQuery('input[name="'+ newName +'"]').is(':checked');
-
-				if ( $this.is(':radio') && $this.is(':checked') && name !== newName && newNameIsChecked ) {
-					if ( cachedRadioSelection !== null ) {
-						cachedRadioSelection.prop('checked', true);
-					}
-
-					$this.prop('checked', false);
-					cachedRadioSelection = $this;
-				}
-
-				$this.attr('name', newName);
-			});
-		});
-		if (depth === 0) {
-			row++;
-		}
-	});
-
-	if ( cachedRadioSelection !== null ) {
-		cachedRadioSelection.prop('checked', true);
-		cachedRadioSelection = null;
-	}
-
-}
-
-function gformToggleRepeaterButtons($container) {
-
-	var max = $container.closest('.gfield_repeater_wrapper').data('max_items'),
-		groupCount = $container.children('.gfield_repeater_items').children('.gfield_repeater_item').length,
-		$buttonsContainer = $container.children('.gfield_repeater_items').children('.gfield_repeater_item').children('.gfield_repeater_buttons'),
-		$addButtons = $buttonsContainer.children('.add_repeater_item');
-
-	$buttonsContainer.children('.remove_repeater_item').css('visibility', groupCount == 1 ? 'hidden' : 'visible');
-
-	if (max > 0 && groupCount >= max) {
-
-		// store original title in the add button
-		$addButtons.data('title', $buttonsContainer.children('.add_repeater_item').attr('title'));
-		$addButtons.addClass('gfield_icon_disabled').attr('title', '');
-
-	} else if (max > 0) {
-
-		$addButtons.removeClass('gfield_icon_disabled');
-
-		if ($addButtons.data('title')) {
-			$addButtons.attr('title', $addButtons.data('title'));
-		}
-	}
-
-	$container
-		.children('.gfield_repeater_items')
-		.children('.gfield_repeater_item')
-		.children( '.gfield_repeater_cell').each(function (i) {
-			var $subContainer = jQuery(this).find('.gfield_repeater_container').first();
-			if ($subContainer.length > 0) {
-				gformToggleRepeaterButtons($subContainer);
-			}
-		});
-}
-
-
-//-----------------------------------
 //------ CREDIT CARD FIELD ----------
 //-----------------------------------
 function gformMatchCard(id) {
@@ -1843,6 +1731,11 @@ function gformToggleCreditCard(){
 function gformInitChosenFields( fieldList, noResultsText ) {
     return jQuery( fieldList ).each( function(){
 		var element = jQuery( this );
+
+		// Cloned (repeater) fields will have noResultsText set to undefined, so we need to cache the original value.
+		noResultsText = noResultsText || element.data('noResultsText');
+		element.attr('data-noResultsText', noResultsText);
+
 	    var isConvoForm = typeof gfcf_theme_config !== 'undefined' ? ( gfcf_theme_config !== null && typeof gfcf_theme_config.data !== 'undefined' ? gfcf_theme_config.data.is_conversational_form : undefined ) : false;
 
         // RTL support
@@ -2231,27 +2124,6 @@ function gformFormatNumber(number, rounding, decimalSeparator, thousandSeparator
 
     var currency = new gform.Currency();
     return currency.numberFormat(number, rounding, decimalSeparator, thousandSeparator, false)
-}
-
-/**
- * @deprecated. Use GFMergeTags.parseMergeTag() instead
- * @remove-in 3.0
- */
-function getMatchGroups(expr, patt) {
-
-	console.log('getMatchGroups() has been deprecated and will be removed in version 3.0. Use GFMergeTags.parseMergeTag() instead.');
-
-	var matches = new Array();
-
-    while(patt.test(expr)) {
-
-        var i = matches.length;
-        matches[i] = patt.exec(expr)
-        expr = expr.replace('' + matches[i][0], '');
-
-    }
-
-    return matches;
 }
 
 function gf_get_field_number_format(fieldId, formId, context) {
@@ -2648,6 +2520,10 @@ function gformValidateFileSize( field, max_file_size ) {
 	}
 
     function setup(uploadElement){
+        if ( typeof plupload === 'undefined' ) {
+            return;
+        }
+
         var settings = $(uploadElement).data('settings');
 
         var uploader = new plupload.Uploader(settings);
@@ -2978,125 +2854,6 @@ function gformValidateFileSize( field, max_file_size ) {
 	}
 
 }(window.gfMultiFileUploader = window.gfMultiFileUploader || {}, jQuery));
-
-
-//----------------------------------------
-//------ GENERAL FUNCTIONS -------
-//----------------------------------------
-let gformIsSpinnerInitialized = false;
-function gformInitSpinner(formId, spinnerUrl, isLegacy = true) {
-
-	// If already initialized, abort.
-	if ( gformIsSpinnerInitialized ) {
-		return;
-	}
-	gformIsSpinnerInitialized = true;
-
-	// Adding spinner on pre_submission.
-	window.gform.utils.addFilter( 'gform/submission/pre_submission', ( data ) => {
-
-		gformShowSpinner( data.form.dataset.formid, spinnerUrl );
-
-		return data;
-	}, 3 );
-
-	// Removing spinner if submission is aborted.
-	document.addEventListener( 'gform/submission/submission_aborted', function( event ) {
-
-		// Removing new theme framework spinner.
-		gformRemoveSpinner();
-
-		// Removing legacy spinner.
-		jQuery( '#gform_ajax_spinner_' + event.detail.form.dataset.formid ).remove();
-	} );
-}
-
-/**
- * Shows the spinner.
- *
- * @since 2.9.0
- *
- * @param {int}    formId     The form id that is being submitted.
- * @param {string} spinnerUrl The image to use for the spinner.
- * @return {void}
- */
-function gformShowSpinner( formId, spinnerUrl ) {
-
-	let filteredSpinner = gform.applyFilters('gform_spinner_url', spinnerUrl, formId);
-	let defaultSpinner = gform.applyFilters('gform_spinner_url', gf_global.spinnerUrl, formId);
-
-	// Legacy spinner: this is not referring to Legacy Markup, but to the pre-2.7 spinner implementation.
-	const isLegacy = filteredSpinner !== defaultSpinner;
-	if ( isLegacy ) {
-		gformAddSpinner( formId, filteredSpinner );
-		return;
-	}
-
-	let $spinnerTarget = gform.applyFilters('gform_spinner_target_elem', jQuery('#gform_submit_button_' + formId + ', #gform_wrapper_' + formId + ' .gform_next_button, #gform_send_resume_link_button_' + formId), formId);
-
-	gformInitializeSpinner( formId, $spinnerTarget );
-}
-/**
- * @description Initializes the theme-framework-based spinner after the provided target.
- *
- * @since 2.7
- *
- * @param {int}    formId The ID of the form within which to initialize the spinner.
- * @param {object} target The target element after which to inject the spinner.
- * @param {string} uniqId A unique ID to use for the spinner - used when removing the spinner.
- *
- * @return void
- */
-function gformInitializeSpinner( formId, target, uniqId = 'gform-ajax-spinner' ) {
-	if (jQuery('#gform_ajax_spinner_' + formId).length == 0) {
-		var loaderHTML = '<span data-js-spinner-id="' + uniqId + '" id="gform_ajax_spinner_' + formId + '" class="gform-loader"></span>';
-		var $spinnerTarget = target instanceof jQuery ? target : jQuery( target );
-		$spinnerTarget.after( loaderHTML );
-	}
-}
-
-/**
- * @description Removes an existing theme-framework-based spinner.
- *
- * @since 2.7
- *
- * @param {string} uniqId A unique ID to use for the spinner - used when removing the spinner.
- *
- * @return void
- */
-function gformRemoveSpinner( uniqId = 'gform-ajax-spinner' ) {
-	var spinners = document.querySelectorAll( '[data-js-spinner-id="' + uniqId + '"]' );
-
-	if ( ! spinners ) {
-		return;
-	}
-
-	// Remove all instances of the spinner.
-	spinners.forEach( function( spinner ) {
-		spinner.remove();
-	} );
-}
-
-function gformAddSpinner(formId, spinnerUrl) {
-
-	if (typeof spinnerUrl == 'undefined' || !spinnerUrl) {
-		spinnerUrl = gform.applyFilters('gform_spinner_url', gf_global.spinnerUrl, formId);
-	}
-
-	if (jQuery('#gform_ajax_spinner_' + formId).length == 0) {
-		/**
-		 * Filter the element after which the AJAX spinner will be inserted.
-		 *
-		 * @since 2.0
-		 *
-		 * @param object $targetElem jQuery object containing all of the elements after which the AJAX spinner will be inserted.
-		 * @param int    formId      ID of the current form.
-		 */
-		var $spinnerTarget = gform.applyFilters('gform_spinner_target_elem', jQuery('#gform_submit_button_' + formId + ', #gform_wrapper_' + formId + ' .gform_next_button, #gform_send_resume_link_button_' + formId), formId);
-		$spinnerTarget.after('<img id="gform_ajax_spinner_' + formId + '"  class="gform_ajax_spinner" src="' + spinnerUrl + '" alt="" />');
-	}
-
-}
 
 //----------------------------------------
 //------ TINYMCE FUNCTIONS ---------------

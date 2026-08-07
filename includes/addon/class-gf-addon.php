@@ -453,6 +453,7 @@ abstract class GFAddOn {
 
 		// enqueues admin scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 10, 0 );
+		add_action( 'enqueue_block_assets', array( $this, 'enqueue_scripts' ), 10, 0 );
 
 		// message enforcing min version of Gravity Forms
 		if ( isset( $this->_min_gravityforms_version ) && RG_CURRENT_PAGE == 'plugins.php' ) {
@@ -908,7 +909,7 @@ abstract class GFAddOn {
 	 * @uses GFAddOn::get_short_title()
 	 * @uses GFAddOn::plugin_settings_title()
 	 * @uses GFCommon::get_base_path()
-	 * @uses RGForms::add_settings_page()
+	 * @uses GFForms::add_settings_page()
 	 */
 	public function failed_requirements_init() {
 
@@ -1109,7 +1110,7 @@ abstract class GFAddOn {
 				'handle'   => 'gaddon_results_js',
 				'src'      => GFAddOn::get_gfaddon_base_url() . "/js/gaddon_results{$min}.js",
 				'version'  => GFCommon::$version,
-				'deps'     => array( 'jquery', 'sack', 'jquery-ui-resizable', 'gform_datepicker_init', 'google_charts', 'gform_field_filter' ),
+				'deps'     => array( 'jquery', 'sack', 'jquery-ui-resizable', 'google_charts', 'gform_field_filter' ),
 				'callback' => array( 'GFResults', 'localize_results_scripts' ),
 				'enqueue'  => array(
 					array( 'admin_page' => array( 'results' ) ),

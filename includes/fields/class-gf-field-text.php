@@ -65,6 +65,23 @@ class GF_Field_Text extends GF_Field {
 	}
 
 	/**
+	 * Returns the placeholder attribute for the field.
+	 *
+	 * If no custom placeholder is set and an input mask is enabled, uses the mask as placeholder.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string
+	 */
+	public function get_field_placeholder_attribute() {
+		if ( empty( $this->placeholder ) && $this->inputMask && $this->inputMaskValue ) {
+			return sprintf( "placeholder='%s'", esc_attr( $this->inputMaskValue ) );
+		}
+
+		return parent::get_field_placeholder_attribute();
+	}
+
+	/**
 	 * Return the result (bool) by setting $this->failed_validation.
 	 * Return the validation message (string) by setting $this->validation_message.
 	 *
@@ -75,13 +92,23 @@ class GF_Field_Text extends GF_Field {
 	 */
 	public function validate( $value, $form ) {
 
-		if ( ! $this->maxLength || ! is_numeric( $this->maxLength ) ) {
-			return;
+		if ( $this->maxLength && is_numeric( $this->maxLength ) ) {
+			if ( GFCommon::safe_strlen( $value ) > $this->maxLength ) {
+				$this->failed_validation  = true;
+				$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'The text entered exceeds the maximum number of characters.', 'gravityforms' ) : $this->errorMessage;
+				return;
+			}
 		}
 
-		if ( GFCommon::safe_strlen( $value ) > $this->maxLength ) {
-			$this->failed_validation  = true;
-			$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'The text entered exceeds the maximum number of characters.', 'gravityforms' ) : $this->errorMessage;
+		// Validate input mask if enabled and value is not empty.
+		if ( $this->inputMask && $this->inputMaskValue && $value !== '' ) {
+			$regex = $this->mask_to_regex( $this->inputMaskValue );
+			if ( ! preg_match( $regex, $value ) ) {
+				$this->failed_validation  = true;
+				$this->validation_message = empty( $this->errorMessage )
+					? sprintf( esc_html__( 'Required format: %s', 'gravityforms' ), $this->inputMaskValue )
+					: $this->errorMessage;
+			}
 		}
 
 	}
@@ -106,8 +133,7 @@ class GF_Field_Text extends GF_Field {
 		$class        = $size . $class_suffix;
 		$class        = esc_attr( $class );
 
-		$max_length = is_numeric( $this->maxLength ) ? "maxlength='{$this->maxLength}'" : '';
-
+		$max_length            = is_numeric( $this->maxLength ) ? "maxlength='{$this->maxLength}'" : '';
 		$tabindex              = $this->get_tabindex();
 		$disabled_text         = $is_form_editor ? 'disabled="disabled"' : '';
 		$placeholder_attribute = $this->get_field_placeholder_attribute();
@@ -115,6 +141,10 @@ class GF_Field_Text extends GF_Field {
 		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
 		$aria_describedby      = $this->get_aria_describedby();
 		$autocomplete          = $this->enableAutocomplete ? $this->get_field_autocomplete_attribute() : '';
+		$mask_attribute        = '';
+		if ( $this->inputMask && $this->inputMaskValue && ! $this->enablePasswordInput ) {
+			$mask_attribute = sprintf( 'data-mask="%s"', esc_attr( $this->inputMaskValue ) );
+		}
 
 		// For Post Tags, Use the WordPress built-in class "howto" in the form editor.
 		$text_hint = '';
@@ -126,9 +156,47 @@ class GF_Field_Text extends GF_Field {
 				), esc_html__( 'Separate tags with commas', 'gravityforms' ), $form_id ) . '</p>';
 		}
 
-		$input = "<input name='input_{$id}' id='{$field_id}' type='{$html_input_type}' value='{$value}' class='{$class}' {$max_length} {$aria_describedby} {$tabindex} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$autocomplete} />{$text_hint}";
+		$input = "<input name='input_{$id}' id='{$field_id}' type='{$html_input_type}' value='{$value}' class='{$class}' {$max_length} {$aria_describedby} {$tabindex} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$autocomplete} {$mask_attribute}/>{$text_hint}";
 
-		return sprintf( "<div class='ginput_container ginput_container_text'>%s</div>", $input );
+		return sprintf( "<div class='ginput_container ginput_container_text'%s>%s</div>", self::get_text_counter_attrs( $this ), $input );
+	}
+
+	/**
+	 * Returns the text counter attributes if maxLength is set.
+	 *
+	 * @since 2.9.20
+	 *
+	 * @param GF_Field $field The field object.
+	 *
+	 * @return string The text counter attributes or an empty string if text counter is not enabled.
+	 */
+	public static function get_text_counter_attrs( $field ) {
+
+		// Abort if maxLength is not set.
+		if ( ! is_numeric( $field->maxLength ) ) {
+			return '';
+		}
+
+		// Translators: Do not translate {current} and {max}. They will be replaced by the actual values later.
+		$default_template = __( '{current} of {max} max characters', 'gravityforms' );
+
+		/**
+		 * Filters the text counter template.
+		 * The template supports the following variables: {current} and {max} and {remaining}
+		 * {current} - The current number of characters entered.
+		 * {max} - The maximum number of characters allowed.
+		 * {remaining} - The number of characters remaining.
+		 *
+		 * @since 2.9.20
+		 *
+		 * @param string   $default_template The text counter template.
+		 * @param int      $form_id          The current Form ID.
+		 * @param GF_Field $field            The current Field object.
+		 *
+		 */
+		$text_counter_template = esc_attr( gf_apply_filters( array( 'gform_text_counter_template', $field->formId, $field->id ), $default_template, $field->formId, $field ) );
+
+		return " data-text-counter-max='{$field->maxLength}' data-text-counter-template='{$text_counter_template}'";
 	}
 
 	public function allow_html() {

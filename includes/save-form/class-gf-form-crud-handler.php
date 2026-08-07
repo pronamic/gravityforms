@@ -342,44 +342,46 @@ class GF_Form_CRUD_Handler {
 	 * @return array The status of the insert and the form meta data.
 	 */
 	private function insert() {
-			$rg_forms_model = $this->rg_forms_model;
-			$gf_forms_model = $this->gf_forms_model;
+		$rg_forms_model = $this->rg_forms_model;
+		$gf_forms_model = $this->gf_forms_model;
 
-			// Inserting form.
-			$this->form_id = $rg_forms_model::insert_form( $this->form_meta['title'] );
+		// Inserting form.
+		$this->form_id = $rg_forms_model::insert_form( $this->form_meta['title'] );
 
-			// Updating object's id property.
-			$this->form_meta['id'] = $this->form_id;
+		// Updating object's id property.
+		$this->form_meta['id'] = $this->form_id;
 
-			// Use the notifications in form_meta if one is set. If not set, and default notification is not disabled by the hook, use default.
-			$notifications = rgempty( 'notifications', $this->form_meta ) ? $this->get_default_notification() : rgar( $this->form_meta, 'notifications' );
-			if ( ! empty( $notifications ) ) {
-				// updating notifications form meta.
-				$rg_forms_model::save_form_notifications( $this->form_id, $notifications );
-			}
+		// Use the notifications in form_meta if one is set. If not set, and default notification is not disabled by the hook, use default.
+		$notifications = rgempty( 'notifications', $this->form_meta ) ? $this->get_default_notification() : rgar( $this->form_meta, 'notifications' );
+		if ( ! empty( $notifications ) ) {
+			// updating notifications form meta.
+			$rg_forms_model::save_form_notifications( $this->form_id, $notifications );
+		}
 
-			// Use default confirmation if not set in form_meta.
-			$confirmations = rgempty( 'confirmations', $this->form_meta ) ? $this->get_default_confirmation() : rgar( $this->form_meta, 'confirmations' );
-			$gf_forms_model::save_form_confirmations( $this->form_id, $confirmations );
+		$this->form_meta = array_merge( $this->form_meta, $gf_forms_model::get_accessible_properties( $this->form_meta ) );
 
-			// Adding markup version. Increment this when we make breaking changes to form markup.
-			$this->form_meta['markupVersion'] = 2;
+		// Use default confirmation if not set in form_meta.
+		$confirmations = rgempty( 'confirmations', $this->form_meta ) ? $this->get_default_confirmation() : rgar( $this->form_meta, 'confirmations' );
+		$gf_forms_model::save_form_confirmations( $this->form_id, $confirmations );
 
-			// Removing notifications and confirmations from form meta.
-			unset( $this->form_meta['confirmations'] );
-			unset( $this->form_meta['notifications'] );
+		// Adding markup version. Increment this when we make breaking changes to form markup.
+		$this->form_meta['markupVersion'] = 2;
 
-			// Updating form meta.
-			$gf_forms_model::update_form_meta( $this->form_id, $this->form_meta );
+		// Removing notifications and confirmations from form meta.
+		unset( $this->form_meta['confirmations'] );
+		unset( $this->form_meta['notifications'] );
 
-			// Get form meta.
-			$this->form_meta = $gf_forms_model::get_form_meta( $this->form_id );
+		// Updating form meta.
+		$gf_forms_model::update_form_meta( $this->form_id, $this->form_meta );
 
-			return array(
-				'status' => self::STATUS_SUCCESS,
-				'meta'   => $this->form_meta,
-				'is_new' => true,
-			);
+		// Get form meta.
+		$this->form_meta = $gf_forms_model::get_form_meta( $this->form_id );
+
+		return array(
+			'status' => self::STATUS_SUCCESS,
+			'meta'   => $this->form_meta,
+			'is_new' => true,
+		);
 	}
 
 	/**

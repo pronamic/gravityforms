@@ -1,3 +1,4 @@
+/* eslint-disable */
 (function (gfFieldFilterUI, $) {
 
     $.fn.gfFilterUI = function(filterSettings, initVars, allowMultiple, minResizeHeight) {
@@ -157,7 +158,6 @@
             $select.siblings(".gform-filter-value").replaceWith(getFilterValues(filter, operatorSelect.value));
         }
         setDisabledFields();
-        if(window['gformInitDatepicker']) {gformInitDatepicker();}
     }
 
     function changeField (fieldSelect) {

@@ -25,6 +25,15 @@ class GF_Field_Name extends GF_Field {
 	public $type = 'name';
 
 	/**
+	 * Indicates if this field supports state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	protected $_supports_state_validation = true;
+
+	/**
 	 * Returns the HTML tag for the field container.
 	 *
 	 * @since 2.5
@@ -210,10 +219,9 @@ class GF_Field_Name extends GF_Field {
 		$disabled_text = $is_form_editor ? "disabled='disabled'" : '';
 		$class_suffix  = $is_entry_detail ? '_admin' : '';
 
-		$form_sub_label_placement = rgar( $form, 'subLabelPlacement' );
-		$field_sub_label_placement = $this->subLabelPlacement;
-		$is_sub_label_above       = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
-		$sub_label_class          = $field_sub_label_placement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
+		$is_sub_label_above = $this->is_sub_label_above( $form );
+
+		$sub_label_class = $this->subLabelPlacement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
 
 		$prefix = '';
 		$first  = '';
@@ -729,6 +737,53 @@ class GF_Field_Name extends GF_Field {
 
 		return $operators;
 	}
+
+	/**
+	 * Determines if this field will be processed by the state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function is_state_validation_supported() {
+		return $this->nameFormat === 'advanced' && parent::is_state_validation_supported();
+	}
+
+	/**
+	 * Prepares the value that will be hashed on form display as part of the state.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The default value.
+	 *
+	 * @return null|array
+	 */
+	public function get_values_for_state_hash( $value ) {
+		$id           = $this->id;
+		$prefix_id    = "{$id}.2";
+		$prefix_input = GFFormsModel::get_input( $this, $prefix_id );
+		if ( rgar( $prefix_input, 'isHidden' ) ) {
+			return null;
+		}
+
+		return array(
+			$prefix_id => $this->get_choices_for_state_hash( rgar( $prefix_input, 'choices', array() ) ),
+		);
+	}
+
+	/**
+	 * Indicates if state validation should be skipped if the submitted value is blank.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|int $key The field or input ID.
+	 *
+	 * @return bool
+	 */
+	public function skip_state_validation_if_blank( $key ) {
+		return true;
+	}
+
 }
 
 // Registers the Name field with the field framework.

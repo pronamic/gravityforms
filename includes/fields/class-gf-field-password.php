@@ -66,6 +66,37 @@ class GF_Field_Password extends GF_Field {
 	}
 
 	/**
+	 * Returns inputs structure for repeater fields only.
+	 * This is used internally by repeater fields to handle multi-input behavior
+	 * without breaking backward compatibility.
+	 *
+	 * @since 3.0.0
+	 * @return array|null
+	 */
+	public function get_repeater_inputs() {
+		if ( ! $this->is_confirm_input_enabled() ) {
+			return null;
+		}
+
+		if ( empty( $this->inputs ) ) {
+			$this->inputs = array(
+				array(
+					'id'    => $this->id . '',
+					'label' => esc_html__( 'Enter Password', 'gravityforms' ),
+					'name'  => '',
+				),
+				array(
+					'id'    => $this->id . '.2',
+					'label' => esc_html__( 'Confirm Password', 'gravityforms' ),
+					'name'  => '',
+				)
+			);
+		}
+
+		return $this->inputs;
+	}
+
+	/**
 	 * Returns the HTML tag for the field container.
 	 *
 	 * @since 2.5
@@ -85,18 +116,30 @@ class GF_Field_Password extends GF_Field {
 	}
 
 	public function validate( $value, $form ) {
-		$password = rgpost( 'input_' . $this->id );
-		$confirm  = rgpost( 'input_' . $this->id . '_2' );
+		if ( $this->is_confirm_input_enabled() ) {
+			if ( is_array( $value ) ) {
+				if ( isset( $value[0] ) ) {
+					$password = $value[0];
+					$confirm  = rgar( $value, 1, '' );
+				} else {
+					$password = rgar( $value, $this->id, '' );
+					$confirm  = rgar( $value, $this->id . '.2', '' );
+				}
+			} else {
+				$password = $value;
+				$confirm  = rgpost( 'input_' . $this->id . '_2' );
+			}
+		} else {
+			$password = is_array( $value ) ? rgar( $value, 0 ) : $value;
+			$confirm  = '';
+		}
+
 		if ( $this->is_confirm_input_enabled() && $password != $confirm ) {
 			$this->failed_validation  = true;
 			$this->validation_message = esc_html__( 'Your passwords do not match.', 'gravityforms' );
 		} elseif ( $this->passwordStrengthEnabled && ! empty( $this->minPasswordStrength ) && ! empty( $password ) ) {
 
-			$strength = rgpost('input_' . $this->id . '_strength' );
-
-			if ( empty( $strength ) ) {
-				$strength = $this->get_password_strength( $password );
-			}
+			$strength = $this->get_password_strength( $password );
 
 			$levels = array( 'short' => 1, 'bad' => 2, 'good' => 3, 'strong' => 4 );
 			if ( rgar( $levels, $strength, 0 ) < $levels[ $this->minPasswordStrength ] ) {
@@ -162,10 +205,6 @@ class GF_Field_Password extends GF_Field {
 
 	public function get_field_input( $form, $value = '', $entry = null ) {
 
-		if ( is_array( $value ) ) {
-			$value = array_values( $value );
-		}
-
 		$form_id         = $form['id'];
 		$is_entry_detail = $this->is_entry_detail();
 		$is_form_editor  = $this->is_form_editor();
@@ -179,10 +218,9 @@ class GF_Field_Password extends GF_Field {
 		$class        = $this->is_confirm_input_enabled() ? '' : $size . $class_suffix; // Size only applies when confirmation is disabled.
 		$class        = esc_attr( $class );
 
-		$form_sub_label_placement = rgar( $form, 'subLabelPlacement' );
-		$field_sub_label_placement = $this->subLabelPlacement;
-		$is_sub_label_above       = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
-		$sub_label_class          = $field_sub_label_placement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
+		$is_sub_label_above = $this->is_sub_label_above( $form );
+
+		$sub_label_class = $this->subLabelPlacement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
 
 		$disabled_text = $is_form_editor ? 'disabled="disabled"' : '';
 
@@ -196,13 +234,46 @@ class GF_Field_Password extends GF_Field {
 																		</div>
 																		<input type='hidden' class='gform_hidden' id='{$field_id}_strength' name='input_{$id}_strength' />" : '';
 
-		$action   = ! $is_admin ? "gformShowPasswordStrength(\"$field_id\");" : '';
+		$action   = ! $is_admin ? "gformShowPasswordStrength(this);" : '';
 		$onchange = $this->passwordStrengthEnabled ? "onchange='{$action}'" : '';
 		$onkeyup  = $this->passwordStrengthEnabled ? "onkeyup='{$action}'" : '';
 
-		$confirmation_value = rgpost( 'input_' . $id . '_2' );
+		$password_value     = '';
+		$confirmation_value = '';
 
-		$password_value     = is_array( $value ) ? $value[0] : $value;
+		if ( is_array( $value ) ) {
+			if ( isset( $value[ $id ] ) && isset( $value[ $id . '.2' ] ) ) {
+				$password_value = $value[ $id ];
+				if ( $this->is_confirm_input_enabled() && ! $is_admin ) {
+					$confirmation_value = $value[ $id . '.2' ];
+				}
+			} elseif ( isset( $value[ $id ] ) ) {
+				$extracted = $value[ $id ];
+				if ( is_array( $extracted ) ) {
+					$password_value = rgar( $extracted, 0, '' );
+					if ( $this->is_confirm_input_enabled() && ! $is_admin ) {
+						$confirmation_value = rgar( $extracted, 1, '' );
+					}
+				} else {
+					$password_value = $extracted;
+				}
+			} elseif ( isset( $value[0] ) ) {
+				$password_value = $value[0];
+				if ( $this->is_confirm_input_enabled() && ! $is_admin && isset( $value[1] ) ) {
+					$confirmation_value = $value[1];
+				}
+			}
+		} else {
+			$password_value = $value;
+		}
+
+		if ( empty( $confirmation_value ) && $this->is_confirm_input_enabled() && ! $is_admin ) {
+			$confirmation_value = rgpost( 'input_' . $id . '_2', '' );
+		}
+
+		$password_value     = is_array( $password_value ) ? '' : $password_value;
+		$confirmation_value = is_array( $confirmation_value ) ? '' : $confirmation_value;
+
 		$password_value     = esc_attr( $password_value );
 		$confirmation_value = esc_attr( $confirmation_value );
 
@@ -222,8 +293,8 @@ class GF_Field_Password extends GF_Field {
 		$confirm_password_placeholder_attribute = GFCommon::get_input_placeholder_attribute( $confirm_password_field_input );
 
 		$visibility_toggle_style = ! $this->passwordVisibilityEnabled ? " style='display:none;'" : '';
-		$enter_password_toggle   = $this->passwordVisibilityEnabled || $is_admin ? "<button type='button' class='gform_show_password gform-theme-button gform-theme-button--simple' onclick='javascript:gformToggleShowPassword(\"{$field_id}\");' aria-live='polite' aria-label='" . esc_attr__( 'Show Password', 'gravityforms' ) . "' data-label-show='" . esc_attr__( 'Show Password', 'gravityforms' ) . "' data-label-hide='" . esc_attr__( 'Hide Password', 'gravityforms' ) . "'{$visibility_toggle_style}><span class='dashicons dashicons-hidden' aria-hidden='true'></span></button>" : "";
-		$confirm_password_toggle = $this->passwordVisibilityEnabled || $is_admin ? "<button type='button' class='gform_show_password gform-theme-button gform-theme-button--simple' onclick='javascript:gformToggleShowPassword(\"{$field_id}_2\");' aria-live='polite' aria-label='" . esc_attr__( 'Show Password', 'gravityforms' ) . "' data-label-show='" . esc_attr__( 'Show Password', 'gravityforms' ) . "' data-label-hide='" . esc_attr__( 'Hide Password', 'gravityforms' ) . "'{$visibility_toggle_style}><span class='dashicons dashicons-hidden' aria-hidden='true'></span></button>" : "";
+		$enter_password_toggle   = $this->passwordVisibilityEnabled || $is_admin ? "<button type='button' class='gform_show_password gform-theme-button gform-theme-button--simple gform-theme-button--simple-in-ctrl' onclick='javascript:gformToggleShowPassword(this);' aria-live='polite' aria-label='" . esc_attr__( 'Show Password', 'gravityforms' ) . "' data-label-show='" . esc_attr__( 'Show Password', 'gravityforms' ) . "' data-label-hide='" . esc_attr__( 'Hide Password', 'gravityforms' ) . "'{$visibility_toggle_style}><span class='dashicons dashicons-hidden' aria-hidden='true'></span></button>" : "";
+		$confirm_password_toggle = $this->passwordVisibilityEnabled || $is_admin ? "<button type='button' class='gform_show_password gform-theme-button gform-theme-button--simple gform-theme-button--simple-in-ctrl' onclick='javascript:gformToggleShowPassword(this);' aria-live='polite' aria-label='" . esc_attr__( 'Show Password', 'gravityforms' ) . "' data-label-show='" . esc_attr__( 'Show Password', 'gravityforms' ) . "' data-label-hide='" . esc_attr__( 'Hide Password', 'gravityforms' ) . "'{$visibility_toggle_style}><span class='dashicons dashicons-hidden' aria-hidden='true'></span></button>" : "";
 
 		$describedby_extra_id = array();
 		if ( $this->passwordStrengthEnabled ) {
@@ -335,8 +406,21 @@ class GF_Field_Password extends GF_Field {
 		return 'gfield_label gform-field-label gfield_label_before_complex';
 	}
 
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
-
+	/**
+	 * Sanitize and format the value before it is saved to the Entry Object.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The Form object currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id        The ID of the entry currently being processed.
+	 * @param array  $entry           The entry currently being processed.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
+	 *
+	 * @return array|string The sanitized and formatted input value to be saved.
+	 */
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
 		/**
 		 * A filter to allow the password to be encrypted (default set to false)
 		 *
@@ -346,10 +430,13 @@ class GF_Field_Password extends GF_Field {
 		$encrypt_password = apply_filters( 'gform_encrypt_password', false, $this, $form );
 		if ( $encrypt_password ) {
 			$value = GFCommon::openssl_encrypt( $value );
-			GFFormsModel::set_openssl_encrypted_fields( $lead_id, $this->id );
+			GFFormsModel::set_openssl_encrypted_fields( $entry_id, $this->id );
+			return $value;
 		}
 
-		return $value;
+		// Passwords should never be saved to the database for security reasons.
+		// This is the default behavior for Gravity Forms password fields.
+		return '';
 	}
 
 	/**
@@ -428,6 +515,15 @@ class GF_Field_Password extends GF_Field {
 			/* @var GF_Field $field */
 			if ( $field->get_input_type() == 'password' ) {
 				self::$passwords[ $field->id ] = $field->get_value_submission( rgpost( 'gform_field_values' ) );
+			} elseif ( $field->get_input_type() == 'repeater' ) {
+				// Also check for password fields inside repeaters
+				if ( ! empty( $field->fields ) ) {
+					foreach ( $field->fields as $sub_field ) {
+						if ( $sub_field->get_input_type() == 'password' ) {
+							self::$passwords[ $sub_field->id ] = $sub_field->get_value_submission( rgpost( 'gform_field_values' ) );
+						}
+					}
+				}
 			}
 		}
 	}
@@ -451,6 +547,16 @@ class GF_Field_Password extends GF_Field {
 		return $entry;
 	}
 
+	public function get_value_submission( $field_values, $get_from_post_global_var = true ) {
+		$password_value = $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
+
+		if ( $this->is_confirm_input_enabled() && is_array( $password_value ) ) {
+			$confirmation_value = $this->get_input_value_submission( 'input_' . $this->id . '_2', $this->inputName, $field_values, $get_from_post_global_var );
+			return array( $password_value, $confirmation_value );
+		}
+
+		return $password_value;
+	}
 }
 
 GF_Fields::register( new GF_Field_Password() );

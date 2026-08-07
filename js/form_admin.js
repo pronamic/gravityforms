@@ -511,10 +511,26 @@ function GetFieldById( id ) {
 	}
 
 	id = parseInt( id );
-	for(var i=0; i<form.fields.length; i++){
-		if(form.fields[i].id == id)
-			return form.fields[i];
+
+	return recursivelyGetFieldsById( id, form.fields );
+}
+
+function recursivelyGetFieldsById( id, fields ) {
+	for ( var i =0; i < fields.length; i++ ) {
+		var thisField = fields[i];
+
+		if ( thisField.id == id ) {
+			return thisField;
+		}
+
+		if ( thisField.fields ) {
+			var subCheck = recursivelyGetFieldsById( id, thisField.fields );
+			if ( subCheck ) {
+				return subCheck;
+			}
+		}
 	}
+
 	return null;
 }
 

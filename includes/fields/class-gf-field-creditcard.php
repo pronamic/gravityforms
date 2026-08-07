@@ -10,6 +10,24 @@ class GF_Field_CreditCard extends GF_Field {
 	public $type = 'creditcard';
 
 	/**
+	 * Whether there can be more than one of this field type per form.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $duplicatable = false;
+
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = false;
+
+	/**
 	 * Indicates the field is used to capture payments.
 	 *
 	 * @since 2.9.23
@@ -224,11 +242,9 @@ class GF_Field_CreditCard extends GF_Field {
 		$disabled_text = $is_form_editor ? "disabled='disabled'" : '';
 		$class_suffix  = $is_entry_detail ? '_admin' : '';
 
+		$is_sub_label_above        = $this->is_sub_label_above( $form );
 
-		$form_sub_label_placement = rgar( $form, 'subLabelPlacement' );
-		$field_sub_label_placement = $this->subLabelPlacement;
-		$is_sub_label_above       = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
-		$sub_label_class          = $field_sub_label_placement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
+		$sub_label_class = $this->subLabelPlacement  == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
 
 		$card_number      = '';
 		$card_name        = '';
@@ -579,7 +595,21 @@ class GF_Field_CreditCard extends GF_Field {
 		return $inputs;
 	}
 
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+	/**
+	 * Sanitize and format the value before it is saved to the Entry Object.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The Form object currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id        The ID of the entry currently being processed.
+	 * @param array  $entry           The entry currently being processed.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
+	 *
+	 * @return array|string The sanitized and formatted input value to be saved.
+	 */
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
 
 		//saving last 4 digits of credit card
 		list( $input_token, $field_id_token, $input_id ) = rgexplode( '_', $input_name, 3 );

@@ -48,7 +48,7 @@ class GF_Field_Multiple_Choice extends GF_Field {
 			'css_class_setting',
 			'select_all_text_setting',
 			'choice_min_max_setting',
-			'horizontal_vertical_setting',
+			'display_choices_columns_setting',
 		);
 	}
 
@@ -103,43 +103,8 @@ class GF_Field_Multiple_Choice extends GF_Field {
 		return $select_all;
 	}
 
-	/**
-	 * Get the choice alignment for the given field.
-	 *
-	 * @since 2.9.0
-	 *
-	 * @param object $field The field object.
-	 * @return string
-	 */
-	public static function get_field_choice_alignment( $field ) {
-
-		return rgempty( 'choiceAlignment', $field ) ? self::get_default_choice_alignment( $field ) : $field->choiceAlignment;
-	}
-
-	/**
-	 * Get the default choice alignment for the multi_choice field.
-	 *
-	 * @since 2.9.0
-	 *
-	 * @param object $field The field object.
-	 * @return string
-	 */
-	public static function get_default_choice_alignment( $field) {
-		/*
-		 * Filter the default choice alignment.  Default is vertical.  Options are 'vertical' and 'horizontal'.
-		 *
-		 * @since 2.9.0
-		 *
-		 * @param string $default_choice_alignment The default choice alignment.
-		 * @param object $field                    The field.
-		 *
-		 * @return string
-		 */
-		return gf_apply_filters( array( 'gform_default_choice_alignment', $field->formId ), 'vertical', $field );
-	}
-
 	public function get_form_editor_inline_script_on_page_render() {
-		$alignment = self::get_default_choice_alignment( $this );
+		$alignment = $this->get_default_choice_alignment( $this );
 		return "gform.addAction( 'gform_post_load_field_settings', function( [ field, form ] ) { if( '" . $alignment . "' == 'horizontal' ) { jQuery('#choice_alignment_horizontal').prop('checked', true); } else { jQuery('#choice_alignment_vertical').prop('checked', true); } } );";
 	}
 

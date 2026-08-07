@@ -127,9 +127,7 @@ class Block_Styles_Handler {
 			'gf-ctrl-btn-padding-x'              => 'var(--gf-ctrl-btn-padding-x-' . $applied_settings['inputSize'] . ')',
 			'gf-ctrl-btn-size'                   => 'var(--gf-ctrl-btn-size-' . $applied_settings['inputSize'] . ')',
 			'gf-ctrl-btn-border-color-secondary' => $applied_settings['inputBorderColor'],
-
-			/* Global CSS API: Control - File */
-			'gf-ctrl-file-btn-bg-color-hover' => GFCommon::darken_color( $color_palette['inside-control']['color-darker'], 2 ),
+			'gf-ctrl-btn-bg-color-hover-tertiary' => GFCommon::darken_color( $color_palette['inside-control']['color-darker'], 2 ),
 
 			/* Global CSS API: Field - Choice (Checkbox, Radio, Image, & Consent) */
 			'gf-field-img-choice-size'                => 'var(--gf-field-img-choice-size-' . $applied_settings['inputImageChoiceSize'] . ')',

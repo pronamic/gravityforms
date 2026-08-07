@@ -46,7 +46,7 @@ class GF_Field_Textarea extends GF_Field {
 			'label_placement_setting',
 			'admin_label_setting',
 			'maxlen_setting',
-			'size_setting',
+			'textarea_height_setting',
 			'rules_setting',
 			'visibility_setting',
 			'duplicate_setting',
@@ -78,7 +78,13 @@ class GF_Field_Textarea extends GF_Field {
 
 		$id            = intval( $this->id );
 		$field_id      = $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
-		$size          = $this->size;
+		if ( $this->textareaHeight ) {
+			$size = $this->textareaHeight;
+		} else if ( $this->size ) {
+			$size = $this->size;
+		} else {
+			$size = 'medium';
+		}
 		$class_suffix  = $is_entry_detail ? '_admin' : '';
 		$class         = $size . $class_suffix;
 		$class         = esc_attr( $class );
@@ -125,7 +131,7 @@ class GF_Field_Textarea extends GF_Field {
 				'textarea_name' => 'input_' . $id,
 				'wpautop' 		=> true,
 				'editor_class' 	=> $class,
-				'editor_height' => rgar( array( 'small' => 110, 'medium' => 180, 'large' => 280 ), $this->size ? $this->size : 'medium' ),
+				'editor_height' => rgar( array( 'small' => 110, 'medium' => 180, 'large' => 280 ), $size ),
 				'tabindex' 		=> $tabindex,
 				'media_buttons' => false,
 				'quicktags'     => false,
@@ -179,7 +185,6 @@ class GF_Field_Textarea extends GF_Field {
 			if ( $this->is_form_editor() ) {
 				$display     = $this->useRichTextEditor ? 'block' : 'none';
 				$input_style = $this->useRichTextEditor ? 'style="display:none;"' : '';
-				$size        = $this->size ? $this->size : 'medium';
 				$input       = "<div id='{$field_id}_rte_preview' class='gform-rte-preview gform-theme__disable {$size}' style='display:{$display}'>
 						<ul class='rte_preview_header'>
 							<li class='icon'><svg width='24' height='24' viewBox='0 0 24 24' version='1.1' xmlns='http://www.w3.org/2000/svg'><path d='M7.761 19c-.253 0-.44-.06-.56-.18-.12-.12-.18-.307-.18-.56l-.02-12.52c0-.267.08-.457.2-.57.12-.113.307-.17.56-.17h5.019c1.56 0 2.723.317 3.49.95.767.633 1.15 1.497 1.15 2.59 0 .667-.21 1.283-.63 1.85-.42.567-.937.963-1.55 1.19l.02.08c.387.067.793.247 1.22.54.427.293.787.677 1.08 1.15.293.473.44 1.01.44 1.61 0 1.32-.427 2.323-1.28 3.01-.853.687-2.12 1.03-3.8 1.03H7.761zm4.969-8.26c.687 0 1.237-.17 1.65-.51.414-.34.621-.77.621-1.29 0-1.147-.757-1.72-2.271-1.72H9.28v3.52h3.45zm.59 6.02c.725 0 1.283-.17 1.674-.51.39-.34.586-.823.586-1.45 0-.587-.223-1.037-.67-1.35-.446-.313-1.088-.47-1.925-.47H9.28v3.78h4.04z' fill='#555d66' stroke='none' stroke-width='1' fill-rule='evenodd'/></svg></li>
@@ -201,7 +206,7 @@ class GF_Field_Textarea extends GF_Field {
 
 		}
 
-		return sprintf( "<div class='ginput_container ginput_container_textarea'>%s</div>", $input );
+		return sprintf( "<div class='ginput_container ginput_container_textarea'%s>%s</div>", GF_Field_Text::get_text_counter_attrs( $this ), $input );
 	}
 
 	public function validate( $value, $form ) {
@@ -210,18 +215,41 @@ class GF_Field_Textarea extends GF_Field {
 		}
 
 		if ( $this->useRichTextEditor ) {
-			$value = wp_specialchars_decode( $value );
+			// Get the plain text value from the RTE HTML. Mirrors: editor.getContent({ format: 'text' }).trim()
+			$value = $this->rte_plain_text_value( $value );
+		} else {
+			// Normalize new lines so that they are not counted as 2 characters.
+			$value = str_replace( "\r", '', $value );
 		}
-
-		// Clean the string of characters not counted by the textareaCounter plugin.
-		$value = strip_tags( $value );
-		$value = str_replace( "\r", '', $value );
-		$value = trim( $value );
 
 		if ( GFCommon::safe_strlen( $value ) > $this->maxLength ) {
 			$this->failed_validation  = true;
 			$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'The text entered exceeds the maximum number of characters.', 'gravityforms' ) : $this->errorMessage;
 		}
+	}
+
+	/**
+	 * Get TinyMCE "plain text" value for submitted HTML.
+	 * Mirrors JS code: editor.getContent({ format: 'text' }).trim().length
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $html The HTML content from the RTE.
+	 *
+	 * @return string The plain text value of the specified $html string.
+	 */
+	public function rte_plain_text_value( $html ) {
+
+		// 1 - Strip all tags (scripts/styles too)
+		$text = wp_strip_all_tags( $html, true );
+
+		// 2 - Decode entities (&amp;, &nbsp;, etc.)
+		$text = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5 );
+
+		// 3 - Normalize non-breaking spaces to regular spaces.
+		$text = preg_replace( '/\x{00A0}/u', ' ', $text ); // NBSP → space
+
+		return $text;
 	}
 
 	public static function start_wp_tiny_mce_init_buffer() {

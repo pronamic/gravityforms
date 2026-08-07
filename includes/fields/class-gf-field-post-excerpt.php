@@ -8,6 +8,24 @@ class GF_Field_Post_Excerpt extends GF_Field {
 
 	public $type = 'post_excerpt';
 
+	/**
+	 * Whether there can be more than one of this field type per form.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $duplicatable = false;
+
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = false;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Excerpt', 'gravityforms' );
 	}
@@ -47,7 +65,7 @@ class GF_Field_Post_Excerpt extends GF_Field {
 			'label_setting',
 			'label_placement_setting',
 			'admin_label_setting',
-			'size_setting',
+			'textarea_height_setting',
 			'maxlen_setting',
 			'rules_setting',
 			'visibility_setting',
@@ -85,9 +103,11 @@ class GF_Field_Post_Excerpt extends GF_Field {
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
 		$aria_describedby      = $this->get_aria_describedby();
+		$counter_attributes    = GF_Field_Text::get_text_counter_attrs( $this );
+		$max_length            = is_numeric( $this->maxLength ) ? "maxlength='{$this->maxLength}'" : '';
 
-		return "<div class='ginput_container ginput_container_post_excerpt'>
-					<textarea name='input_{$id}' id='{$field_id}' class='textarea {$class}' {$tabindex} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$disabled_text} rows='10' cols='50'>{$value}</textarea>
+		return "<div class='ginput_container ginput_container_post_excerpt'{$counter_attributes}>
+					<textarea name='input_{$id}' id='{$field_id}' class='textarea {$class}' {$max_length} {$tabindex} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$disabled_text} rows='10' cols='50'>{$value}</textarea>
 				</div>";
 	}
 

@@ -1,1 +1,1 @@
-<?php return array('dependencies' => array('gform_gravityforms_utils', 'jquery', 'wp-polyfill'), 'version' => 'a2540dbd0a124d8d094b');
+<?php return array('dependencies' => array('gform_gravityforms_utils', 'jquery', 'wp-polyfill'), 'version' => 'b69a6c7b55e2ef900563');

@@ -71,27 +71,76 @@ class GF_Field_Radio extends GF_Field {
 	}
 
 	/**
-	 * Determines if this field will be processed by the state validation.
+	 * Determines the if the field has been tampered with before submission.
 	 *
-	 * @since 2.5.11
+	 * @since 3.0
+	 *
+	 * @param string|array $value The submitted value.
 	 *
 	 * @return bool
 	 */
-	public function is_state_validation_supported() {
-		if ( $this->enableOtherChoice && rgpost( "is_submit_{$this->formId}" ) && rgpost( "input_{$this->id}" ) == 'gf_other_choice' ) {
-			return false;
+	public function is_state_valid( $value ) {
+		if ( $this->enableOtherChoice && rgpost( "is_submit_{$this->formId}" ) && $this->is_other_choice_selected() ) {
+			return true;
 		}
 
-		return parent::is_state_validation_supported();
+		return parent::is_state_valid( $value );
+	}
+
+	/**
+	 * Indicates if state validation should be skipped if the submitted value is blank.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function skip_state_validation_if_blank( $key ) {
+		return true;
+	}
+
+	/**
+	 * Prepares the value that will be hashed on form display as part of the state.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The default value.
+	 *
+	 * @return null|array
+	 */
+	public function get_values_for_state_hash( $value ) {
+		$id = $this->id;
+
+		return array(
+			$id => $this->get_choices_for_state_hash(),
+		);
 	}
 
 	public function validate( $value, $form ) {
-		if ( $this->isRequired && $this->enableOtherChoice && rgpost( "input_{$this->id}" ) == 'gf_other_choice' ) {
-			if ( empty( $value ) || strtolower( $value ) == strtolower( GFCommon::get_other_choice_value( $this ) ) ) {
+		if ( $this->isRequired && $this->enableOtherChoice && $this->is_other_choice_selected() ) {
+			$is_empty = $value === '' || $value === null;
+			if ( $is_empty || strtolower( $value ) == strtolower( GFCommon::get_other_choice_value( $this ) ) ) {
 				$this->failed_validation  = true;
 				$this->validation_message = empty( $this->errorMessage ) ? esc_html__( 'This field is required.', 'gravityforms' ) : $this->errorMessage;
 			}
 		}
+	}
+
+	/**
+	 * Returns the value to use when the state is validated.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The submitted value.
+	 *
+	 * @return array
+	 */
+	public function get_value_for_state_validation( $value ) {
+		if ( $this->enableOtherChoice && $value == 'gf_other_choice' ) {
+			$item_index = $this->get_context_property( 'itemIndex' );
+			$value      = $this->get_other_choice_value_from_post( $item_index );
+		}
+
+		return parent::get_value_for_state_validation( $value );
 	}
 
 	public function get_first_input_id( $form ) {
@@ -152,7 +201,7 @@ class GF_Field_Radio extends GF_Field {
 			$choice_id = 0;
 			$count     = 1;
 			// Determine max choices to show in the form editor if Display in columns setting is enabled.
-			$max_choices = $this->enableDisplayInColumns === true ? 10 : 5;
+			$max_choices = $this->enableDisplayInColumns === true || ( isset( $this->choiceAlignment ) && $this->choiceAlignment === 'columns' ) ? 10 : 5;
 
 			/**
 			 * A filter that allows for the setting of the maximum number of choices shown in
@@ -291,9 +340,12 @@ class GF_Field_Radio extends GF_Field {
 		if ( $this->enableOtherChoice && rgar( $choice, 'isOtherChoice' ) ) {
 			$input_disabled_text = $disabled_text;
 
-			if ( $value == 'gf_other_choice' && rgpost( "input_{$this->id}_other" ) ) {
-				$other_value = rgpost( "input_{$this->id}_other" );
-			} elseif ( ! empty( $value ) && ! GFFormsModel::choices_value_match( $this, $this->choices, $value ) ) {
+			$item_index = $this->get_context_property( 'itemIndex' );
+
+			$posted_other = rgpost( "input_{$this->id}_other" );
+			if ( $value == 'gf_other_choice' && is_string( $posted_other ) && $item_index !== '{ID}' ) {
+				$other_value = $this->get_other_choice_value_from_post( $item_index );
+			} elseif ( $value !== '' && $value !== null && ! GFFormsModel::choices_value_match( $this, $this->choices, $value ) ) {
 				$other_value = $value;
 				$value       = 'gf_other_choice';
 				$checked     = "checked='checked'";
@@ -379,9 +431,11 @@ class GF_Field_Radio extends GF_Field {
 			$input_focus  = ! $is_admin ? "onfocus=\"jQuery(this).next('input').focus();\"" : '';
 			$value_exists = GFFormsModel::choices_value_match( $this, $this->choices, $value );
 
-			if ( $value == 'gf_other_choice' && rgpost( "input_{$this->id}_other" ) ) {
-				$other_value = rgpost( "input_{$this->id}_other" );
-			} elseif ( ! $value_exists && ! empty( $value ) ) {
+			$posted_other = rgpost( "input_{$this->id}_other" );
+			if ( $value == 'gf_other_choice' && is_string( $posted_other ) ) {
+				$item_index  = $this->get_context_property( 'itemIndex' );
+				$other_value = $this->get_other_choice_value_from_post( $item_index );
+			} elseif ( ! $value_exists && $value !== '' && $value !== null ) {
 				$other_value = $value;
 				$value       = 'gf_other_choice';
 				$checked     = "checked='checked'";
@@ -423,8 +477,8 @@ class GF_Field_Radio extends GF_Field {
 
 		$value = $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
 		if ( $value == 'gf_other_choice' ) {
-			//get value from text box
-			$value = $this->get_input_value_submission( 'input_' . $this->id . '_other', $this->inputName, $field_values, $get_from_post_global_var );
+			$item_index = $this->get_context_property( 'itemIndex' );
+			$value      = $this->get_other_choice_value_from_post( $item_index );
 		}
 
 		return $value;
@@ -534,15 +588,78 @@ class GF_Field_Radio extends GF_Field {
 		return GFCommon::implode_non_blank( ', ', $ary );
 	}
 
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
-
+	/**
+	 * Sanitize and format the value before it is saved to the Entry Object. For radio fields with 'other' option enabled, extracts the user-entered text from the array.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The Form object currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id       The ID of the entry currently being processed.
+	 * @param array  $entry          The entry currently being processed.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
+	 *
+	 * @return array|string The sanitized and formatted input value to be saved.
+	 */
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
 		if ( $this->enableOtherChoice && $value == 'gf_other_choice' ) {
-			$value = rgpost( "input_{$this->id}_other" );
+			$value = $this->get_other_choice_value_from_post( $repeater_index );
 		}
 
 		$value = $this->sanitize_entry_value( $value, $form['id'] );
 
-		return $value;
+		return $this->clear_blank_price_value( $value );
+	}
+
+	/**
+	 * Checks if the "other choice" option was selected, handling nested repeater arrays.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool True if "other choice" was selected.
+	 */
+	private function is_other_choice_selected() {
+		$posted_value = rgpost( "input_{$this->id}" );
+
+		if ( ! is_array( $posted_value ) ) {
+			return $posted_value == 'gf_other_choice';
+		}
+
+		$indices = $this->get_repeater_indices();
+		if ( $indices === null ) {
+			return false;
+		}
+
+		$value = $this->get_deep_value( $posted_value, $indices );
+
+		return $value == 'gf_other_choice';
+	}
+
+	/**
+	 * Extracts the "other" choice value from POST data, handling nested repeater arrays.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string|null $item_index Optional explicit index (for get_value_save_input).
+	 *
+	 * @return string The extracted other value, or empty string if not found.
+	 */
+	public function get_other_choice_value_from_post( $item_index = null ) {
+		$other_value = rgpost( "input_{$this->id}_other" );
+
+		if ( ! is_array( $other_value ) ) {
+			return is_string( $other_value ) ? $other_value : '';
+		}
+
+		$indices = $this->get_repeater_indices( $item_index );
+		if ( $indices === null ) {
+			return '';
+		}
+
+		$value = $this->get_deep_value( $other_value, $indices );
+
+		return is_string( $value ) ? $value : '';
 	}
 
 	public function allow_html() {
@@ -579,10 +696,14 @@ class GF_Field_Radio extends GF_Field {
 			$value = strip_tags( $value, $allowable_tags );
 		}
 
+		$original_value = $value;
+
 		$allowed_protocols = wp_allowed_protocols();
 		$value             = wp_kses_no_null( $value, array( 'slash_zero' => 'keep' ) );
 		$value             = wp_kses_hook( $value, 'post', $allowed_protocols );
 		$value             = wp_kses_split( $value, 'post', $allowed_protocols );
+
+		$this->post_entry_value_sanitization( $original_value, $value, 'wp_kses' );
 
 		return $value;
 	}

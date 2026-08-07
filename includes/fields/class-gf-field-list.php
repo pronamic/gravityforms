@@ -790,30 +790,33 @@ class GF_Field_List extends GF_Field {
 	}
 
 	/**
-	 * Gets the value of the field when the entry is saved.
+	 * Sanitize and format the value before it is saved to the Entry Object.
 	 *
-	 * @since  Unknown
-	 * @access public
+	 * @since 3.0.0
 	 *
-	 * @param string $value      The value to use.
-	 * @param array  $form       The form that the entry is associated with.
-	 * @param string $input_name The name of the input containing the value.
-	 * @param int    $lead_id    The entry ID.
-	 * @param array  $lead       The Entry Object.
+	 * @param string|array $value          The value to be saved.
+	 * @param array        $form           The Form object currently being processed.
+	 * @param string       $input_name     The input name used when accessing the $_POST.
+	 * @param int          $entry_id       The ID of the entry currently being processed.
+	 * @param array        $entry          The entry currently being processed.
+	 * @param string       $repeater_index The repeater index if the field is inside a repeater.
 	 *
-	 * @return string The entry value. Escaped.
+	 * @return array|string The sanitized and formatted input value to be saved.
 	 */
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
 
-		if ( $this->is_administrative() && $this->allowsPrepopulate ) {
-			$value = json_decode( $value );
+		if ( $this->is_administrative() && $this->allowsPrepopulate && is_string( $value ) ) {
+			$value = json_decode( $value, true );
 		}
 
 		if ( GFCommon::is_empty_array( $value ) ) {
 			$value = '';
 		} else {
-			$value = $this->create_list_array( $value );
-			$value = serialize( $value );
+			// Convert Old Array Format (flat) values to the structured New Array Format; already-structured rows are used as-is.
+			$first_row     = is_array( $value ) ? reset( $value ) : null;
+			$is_structured = $this->is_administrative() && $this->allowsPrepopulate && is_array( $first_row );
+			$value         = $is_structured ? array_values( $value ) : $this->create_list_array( $value );
+			$value         = serialize( $value );
 		}
 
 		$value_safe = $this->sanitize_entry_value( $value, $form['id'] );

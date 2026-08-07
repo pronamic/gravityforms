@@ -363,6 +363,16 @@ class GF_Field_FileUpload extends GF_Field {
 			$message = $this->errorMessage ?: esc_html__( 'The file is not valid.', 'gravityforms' );
 
 			return $this->get_invalid_file_result( $file, $message, 'url' );
+		} elseif ( ! empty( $file['temp_filename'] ) ) {
+			$temp_file_extension     = strtolower( pathinfo( $file['temp_filename'], PATHINFO_EXTENSION ) );
+			$uploaded_file_extension = strtolower( pathinfo( $file_name, PATHINFO_EXTENSION ) );
+
+			if ( empty( $temp_file_extension ) || empty( $uploaded_file_extension ) || $temp_file_extension !== $uploaded_file_extension ) {
+				GFCommon::log_debug( __METHOD__ . sprintf( '(): Temporary file extension (%s) does not match uploaded file extension (%s).', $temp_file_extension, $uploaded_file_extension ) );
+				$message = $this->errorMessage ? $this->errorMessage : esc_html__( 'The file is not valid.', 'gravityforms' );
+
+				return $this->get_invalid_file_result( $file, $message, $name_key );
+			}
 		}
 
 		$allowed_extensions = $this->get_clean_allowed_extensions();
@@ -497,9 +507,9 @@ class GF_Field_FileUpload extends GF_Field {
 
 		$disabled_text = $is_form_editor ? 'disabled="disabled"' : '';
 
-		$tabindex        = $this->get_tabindex();
-		$multiple_files  = $this->multipleFiles;
-		$file_list_id    = 'gform_preview_' . $form_id . '_' . $id;
+		$tabindex       = $this->get_tabindex();
+		$multiple_files = $this->multipleFiles;
+		$file_list_id   = 'gform_preview_' . $form_id . '_' . $id;
 
 		// Generate upload rules messages ( allowed extensions, max no. of files, max file size ).
 		$upload_rules_messages = array();
@@ -527,13 +537,13 @@ class GF_Field_FileUpload extends GF_Field {
 		if ( $multiple_files ) {
 			$upload_action_url = trailingslashit( site_url() ) . '?gf_page=' . GFCommon::get_upload_page_slug();
 
-			$browse_button_id  = 'gform_browse_button_' . $form_id . '_' . $id;
-			$container_id      = 'gform_multifile_upload_' . $form_id . '_' . $id;
-			$drag_drop_id      = 'gform_drag_drop_area_' . $form_id . '_' . $id;
+			$browse_button_id = 'gform_browse_button_' . $form_id . '_' . $id;
+			$container_id     = 'gform_multifile_upload_' . $form_id . '_' . $id;
+			$drag_drop_id     = 'gform_drag_drop_area_' . $form_id . '_' . $id;
 
 			$validation_message_id = 'gform_multifile_messages_' . $form_id . '_' . $id;
 
-			$messages_id        = "gform_multifile_messages_{$form_id}_{$id}";
+			$messages_id = "gform_multifile_messages_{$form_id}_{$id}";
 			if ( empty( $allowed_extensions ) ) {
 				$allowed_extensions = '*';
 			}
@@ -554,7 +564,12 @@ class GF_Field_FileUpload extends GF_Field {
 					'flash_swf_url'       => includes_url( 'js/plupload/plupload.flash.swf' ),
 					'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),
 					'filters'             => array(
-						'mime_types'    => array( array( 'title' => __( 'Allowed Files', 'gravityforms' ), 'extensions' => $allowed_extensions ) ),
+						'mime_types'    => array(
+							array(
+								'title'      => __( 'Allowed Files', 'gravityforms' ),
+								'extensions' => $allowed_extensions,
+							),
+						),
 						'max_file_size' => $max_upload_size . 'b',
 					),
 					'multipart'           => true,
@@ -847,30 +862,33 @@ class GF_Field_FileUpload extends GF_Field {
 	 *
 	 * @since 1.9
 	 * @since 2.9.18 Updated to cache the entry and form in context properties.
+	 * @since 3.0.0 Renamed to get_value_save_input
 	 *
-	 * @param string $value      The value to be saved.
-	 * @param array  $form       The form currently being processed.
-	 * @param string $input_name The input name used when accessing the $_POST.
-	 * @param int    $lead_id    The ID of the entry currently being saved.
-	 * @param array  $lead       The entry properties and values that have already been saved for the current submission.
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The form currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id        The ID of the entry currently being saved.
+	 * @param array  $entry           The entry properties and values that have already been saved for the current submission.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
 	 *
-	 * @return string
+	 * @return string The sanitized and formatted input value to be saved.
 	 */
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
-		$this->set_context_property( 'entry', $lead );
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
+
+		$this->set_context_property( 'entry', $entry );
 		$this->set_context_property( 'form', $form );
 
 		if ( ! $this->multipleFiles ) {
-			return $this->to_string( $this->get_single_file_value( $form['id'], $input_name, $lead_id ) );
+			return $this->to_string( $this->get_single_file_value( $form['id'], $input_name, $entry_id ) );
 		}
 
-		if ( $this->is_entry_detail() && empty( $lead ) ) {
+		if ( $this->is_entry_detail() && empty( $entry ) ) {
 			// Deleted files remain in the $value from $_POST so use the updated entry value.
-			$lead  = GFFormsModel::get_lead( $lead_id );
-			$value = rgar( $lead, strval( $this->id ) );
+			$entry  = GFFormsModel::get_lead( $entry_id );
+			$value = rgar( $entry, strval( $this->id ) );
 		}
 
-		return $this->get_multifile_value( $form['id'], $input_name, $value, $lead_id );
+		return $this->get_multifile_value( $form['id'], $input_name, $value, $entry_id );
 	}
 
 	/**
@@ -1340,6 +1358,33 @@ class GF_Field_FileUpload extends GF_Field {
 
 
 		GFCommon::log_debug( __METHOD__ . '(): Moving temp file from: ' . $source );
+
+		$temp_file_extension     = strtolower( pathinfo( $tempfile_info['temp_filename'], PATHINFO_EXTENSION ) );
+		$uploaded_file_extension = strtolower( pathinfo( $tempfile_info['uploaded_filename'], PATHINFO_EXTENSION ) );
+
+		if ( empty( $temp_file_extension ) || empty( $uploaded_file_extension ) || $temp_file_extension !== $uploaded_file_extension ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting; temporary file extension (%s) does not match uploaded file extension (%s).', $temp_file_extension, $uploaded_file_extension ) );
+			@unlink( $source ); // nosemgrep audit.php.lang.security.file.read-write-delete
+
+			return '';
+		}
+
+		if ( ! $this->is_check_type_and_ext_disabled() ) {
+			$check_result = GFCommon::check_type_and_ext(
+				array(
+					'tmp_name' => $source,
+					'name'     => $tempfile_info['uploaded_filename'],
+				),
+				$tempfile_info['uploaded_filename']
+			);
+
+			if ( is_wp_error( $check_result ) ) {
+				GFCommon::log_debug( sprintf( '%s(): Aborting; %s; %s', __METHOD__, $check_result->get_error_code(), $check_result->get_error_message() ) );
+				@unlink( $source ); // nosemgrep audit.php.lang.security.file.read-write-delete
+
+				return '';
+			}
+		}
 
 		if ( rename( $source, $target['path'] ) ) {
 			GFCommon::log_debug( __METHOD__ . sprintf( '(): File (temp_filename: %s) successfully moved to %s.', $tempfile_info['temp_filename'], $target['path'] ) );

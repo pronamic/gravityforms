@@ -10,6 +10,24 @@ class GF_Field_SingleShipping extends GF_Field {
 	public $type = 'singleshipping';
 
 	/**
+	 * Whether there can be more than one of this field type per form.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $duplicatable = false;
+
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = false;
+	
+	/**
 	 * Indicates if this field supports state validation.
 	 *
 	 * @since 2.5.11
@@ -104,6 +122,38 @@ class GF_Field_SingleShipping extends GF_Field {
 
 		// Ensure the choices property is not an array to prevent issues with some features such as the conditional logic reset to default.
 		$this->choices = null;
+	}
+
+	/**
+	 * Prepares the value that will be hashed on form display as part of the state.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The value on display.
+	 *
+	 * @return array
+	 */
+	public function get_values_for_state_hash( $value ) {
+		$id = $this->id;
+
+		return array(
+			$id => ! empty( $value ) ? GFCommon::to_number( $value ) : 0,
+		);
+	}
+
+	/**
+	 * Returns the value to use when the state is validated.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The submitted value.
+	 *
+	 * @return array
+	 */
+	public function get_value_for_state_validation( $value ) {
+		$id = $this->id;
+
+		return array( $id => GFCommon::to_number( $value ) );
 	}
 
 }

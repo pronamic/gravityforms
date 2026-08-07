@@ -46,7 +46,7 @@ class GF_Field_Post_Custom_Field extends GF_Field {
 			'label_setting',
 			'label_placement_setting',
 			'admin_label_setting',
-			'size_setting',
+			'textarea_height_setting',
 			'rules_setting',
 			'visibility_setting',
 			'duplicate_setting',
@@ -75,14 +75,16 @@ class GF_Field_Post_Custom_Field extends GF_Field {
 
 		$disabled_text = $is_form_editor ? 'disabled="disabled"' : '';
 
+		$max_length            = is_numeric( $this->maxLength ) ? "maxlength='{$this->maxLength}'" : '';
 		$tabindex              = $this->get_tabindex();
 		$placeholder_attribute = $this->get_field_placeholder_attribute();
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
 		$aria_describedby      = $this->get_aria_describedby();
+		$counter_attributes    = GF_Field_Text::get_text_counter_attrs( $this );
 
-		return "<div class='ginput_container ginput_container_post_custom_field'>
-					<input name='input_{$id}' id='{$field_id}' type='text' value='{$value}' class='{$class}' {$tabindex} {$placeholder_attribute} {$disabled_text} {$required_attribute} {$invalid_attribute} {$aria_describedby} />
+		return "<div class='ginput_container ginput_container_post_custom_field'{$counter_attributes}>
+					<input name='input_{$id}' id='{$field_id}' type='text' value='{$value}' class='{$class}' {$max_length} {$tabindex} {$placeholder_attribute} {$disabled_text} {$required_attribute} {$invalid_attribute} {$aria_describedby} />
 				</div>";
 	}
 

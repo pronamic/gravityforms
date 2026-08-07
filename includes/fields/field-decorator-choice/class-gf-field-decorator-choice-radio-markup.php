@@ -32,6 +32,8 @@ class GF_Field_Decorator_Choice_Radio_Markup extends ChoiceDecorator {
 
 			$choice_id = 0;
 			$count     = 1;
+			// Determine max choices to show in the form editor if Display in columns setting is enabled.
+			$max_choices = $this->field->enableDisplayInColumns === true || ( isset( $this->choiceAlignment ) && $this->choiceAlignment === 'columns' ) ? 10 : 8;
 
 			/**
 			 * A filter that allows for the setting of the maximum number of choices shown in
@@ -39,10 +41,10 @@ class GF_Field_Decorator_Choice_Radio_Markup extends ChoiceDecorator {
 			 *
 			 * @since 2.9
 			 *
-			 * @param int    $max_choices_visible_count The default number of choices visible is 8.
+			 * @param int    $max_choices_visible_count The default number of choices visible is 8 (or 10 if columns are enabled).
 			 * @param object $field                     The current field object.
 			 */
-			$max_choices_count = gf_apply_filters( array( 'gform_field_choices_max_count_visible', $this->field->formId ), 8, $this->field );
+			$max_choices_count = gf_apply_filters( array( 'gform_field_choices_max_count_visible', $this->field->formId ), $max_choices, $this->field );
 
 			$choices .= sprintf( '<div class="gfield_radio" id="%s">', esc_attr( $field_id ) );
 

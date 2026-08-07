@@ -44,6 +44,7 @@ class GF_Settings_Config_Admin extends GF_Config {
 					'endpoints' => array(
 						'get' => rest_url( '/wp/v2/users' ),
 					),
+					'nonce'     => wp_create_nonce( 'wp_rest' ),
 					'data'      => $this->get_first_users(),
 				),
 				'file_upload' => array(

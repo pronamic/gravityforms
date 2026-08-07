@@ -95,6 +95,12 @@ class GF_Asset_Service_Provider extends GF_Service_Provider {
 			$container->get( self::SCRIPT_DEPS_THEME )->enqueue();
 		} );
 
+		add_action( 'enqueue_block_assets', function () use ( $container ) {
+			if ( is_admin() ) {
+				$container->get( self::SCRIPT_DEPS_THEME )->enqueue();
+			}
+		} );
+
 		add_filter( 'gform_noconflict_styles', function ( $styles ) use ( $container ) {
 			return array_merge( $styles, $container->get( self::STYLE_DEPS )->get_items() );
 		}, 1 );

@@ -11,6 +11,24 @@ class GF_Field_Submit extends GF_Field {
 
 	public $position = 'last';
 
+	/**
+	 * Whether there can be more than one of this field type per form.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $duplicatable = false;
+
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = false;
+
 	public function __construct( $data = array() ) {
 		add_filter( 'gform_pre_render', array( $this, 'inject_inline_button' ), 100 );
 
@@ -133,7 +151,9 @@ class GF_Field_Submit extends GF_Field {
 		// Add a data attribute to the container div so that we can target it in the layout editor.
 		$atts['data-field-class']    = 'gform_editor_submit_container';
 		$atts['data-field-position'] = rgar( $form['button'], 'location' ) ? $form['button']['location'] : 'bottom';
-		$atts['id']                  = 'field_submit';
+
+		// Use a unique id on the front end to avoid duplicate ids across inline forms.
+		$atts['id'] = $this->is_form_editor() ? 'field_submit' : 'field_submit_' . absint( rgar( $form, 'id' ) );
 
 		return parent::get_field_container( $atts, $form );
 
@@ -156,15 +176,16 @@ class GF_Field_Submit extends GF_Field {
 
 		$class_theme  = $is_form_editor ? esc_attr( 'gform-theme-button gform-theme-button--secondary ' ) : '';
 		$class        = sprintf( '%s%s', esc_attr( 'gform-button gform-button--white ' ), $class_theme );
-		$default_text = __( 'Submit', 'gravityforms' );
+		$default_text = esc_html__( 'Submit', 'gravityforms' );
 		$button       = rgar( $form, 'button', array( 'type' => 'link' ) );
+		$alt          = rgar( $form['button'], 'text', $default_text );
 
 		$inline = rgar( $form['button'], 'location', 'bottom' );
 
 		// If we're in the editor or the button is inline, display the button.
 		// Otherwise, the button will be added to the footer in form_display.php.
 		if ( $is_form_editor || 'inline' == $inline ) {
-			$submit = GFFormDisplay::get_form_button( $form_id, "gform_submit_button_{$form_id}", $button, $default_text, $class, $default_text, 0 );
+			$submit = GFFormDisplay::get_form_button( $form_id, "gform_submit_button_{$form_id}", $button, $default_text, $class, $alt, 0 );
 			return gf_apply_filters( array( 'gform_submit_button', $form_id ), $submit, $form );
 		}
 

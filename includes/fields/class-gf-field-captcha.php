@@ -11,6 +11,24 @@ class GF_Field_CAPTCHA extends GF_Field {
 	 */
 	public $type = 'captcha';
 
+	/**
+	 * Whether there can be more than one of this field type per form.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $duplicatable = false;
+
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = false;
+
 
 	/**
 	 * The reCAPTCHA API response.
@@ -32,6 +50,24 @@ class GF_Field_CAPTCHA extends GF_Field {
 	 * @var string
 	 */
 	private $secret_key;
+
+	/**
+	 * Whether this field is using invisible reCAPTCHA v2.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var bool|null
+	 */
+	private $is_invisible;
+
+	/**
+	 * Indicates if this field supports state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	protected $_supports_state_validation = true;
 
 	/**
 	 * The reCAPTCHA field constructor.
@@ -156,16 +192,11 @@ class GF_Field_CAPTCHA extends GF_Field {
 		return array(
 			'type'             => 'notice',
 			'content'          => sprintf(
-                    '%s<div class="gform-spacing gform-spacing--top-1">%s</div>',
-                    __( 'Configuration Required', 'gravityforms' ),
-                    // Translators: 1. Opening <a> tag with link to the Forms > Settings > reCAPTCHA page. 2. closing <a> tag.
-				sprintf(
-					esc_html__( 'To use the reCAPTCHA field, please configure your %1$sreCAPTCHA settings.%2$s', 'gravityforms' ),
-					'<a href="?page=gf_settings&subview=recaptcha" target="_blank">',
-					'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
-				)
+				'%s<div class="gform-spacing gform-spacing--top-1">%s</div>',
+				__( 'The Gravity Forms reCAPTCHA Add-On is required', 'gravityforms' ),
+				esc_html__( 'To use the reCAPTCHA field, please install and activate the Gravity Forms reCAPTCHA Add-On.', 'gravityforms' ),
 			),
-			'icon_helper_text' => __( 'This field requires additional configuration', 'gravityforms' ),
+			'icon_helper_text' => __( 'The Gravity Forms reCAPTCHA Add-On is required', 'gravityforms' ),
 		);
 	}
 
@@ -209,7 +240,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 		switch ( $this->captchaType ) {
 			case 'simple_captcha' :
 				if ( class_exists( 'ReallySimpleCaptcha' ) ) {
-					$prefix      = rgpost( "input_captcha_prefix_{$this->id}" ); 
+					$prefix      = rgpost( "input_captcha_prefix_{$this->id}" );
 					$captcha_obj = $this->get_simple_captcha();
 
 					if ( ! $captcha_obj->check( $prefix, str_replace( ' ', '', $value ) ) ) {
@@ -422,6 +453,75 @@ class GF_Field_CAPTCHA extends GF_Field {
 
 		return false;
 	}
+	/**
+	 * Whether this field is using invisible reCAPTCHA v2.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_invisible_recaptcha() {
+		if ( ! is_null( $this->is_invisible ) ) {
+			return $this->is_invisible;
+		}
+
+		if ( in_array( $this->captchaType, array( 'simple_captcha', 'math' ), true ) ) {
+			$this->is_invisible = false;
+
+			return false;
+		}
+
+		$captcha_type       = get_option( 'rg_gforms_captcha_type' );
+		$this->is_invisible = $captcha_type === 'invisible';
+
+		return $this->is_invisible;
+	}
+
+	/**
+	 * Returns the field content markup and ensures the Invisible reCAPTCHA
+	 * does not display a visible label or occupy layout space on the frontend.
+	 *
+     * @param string|array $value The field value.
+	 * @param bool $force_frontend_label Should the frontend label be displayed in the admin.
+	 * @param array $form The Form being processed.
+	 *
+	 * @return string
+	 * @since 3.0.0
+	 */
+	public function get_field_content( $value, $force_frontend_label, $form ) {
+		if ( ! $this->is_invisible_recaptcha() || $this->is_form_editor() || $this->is_entry_detail() ) {
+			return parent::get_field_content( $value, $force_frontend_label, $form );
+		}
+
+		$form_id               = (int) rgar( $form, 'id' );
+		$validation_message_id = 'validation_message_' . $form_id . '_' . $this->id;
+		$validation_message    = ( $this->failed_validation && ! empty( $this->validation_message ) ) ? sprintf(
+			"<div id='%s' class='gfield_description validation_message gfield_validation_message'>%s</div>",
+			$validation_message_id,
+			$this->validation_message
+		) : '';
+
+		if ( $this->is_validation_above( $form ) ) {
+			return $validation_message . '{FIELD}';
+		}
+
+		return '{FIELD}' . $validation_message;
+	}
+
+	/**
+	 * Returns the field specific CSS classes.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string
+	 */
+	public function get_field_css_class() {
+		if ( $this->is_invisible_recaptcha() && ! $this->is_form_editor() && ! $this->is_entry_detail() && ! $this->failed_validation ) {
+			return 'gfield--captcha-invisible';
+		}
+
+		return '';
+	}
 
 	public function get_field_input( $form, $value = '', $entry = null ) {
 		$form_id         = $form['id'];
@@ -438,9 +538,11 @@ class GF_Field_CAPTCHA extends GF_Field {
 
 				$tabindex = $this->get_tabindex();
 
-				$dimensions = $is_entry_detail || $is_form_editor ? '' : "width='" . esc_attr( rgar( $captcha, 'width' ) ) . "' height='" . esc_attr( rgar( $captcha, 'height' ) ) . "'";
+				$dimensions   = $is_entry_detail || $is_form_editor ? '' : "width='" . esc_attr( rgar( $captcha, 'width' ) ) . "' height='" . esc_attr( rgar( $captcha, 'height' ) ) . "'";
+				$prefix_value = rgar( $captcha, 'prefix' );
+				$this->set_context_property( 'prefix_value', $prefix_value );
 
-				return "<div class='gfield_captcha_container'><img class='gfield_captcha' src='" . esc_url( rgar( $captcha, 'url' ) ) . "' alt='' {$dimensions} /><div class='gfield_captcha_input_container simple_captcha_{$size}'><input type='text' autocomplete='off' name='input_{$id}' id='{$field_id}' {$tabindex}/><input type='hidden' name='input_captcha_prefix_{$id}' value='" . esc_attr( rgar( $captcha, 'prefix' ) ) . "' /></div></div>";
+				return "<div class='gfield_captcha_container'><img class='gfield_captcha' src='" . esc_url( rgar( $captcha, 'url' ) ) . "' alt='' {$dimensions} /><div class='gfield_captcha_input_container simple_captcha_{$size}'><input type='text' autocomplete='off' name='input_{$id}' id='{$field_id}' {$tabindex}/><input type='hidden' name='input_captcha_prefix_{$id}' value='" . esc_attr( $prefix_value ) . "' /></div></div>";
 				break;
 
 			case 'math' :
@@ -453,6 +555,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 
 				$dimensions   = $is_entry_detail || $is_form_editor ? '' : "width='" . esc_attr( rgar( $captcha_1, 'width' ) ) . "' height='" . esc_attr( rgar( $captcha_1, 'height' ) ) . "'";
 				$prefix_value = rgar( $captcha_1, 'prefix' ) . ',' . rgar( $captcha_2, 'prefix' ) . ',' . rgar( $captcha_3, 'prefix' );
+				$this->set_context_property( 'prefix_value', $prefix_value );
 
 				return "<div class='gfield_captcha_container'><img class='gfield_captcha' src='" . esc_url( rgar( $captcha_1, 'url' ) ) . "' alt='' {$dimensions} /><img class='gfield_captcha' src='" . esc_url( rgar( $captcha_2, 'url' ) ) . "' alt='' {$dimensions} /><img class='gfield_captcha' src='" . esc_url( rgar( $captcha_3, 'url' ) ) . "' alt='' {$dimensions} /><div class='gfield_captcha_input_container math_{$size}'><input type='text' autocomplete='off' name='input_{$id}' id='{$field_id}' {$tabindex}/><input type='hidden' name='input_captcha_prefix_{$id}' value='" . esc_attr( $prefix_value ) . "' /></div></div>";
 				break;
@@ -474,14 +577,8 @@ class GF_Field_CAPTCHA extends GF_Field {
 								></span>
 								<div class="gform-alert__message-wrap">
 									<div class="gform-alert__message">
-										'. __( 'Configuration Required', 'gravityforms' ) .'
-										<div class="gform-spacing gform-spacing--top-1">'. sprintf(
-									'%s %s%s.%s',
-									__( 'To use the reCAPTCHA field, please configure your', 'gravityforms' ),
-											'<a href="?page=gf_settings&subview=recaptcha" target="_blank">',
-											__( 'reCAPTCHA settings', 'gravityforms' ),
-											'<span class="screen-reader-text">' . esc_html__('(opens in a new tab)', 'gravityforms') . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
-										) .'</div>
+										'. __( 'The Gravity Forms reCAPTCHA Add-On is required', 'gravityforms' ) .'
+										<div class="gform-spacing gform-spacing--top-1">' . __( 'To use the reCAPTCHA field, please install and activate the Gravity Forms reCAPTCHA Add-On.', 'gravityforms' ) . '</div>
 									</div>
 								</div>
 							</div>
@@ -808,6 +905,63 @@ class GF_Field_CAPTCHA extends GF_Field {
 			),
 			site_url( 'index.php', GFCommon::is_ssl() ? 'https' : 'http' )
 		);
+	}
+
+	/**
+	 * Actions to be performed after the field has been converted to an object.
+	 *
+	 * @since 3.0
+	 *
+	 * @return void
+	 */
+	public function post_convert_field() {
+		parent::post_convert_field();
+
+		if ( in_array( $this->captchaType, array( 'math', 'simple_captcha' ) ) ) {
+			$this->validateState = is_bool( $this->validateState ) ? $this->validateState : true;
+		}
+	}
+
+	/**
+	 * Determines if this field will be processed by the state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function is_state_validation_supported() {
+		return parent::is_state_validation_supported() && in_array( $this->captchaType, array( 'math', 'simple_captcha' ) );
+	}
+
+	/**
+	 * Prepares the value that will be hashed on form display as part of the state.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The default value.
+	 *
+	 * @return null|array
+	 */
+	public function get_values_for_state_hash( $value ) {
+		$prefix_value = $this->get_context_property( 'prefix_value' );
+		if ( empty( $prefix_value ) ) {
+			return null;
+		}
+
+		return array( $this->id => $prefix_value );
+	}
+
+	/**
+	 * Returns the value to use when the state is validated.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The submitted value.
+	 *
+	 * @return array
+	 */
+	public function get_value_for_state_validation( $value ) {
+		return array( $this->id => rgpost( "input_captcha_prefix_{$this->id}" ) );
 	}
 
 }

@@ -47,11 +47,11 @@ class GF_Splash_Page {
 	 * @param Splash_Page_Template_Tags\GF_Splash_Page_Template_Tags $tags
 	 */
 	public function __construct( $tags ) {
-		$this->about_version = '2.9';
+		$this->about_version = '3.0';
 
 		$this->tags = $tags;
 
-		$this->img_dir = 'https://cdn.gravity.com/gravityforms/about-page/2.9/';
+		$this->img_dir = 'https://cdn.gravity.com/gravityforms/about-page/3.0/';
 	}
 
 	/**

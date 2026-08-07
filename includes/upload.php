@@ -75,7 +75,7 @@ class GFAsyncUpload {
 			GFForms::add_security_files();
 		} else if ( ! file_exists( GFFormsModel::get_upload_path( $form_id ) . '/index.html' ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
 			GFCommon::recursive_add_index_file( GFFormsModel::get_upload_path( $form_id ) );
-		} else if ( ! file_exists( GFFormsModel::get_upload_path( $form_id ) . "/$y/index.html" ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization 
+		} else if ( ! file_exists( GFFormsModel::get_upload_path( $form_id ) . "/$y/index.html" ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
 			GFCommon::recursive_add_index_file( GFFormsModel::get_upload_path( $form_id ) . "/$y" );
 		} else if ( is_dir( GFFormsModel::get_upload_path( $form_id ) . "/$y/$m" ) ) { // Prevent adding the index file if the month upload folder is not created yet.
 			GFCommon::recursive_add_index_file( GFFormsModel::get_upload_path( $form_id ) . "/$y/$m" );
@@ -127,23 +127,16 @@ class GFAsyncUpload {
 		$tmp_file_name = sanitize_file_name( $tmp_file_name );
 		$file_path     = $target_dir . $tmp_file_name;
 
-		// Only validate if chunking is disabled, or if the final chunk has been uploaded.
-		$check_chunk = $chunks === 0 || $chunk === ( $chunks - 1 );
-
-		if ( ! $field->is_check_type_and_ext_disabled() && $check_chunk ) {
+		if ( ! $field->is_check_type_and_ext_disabled() && ! $chunks ) {
 
 			$file_array = $_FILES['file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Missing
-
-			if ( $chunks ) {
-				$file_array['tmp_name'] = $file_path;
-			}
 
 			self::die_if_invalid_type_and_ext( $file_array, $uploaded_filename, 'original_filename' );
 			self::die_if_invalid_type_and_ext( $file_array, $file_name, 'name' );
 		}
 
 		$cleanup_target_dir = apply_filters( 'gform_cleanup_target_dir', true ); // Remove old files
-		$max_file_age = 5 * 3600; // Temp file age in seconds
+		$max_file_age       = 5 * 3600; // Temp file age in seconds
 
 		// Remove old temp files
 		if ( $cleanup_target_dir ) {
@@ -225,6 +218,14 @@ class GFAsyncUpload {
 			rename( "{$file_path}.part", $file_path );
 
 			if ( file_exists( $file_path ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
+				if ( $chunks && ! $field->is_check_type_and_ext_disabled() ) {
+					$file_array             = $_FILES['file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Missing
+					$file_array['tmp_name'] = $file_path;
+
+					self::die_if_invalid_type_and_ext( $file_array, $uploaded_filename, 'original_filename', $file_path );
+					self::die_if_invalid_type_and_ext( $file_array, $file_name, 'name', $file_path );
+				}
+
 				GFFormsModel::set_permissions( $file_path );
 			} else {
 				self::die_error( 105, __( 'Upload unsuccessful', 'gravityforms' ) . ' ' . $uploaded_filename );
@@ -249,8 +250,8 @@ class GFAsyncUpload {
 			'status' => 'ok',
 			'data'   => array(
 				'temp_filename'     => $tmp_file_name,
-				'uploaded_filename' => str_replace( "\\'", "'", urldecode( $uploaded_filename ) ) //Decoding filename to prevent file name mismatch.
-			)
+				'uploaded_filename' => str_replace( "\\'", "'", urldecode( $uploaded_filename ) ), //Decoding filename to prevent file name mismatch.
+			),
 		);
 
 		if ( $chunks && ( $chunk != $chunks - 1 ) ) {
@@ -392,16 +393,20 @@ class GFAsyncUpload {
 	 *
 	 * @since 2.9.24
 	 *
-	 * @param array  $file       The file details from $_FILES.
-	 * @param string $file_name  The file name.
-	 * @param string $input_name The input name the file name is from.
+	 * @param array  $file                The file details from $_FILES.
+	 * @param string $file_name           The file name.
+	 * @param string $input_name          The input name the file name is from.
+	 * @param string $file_path_to_delete The file path to delete if validation fails.
 	 *
 	 * @return void
 	 */
-	private static function die_if_invalid_type_and_ext( $file, $file_name, $input_name ) {
+	private static function die_if_invalid_type_and_ext( $file, $file_name, $input_name, $file_path_to_delete = '' ) {
 		$result = GFCommon::check_type_and_ext( $file, $file_name );
 		if ( is_wp_error( $result ) ) {
 			GFCommon::log_debug( sprintf( '%s(): %s (input: %s); %s; %s', __METHOD__, $file_name, $input_name, $result->get_error_code(), $result->get_error_message() ) );
+			if ( ! empty( $file_path_to_delete ) && file_exists( $file_path_to_delete ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
+				@unlink( $file_path_to_delete ); // nosemgrep audit.php.lang.security.file.read-write-delete
+			}
 			self::die_error( $result->get_error_code(), $result->get_error_message() );
 		}
 	}

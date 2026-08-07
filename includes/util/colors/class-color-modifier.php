@@ -261,6 +261,11 @@ class Color_Modifier {
 	 * @return mixed|string
 	 */
 	public function sanitize_color_string( $color ) {
+		// bail if the string is not a valid hex color
+		if ( ! preg_match( '/^#?([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/', $color ) ) {
+			return '';
+		}
+
 		// Remove the preceding # sign
 		if ( strpos( $color, '#' ) !== false ) {
 			$color = ltrim( $color, '#' );

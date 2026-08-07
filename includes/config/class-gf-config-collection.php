@@ -148,8 +148,14 @@ class GF_Config_Collection {
 				continue;
 			}
 
+			$config_data = $config->get_data();
+
+			if ( ! is_array( $config_data ) ) {
+				continue;
+			}
+
 			// Config should be merged - loop through each key and attempt to recursively merge the values.
-			foreach ( $config->get_data() as $key => $value ) {
+			foreach ( $config_data as $key => $value ) {
 				$existing = isset( $data[ $key ] ) ? $data[ $key ] : null;
 
 				if ( is_null( $existing ) || ! is_array( $existing ) || ! is_array( $value ) ) {

@@ -47,7 +47,6 @@ class GFSettings {
 	 *
 	 * @since  Unknown
 	 * @access public
-	 * @remove-in 3.0
 	 * @uses GFSettings::$addon_pages
 	 *
 	 * @param string|array $name      The settings page slug.
@@ -647,7 +646,7 @@ class GFSettings {
 
 							return $value;
 						},
-						'default_value' => self::get_dashboard_widget_default_value(),
+						'default_value' => get_option( 'gform_enable_dashboard_widget' ),
 					),
 				),
 		);
@@ -711,29 +710,29 @@ class GFSettings {
 				),
 			);
 
-        $fields['telemetry'] = array(
-				'id'            => 'section_enable_telemetry_collection',
-				'title'         => esc_html__( 'Data Collection', 'gravityforms' ),
-				'description' => sprintf(
-					esc_html__( 'We love improving the form building experience for everyone in our community. By enabling data collection, you can help us learn more about how our customers use Gravity Forms. %1$sLearn more...%2$s','gravityforms'),
-					'<a target="_blank" href="https://docs.gravityforms.com/about-additional-data-collection/">',
-					'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
-				),
-				'class'         => 'gform-settings-panel--half',
-				'fields'        => array(
-					array(
-						'name'          => 'rg_gforms_dataCollection',
-						'type'          => 'toggle',
-						'default_value' => get_option( 'rg_gforms_dataCollection', 0 ),
-						'toggle_label'  => esc_html__( 'Enable Data Collection', 'gravityforms' ),
-						'save_callback' => function( $field, $value ) {
-							update_option( 'rg_gforms_dataCollection', (bool) $value ? 1 : 0 );
+		$fields['telemetry'] = array(
+			'id'          => 'section_enable_telemetry_collection',
+			'title'       => esc_html__( 'Data Collection', 'gravityforms' ),
+			'description' => sprintf(
+				esc_html__( 'We love improving the form building experience for everyone in our community. By enabling data collection, you can help us learn more about how our customers use Gravity Forms. %1$sLearn more...%2$s', 'gravityforms' ),
+				'<a target="_blank" href="https://docs.gravityforms.com/about-additional-data-collection/">',
+				'<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>'
+			),
+			'class'       => 'gform-settings-panel--half',
+			'fields'      => array(
+				array(
+					'name'          => 'rg_gforms_dataCollection',
+					'type'          => 'toggle',
+					'default_value' => get_option( 'rg_gforms_dataCollection', 0 ),
+					'toggle_label'  => esc_html__( 'Enable Data Collection', 'gravityforms' ),
+					'save_callback' => function( $field, $value ) {
+						update_option( 'rg_gforms_dataCollection', (bool) $value ? 1 : 0 );
 
-							return $value;
-						},
-					),
+						return $value;
+					},
 				),
-			);
+			),
+		);
 
 		/**
 		 * Allows forcing the display of the disable CSS setting.
@@ -970,27 +969,6 @@ class GFSettings {
 	}
 
 	/**
-	 * Returns the default value for the dashboard widget setting.
-	 *
-	 * Sometimes we get a false positive as the default value, so we need to explicitly check if it is set to '1'.
-	 *
-	 * @since 2.9.8
-	 *
-	 * @return bool
-	 */
-	private static function get_dashboard_widget_default_value() {
-		$saved_value = get_option( 'gform_enable_dashboard_widget' );
-
-		// get_option() returns false if there is no value set
-		if ( false === $saved_value ) {
-			return true;
-		}
-
-		// the saved value will be either '1' or ''
-		return $saved_value;
-	}
-
-	/**
 	 * Initialize Plugin Settings fields renderer.
 	 *
 	 * @since 2.5
@@ -1055,6 +1033,8 @@ class GFSettings {
 			return;
 		}
 
+		self::maybe_install_recaptcha();
+
 		self::page_header();
 
 		wp_enqueue_style( 'gform_admin' );
@@ -1064,11 +1044,255 @@ class GFSettings {
 			self::initialize_recaptcha_settings();
 		}
 
+		// Disable the save button on the core reCAPTCHA settings page with the gform_settings_save_button filter.
+		add_filter( 'gform_settings_save_button', array( 'GFSettings', 'hide_recaptcha_save_button' ), 10, 0 );
 		self::get_settings_renderer()->render();
 
 		self::page_footer();
+	}
 
+	/**
+	 * Check is the reCAPTCHA Add-On is installed and activated, and handle installation and activation if the installation button was clicked.
+	 *
+	 * @since 3.0.0
+	 */
+	public static function maybe_install_recaptcha() {
+		if ( ! rgget( 'gform_recaptcha_addon_action' ) ) {
+			return;
+		}
 
+		check_admin_referer( 'gform_recaptcha_addon_action', 'gform_recaptcha_addon_nonce' );
+
+		// Checking permissions to install and activate the recaptcha addon
+		if ( ! self::can_activate_recaptcha() ) {
+			return;
+		}
+
+		// Install plugin if it is not already installed.
+		$plugin_file = self::find_recaptcha_plugin_file();
+		if ( empty( $plugin_file ) ) {
+			self::install_recaptcha_addon();
+			$plugin_file = self::find_recaptcha_plugin_file();
+		}
+
+		if ( empty( $plugin_file ) ) {
+			// could not install plugin. abort.
+			return;
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+		if ( ! is_plugin_active( $plugin_file ) ) {
+			// Activating addon
+			activate_plugin( $plugin_file );
+
+			// Moving recaptcha settings to addon
+			self::move_recaptcha_settings();
+		}
+
+		// Redirects to the settings page if user has access to that page, otherwise redirect to the plugins page.
+		$redirect_url = GFCommon::current_user_can_any( 'gravityforms_recaptcha' ) ? admin_url( 'admin.php?page=gf_settings&subview=gravityformsrecaptcha' ) : admin_url( 'plugins.php' );
+		wp_safe_redirect( $redirect_url );
+	}
+
+	/**
+	 * Move core reCAPTCHA settings to the Add-On to prevent removal of the reCAPTCHA field on form display.
+	 *
+	 * @since 3.0.0
+	 */
+	private static function move_recaptcha_settings() {
+		$v2_settings = [
+			'site_key_v2'     => get_option( 'rg_gforms_captcha_public_key' ),
+			'secret_key_v2'   => get_option( 'rg_gforms_captcha_private_key' ),
+			'type_v2'         => get_option( 'rg_gforms_captcha_type' ),
+			'connection_type' => 'v2',
+		];
+
+		// Get existing settings (if any) and merge
+		$existing_addon_settings = get_option( 'gravityformsaddon_gravityformsrecaptcha_settings', [] );
+
+		// Write to the option
+		update_option( 'gravityformsaddon_gravityformsrecaptcha_settings', array_merge( $existing_addon_settings, $v2_settings ) );
+	}
+
+	/**
+	 * Installs the reCAPTCHA Add-On.
+	 *
+	 * @since 3.0.0
+	 */
+	private static function install_recaptcha_addon() {
+		if ( ! self::can_activate_recaptcha() ) {
+			return false;
+		}
+
+		$key = GFCommon::get_key();
+
+		if ( empty( $key ) ) {
+			GFCommon::add_dismissible_message(
+				__( 'The Gravity Forms reCAPTCHA Add-On could not be installed because a valid license key is required.', 'gravityforms' ),
+				'gform_recaptcha_install_error',
+				'warning'
+			);
+			return false;
+		}
+
+		$raw_response = GFCommon::post_to_manager( 'api.php', "op=get_plugin&slug=gravityformsrecaptcha&key={$key}", array() );
+
+		if ( is_wp_error( $raw_response ) || rgar( $raw_response['response'], 'code' ) !== 200 ) {
+			return false;
+		}
+
+		$plugin_data  = maybe_unserialize( rgar( $raw_response, 'body' ) );
+		$download_url = is_array( $plugin_data ) ? rgar( $plugin_data, 'download_url' ) : '';
+
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/misc.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+		$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
+		$result   = $upgrader->install( $download_url );
+
+		if ( ! $result || is_wp_error( $upgrader->result ) ) {
+			GFCommon::add_dismissible_message(
+				__( 'The Gravity Forms reCAPTCHA Add-On could not be installed. reCAPTCHA support in Gravity Forms is being deprecated, and the reCAPTCHA Add-On will be required in the future.', 'gravityforms' ),
+				'gform_recaptcha_install_error',
+				'warning'
+			);
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Find the reCAPTCHA plugin file in the list of installed plugins.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string|false The plugin file path if found, false otherwise.
+	 */
+	private static function find_recaptcha_plugin_file() {
+		foreach ( get_plugins() as $plugin_file => $plugin_data ) {
+			if ( dirname( $plugin_file ) === 'gravityformsrecaptcha' ) {
+				return $plugin_file;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check if the reCAPTCHA Add-On is active.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool True if the reCAPTCHA Add-On is active, false otherwise.
+	 */
+	private static function recaptcha_addon_active() {
+		$plugin_file = self::find_recaptcha_plugin_file();
+		if ( empty( $plugin_file ) ) {
+			return false;
+		}
+		return is_plugin_active( $plugin_file );
+	}
+
+	/**
+	 * Check if the reCAPTCHA tab should be displayed.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool True if the reCAPTCHA tab should be displayed, false otherwise.
+	 */
+	private static function has_recaptcha_tab() {
+		if ( self::recaptcha_addon_active() ) {
+			// If the addon is active, display the tab if the user has access to the settings page
+			return GFCommon::current_user_can_any( 'gravityforms_recaptcha' );
+		}
+
+		// If the addon is not active, display the tab if legacy keys are configured.
+		$recaptcha_public_key     = get_option( 'rg_gforms_captcha_public_key' );
+		$recaptcha_private_key    = get_option( 'rg_gforms_captcha_private_key' );
+		$has_legacy_recaptcha_key = ! rgblank( $recaptcha_public_key ) || ! rgblank( $recaptcha_private_key );
+		return $has_legacy_recaptcha_key;
+	}
+
+	/**
+	 * Get the HTML for the reCAPTCHA Add-On installation/activation button, or empty string if the user does not have the required capabilities.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string The button HTML, or empty string.
+	 */
+	private static function get_recaptcha_activate_button() {
+		if ( ! self::can_activate_recaptcha() ) {
+			return '';
+		}
+
+		$recaptcha_addon_url = wp_nonce_url(
+			add_query_arg( 'gform_recaptcha_addon_action', '1', admin_url( 'admin.php?page=gf_settings&subview=recaptcha' ) ),
+			'gform_recaptcha_addon_action',
+			'gform_recaptcha_addon_nonce'
+		);
+
+		$label = empty( self::find_recaptcha_plugin_file() ) ? esc_html__( 'Install and activate the Gravity Forms reCAPTCHA Add-On', 'gravityforms' ) : esc_html__( 'Activate the Gravity Forms reCAPTCHA Add-On', 'gravityforms' );
+
+		return sprintf(
+			'<div style="margin-top:4px;"><a href="%s" class="button primary">%s</a></div>',
+			esc_url( $recaptcha_addon_url ),
+			$label,
+		);
+	}
+
+	/**
+	 * Check if the current user has the required capabilities to install or activate the reCAPTCHA Add-On.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool True if the user has the required capabilities, false otherwise.
+	 */
+	private static function can_activate_recaptcha() {
+		$is_addon_installed = ! empty( self::find_recaptcha_plugin_file() );
+
+		if ( $is_addon_installed ) {
+			if ( ! current_user_can( 'activate_plugins' ) ) {
+				return false;
+			}
+		} else {
+			if ( ! current_user_can( 'install_plugins' ) || ! current_user_can( 'activate_plugins' ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Get the deprecation notice for the core reCAPTCHA settings page.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string The deprecation notice HTML.
+	 */
+	private static function get_recaptcha_deprecation_notice() {
+		$capabilities_message = self::can_activate_recaptcha() ? esc_html__( 'please install the Gravity Forms reCAPTCHA Add-On', 'gravityforms' ) : esc_html__( 'please contact your site administrator to install and activate the Gravity Forms reCAPTCHA Add-On', 'gravityforms' );
+
+		return sprintf(
+			'<div class="alert warning"><p>%s</p></div>',
+			sprintf(
+				/* translators: %1$s is replaced with a message about installing the reCAPTCHA Add-On or contacting the site administrator. */
+				esc_html__( 'The built-in reCAPTCHA integration in Gravity Forms Core is being deprecated. To continue using and managing reCAPTCHA, %1$s. Your existing keys are shown below for reference but can no longer be edited from this page.', 'gravityforms' ),
+				$capabilities_message
+			)
+		);
+	}
+
+	/**
+	 * Hides the save button for the core reCAPTCHA settings page.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string Returns a blank string to remove the save button
+	 */
+	public static function hide_recaptcha_save_button() {
+		return '';
 	}
 
 	/**
@@ -1086,43 +1310,33 @@ class GFSettings {
 					array(
 						'id'          => 'recpatcha',
 						'title'       => esc_html__( 'reCAPTCHA Settings', 'gravityforms' ),
-						'description' => sprintf(
-							'%s <strong>%s</strong> %s <a href="https://www.google.com/recaptcha/admin/create" target="_blank">%s<span class="screen-reader-text">%s</span>&nbsp;<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a>',
-							esc_html__( 'Gravity Forms integrates with reCAPTCHA, a free CAPTCHA service that uses an advanced risk analysis engine and adaptive challenges to keep automated software from engaging in abusive activities on your site. ', 'gravityforms' ),
-							esc_html__( 'Please note, only v2 keys are supported and checkbox keys are not compatible with invisible reCAPTCHA.', 'gravityforms' ),
-							esc_html__( 'These settings are required only if you decide to use the reCAPTCHA field.', 'gravityforms' ),
-							esc_html__( 'Get your reCAPTCHA Keys.', 'gravityforms' ),
-							esc_html__( '(opens in a new tab)', 'gravityforms' )
-						),
+						'description' => self::get_recaptcha_deprecation_notice(),
 						'class'       => 'gform-settings-panel--full',
 						'fields'      => array(
 							array(
-								'name'              => 'public_key',
-								'label'             => esc_html__( 'Site Key', 'gravityforms' ),
-								'tooltip'           => gform_tooltip( 'settings_recaptcha_public', null, true ),
-								'type'              => 'text',
-								'feedback_callback' => function( $value ) {
-									$key_status = get_option( 'gform_recaptcha_keys_status', null );
-									return is_null( $key_status ) ? ( rgblank( $value ) ? null : false ) : (bool) $key_status;
-								},
+								'name'        => 'public_key',
+								'label'       => esc_html__( 'Site Key', 'gravityforms' ),
+								'tooltip'     => gform_tooltip( 'settings_recaptcha_public', null, true ),
+								'type'        => 'text',
+								'readonly'    => 'readonly',
+								'description' => '<span class="screen-reader-text">' . esc_html__( 'This field is read-only.', 'gravityforms' ) . '</span>',
 							),
 							array(
-								'name'              => 'private_key',
-								'label'             => esc_html__( 'Secret Key', 'gravityforms' ),
-								'tooltip'           => gform_tooltip( 'settings_recaptcha_private', null, true ),
-								'type'              => 'text',
-								'feedback_callback' => function( $value ) {
-									$key_status = get_option( 'gform_recaptcha_keys_status', null );
-									return is_null( $key_status ) ? ( rgblank( $value ) ? null : false ) : (bool) $key_status;
-								},
+								'name'        => 'private_key',
+								'label'       => esc_html__( 'Secret Key', 'gravityforms' ),
+								'tooltip'     => gform_tooltip( 'settings_recaptcha_private', null, true ),
+								'type'        => 'text',
+								'readonly'    => 'readonly',
+								'description' => '<span class="screen-reader-text">' . esc_html__( 'This field is read-only.', 'gravityforms' ) . '</span>',
 							),
 							array(
 								'name'          => 'type',
 								'label'         => esc_html__( 'Type', 'gravityforms' ),
-								'tooltip'       => gform_tooltip( 'settings_recaptcha_type', null, true ),
+								'tooltip'       => GFSettings::get_subview() === 'recaptcha' ? gform_tooltip( 'deprecated_settings_recaptcha_type', null, true ) : gform_tooltip( 'settings_recaptcha_type', null, true ),
 								'type'          => 'radio',
 								'horizontal'    => true,
 								'default_value' => 'checkbox',
+								'disabled'      => 'disabled',
 								'choices'       => array(
 									array(
 										'label' => esc_html__( 'Checkbox', 'gravityforms' ),
@@ -1135,64 +1349,11 @@ class GFSettings {
 								),
 							),
 							array(
-								'name'     => 'reset',
-								'label'    => esc_html__( 'Validate Keys', 'gravityforms' ),
-								'type'     => 'recaptcha_reset',
-								'callback' => array( 'GFSettings', 'settings_field_recaptcha_reset' ),
-								'hidden'   => true,
-								'validation_callback' => function( $field, $value ) {
-
-									// If reCAPTCHA key is empty, exit.
-									if ( rgblank( $value ) ) {
-										return;
-									}
-
-									$values = GFSettings::get_settings_renderer()->get_posted_values();
-
-									// Get public, private keys, API response.
-									$public_key  = rgar( $values, 'public_key' );
-									$private_key = rgar( $values, 'private_key' );
-									$response    = rgpost( 'g-recaptcha-response' );
-
-									// If keys and response are provided, verify and save.
-									if ( $public_key && $private_key && $response ) {
-
-										// Log public, private keys, API response.
-										GFCommon::log_debug( __METHOD__ . '(): reCAPTCHA Site Key:' . print_r( $public_key, true ) );
-										GFCommon::log_debug( __METHOD__ . '(): reCAPTCHA Secret Key:' . print_r( $private_key, true ) );
-										GFCommon::log_debug( __METHOD__ . '(): reCAPTCHA Response:' . print_r( $response, true ) );
-
-										// Verify response.
-										$recaptcha          = new GF_Field_CAPTCHA();
-										$recaptcha_response = $recaptcha->verify_recaptcha_response( $response, $private_key );
-
-										// Log verification response.
-										GFCommon::log_debug( __METHOD__ . '(): reCAPTCHA verification response:' . print_r( $recaptcha_response, true ) );
-
-										// If response is false, return validation error.
-										if ( $recaptcha_response === false ) {
-											$field->set_error( __( 'reCAPTCHA keys are invalid.', 'gravityforms' ) );
-										}
-
-										// Save status.
-										update_option( 'gform_recaptcha_keys_status', $recaptcha_response );
-
-									} else {
-
-										// Delete existing status.
-										delete_option( 'gform_recaptcha_keys_status' );
-
-									}
-
-								}
+								'type' => 'html',
+								'name' => 'recaptcha_addon_install',
+								'html' => self::get_recaptcha_activate_button(),
 							),
 						),
-					),
-				),
-				'save_button'       => array(
-					'messages' => array(
-						'save'  => esc_html__( 'Settings updated.', 'gravityforms' ),
-						'error' => __( 'reCAPTCHA keys are invalid.', 'gravityforms' ),
 					),
 				),
 				'input_name_prefix' => '_gform_setting',
@@ -1202,29 +1363,10 @@ class GFSettings {
 					'private_key' => get_option( 'rg_gforms_captcha_private_key' ),
 					'type'        => get_option( 'rg_gforms_captcha_type' ),
 				),
-				'save_callback'     => function( $values ) {
-
-					// reCAPTCHA.
-					update_option( 'rg_gforms_captcha_public_key', rgar( $values, 'public_key' ) );
-					update_option( 'rg_gforms_captcha_private_key', rgar( $values, 'private_key' ) );
-					update_option( 'rg_gforms_captcha_type', rgar( $values, 'type' ) );
-
-				},
-				'after_fields'      => function() {
-					echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>';
-					printf( '<script type="text/javascript" src="%s"></script>', esc_url( GFCommon::get_base_url() . '/js/plugin_settings.js' ) );
-				},
 			)
 		);
 
 		self::set_settings_renderer( $renderer );
-
-		// Process save callback.
-		if ( self::get_settings_renderer()->is_save_postback() ) {
-			self::get_settings_renderer()->process_postback();
-		}
-
-
 	}
 
 	/**
@@ -1360,8 +1502,11 @@ class GFSettings {
 		// Build left side options, always have GF Settings first and Uninstall last, put add-ons in the middle.
 		$setting_tabs = array(
 			'10' => array( 'name' => 'settings', 'label' => __( 'Settings', 'gravityforms' ), 'icon' => 'gform-icon--cog' ),
-			'11' => array( 'name' => 'recaptcha', 'label' => __( 'reCAPTCHA', 'gravityforms' ), 'icon' => 'gform-icon--recaptcha' ),
 		);
+
+		if ( self::has_recaptcha_tab() ) {
+			$setting_tabs['11'] = array( 'name' => 'recaptcha', 'label' => __( 'reCAPTCHA', 'gravityforms' ), 'icon' => 'gform-icon--recaptcha' );
+		}
 
 		// Remove an addon from the sidebar if it is uninstalled from the main uninstall page.
 		if ( rgpost( 'uninstall_addon' ) ) {
@@ -1443,8 +1588,12 @@ class GFSettings {
 			<div class="gform-settings__wrapper">
 
 				<?php GFCommon::display_dismissible_message(); ?>
+				<?php
+				$page_title = get_admin_page_title();
+				$page_title = str_replace( '- Gravity Forms', 'page', $page_title );
+				?>
 
-				<nav class="gform-settings__navigation">
+				<nav class="gform-settings__navigation" aria-label="<?php echo esc_attr( esc_html__( $page_title, 'gravityforms' ) ); ?>">
 					<?php
 					foreach ( $setting_tabs as $tab ) {
 
@@ -1504,6 +1653,23 @@ class GFSettings {
 
 		<?php
 	}
+
+    /**
+     * Check if the reCAPTCHA Add-On is active.
+     *
+     * @since 3.0.0
+     *
+     * @return bool
+     */
+    private static function is_recaptcha_addon_active() {
+        $gf_addons = GFAddOn::get_registered_addons();
+        foreach ( $gf_addons as $addon ) {
+            if ( $addon === 'Gravity_Forms\Gravity_Forms_RECAPTCHA\GF_RECAPTCHA' ) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 	/**
 	 * Gets the Settings page subview based on the query string.

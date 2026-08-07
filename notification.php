@@ -137,11 +137,26 @@ Class GFNotification {
 		$events = self::get_notification_events( $form );
 
 		// Prepare notification events as choices.
-		$events_choices = array();
+		$events_choices = array(
+			array(
+				'label' => __( 'Select an Event', 'gravityforms' ),
+				'value' => '',
+			),
+		);
+
 		foreach ( $events as $name => $label ) {
 			$events_choices[] = array(
 				'label' => $label,
 				'value' => $name,
+			);
+		}
+
+		$selected_event = rgar( $notification, 'event' );
+		if ( $selected_event && ! array_key_exists( $selected_event, $events ) ) {
+			$sanitized_event  = sanitize_key( $selected_event );
+			$events_choices[] = array(
+				'label' => self::get_missing_notification_event_label( $sanitized_event ),
+				'value' => $sanitized_event,
 			);
 		}
 
@@ -245,12 +260,13 @@ Class GFNotification {
 						'hidden'        => count( $services_choices ) === 1,
 					),
 					array(
-						'name'    => 'event',
-						'label'   => esc_html__( 'Event', 'gravityforms' ),
-						'tooltip' => gform_tooltip( 'notification_event', null, true ),
-						'type'    => 'select',
-						'choices' => $events_choices,
-						'hidden'  => count( $events_choices ) === 1,
+						'name'          => 'event',
+						'label'         => esc_html__( 'Event', 'gravityforms' ),
+						'tooltip'       => gform_tooltip( 'notification_event', null, true ),
+						'type'          => 'select',
+						'choices'       => $events_choices,
+						'required'      => true,
+						'default_value' => 'form_submission',
 					),
 					$to_type,
 					array(
@@ -481,9 +497,6 @@ Class GFNotification {
 			),
 		);
 
-		// Append registered legacy settings to the fields array.
-		$fields = self::append_legacy_settings_fields( $fields, $notification, $form );
-
 		/**
 		 * Filters the Notification settings fields before they are displayed.
 		 *
@@ -511,77 +524,6 @@ Class GFNotification {
 	 */
 	public static function append_filtered_notification_email_fields( $fields, $form ) {
 		return gf_apply_filters( array( 'gform_email_fields_notification_admin', $form['id'] ), $fields, $form );
-	}
-
-	/**
-	 * Appends any legacy settings fields to the fields array, if they exist.
-	 *
-	 * @since 2.5.6
-	 *
-	 * @param array $fields       Array of settings fields.
-	 * @param array $notification The notification being edited.
-	 * @param array $form         The form being edited.
-	 *
-	 * @return array
-	 */
-	private static function append_legacy_settings_fields( $fields, $notification, $form ) {
-		/**
-		 * Add new or modify existing notification settings that display on the Notification Edit screen.
-		 *
-		 * @deprecated
-		 * @since 1.7
-		 * @remove-in 3.0
-		 * @param array $ui_settings  An array of settings for the notification UI.
-		 * @param array $notification The current notification object being edited.
-		 * @param array $form         The current form object to which the notification being edited belongs.
-		 * @param null  $is_valid     Whether or not the current notification has passed validation. (Deprecated.)
-		 */
-		$legacy_settings = apply_filters( 'gform_notification_ui_settings', array(), $notification, $form, null );
-
-		if ( has_filter( 'gform_notification_ui_settings' ) ) {
-			trigger_error( 'gform_notification_ui_settings is deprecated and will be removed in version 3.0.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
-		}
-
-		if ( empty( $legacy_settings ) ) {
-			return $fields;
-		}
-
-		// Add the Legacy Settings section.
-		$fields[] = array(
-			'title'  => esc_html__( 'Legacy Settings', 'gravityforms' ),
-			'class'  => 'gform-settings-panel--full',
-			'fields' => array(
-				array(
-					'name' => 'legacy',
-					'type' => 'html',
-					'html' => function() use ( $legacy_settings ) {
-						$html = '<table class="gforms_form_settings" cellspacing="0" cellpadding="0" width="100%">';
-
-						foreach ( $legacy_settings as $title => $legacy_fields ) {
-							$html .= sprintf(
-								'<tr><td colspan="2"><h4 class="gf_settings_subgroup_title">%s</h4></td>',
-								esc_html( $title )
-							);
-
-							switch ( $legacy_fields ) {
-								case is_string( $legacy_fields ):
-									$html .= $legacy_fields;
-									break;
-								case is_array( $legacy_fields ):
-									foreach ( $legacy_fields as $field ) {
-										$html .= $field;
-									}
-									break;
-							}
-						}
-
-						return $html . '</table>';
-					},
-				),
-			),
-		);
-
-		return $fields;
 	}
 
 	// # SETTINGS RENDERER ---------------------------------------------------------------------------------------------
@@ -996,6 +938,20 @@ Class GFNotification {
 	}
 
 	/**
+	 * Returns the label to use for a missing notification event.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $sanitized_event The sanitied key of the missing event.
+	 *
+	 * @return string
+	 */
+	public static function get_missing_notification_event_label( $sanitized_event ) {
+		// translators: %s: the sanitized key of the missing notification event.
+		return sprintf( __( '%s (Event Missing)', 'gravityforms' ), $sanitized_event );
+	}
+
+	/**
 	 * Get the notification events for the current form.
 	 *
 	 * @since  Unknown
@@ -1306,11 +1262,8 @@ class GFNotificationTable extends WP_List_Table {
 			'cb'      => '',
 			'name'    => esc_html__( 'Name', 'gravityforms' ),
 			'subject' => esc_html__( 'Subject', 'gravityforms' ),
+			'event'   => esc_html__( 'Event', 'gravityforms' ),
 		);
-
-		if ( count( $this->notification_events ) > 1 ) {
-			$columns['event'] = esc_html__( 'Event', 'gravityforms' );
-		}
 
 		if ( count( $this->notification_services ) > 1 ) {
 			$columns['service'] = esc_html__( 'Service', 'gravityforms' );
@@ -1617,7 +1570,18 @@ class GFNotificationTable extends WP_List_Table {
 	 * @return void
 	 */
 	function column_event( $notification ) {
-		echo rgar( $this->notification_events, rgar( $notification, 'event' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$selected_event = rgar( $notification, 'event' );
+		if ( empty( $selected_event ) ) {
+			return;
+		}
+
+		if ( ! array_key_exists( $selected_event, $this->notification_events ) ) {
+			echo esc_html( GFNotification::get_missing_notification_event_label( sanitize_key( $selected_event ) ) );
+
+			return;
+		}
+
+		echo esc_html( $this->notification_events[ $selected_event ] );
 	}
 
 	/**

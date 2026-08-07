@@ -10,6 +10,24 @@ class GF_Field_Post_Content extends GF_Field_Textarea {
 
 	public $type = 'post_content';
 
+	/**
+	 * Whether there can be more than one of this field type per form.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $duplicatable = false;
+
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = false;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Body', 'gravityforms' );
 	}
@@ -51,7 +69,7 @@ class GF_Field_Post_Content extends GF_Field_Textarea {
 			'label_setting',
 			'label_placement_setting',
 			'admin_label_setting',
-			'size_setting',
+			'textarea_height_setting',
 			'maxlen_setting',
 			'rules_setting',
 			'visibility_setting',
@@ -65,6 +83,27 @@ class GF_Field_Post_Content extends GF_Field_Textarea {
 
 	public function allow_html() {
 		return true;
+	}
+
+	/**
+	 * Format the entry value for display on the entries list page.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string|array $value    The field value.
+	 * @param array        $entry    The Entry Object currently being processed.
+	 * @param string       $field_id The field or input ID currently being processed.
+	 * @param array        $columns  The properties for the columns being displayed on the entry list page.
+	 * @param array        $form     The Form Object currently being processed.
+	 *
+	 * @return string
+	 */
+	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
+		if ( is_array( $value ) ) {
+			return '';
+		}
+
+		return esc_html( $value );
 	}
 
 	/**

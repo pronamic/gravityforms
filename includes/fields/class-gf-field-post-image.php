@@ -102,9 +102,7 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 		$description_style = ! $this->displayDescription && $is_admin ? $hidden_style : '';
 		$file_label_style  = $is_admin && ! ( $this->displayAlt || $this->displayTitle || $this->displayCaption || $this->displayDescription ) ? $hidden_style : '';
 
-		$form_sub_label_placement  = rgar( $form, 'subLabelPlacement' );
-		$field_sub_label_placement = $this->subLabelPlacement;
-		$is_sub_label_above        = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
+		$is_sub_label_above = $this->is_sub_label_above( $form );
 
 		// Prepare accepted extensions message.
 		$extensions_message_id = 'gfield_upload_rules_' . $form_id . '_' . $id;
@@ -176,7 +174,21 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 		return "<div class='ginput_complex$class_suffix ginput_container ginput_container_post_image gform-grid-row'>" . $upload . $alt_field . $title_field . $caption_field . $description_field . '</div>';
 	}
 
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+	/**
+	 * Sanitize and format the value before it is saved to the Entry Object.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The Form object currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id        The ID of the entry currently being processed.
+	 * @param array  $entry           The entry currently being processed.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
+	 *
+	 * @return array|string The sanitized and formatted input value to be saved.
+	 */
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
 		$form_id = $form['id'];
 		$url     = $this->get_single_file_value( $form_id, $input_name );
 

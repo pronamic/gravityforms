@@ -1,3 +1,80 @@
+### 3.0.2 | 2026-08-05
+- Fixed an issue where Orbital theme styles were reset on the Save & Continue page when email validation failed on the Send Link form while using the new AJAX submission method.
+- Fixed a PHP deprecation warning that appears when showing/hiding the QR code.
+- Fixed a PHP fatal error that occurs when the form includes a Phone field that is set to a custom format that no longer exists.
+- Fixed an issue where window.gformShowSpinner was not defined in some cases.
+- API: Updated `gf_apply_filters()` and `gf_do_action()` to attempt to catch throwable PHP errors from hooked callbacks when WP_DEBUG is disabled.
+
+### 3.0.1 | 2026-07-31
+- Fixed console error that occurred when adding a page field to an empty form.
+- Fixed an issue where a Phone field that was previously configured to use the "International (formatted)" format can display JSON data in the input when the entry is edited.
+- Fixed an issue that causes the International Formatted Phone field to fail validation if it is submitted with a default value.
+- Fixed low contrast on focus state radio inputs in settings pages.
+- Fixed an issue that sometimes causes the text of the submit button to appear outside the button.
+- API: Fixed an issue with GF_Query that could affect sorting when performing an explicit join.
+
+### 3.0.0 | 2026-07-28
+- Added security enhancements.
+- Added a new international variant of the Phone Field.
+- Added multiple accessibility improvements to the dashboard.
+- Added imaskjs to replace the old jQuery based input mask library for US phone fields and text fields with input mask.
+- Added improvements to the honeypot feature.
+- Added new [`gform_text_counter_template`](https://docs.gravityforms.com/gform_text_counter_template/) filter so that the text counter format can be customized.
+- Added several merge tag modifiers for the repeater field: `:count` to get the number of repeats; `:text` to get the value without HTML markup; `:field_ids=` to get only the values of the specified field IDs (separate multiple IDs with a |); and `:value` to get only the value with no label or HTML markup.
+- Added textareaHeight setting to the Paragraph Field and usage notice to all Field Size settings.
+- Added total field validation for existing fields.
+- Added the [`gform_state_pre_encode`](https://docs.gravityforms.com/gform_state_pre_encode/) hook, so that add-ons can add additional non-field values to the state before it is encoded.
+- Added the [`gform_enable_repeater_field_button`](https://docs.gravityforms.com/gform_enable_repeater_field_button/) filter to allow enabling the beta Repeater field.
+- Added additional logging details to the processing of gf-download links.
+- Updated many default form and field settings to be accessible by default on new forms.
+- Updated drop-zones in the form editor to indicate when a field cannot be dropped in a specific location.
+- Updated form buttons to use `<button>` elements instead of `<input>` elements for better accessibility and styling flexibility.  It is no longer necessary to use the `gform_submit_button` filter to change the submit input into a button, and use of that filter might cause unexpected issues.
+- Updated form theme/frontend based scripts to load on block editor pages.
+- Updated the layout editor so that it doesn't use jQuery UI libraries.
+- Updated Save and Continue to use `GFFormDisplay::validate_field()` with a `$context` of `send-link-submit` to validate the send link email field, so the `gform_email_field_rejectable_values` and `gform_field_validation` filters are triggered.
+- Updated state validation to support additional field types, including fields added by add-ons that extend the GF_Field class.
+- Updated the appearance of the Repeater field in the form editor, the frontend, Entry Details page, and in the `{all_fields}` merge tag output.
+- Updated the Dashboard Widget setting to be off by default.
+- Updated the datepicker field to use a new datepicker library that is fully accessible and does not rely on jQuery.
+- Updated the form submission spinner to display inside the submit button instead of next to it.
+- Updated the Gravity Forms block to use the Block API version 3.
+- Updated the settings for the Radio, Checkbox, and Multiple Choice fields so that they all have the same settings for displaying vertically, horizontally, and in columns.
+- Updated the accessibility settings for the Submit and Page Navigation buttons when the button type is set to Image.
+- Updated the location and naming of the Choice Layout settings for the Radio, Checkbox, and Multiple Choice fields.
+- Updated the accepted files filter for the Import Forms upload input to `.json` files.
+- Updated the name of the "Field Size" setting to "Field Height" for the Paragraph, Post Body, Post Excerpt, and Post Custom Field fields.
+- Updated the browser log so that it doesn't contain the characters `-->`, which can trigger WAF rules and cause form submissions to be rejected.
+- Updated the validation used by the Submission Speed Check.
+- Fixed several bugs with the beta Repeater field.
+- Fixed a JavaScript error that occurs when editing a page with an embedded form that includes a multi-file upload field.
+- Fixed an issue where empty required fields can be submitted if the value is sanitized.
+- Fixed an issue where some fields are displayed incorrectly on block editor pages.
+- Fixed an issue with the consent field description spacing in the Orbital Theme.
+- Fixed an issue with the consent field for the field required indicator and description spacing and placement in the Gravity Forms 2.5 Theme.
+- Fixed an issue with the required field indicator placement and spacing in the Orbital Theme.
+- Fixed an issue with the notifications list and edit pages where you can't see that a notification is assigned to an event that is missing.
+- Fixed deprecation notices on MySQL 8.0 caused by the use of the deprecated `SQL_CALC_FOUND_ROWS` modifier.
+- Fixed an issue where `false` is output in the `gf_global.number_formats` variable instead of the selected format when the number field visibility is set to administrative and dynamic population is enabled. Developers: use `$field->set_context_property( 'adminonly_hidden', true )` instead of `$field->inputType = 'adminonly_hidden'`.
+- Fixed a fatal error when the `$text` value passed to `GFCommon::replace_variables()` is not a string.
+- Fixed an issue that causes the Submit button to lose its appearance settings when it is set to display inline and another field is added to the end of the form.
+- Fixed an issue that can cause PHP warnings with PHP 8.1+ when a color selected in the Form block settings is a CSS variable defined in `theme.json`.
+- Fixed an issue where the reCAPTCHA v2 Invisible field label is displayed, or space is reserved for it, when no label is provided.
+- Fixed an issue where multiple forms with an inline submit button embedded on the same page output a duplicate element ID for the submit button container.
+- Fixed an issue where the user selection dropdown doesn't display all users.
+- Fixed an issue where an administrative List field with dynamic population enabled causes a fatal error when the form is submitted or the entry is viewed.
+- Fixed an issue where the dropdown caret on the Settings page overlaps the text in RTL languages instead of appearing on the leading (left) side.
+- Fixed an issue where the Personal Data page doesn't display a Gravity Forms alert when the form doesn't contain an Email field.
+- Fixed a bug that prevents some touch events in the form editor from working on some devices.
+- Removed the `gform_ajax_spinner_url` and `gform_spinner_url` filters.  You can use CSS to replace the default spinner.
+- Removed the `gform_always_show_spinner` filter.  You can use CSS to hide the spinner.
+- Removed the form button section from the form settings page.
+- Removed the gform_price_change JQuery event.
+- Removed the Preview toggle in the block editor.
+- Removed "display grid" and "show structure" from the form preview
+- Removed reCAPTCHA from the Global Settings page when no site key or secret key is configured.
+- API: Added get_value_save_input() to replace the deprecated functions get_value_save_entry() and GFFormsModel::prepare_value().
+- API: Added a `conditional_descriptions` property to the setting field class that can be used to conditionally display descriptions based on the field's value.
+
 ### 2.10.5 | 2026-06-30
 - Added security enhancements.
 - Fixed an issue that prevents a "CONTAINS" conditional logic rule from being evaluated properly when the target field value contains a pipe (`|`) character.
@@ -164,6 +241,7 @@
 - Added copy buttons to the Consumer Key and Consumer Secret when adding a new REST API Key.
 - API: Deprecated the JS-based GFMergeTag, which will be removed in Gravity Forms 3.1 Use gform.mergeTags instead.
 - Fixed an issue introduced in 2.9.21 where the selected file is not saved for a single File Upload field when editing an existing entry.
+- Removed the 'display grid' and 'show structure' toggle options from the preview.
 - API: Removed `GFFeedAddon::paypal_fulfillment()` legacy method.
 
 ### 2.9.21 | 2025-10-29

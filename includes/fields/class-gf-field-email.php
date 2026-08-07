@@ -67,6 +67,37 @@ class GF_Field_Email extends GF_Field {
 	}
 
 	/**
+	 * Returns inputs structure for repeater fields only.
+	 * This is used internally by repeater fields to handle multi-input behavior
+	 * without breaking backward compatibility.
+	 *
+	 * @since 3.0.0
+	 * @return array|null
+	 */
+	public function get_repeater_inputs() {
+		if ( ! $this->emailConfirmEnabled ) {
+			return null;
+		}
+
+		if ( empty( $this->inputs ) ) {
+			$this->inputs = array(
+				array(
+					'id'    => $this->id . '',
+					'label' => esc_html__( 'Enter Email', 'gravityforms' ),
+					'name'  => '',
+				),
+				array(
+					'id'    => $this->id . '.2',
+					'label' => esc_html__( 'Confirm Email', 'gravityforms' ),
+					'name'  => '',
+				)
+			);
+		}
+
+		return $this->inputs;
+	}
+
+	/**
 	 * Returns the HTML tag for the field container.
 	 *
 	 * @since 2.5
@@ -93,7 +124,8 @@ class GF_Field_Email extends GF_Field {
 	 * @return bool
 	 */
 	public function is_value_submission_array() {
-		return (bool) $this->emailConfirmEnabled ;
+		// This is not needed anymore since we're using standard multi-input behavior
+		return false;
 	}
 
 	/**
@@ -108,7 +140,19 @@ class GF_Field_Email extends GF_Field {
 	 * @return void
 	 */
 	public function validate( $value, $form ) {
-		$email     = is_array( $value ) ? rgar( $value, 0 ) : $value; // Form objects created in 1.8 will supply a string as the value.
+		if ( $this->emailConfirmEnabled && is_array( $value ) ) {
+			if ( isset( $value[0] ) ) {
+				$email   = $value[0];
+				$confirm = rgar( $value, 1, '' );
+			} else {
+				$email   = rgar( $value, $this->id, '' );
+				$confirm = rgar( $value, $this->id . '.2', '' );
+			}
+		} else {
+			$email   = is_array( $value ) ? rgar( $value, 0 ) : $value;
+			$confirm = '';
+		}
+
 		$not_blank = ! rgblank( $email );
 
 		if ( $not_blank && ! GFCommon::is_valid_email( $email ) ) {
@@ -118,12 +162,9 @@ class GF_Field_Email extends GF_Field {
 			$this->set_context_property( 'is_value_spam', true );
 			$this->failed_validation  = true;
 			$this->validation_message = $this->errorMessage ?: esc_html__( 'The email address entered is invalid.', 'gravityforms' );
-		} elseif ( $this->emailConfirmEnabled ) {
-			$confirm = is_array( $value ) ? rgar( $value, 1 ) : $this->get_input_value_submission( 'input_' . $this->id . '_2' );
-			if ( $confirm !== $email ) {
-				$this->failed_validation  = true;
-				$this->validation_message = esc_html__( 'Your emails do not match.', 'gravityforms' );
-			}
+		} elseif ( $this->emailConfirmEnabled && $confirm !== $email ) {
+			$this->failed_validation  = true;
+			$this->validation_message = esc_html__( 'Your emails do not match.', 'gravityforms' );
 		}
 	}
 
@@ -199,10 +240,9 @@ class GF_Field_Email extends GF_Field {
 		$class         = $this->emailConfirmEnabled ? '' : $size . $class_suffix; //Size only applies when confirmation is disabled
 		$class         = esc_attr( $class );
 
-		$form_sub_label_placement = rgar( $form, 'subLabelPlacement' );
-		$field_sub_label_placement = $this->subLabelPlacement;
-		$is_sub_label_above       = $field_sub_label_placement == 'above' || ( empty( $field_sub_label_placement ) && $form_sub_label_placement == 'above' );
-		$sub_label_class          = $field_sub_label_placement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
+		$is_sub_label_above = $this->is_sub_label_above( $form );
+
+		$sub_label_class = $this->subLabelPlacement == 'hidden_label' ? "hidden_sub_label screen-reader-text" : '';
 
 		$html_input_type = 'email';
 
@@ -268,11 +308,26 @@ class GF_Field_Email extends GF_Field {
 			if ( $this->emailConfirmEnabled && ! $is_entry_detail ) {
 				$first_tabindex        = $this->get_tabindex();
 				$last_tabindex         = $this->get_tabindex();
-				$email_value           = is_array( $value ) ? rgar( $value, 0 ) : $value;
+
+				if ( is_array( $value ) ) {
+					$email_value        = isset( $value[0] ) ? $value[0] : ( isset( $value[ $this->id ] ) ? $value[ $this->id ] : '' );
+					$confirmation_value = isset( $value[1] ) ? $value[1] : ( isset( $value[ $this->id . '.2' ] ) ? $value[ $this->id . '.2' ] : '' );
+				} else {
+					$email_value        = $value;
+					$confirmation_value = '';
+				}
+
+				if ( empty( $confirmation_value ) ) {
+					$confirmation_value = rgpost( 'input_' . $id . '_2', '' );
+				}
+
+				$email_value = is_array( $email_value ) ? '' : $email_value;
+				$confirmation_value = is_array( $confirmation_value ) ? '' : $confirmation_value;
+
 				$email_value = esc_attr( $email_value );
-				$confirmation_value    = is_array( $value ) ? rgar( $value, 1 ) : rgpost( 'input_' . $this->id . '_2' );
 				$confirmation_value = esc_attr( $confirmation_value );
 				$confirmation_disabled = $is_entry_detail ? "disabled='disabled'" : $disabled_text;
+
 				if ( $is_sub_label_above ) {
 					return "<div class='ginput_complex ginput_container ginput_container_email gform-grid-row' id='{$field_id}_container'>
                                 <span id='{$field_id}_1_container' class='ginput_left gform-grid-col gform-grid-col--size-auto'>
@@ -300,6 +355,27 @@ class GF_Field_Email extends GF_Field {
 				}
 			} else {
 				$tabindex = $this->get_tabindex();
+
+				// Check if we're inside a repeater by looking for the itemIndex context
+				$item_index = $this->get_context_property( 'itemIndex' );
+
+				// Handle array values from repeaters
+				if ( is_array( $value ) ) {
+					// If we're in a repeater and have an itemIndex, the value array might be all repeater items
+					if ( $item_index !== null && isset( $value[ $item_index ] ) ) {
+						// Try to get the value for this specific repeater item
+						$value = $value[ $item_index ];
+					} else {
+						// Fallback to first value if available
+						$value = isset( $value[0] ) ? $value[0] : '';
+					}
+				}
+
+				// Ensure value is a string
+				if ( is_array( $value ) ) {
+					$value = '';
+				}
+
 				$value    = esc_attr( $value );
 				$class    = esc_attr( $class );
 
@@ -325,6 +401,20 @@ class GF_Field_Email extends GF_Field {
 	 * @return string
 	 */
 	public function get_value_entry_detail( $value, $entry = array(), $use_text = false, $format = 'html', $media = 'screen' ) {
+		// Handle array values (can happen when field is inside a repeater)
+		if ( is_array( $value ) ) {
+			// For email fields with confirmation enabled, we want the main email value
+			if ( $this->emailConfirmEnabled && isset( $value[ $this->id ] ) ) {
+				$value = $value[ $this->id ];
+			} elseif ( isset( $value[0] ) ) {
+				// Fallback to first element
+				$value = $value[0];
+			} else {
+				// If still an array or empty, convert to empty string
+				$value = '';
+			}
+		}
+
 		if ( GFCommon::is_valid_email( $value ) && $format == 'html'  ) {
 			return sprintf( "<a href='mailto:%s'>%s</a>", esc_attr( $value ), esc_html( $value ) );
 		}
@@ -333,15 +423,14 @@ class GF_Field_Email extends GF_Field {
 	}
 
 	public function get_value_submission( $field_values, $get_from_post_global_var = true ) {
+		if ( $this->emailConfirmEnabled && ! $this->is_entry_detail() ) {
+			$email_value   = $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
+			$confirm_value = $this->get_input_value_submission( 'input_' . $this->id . '_2', $this->inputName, $field_values, $get_from_post_global_var );
 
-		if ( $this->emailConfirmEnabled && ! $this->is_entry_detail() && is_array( $this->inputs ) ) {
-			$value[0] = $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
-			$value[1] = $this->get_input_value_submission( 'input_' . $this->id . '_2', $this->inputName, $field_values, $get_from_post_global_var );
-		} else {
-			$value = $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
+			return array( $email_value, $confirm_value );
 		}
 
-		return $value;
+		return $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
 	}
 
 	/**

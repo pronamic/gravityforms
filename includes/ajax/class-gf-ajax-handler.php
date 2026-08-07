@@ -205,7 +205,10 @@ class GF_Ajax_Handler {
 
 		\GFFormDisplay::process_send_resume_link();
 
-		$confirmation = \GFFormDisplay::get_form( $form_id, false, false, false, rgpost( 'gform_field_values' ) );
+		$theme = rgpost( 'gform_theme' );
+		$style = rgpost( 'gform_style_settings' );
+
+		$confirmation = \GFFormDisplay::get_form( $form_id, false, false, false, rgpost( 'gform_field_values' ), false, 0, $theme, $style );
 
 		GFCommon::send_json_success(
 			array(

@@ -69,11 +69,13 @@ class GF_Field_Number extends GF_Field {
 		$value = $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
 
 		if ( is_array( $value ) ) {
-			$value = array_map( 'trim', $value );
-			foreach ( $value  as &$v ) {
-				$v = trim( $v );
-				$v = $this->clean_value( $v );
-			}
+			// account for nested arrays, from nested repeater fields
+			$value = array_map( function( $v ) {
+				if ( is_array( $v ) ) {
+					return array_map( 'trim', $v );
+				}
+				return trim( $v );
+			}, $value );
 		} else {
 			if ( is_string( $value ) ) {
 				$value = trim( $value );
@@ -259,7 +261,7 @@ class GF_Field_Number extends GF_Field {
 		$placeholder_attribute = $this->get_field_placeholder_attribute();
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
-		
+
 		$describedby_extra_id = '' == $instruction ? array() : array( "gfield_instruction_{$this->formId}_{$this->id}" );
 		$aria_describedby     = $this->get_aria_describedby( $describedby_extra_id );
 
@@ -336,13 +338,27 @@ class GF_Field_Number extends GF_Field {
 		return $url_encode ? urlencode( $formatted_value ) : $formatted_value;
 	}
 
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+	/**
+	 * Sanitize and format the value before it is saved to the Entry Object.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The Form object currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id        The ID of the entry currently being processed.
+	 * @param array  $entry           The entry currently being processed.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
+	 *
+	 * @return array|string The sanitized and formatted input value to be saved.
+	 */
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
 		if ( $this->has_calculation() ) {
-			if ( empty( $lead ) ) {
-				$lead = GFFormsModel::get_lead( $lead_id );
+			if ( empty( $entry ) ) {
+				$entry = GFFormsModel::get_lead( $entry_id );
 			}
 
-			$value = GFCommon::calculate( $this, $form, $lead );
+			$value = GFCommon::calculate( $this, $form, $entry );
 
 			if ( $this->numberFormat !== 'currency' ) {
 				$value = GFCommon::round_number( $value, $this->calculationRounding );

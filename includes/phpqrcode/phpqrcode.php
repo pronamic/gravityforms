@@ -958,8 +958,6 @@ if(!class_exists('GFForms')){
                     ImagePng($image, $filename);
                 }
             }
-
-            ImageDestroy($image);
         }
 
         //----------------------------------------------------------------------
@@ -973,8 +971,6 @@ if(!class_exists('GFForms')){
             } else {
                 ImageJpeg($image, $filename, $q);
             }
-
-            ImageDestroy($image);
         }
 
         //----------------------------------------------------------------------
@@ -1003,7 +999,6 @@ if(!class_exists('GFForms')){
 
             $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
             ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
-            ImageDestroy($base_image);
 
             return $target_image;
         }
@@ -2945,14 +2940,14 @@ if(!class_exists('GFForms')){
 
             if($this->count < $this->dataLength) {
                 $row = $this->count % $this->blocks;
-                $col = $this->count / $this->blocks;
+                $col = intdiv($this->count, $this->blocks);
                 if($col >= $this->rsblocks[0]->dataLength) {
                     $row += $this->b1;
                 }
                 $ret = $this->rsblocks[$row]->data[$col];
             } else if($this->count < $this->dataLength + $this->eccLength) {
                 $row = ($this->count - $this->dataLength) % $this->blocks;
-                $col = ($this->count - $this->dataLength) / $this->blocks;
+                $col = intdiv($this->count - $this->dataLength, $this->blocks);
                 $ret = $this->rsblocks[$row]->ecc[$col];
             } else {
                 return 0;

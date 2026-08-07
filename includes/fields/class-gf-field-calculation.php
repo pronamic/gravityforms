@@ -9,6 +9,15 @@ class GF_Field_Calculation extends GF_Field {
 
 	public $type = 'calculation';
 
+	/**
+	 * Indicates if this field supports state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	protected $_supports_state_validation = true;
+
 	function get_form_editor_field_settings() {
 		return array(
 			'disable_quantity_setting',
@@ -116,13 +125,14 @@ class GF_Field_Calculation extends GF_Field {
 	 * Retrieve the field label.
 	 *
 	 * @since 2.5
+	 * @since 3.0 Made the params optional.
 	 *
 	 * @param bool   $force_frontend_label Should the frontend label be displayed in the admin even if an admin label is configured.
 	 * @param string $value                The field value. From default/dynamic population, $_POST, or a resumed incomplete submission.
 	 *
 	 * @return string
 	 */
-	public function get_field_label( $force_frontend_label, $value ) {
+	public function get_field_label( $force_frontend_label = true, $value = '' ) {
 		$field_label = parent::get_field_label( $force_frontend_label, $value );
 
 		// Checking the defined product name.
@@ -134,7 +144,7 @@ class GF_Field_Calculation extends GF_Field {
 			$label = esc_html( $field_label );
 		} else {
 			$product_quantity_sub_label = $this->get_product_quantity_label( $this->formId );
-			$label                      = '<span class="gfield_label_product gform-field-label">' . esc_html( $field_label ) . '</span>' . ' <span class="screen-reader-text">' . $product_quantity_sub_label . '</span>';
+			$label                      = '<span class="gfield_label_product">' . esc_html( $field_label ) . '</span>' . ' <span class="screen-reader-text">' . $product_quantity_sub_label . '</span>';
 		}
 
 		return $label;
@@ -168,13 +178,27 @@ class GF_Field_Calculation extends GF_Field {
 		}
 	}
 
-	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+	/**
+	 * Sanitize and format the value before it is saved to the Entry Object.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $value          The value to be saved.
+	 * @param array  $form           The Form object currently being processed.
+	 * @param string $input_name     The input name used when accessing the $_POST.
+	 * @param int    $entry_id       The ID of the entry currently being processed.
+	 * @param array  $entry          The entry currently being processed.
+	 * @param string $repeater_index The repeater index if the field is inside a repeater.
+	 *
+	 * @return array|string The sanitized and formatted input value to be saved.
+	 */
+	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
 		// ignore submitted value and recalculate price in backend
 		list( $prefix, $field_id, $input_id ) = rgexplode( '_', $input_name, 3 );
 		if ( $input_id == 2 ) {
 			$currency = new RGCurrency( GFCommon::get_currency() );
-			$lead     = empty( $lead ) ? RGFormsModel::get_lead( $lead_id ) : $lead;
-			$value    = $currency->to_money( GFCommon::calculate( $this, $form, $lead ) );
+			$entry     = empty( $entry ) ? RGFormsModel::get_lead( $entry_id ) : $entry;
+			$value    = $currency->to_money( GFCommon::calculate( $this, $form, $entry ) );
 		}
 		return $value;
 	}
@@ -185,6 +209,33 @@ class GF_Field_Calculation extends GF_Field {
 
 	}
 
+	/**
+	 * Prepares the value that will be hashed on form display as part of the state.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string|array $value The default value.
+	 *
+	 * @return null|array
+	 */
+	public function get_values_for_state_hash( $value ) {
+		$input_1_id = "{$this->id}.1";
+
+		return array(
+			$input_1_id => rgar( $value, $input_1_id, $this->label ),
+		);
+	}
+
+	/**
+	 * Returns the validation message to be applied when the field has failed state validation.
+	 *
+	 * @since 3.0
+	 *
+	 * @return string
+	 */
+	public function get_state_validation_message() {
+		return esc_html__( 'The value of this field has been reset to default because the submitted value of the hidden product name input does not match expected value.', 'gravityforms' );
+	}
 
 }
 

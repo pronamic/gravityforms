@@ -1,26 +1,5 @@
 jQuery( document ).ready(function() {
 
-  // toggle the helper classes that show the form structure
-  jQuery( '.toggle_helpers input[type=checkbox]' ).prop( 'checked',false );
-
-  jQuery('#showgrid').on( 'click', function(){
-    if(jQuery(this).is(":checked")) {
-      jQuery('#preview_form_container').addClass("showgrid");
-    } else {
-      jQuery('#preview_form_container').removeClass("showgrid");
-    }
-  });
-
-  jQuery('#showme').on( 'click', function(){
-    if(jQuery(this).is(":checked")) {
-      jQuery('.gform_wrapper form').addClass("gf_showme");
-      jQuery('#helper_legend_container').css("display", "inline-block");
-    } else {
-      jQuery('.gform_wrapper form').removeClass("gf_showme");
-      jQuery('#helper_legend_container').css("display", "none");
-    }
-  });
-
   // dismiss the alerts and set a cookie
 
   if (GetCookie("dismissed-notifications")) {

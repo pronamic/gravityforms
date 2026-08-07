@@ -66,6 +66,8 @@ class GF_Honeypot_Service_Provider extends GF_Service_Provider {
 
 		$honeypot_handler = $container->get( self::GF_HONEYPOT_HANDLER );
 
+		add_filter( 'gform_validation', array( $honeypot_handler, 'cache_invalid_state_counts' ), 1 );
+
 		// Maybe abort early. If configured not to create entry.
 		add_filter( 'gform_abort_submission_with_confirmation', array( $honeypot_handler, 'handle_abort_submission' ), 10, 2 );
 
@@ -73,7 +75,7 @@ class GF_Honeypot_Service_Provider extends GF_Service_Provider {
 		add_filter( 'gform_entry_is_spam', array( $honeypot_handler, 'handle_entry_is_spam' ), 1, 2 );
 
 		// Clear validation cache.
-		add_action( 'gform_after_submission', array( $honeypot_handler, 'handle_after_submission' ), 10, 2 );
+		add_action( 'gform_after_submission', array( $honeypot_handler, 'handle_after_submission' ), 1, 2 );
 
 		add_filter( 'gform_entry_meta', array( $honeypot_handler, 'submission_speeds_entry_meta' ) );
 		add_filter( 'gform_entries_field_value', array( $honeypot_handler, 'submission_speeds_entries_field_value' ), 10, 4 );

@@ -226,7 +226,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 			add_filter( 'gform_form_args', array( $this, 'force_ajax_for_creditcard_tokens' ), 10, 1 );
 		}
 
-		add_filter( 'gform_is_delayed_pre_process_feed', array( $this, 'maybe_delay_feed_processing' ), 1, 4 );
+		add_filter( 'gform_is_delayed_pre_process_feed', array( $this, 'maybe_delay_feed_processing' ), 20, 4 );
 
 		// Maybe support payment status in Confirmation conditional logic.
 		add_filter( 'gform_entry_meta_conditional_logic_confirmations', function( $entry_meta, $form ) {
@@ -280,7 +280,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		add_filter( 'gform_currencies', array( $this, 'supported_currencies' ) );
 
-		add_filter( 'gform_delete_lead', array( $this, 'entry_deleted' ) );
+		add_filter( 'gform_delete_entry', array( $this, 'entry_deleted' ) );
 		add_action( 'gform_before_delete_field', array( $this, 'before_delete_field' ), 10, 2 );
 
 		if ( GFForms::get_page_query_arg() == 'gf_entries' ) {
@@ -367,7 +367,6 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 	 *
 	 * @uses GFFormsModel::dbDelta()
 	 * @uses GFPaymentAddOn::$_supports_callbacks
-	 * @uses GFForms::drop_index()
 	 *
 	 * @global $wpdb
 	 * @param null $previous_versions Not used.
@@ -1963,13 +1962,13 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		global $wpdb;
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			"{$wpdb->prefix}gf_addon_payment_callback",
+			"{$wpdb->prefix}gf_addon_payment_callback", 
 			array(
 				'addon_slug'   => $this->get_slug(),
 				'callback_id'  => $callback_id,
 				'lead_id'      => $entry_id,
 				'date_created' => gmdate( 'Y-m-d H:i:s' )
-			)
+			) 
 		);
 	}
 
@@ -2363,16 +2362,6 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		GFAPI::update_entry_property( $entry['id'], 'payment_status', 'Failed' );
 		$this->add_note( $entry['id'], $action['note'], 'error' );
 
-		// keep 'gform_subscription_payment_failed' for backward compatability
-		/**
-		 * @deprecated Use gform_post_fail_subscription_payment now.
-		 * @remove-in 3.0
-		 */
-		do_action( 'gform_subscription_payment_failed', $entry, $action['subscription_id'] );
-		if ( has_filter( 'gform_subscription_payment_failed' ) ) {
-			trigger_error( 'gform_subscription_payment_failed is deprecated and will be removed in version 3.0. Use gform_post_fail_subscription_payment.', E_USER_DEPRECATED ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
-			$this->log_debug( __METHOD__ . '(): Executing functions hooked to gform_subscription_payment_failed.' );
-		}
 		/**
 		 * Fires after a subscription payment has failed
 		 *
@@ -3340,39 +3329,41 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		$offset           = $page_size * ( $current_page - 1 );
 		$entry_table_name = self::get_entry_table_name();
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		
+		$query_from = " FROM (
+							SELECT  {$select_inner1},
+									sum( if(transaction_type = 1,1,0) ) as orders,
+									sum( if(transaction_type = 2,1,0) ) as subscriptions
+							FROM {$entry_table_name} l
+							WHERE l.status='active' AND form_id=%d {$lead_date_filter} {$payment_method_filter}
+							GROUP BY {$group_by}
+						) AS leads
+
+						RIGHT OUTER JOIN(
+							SELECT  {$select_inner2},
+									sum( if(t.transaction_type = 'refund', abs(t.amount) * -1, t.amount) ) as revenue,
+									sum( if(t.transaction_type = 'refund', 1, 0) ) as refunds,
+									sum( if(t.transaction_type = 'payment' AND t.is_recurring = 1, 1, 0) ) as recurring_payments
+							FROM {$wpdb->prefix}gf_addon_payment_transaction t
+							INNER JOIN {$entry_table_name} l ON l.id = t.lead_id
+							WHERE l.status='active' AND l.form_id=%d {$lead_date_filter} {$transaction_date_filter} {$payment_method_filter}
+							GROUP BY {$group_by}
+
+						) AS transaction on {$join}";
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		$sql = $wpdb->prepare(
-			" SELECT SQL_CALC_FOUND_ROWS {$select}, leads.orders, leads.subscriptions, transaction.refunds, transaction.recurring_payments, transaction.revenue
-                                FROM (
-                                  SELECT  {$select_inner1},
-                                          sum( if(transaction_type = 1,1,0) ) as orders,
-                                          sum( if(transaction_type = 2,1,0) ) as subscriptions
-                                  FROM {$entry_table_name} l
-                                  WHERE l.status='active' AND form_id=%d {$lead_date_filter} {$payment_method_filter}
-                                  GROUP BY {$group_by}
-                                ) AS leads
-
-                                RIGHT OUTER JOIN(
-                                  SELECT  {$select_inner2},
-                                          sum( if(t.transaction_type = 'refund', abs(t.amount) * -1, t.amount) ) as revenue,
-                                          sum( if(t.transaction_type = 'refund', 1, 0) ) as refunds,
-                                          sum( if(t.transaction_type = 'payment' AND t.is_recurring = 1, 1, 0) ) as recurring_payments
-                                  FROM {$wpdb->prefix}gf_addon_payment_transaction t
-                                  INNER JOIN {$entry_table_name} l ON l.id = t.lead_id
-                                  WHERE l.status='active' AND l.form_id=%d {$lead_date_filter} {$transaction_date_filter} {$payment_method_filter}
-                                  GROUP BY {$group_by}
-
-                                ) AS transaction on {$join}
-                                ORDER BY {$order_by}
-                                LIMIT $page_size OFFSET $offset
-                                ", $form_id, $form_id
+			" SELECT {$select}, leads.orders, leads.subscriptions, transaction.refunds, transaction.recurring_payments, transaction.revenue
+						{$query_from}
+					 ORDER BY {$order_by}
+					 LIMIT $page_size OFFSET $offset", 
+					 $form_id, $form_id
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 
 		GFCommon::log_debug( "sales sql: {$sql}" );
 
 		$results = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-
 
 		if ( isset( $search['start_date'] ) || isset( $search['end_date'] ) ) {
 			foreach ( $results as &$result ) {
@@ -3386,7 +3377,9 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 			}
 
-			$data['row_count'] = $wpdb->get_var( 'SELECT FOUND_ROWS()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$count_sql = $wpdb->prepare( "SELECT COUNT(*) {$query_from}", $form_id, $form_id ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, , WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+
+			$data['row_count'] = (int) $wpdb->get_var( $count_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$data['page_size'] = $page_size;
 
 			$data['rows'] = $results;
@@ -4026,7 +4019,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 	}
 
 	/**
-	 * Target of gform_delete_lead hook. Deletes all transactions and callbacks when an entry is deleted.
+	 * Target of gform_delete_entry hook. Deletes all transactions and callbacks when an entry is deleted.
 	 *
 	 * @param $entry_id . ID of entry that is being deleted
 	 */
