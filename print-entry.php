@@ -55,6 +55,7 @@ function gform_default_entry_content( $form, $entry, $entry_ids ) {
 	 * @param array $form              The form which created the current entry.
 	 */
 	$print_entry_notes = apply_filters( 'gform_print_entry_notes', $print_entry_notes, $entry, $form );
+	$print_entry_notes = $print_entry_notes && GFCommon::current_user_can_any( 'gravityforms_view_entry_notes' );
 
 	if ( $print_entry_notes ) {
 		$notes = GFFormsModel::get_lead_notes( $entry['id'] );

@@ -59,16 +59,16 @@ class GF_Bulk_Action_Endpoint_Start {
 	public function handle() {
 		check_ajax_referer( 'gf_bulk_action', 'nonce' );
 
-		if ( ! GFCommon::current_user_can_any( 'gravityforms_delete_entries' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'gravityforms' ) ) );
-		}
-
 		$bulk_action = sanitize_text_field( rgpost( 'bulk_action' ) );
 		$action_type = sanitize_text_field( rgpost( 'action_type' ) );
 		$origin_page = sanitize_text_field( rgpost( 'origin_page' ) );
 
 		if ( ! in_array( $bulk_action, self::BACKGROUND_ACTIONS, true ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid action.', 'gravityforms' ) ) );
+		}
+
+		if ( ! $this->current_user_can_start_action( $action_type, $bulk_action ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'gravityforms' ) ) );
 		}
 
 		$status = get_option( 'gf_bulk_action_status', array() );
@@ -81,6 +81,56 @@ class GF_Bulk_Action_Endpoint_Start {
 		} else {
 			$this->handle_entry_action( $bulk_action, $origin_page );
 		}
+	}
+
+	/**
+	 * Gets the capability required to start or manage a background bulk action.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param string $action_type The action type. Either form or entry.
+	 * @param string $bulk_action The requested bulk action.
+	 *
+	 * @return string|null
+	 */
+	public static function get_required_capability( $action_type, $bulk_action ) {
+		if ( $action_type === 'form' ) {
+			if ( $bulk_action === 'delete' ) {
+				return 'gravityforms_delete_forms';
+			}
+
+			if ( $bulk_action === 'delete_entries' ) {
+				return 'gravityforms_delete_entries';
+			}
+
+			return null;
+		}
+
+		if ( in_array( $bulk_action, array( 'delete', 'trash', 'restore' ), true ) ) {
+			return 'gravityforms_delete_entries';
+		}
+
+		if ( in_array( $bulk_action, array( 'spam', 'unspam', 'mark_read', 'mark_unread' ), true ) ) {
+			return 'gravityforms_edit_entries';
+		}
+
+		return null;
+	}
+
+	/**
+	 * Determines if the current user can start the requested background action.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param string $action_type The action type. Either form or entry.
+	 * @param string $bulk_action The requested bulk action.
+	 *
+	 * @return bool
+	 */
+	protected function current_user_can_start_action( $action_type, $bulk_action ) {
+		$capability = self::get_required_capability( $action_type, $bulk_action );
+
+		return $capability && GFCommon::current_user_can_any( $capability );
 	}
 
 	private function handle_entry_action( $bulk_action, $origin_page ) {

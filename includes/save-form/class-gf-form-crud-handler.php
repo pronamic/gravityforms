@@ -129,7 +129,6 @@ class GF_Form_CRUD_Handler {
 		$this->gf_common      = $dependencies['gf_common'];
 		$this->gf_api         = $dependencies['gf_api'];
 		$this->gf_forms       = $dependencies['gf_forms'];
-
 	}
 
 	/**
@@ -221,7 +220,7 @@ class GF_Form_CRUD_Handler {
 		// If form has a duplicate title, exit.
 		$forms = $gf_forms_model::get_forms();
 		foreach ( $forms as $form ) {
-			if ( strtolower( $form->title ) == strtolower( $this->form_meta['title'] ) && rgar( $this->form_meta, 'id' ) != $form->id ) {
+			if ( strtolower( $form->title ) === strtolower( $this->form_meta['title'] ) && rgar( $this->form_meta, 'id' ) != $form->id ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual
 				return array(
 					'status' => self::STATUS_DUPLICATE_TITLE,
 					'meta'   => $this->form_meta,
@@ -420,7 +419,7 @@ class GF_Form_CRUD_Handler {
 	private function get_default_confirmation() {
 		$gf_forms_model = $this->gf_forms_model;
 
-		$confirmation  = $gf_forms_model::get_default_confirmation();
+		$confirmation = $gf_forms_model::get_default_confirmation();
 		return array( $confirmation['id'] => $confirmation );
 	}
 

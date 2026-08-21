@@ -1,3 +1,32 @@
+### 3.0.3 | 2026-08-20
+- Added security enhancements.
+- Added new icons to the Common Icons library.
+- Updated the Datepicker to use the WordPress "Week Starts On" setting as the default first day of the week.
+- Updated the entry list page filter and action hooks to use `gf_apply_filters()` and `gf_do_action()`, so throwable errors from hooked callbacks can be caught.
+- Updated the Address field countries list to use the country code as the choice value for improved compatiblity with third-party plugins.
+- Updated the Datepicker type Date field to use the input mask library on manual entry.
+- Updated the validation summary to show a single message when no fields have been filled out.
+- Fixed an issue introduced in WordPress 7.1 where the Add New feed button is misaligned.
+- Fixed an issue where there is a gap above the Entries and Forms tables when there are no entries or forms.
+- Fixed an issue introduced in WordPress 7.1 where the Form List table columns display the word 'Title' over the form name on mobile view.
+- Fixed an issue where the Post Category field entry value changed in 3.0 resulting the post category name not being included in the field merge tag output.
+- Fixed issue where card setting descriptions are not announced by screen readers.
+- Fixed inconsistent spacing for all color picker settings in the form editor sidebar.
+- Fixed an issue where an extra colon appears next to feed status indicators on mobile devices.
+- Fixed a performance issue where default lists containing translatable strings (e.g., currencies, countries, US states, and Canadian provinces) can be translated multiple times per page load.
+- Fixed an issue where the enhanced UI is initalized for some Drop Down and Multi Select fields that don't have it enabled.
+- Fixed an issue with the International (formatted) type Phone field where the sub-labels remain visible when the Sub-Label Placement setting is set to Hidden.
+- Fixed an issue where GFAPI::update_entry_field() does not update entry values when numeric strings contained leading zeros.
+- Fixed Datepicker parsing and editor preview for selected date formats.
+- Fixed an issue that prevents chained forms from properly working when new AJAX is enabled.
+- Fixed a Firefox browser deprecation notice.
+- Fixed an issue where some fields and buttons can still be included in the conditional logic init script when conditional logic is disabled.
+- Fixed an issue where the gform_disable_css filter does not disable Gravity Forms CSS completely when using the Orbital theme.
+- Fixed an issue where a warning is thrown on console when using the Coupons Add-On and creating a new coupon.
+- Fixed an issue where the selected value of the Address field default country setting can be lost when the user/site locale changes.
+- Fixed an issue with the order of the choices in the Address field country drop down when translsated.
+- API: Fixed an issue that prevents the gform_product_total filter from being triggered if the form doesn't have a total field.
+
 ### 3.0.2 | 2026-08-05
 - Fixed an issue where Orbital theme styles were reset on the Save & Continue page when email validation failed on the Send Link form while using the new AJAX submission method.
 - Fixed a PHP deprecation warning that appears when showing/hiding the QR code.
@@ -14,6 +43,7 @@
 - API: Fixed an issue with GF_Query that could affect sorting when performing an explicit join.
 
 ### 3.0.0 | 2026-07-28
+- Version 2.X → 3.X is a major version upgrade and may include breaking changes that affect existing functionality. Sandbox testing is recommended before upgrading to major versions.
 - Added security enhancements.
 - Added a new international variant of the Phone Field.
 - Added multiple accessibility improvements to the dashboard.

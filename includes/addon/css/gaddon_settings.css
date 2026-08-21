@@ -293,7 +293,7 @@ html[dir="rtl"] .mt-gaddon-editor {
 
 /* ------------------ Feed List ------------------ */
 @media screen and ( max-width: 782px ) {
-	.wp-list-table tbody tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary)::before {
+	.wp-list-table tbody tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary):not(.column-is_active)::before {
 		content: attr(data-colname) ":";
 		font-weight: bold;
 	}

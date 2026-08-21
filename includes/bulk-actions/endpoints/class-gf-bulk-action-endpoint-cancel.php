@@ -29,11 +29,11 @@ class GF_Bulk_Action_Endpoint_Cancel {
 	public function handle() {
 		check_ajax_referer( 'gf_bulk_action', 'nonce' );
 
-		if ( ! GFCommon::current_user_can_any( 'gravityforms_delete_entries' ) ) {
+		$status = get_option( 'gf_bulk_action_status', array() );
+
+		if ( ! $this->current_user_can_manage_status( $status ) ) {
 			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'gravityforms' ) ) );
 		}
-
-		$status = get_option( 'gf_bulk_action_status', array() );
 
 		if ( empty( $status ) || rgar( $status, 'status' ) !== 'processing' ) {
 			wp_send_json_error( array( 'message' => __( 'No active bulk operation to cancel.', 'gravityforms' ) ) );
@@ -50,10 +50,31 @@ class GF_Bulk_Action_Endpoint_Cancel {
 
 		GFCommon::log_debug( __METHOD__ . sprintf( '(): Cancelled bulk %s operation.', $bulk_action ) );
 
-		wp_send_json_success( array(
-			'message'   => __( 'Bulk operation cancelled.', 'gravityforms' ),
-			'processed' => rgar( $status, 'processed', 0 ),
-			'total'     => rgar( $status, 'total', 0 ),
-		) );
+		wp_send_json_success(
+			array(
+				'message'   => __( 'Bulk operation cancelled.', 'gravityforms' ),
+				'processed' => rgar( $status, 'processed', 0 ),
+				'total'     => rgar( $status, 'total', 0 ),
+			)
+		);
+	}
+
+	/**
+	 * Determines if the current user can cancel the current background action.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param array $status The stored bulk action status.
+	 *
+	 * @return bool
+	 */
+	protected function current_user_can_manage_status( $status ) {
+		if ( empty( $status ) ) {
+			return GFCommon::current_user_can_any( array( 'gravityforms_delete_entries', 'gravityforms_delete_forms', 'gravityforms_edit_entries' ) );
+		}
+
+		$capability = GF_Bulk_Action_Endpoint_Start::get_required_capability( rgar( $status, 'action_type', 'entry' ), rgar( $status, 'bulk_action' ) );
+
+		return $capability && GFCommon::current_user_can_any( $capability );
 	}
 }

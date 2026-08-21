@@ -4857,6 +4857,9 @@ class GFFormsModel {
 	/**
 	 * Prepare the value before saving it to the lead. For multi-input fields this will be called for each input.
 	 *
+	 * @depecated 3.0
+	 * @remove-in 4.0
+	 *
 	 * @param mixed    $form
 	 * @param GF_Field $field
 	 * @param mixed    $value
@@ -8074,12 +8077,17 @@ class GFFormsModel {
 			} catch ( Error $e ) {
 				GFCommon::log_error( __METHOD__ . '(): Error from function hooked to gform_rule_pre_evaluation. ' . $e->getMessage() );
 			}
-			$source_field = RGFormsModel::get_field( $form, $rule['fieldId'] );
+			$source_field = self::get_field( $form, $rule['fieldId'] );
 			$source_value = empty( $entry ) ? self::get_field_value( $source_field, $field_values ) : self::get_lead_field_value( $entry, $source_field );
 
 			// Number format will either be currency or decimal_dot. Numbers formatted with decimal_comma will have their values transformed and stored as decimal_dot.
 			$number_format = rgobj( $source_field, 'numberFormat' ) == 'currency' ? 'currency' : 'decimal_dot';
 			$source_value  = GFCommon::maybe_format_numeric( $source_value, $rule['operator'], $number_format );
+
+			// Back-compat for rules based on the address field country input that are still using the country name instead of the code.
+			if ( ! empty( $rule['value'] ) && $source_field instanceof GF_Field_Address && str_ends_with( $rule['fieldId'], '.6' ) && ! $source_field->is_country_code( $rule['value'] ) ) {
+				$rule['value'] = $source_field->get_country_code( $rule['value'], true );
+			}
 
 			/**
 			 * Filter the source value of a conditional logic rule before it is compared with the target value.

@@ -1463,7 +1463,7 @@ class GFAPI {
 
 			$lead_detail_id = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
-			if ( ! isset( $entry[ $input_id ] ) || ( $value === 0 && $entry[ $input_id ] !== '0' ) || $entry[ $input_id ] != $value ) {
+			if ( ! isset( $entry[ $input_id ] ) || ( $value === 0 && $entry[ $input_id ] !== '0' ) || $entry[ $input_id ] !== $value ) {
 				$result = GFFormsModel::update_entry_field_value( $form, $entry, $field, $lead_detail_id, $input_id, $value, $item_index );
 			}
 		}
@@ -1730,9 +1730,9 @@ class GFAPI {
 			return new WP_Error( 'form_restriction_error', $form_restriction_error );
 		}
 
-		$button_logic_error = rgar( $submission_details, 'button_logic_error' );
-		if ( $button_logic_error ) {
-			return new WP_Error( 'button_logic_error', $button_logic_error );
+		$form_level_error = rgar( $submission_details, 'form_level_error' );
+		if ( $form_level_error ) {
+			return new WP_Error( 'form_level_error', $form_level_error );
 		}
 
 		$result = array();
@@ -1841,9 +1841,9 @@ class GFAPI {
 			return new WP_Error( 'form_restriction_error', $form_restriction_error );
 		}
 
-		$button_logic_error = rgars( GFFormDisplay::$submission, $form_id . '/button_logic_error' );
-		if ( $button_logic_error ) {
-			return new WP_Error( 'button_logic_error', $button_logic_error );
+		$form_level_error = rgars( GFFormDisplay::$submission, $form_id . '/form_level_error' );
+		if ( $form_level_error ) {
+			return new WP_Error( 'form_level_error', $form_level_error );
 		}
 
 		$result['validation_messages'] = self::get_field_validation_errors( $form );

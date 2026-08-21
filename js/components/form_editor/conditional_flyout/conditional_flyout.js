@@ -285,6 +285,7 @@ function getAddressOptions( field, inputId, value ) {
 
 	// True associative arrays (country codes) are handled here.
 	if ( ! Array.isArray( fieldAddressOptions ) ) {
+		const compareLocale = typeof value === 'string' && value.length === 2;
 
 		for ( var locale in fieldAddressOptions ) {
 			var group = fieldAddressOptions[ locale ];
@@ -306,7 +307,7 @@ function getAddressOptions( field, inputId, value ) {
 				config = {
 					label: group,
 					value: locale,
-					selected: locale == value ? 'selected="selected"' : '',
+					selected: ( compareLocale ? locale === value : group === value ) ? 'selected="selected"' : '',
 				}
 				options.push(config);
 			}

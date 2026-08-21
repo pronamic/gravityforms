@@ -592,6 +592,7 @@ class GF_Field_Radio extends GF_Field {
 	 * Sanitize and format the value before it is saved to the Entry Object. For radio fields with 'other' option enabled, extracts the user-entered text from the array.
 	 *
 	 * @since 3.0.0
+	 * @since 3.0.3 Updated to use $this->prepare_post_category_value_save_input().
 	 *
 	 * @param string $value          The value to be saved.
 	 * @param array  $form           The Form object currently being processed.
@@ -603,7 +604,11 @@ class GF_Field_Radio extends GF_Field {
 	 * @return array|string The sanitized and formatted input value to be saved.
 	 */
 	public function get_value_save_input( $value, $form, $input_name, $entry_id, $entry, $repeater_index = '' ) {
-		if ( $this->enableOtherChoice && $value == 'gf_other_choice' ) {
+		if ( $this->type === 'post_category' ) {
+			return $this->prepare_post_category_value_save_input( $value );
+		}
+
+		if ( $this->enableOtherChoice && $value === 'gf_other_choice' ) {
 			$value = $this->get_other_choice_value_from_post( $repeater_index );
 		}
 

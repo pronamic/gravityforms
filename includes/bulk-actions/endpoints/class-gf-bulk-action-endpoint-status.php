@@ -31,11 +31,11 @@ class GF_Bulk_Action_Endpoint_Status {
 	public function handle() {
 		check_ajax_referer( 'gf_bulk_action', 'nonce' );
 
-		if ( ! GFCommon::current_user_can_any( 'gravityforms_delete_entries' ) ) {
+		$status = get_option( 'gf_bulk_action_status', array() );
+
+		if ( ! $this->current_user_can_manage_status( $status ) ) {
 			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'gravityforms' ) ) );
 		}
-
-		$status = get_option( 'gf_bulk_action_status', array() );
 
 		require_once GF_PLUGIN_DIR_PATH . 'includes/bulk-actions/class-gf-entry-bulk-action-processor.php';
 		$processor = GF_Entry_Bulk_Action_Processor::get_instance();
@@ -52,26 +52,49 @@ class GF_Bulk_Action_Endpoint_Status {
 				$processor->clear_queue();
 			}
 
-			wp_send_json_success( array(
-				'active' => false,
-			) );
+			wp_send_json_success(
+				array(
+					'active' => false,
+				)
+			);
 		}
 
 		$is_processing = rgar( $status, 'status' ) === 'processing';
 
-		wp_send_json_success( array(
-			'active'      => $is_processing || $has_queue,
-			'pending'     => $has_queue && ! $processor->is_processing(),
-			'cancelled'   => rgar( $status, 'status' ) === 'cancelled',
-			'form_id'     => rgar( $status, 'form_id' ),
-			'bulk_action' => rgar( $status, 'bulk_action' ),
-			'action_type' => rgar( $status, 'action_type', 'entry' ),
-			'total'       => rgar( $status, 'total', 0 ),
-			'processed'   => rgar( $status, 'processed', 0 ),
-			'status'      => rgar( $status, 'status' ),
-			'origin_url'  => rgar( $status, 'origin_url' ),
-			'origin_page' => rgar( $status, 'origin_page' ),
-		) );
+		wp_send_json_success(
+			array(
+				'active'      => $is_processing || $has_queue,
+				'pending'     => $has_queue && ! $processor->is_processing(),
+				'cancelled'   => rgar( $status, 'status' ) === 'cancelled',
+				'form_id'     => rgar( $status, 'form_id' ),
+				'bulk_action' => rgar( $status, 'bulk_action' ),
+				'action_type' => rgar( $status, 'action_type', 'entry' ),
+				'total'       => rgar( $status, 'total', 0 ),
+				'processed'   => rgar( $status, 'processed', 0 ),
+				'status'      => rgar( $status, 'status' ),
+				'origin_url'  => rgar( $status, 'origin_url' ),
+				'origin_page' => rgar( $status, 'origin_page' ),
+			)
+		);
+	}
+
+	/**
+	 * Determines if the current user can view the current background action status.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param array $status The stored bulk action status.
+	 *
+	 * @return bool
+	 */
+	protected function current_user_can_manage_status( $status ) {
+		if ( empty( $status ) ) {
+			return GFCommon::current_user_can_any( array( 'gravityforms_delete_entries', 'gravityforms_delete_forms', 'gravityforms_edit_entries' ) );
+		}
+
+		$capability = GF_Bulk_Action_Endpoint_Start::get_required_capability( rgar( $status, 'action_type', 'entry' ), rgar( $status, 'bulk_action' ) );
+
+		return $capability && GFCommon::current_user_can_any( $capability );
 	}
 
 	/**

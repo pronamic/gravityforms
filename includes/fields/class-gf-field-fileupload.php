@@ -983,7 +983,12 @@ class GF_Field_FileUpload extends GF_Field {
 		if ( ! empty( $value ) ) {
 			// Merge with existing files (entry detail edit page or an add-on edit entry page).
 			if ( ! empty( $uploaded_files ) ) {
-				$array = $this->to_array( $value );
+				$array = array();
+				foreach ( $this->to_array( $value ) as $key => $file ) {
+					if ( is_int( $key ) && is_string( $file ) ) {
+						$array[] = $file;
+					}
+				}
 				if ( empty( $array ) ) {
 					$value = $uploaded_files;
 				} else {

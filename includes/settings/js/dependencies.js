@@ -65,6 +65,10 @@ var GF_Settings_Dependencies = function ( args ) {
 			passedLogic = true;
 		}
 
+		if ( self.getTargetObject() == null ) {
+			return;
+		}
+
 		if ( passedLogic ) {
 			self.getTargetObject().style.display = '';
 		} else {

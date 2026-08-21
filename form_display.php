@@ -2551,7 +2551,7 @@ class GFFormDisplay {
 		$is_last_page = self::get_target_page( $form, $page_number, $field_values ) === 0;
 		if ( $is_last_page && GFFormsModel::is_submit_button_hidden( $form ) ) {
 			GFCommon::log_debug( __METHOD__ . '(): Aborting. Submit button is hidden/disabled by conditional logic.' );
-			self::set_submission_if_null( $form_id, 'button_logic_error', __( 'Submit button is hidden/disabled by conditional logic.', 'gravityforms' ) );
+			self::set_submission_if_null( $form_id, 'form_level_error', __( 'Submit button is hidden/disabled by conditional logic.', 'gravityforms' ) );
 
 			return false;
 		}
@@ -2574,7 +2574,7 @@ class GFFormDisplay {
 			$field_in_other_page = $page_number > 0 && $field_page_number !== $page_number;
 			if ( ! $field_in_other_page && $field->type === 'page' && GFFormsModel::is_next_button_hidden( $field, $form ) ) {
 				GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting. Next button is hidden/disabled by conditional logic. Field validation completed in %F seconds.', GFCommon::timer_end( 'field-validation' ) ) );
-				self::set_submission_if_null( $form_id, 'button_logic_error', __( 'Next button is hidden/disabled by conditional logic.', 'gravityforms' ) );
+				self::set_submission_if_null( $form_id, 'form_level_error', __( 'Next button is hidden/disabled by conditional logic.', 'gravityforms' ) );
 
 				return false;
 			}
@@ -2606,16 +2606,10 @@ class GFFormDisplay {
 		}
 
 		if ( $is_valid && $is_last_page && self::is_form_empty( $form ) ) {
-			foreach ( $form['fields'] as &$field ) {
-				if ( ! self::is_field_validation_supported( $field ) ) {
-					continue;
-				}
+			$failed_validation_page = 1;
+			$is_valid               = false;
 
-				$field->failed_validation  = true;
-				$field->validation_message = esc_html__( 'At least one field must be filled out', 'gravityforms' );
-				$is_valid                  = false;
-				unset( $field->is_field_hidden );
-			}
+			self::set_submission_if_null( $form_id, 'form_level_error', esc_html__( 'At least one field must be filled out.', 'gravityforms' ) );
 		}
 
 		GFCommon::log_debug( __METHOD__ . sprintf( '(): Field validation completed in %F seconds.', GFCommon::timer_end( 'field-validation' ) ) );
@@ -2740,12 +2734,20 @@ class GFFormDisplay {
 					case 'phone' :
 						// Avoid using $value directly, as for the International (formatted) version of the phone number it comes as JSON
 						$display_value = $field->get_value_entry_list( $value, array(), $field->id, array(), $form );
-						$message       = sprintf( esc_html__( "This field requires a unique entry and '%s' has already been used", 'gravityforms' ), $display_value );
+						$message       = sprintf(
+							/* Translators: %s: The submitted value that has already been used. */
+							esc_html__( "This field requires a unique entry and '%s' has already been used", 'gravityforms' ),
+							esc_html( $display_value )
+						);
 						break;
 
 					default:
 						$message = is_array( $value ) ? esc_html__( 'This field requires a unique entry and the values you entered have already been used.', 'gravityforms' ) :
-							sprintf( esc_html__( "This field requires a unique entry and '%s' has already been used", 'gravityforms' ), $value );
+							sprintf(
+								/* Translators: %s: The submitted value that has already been used. */
+								esc_html__( "This field requires a unique entry and '%s' has already been used", 'gravityforms' ),
+								esc_html( is_scalar( $value ) ? (string) $value : '' )
+							);
 						break;
 				}
 
@@ -3501,7 +3503,7 @@ class GFFormDisplay {
 			return false;
 		}
 
-		if ( isset( $form['button']['conditionalLogic'] ) ) {
+		if ( self::has_conditional_logic_rules( rgar( $form, 'button' ) ) ) {
 			return true;
 		}
 
@@ -3510,15 +3512,40 @@ class GFFormDisplay {
 				if ( isset( $field->fields ) && is_array( $field->fields ) && self::has_conditional_logic_legwork( array( 'fields' => $field->fields ) ) ) {
 					return true;
 				}
-				if ( ! empty( $field->conditionalLogic ) ) {
+				if ( self::has_conditional_logic_rules( $field ) ) {
 					return true;
-				} else if ( isset( $field->nextButton ) && ! empty( $field->nextButton['conditionalLogic'] ) ) {
+				} elseif ( isset( $field->nextButton ) && self::has_conditional_logic_rules( $field->nextButton ) ) {
 					return true;
 				}
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Checks if the given item (e.g., field/button) has any conditional logic rules configured.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param array|GF_Field $item The item that might have conditional logic
+	 *
+	 * @return bool
+	 */
+	private static function has_conditional_logic_rules( $item ) {
+		$logic = $item instanceof GF_Field ? $item->conditionalLogic : rgar( $item, 'conditionalLogic' );
+		if ( empty( $logic ) || ! is_array( $logic ) ) {
+			return false;
+		}
+
+		// Legacy logic configured before the flyout won't have this.
+		if ( isset( $logic['enabled'] ) && ! $logic['enabled'] ) {
+			return false;
+		}
+
+		$rules = rgar( $logic, 'rules' );
+
+		return ! empty( $rules ) && is_array( $rules );
 	}
 
 	/**
@@ -3536,7 +3563,7 @@ class GFFormDisplay {
 		}
 
 		foreach ( $form['fields'] as $field ) {
-			if ( $field->type === 'page' && ! empty( $field->conditionalLogic ) && is_array( $field->conditionalLogic ) ) {
+			if ( $field->type === 'page' && self::has_conditional_logic_rules( $field ) ) {
 				return true;
 			}
 		}
@@ -3569,12 +3596,12 @@ class GFFormDisplay {
 			$field_dependents[ $field->id ] = ! empty( $field_deps ) ? $field_deps : array();
 
 			//use section's logic if one exists
-			$section       = RGFormsModel::get_section( $form, $field->id );
-			$section_logic = ! empty( $section ) ? $section->conditionalLogic : null;
+			$section       = GFFormsModel::get_section( $form, $field->id );
+			$section_logic = ! empty( $section ) && self::has_conditional_logic_rules( $section ) ? $section->conditionalLogic : null;
 
-			$field_logic = $field->type != 'page' ? $field->conditionalLogic : null; //page break conditional logic will be handled during the next button click
+			$field_logic = $field->type != 'page' && self::has_conditional_logic_rules( $field ) ? $field->conditionalLogic : null; //page break conditional logic will be handled during the next button click
 
-			$next_button_logic = ! empty( $field->nextButton ) && ! empty( $field->nextButton['conditionalLogic'] ) ? $field->nextButton['conditionalLogic'] : null;
+			$next_button_logic = self::has_conditional_logic_rules( $field->nextButton ) ? $field->nextButton['conditionalLogic'] : null;
 
 			if ( ! empty( $field_logic ) || ! empty( $next_button_logic ) ) {
 
@@ -3716,13 +3743,12 @@ class GFFormDisplay {
 				$default_values[ $field->id ] = $field_val;
 
 			}
-
 		}
 
 		//adding form button conditional logic if enabled
-		if ( isset( $form['button']['conditionalLogic'] ) ) {
-			$logics .= '0: ' . GFCommon::json_encode( array( 'field' => $form['button']['conditionalLogic'], 'section' => null ) ) . ',';
-			$dependents .= '0: ' . GFCommon::json_encode( array( 0 ) ) . ',';
+		if ( self::has_conditional_logic_rules( rgar( $form, 'button' ) ) ) {
+			$logics             .= '0: ' . GFCommon::json_encode( array( 'field' => $form['button']['conditionalLogic'], 'section' => null ) ) . ',';
+			$dependents         .= '0: ' . GFCommon::json_encode( array( 0 ) ) . ',';
 			$fields_with_logic[] = 0;
 		}
 
@@ -3778,16 +3804,16 @@ class GFFormDisplay {
 			if ( $field->type === 'page' ) {
 				$page_fields[] = array(
 					'fieldId'          => $field->id,
-					'conditionalLogic' => $field->conditionalLogic,
+					'conditionalLogic' => self::has_conditional_logic_rules( $field ) ? $field->conditionalLogic : null,
 					'nextButton'       => $field->nextButton,
 				);
 			}
 		}
 
 		$args = array(
-			'formId'     => $form['id'],
-			'formButton' => $form['button'],
-			'pagination' => $form['pagination'],
+			'formId'     => absint( rgar( $form, 'id' ) ),
+			'formButton' => rgar( $form, 'button' ),
+			'pagination' => rgar( $form, 'pagination' ),
 			'pages'      => $page_fields,
 		);
 
@@ -3919,18 +3945,24 @@ class GFFormDisplay {
 
 	public static function get_chosen_init_script( $form ) {
 		$chosen_fields = array();
+		$form_id       = absint( rgar( $form, 'id' ) );
 
 		// Recursive function to handle enhanced dropdowns for nested repeaters.
-		$process_fields = function( $fields ) use ( &$process_fields, &$chosen_fields, $form ) {
+		$process_fields = function ( $fields, $is_nested = false ) use ( &$process_fields, &$chosen_fields, $form_id ) {
 			foreach ( $fields as $field ) {
 				if ( isset( $field->fields ) && is_array( $field->fields ) ) {
 					// Recursively process nested fields
-					$process_fields( $field->fields );
+					$process_fields( $field->fields, true );
+					continue;
 				}
 
-				$input_type = GFFormsModel::get_input_type( $field );
-				if ( $field->enableEnhancedUI && in_array( $input_type, array( 'select', 'multiselect' ) ) ) {
-					$chosen_fields[] = "select[id^=\"input_{$form['id']}_{$field->id}\"]";
+				if ( $field->enableEnhancedUI && in_array( $field->get_input_type(), array( 'select', 'multiselect' ) ) ) {
+					$field_id = absint( $field->id );
+					if ( $is_nested ) {
+						$chosen_fields[] = "select[id^=\"input_{$form_id}_{$field_id}-\"]";
+					} else {
+						$chosen_fields[] = "#input_{$form_id}_{$field_id}";
+					}
 				}
 			}
 		};
@@ -4355,25 +4387,31 @@ class GFFormDisplay {
 
 	//Getting all fields that have a rule based on the specified field id
 	public static function get_conditional_logic_fields( $form, $fieldId ) {
-		$fields = array();
+		$fields  = array();
+		$fieldId = absint( $fieldId );
 
 		//adding submit button field if enabled
-		if ( isset( $form['button']['conditionalLogic'] ) ) {
-			$fields[] = 0;
+		if ( self::has_conditional_logic_rules( rgar( $form, 'button' ) ) ) {
+			foreach ( $form['button']['conditionalLogic']['rules'] as $rule ) {
+				if ( intval( $rule['fieldId'] ) === $fieldId ) {
+					$fields[] = 0;
+					break;
+				}
+			}
 		}
 
 		foreach ( $form['fields'] as $field ) {
 
-			if ( $field->type != 'page' && ! empty( $field->conditionalLogic ) ) {
+			if ( $field->type !== 'page' && self::has_conditional_logic_rules( $field ) ) {
 				foreach ( $field->conditionalLogic['rules'] as $rule ) {
-					if ( intval( $rule['fieldId'] ) == $fieldId ) {
+					if ( intval( $rule['fieldId'] ) === $fieldId ) {
 						$fields[] = floatval( $field->id );
 
 						//if field is a section, add all fields in the section that have conditional logic (to support nesting)
-						if ( $field->type == 'section' ) {
+						if ( $field->type === 'section' ) {
 							$section_fields = GFCommon::get_section_fields( $form, $field->id );
 							foreach ( $section_fields as $section_field ) {
-								if ( ! empty( $section_field->conditionalLogic ) ) {
+								if ( self::has_conditional_logic_rules( $section_field ) ) {
 									$fields[] = floatval( $section_field->id );
 								}
 							}
@@ -4383,9 +4421,9 @@ class GFFormDisplay {
 				}
 			}
 			//adding fields with next button logic
-			if ( ! empty( $field->nextButton['conditionalLogic'] ) ) {
+			if ( self::has_conditional_logic_rules( $field->nextButton ) ) {
 				foreach ( $field->nextButton['conditionalLogic']['rules'] as $rule ) {
-					if ( intval( $rule['fieldId'] ) == $fieldId && ! in_array( $fieldId, $fields ) ) {
+					if ( intval( $rule['fieldId'] ) === $fieldId && ! in_array( $fieldId, $fields ) ) {
 						$fields[] = floatval( $field->id );
 						break;
 					}
@@ -5582,9 +5620,9 @@ class GFFormDisplay {
 		$error_messages_list = '';
 		$hide_summary_class  = $show_summary ? '' : ' hide_summary';
 
-		$button_logic_error = rgars( self::$submission, sprintf( '%d/button_logic_error', rgar( $form, 'id' ) ) );
-		if ( $button_logic_error ) {
-			$validation_message_markup = "<h2 class='gform_submission_error{$hide_summary_class}'><span class='gform-icon gform-icon--circle-error'></span>" . esc_html__( 'There was a problem with your submission.', 'gravityforms' ) . ' ' . esc_html( $button_logic_error ) . '</h2>';
+		$form_level_error = rgars( self::$submission, sprintf( '%d/form_level_error', rgar( $form, 'id' ) ) );
+		if ( $form_level_error ) {
+			$validation_message_markup = "<h2 class='gform_submission_error{$hide_summary_class}'><span class='gform-icon gform-icon--circle-error'></span>" . esc_html__( 'There was a problem with your submission.', 'gravityforms' ) . ' ' . esc_html( $form_level_error ) . '</h2>';
 		} elseif ( gf_upgrade()->get_submissions_block() ) {
 			$validation_message_markup = "<h2 class='gf_submission_limit_message'>" . esc_html__( 'Your form was not submitted. Please try again in a few minutes.', 'gravityforms' ) . '</h2>';
 		} else {

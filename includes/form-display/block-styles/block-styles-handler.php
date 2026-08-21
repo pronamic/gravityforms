@@ -32,6 +32,10 @@ class Block_Styles_Handler {
 
 	public function form_css_properties( $form_id, $settings, $block_settings, $form = array() ) {
 
+		if ( GFCommon::is_frontend_default_css_disabled() ) {
+            return array();
+        }
+
 		if ( rgar( $form, 'styles' ) === false ) {
 			return array();
 		}

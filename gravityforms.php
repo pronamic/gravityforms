@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 3.0.2
+Version: 3.0.3
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -244,7 +244,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '3.0.2';
+	public static $version = '3.0.3';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -941,7 +941,15 @@ class GFForms {
 				break;
 
 			case 'select_columns' :
-				require_once( GFCommon::get_base_path() . '/select_columns.php' );
+				if ( ! GFCommon::current_user_can_select_columns() ) {
+					wp_die(
+						esc_html__( 'You do not have permission to select columns.', 'gravityforms' ),
+						'',
+						array( 'response' => 403 )
+					);
+				}
+
+				require_once GFCommon::get_base_path() . '/select_columns.php';
 				break;
 		}
 		exit();
@@ -4128,12 +4136,15 @@ class GFForms {
 
 		$address_field = new GF_Field_Address();
 		$address_types = $address_field->get_address_types( $form_id );
-		$markup        = '';
 
 		$type_obj = $address_type && isset( $address_types[ $address_type ] ) ? $address_types[ $address_type ] : 'international';
 
 		switch ( $address_type ) {
 			case 'international':
+				if ( ! empty( $value ) && ! $address_field->is_country_code( $value ) ) {
+					$value = $address_field->get_country_code( $value );
+				}
+
 				$items = $address_field->get_countries();
 				break;
 			default:
@@ -4338,6 +4349,15 @@ class GFForms {
 	public static function resend_notifications() {
 
 		check_admin_referer( 'gf_resend_notifications', 'gf_resend_notifications' );
+
+		if ( ! GFCommon::current_user_can_any( 'gravityforms_edit_entries' ) ) {
+			wp_die(
+				esc_html__( 'You do not have permission to resend notifications.', 'gravityforms' ),
+				'',
+				array( 'response' => 403 )
+			);
+		}
+
 		$form_id = absint( rgpost( 'formId' ) );
 		$leads   = rgpost( 'leadIds' ); // may be a single ID or an array of IDs
 		if ( 0 == $leads ) {

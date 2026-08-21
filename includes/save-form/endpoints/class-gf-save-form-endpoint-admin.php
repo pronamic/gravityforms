@@ -135,7 +135,26 @@ class GF_Save_Form_Endpoint_Admin {
 			}
 		}
 
+		if ( ! $this->current_user_can_save_form( rgpost( self::PARAM_FORM_ID ) ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to save forms.', 'gravityforms' ) ), 403 );
+		}
+
 		return true;
+	}
+
+	/**
+	 * Determines if the current user can save the requested form.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param int|string $form_id The posted form ID. Non-positive IDs create a new form.
+	 *
+	 * @return bool
+	 */
+	protected function current_user_can_save_form( $form_id ) {
+		$capability = (int) $form_id <= 0 ? 'gravityforms_create_form' : 'gravityforms_edit_forms';
+
+		return \GFCommon::current_user_can_any( $capability );
 	}
 
 	/**

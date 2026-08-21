@@ -38,13 +38,20 @@ class GF_Setup_Wizard_Endpoint_Validate_License {
 	public function handle() {
 		check_ajax_referer( self::ACTION_NAME );
 
-		$license  = rgpost( self::PARAM_LICENSE );
+		if ( ! $this->current_user_can_update_settings() ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to update settings.', 'gravityforms' ) ), 403 );
+		}
+
+		$license = rgpost( self::PARAM_LICENSE );
 
 		// Check if $license has not alphanumeric values to prevent malformed requests to the API.
 		if ( ! ctype_alnum( $license ) ) {
 			return wp_send_json_error( __( 'The license is invalid.', 'gravityforms' ) );
 		}
 
+		/**
+		 * @var \Gravity_Forms\Gravity_Forms\License\GF_License_API_Response $info
+		 */
 		$info     = $this->license_api->check_license( $license, false );
 		$is_valid = $info->can_be_used();
 
@@ -55,4 +62,14 @@ class GF_Setup_Wizard_Endpoint_Validate_License {
 		wp_send_json_success( $license );
 	}
 
+	/**
+	 * Determines if the current user can update setup wizard settings.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @return bool
+	 */
+	protected function current_user_can_update_settings() {
+		return \GFCommon::current_user_can_any( 'gravityforms_edit_settings' );
+	}
 }

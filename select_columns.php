@@ -43,6 +43,14 @@ class GFSelectColumns {
 	 */
 	public static function select_columns_page() {
 
+		if ( ! GFCommon::current_user_can_select_columns() ) {
+			wp_die(
+				esc_html__( 'You do not have permission to select columns.', 'gravityforms' ),
+				'',
+				array( 'response' => 403 )
+			);
+		}
+
 		$form_id = absint( rgget( 'id' ) );
 		if ( empty( $form_id ) ) {
 			echo esc_html__( 'You don\'t have any forms yet.', 'gravityforms' );

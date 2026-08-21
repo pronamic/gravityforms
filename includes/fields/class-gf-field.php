@@ -1240,6 +1240,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 	/**
 	 * Sanitize and format the value before it is saved to the Entry Object.
 	 *
+	 * @deprecated 3.0
+	 * @remove-in 4.0
+	 *
 	 * @param string $value          The value to be saved.
 	 * @param array  $form           The Form Object currently being processed.
 	 * @param string $input_name     The input name used when accessing the $_POST.
@@ -1297,6 +1300,50 @@ class GF_Field extends stdClass implements ArrayAccess {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Sanitize and formats the post category field value before it is saved to the database.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param array|string $value The selected post categories.
+	 *
+	 * @return array|string
+	 */
+	public function prepare_post_category_value_save_input( $value ) {
+		if ( empty( $value ) ) {
+			return $value;
+		}
+
+		$clean_value  = array();
+		$return_array = is_array( $value );
+
+		if ( ! $return_array ) {
+			$value = array( $value );
+		}
+
+		foreach ( $value as $cat_id ) {
+			if ( rgblank( $cat_id ) ) {
+				continue;
+			}
+
+			$cat_id = (int) $cat_id;
+			$cat    = get_term( $cat_id, 'category' );
+
+			if ( ! $cat || is_wp_error( $cat ) || empty( $cat->name ) ) {
+				continue;
+			}
+
+			$clean_name = $this->sanitize_entry_value( $cat->name, $this->formId );
+			if ( empty( $clean_name ) ) {
+				continue;
+			}
+
+			$clean_value[] = $clean_name . ':' . $cat_id;
+		}
+
+		return $return_array ? $clean_value : rgar( $clean_value, 0, '' );
 	}
 
 	/**

@@ -626,13 +626,20 @@ class GF_Field_Address extends GF_Field {
 	 * @since Unknown
 	 * @since 2.4     Updated to use ISO 3166-1 list of countries.
 	 * @since 2.4.20  Updated to use GF_Field_Address::get_default_countries() and to sort the countries.
+	 * @since 3.0.3   Updated to use the country codes as the keys.
 	 *
 	 * @return array
 	 */
 	public function get_countries() {
 
-		$countries = array_values( $this->get_default_countries() );
-		sort( $countries );
+		$countries = $this->get_default_countries();
+
+		if ( class_exists( 'Collator' ) ) {
+			$collator = new Collator( get_user_locale() );
+			$collator->asort( $countries );
+		} else {
+			asort( $countries );
+		}
 
 		/**
 		 * A list of countries displayed in the Address field country drop down.
@@ -649,11 +656,18 @@ class GF_Field_Address extends GF_Field {
 	 * Returns the default array of countries using the ISO 3166-1 alpha-2 code as the key to the country name.
 	 *
 	 * @since 2.4.20
+	 * @since 3.0.3  Added static caching.
 	 *
 	 * @return array
 	 */
 	public function get_default_countries() {
-		return array(
+		static $countries;
+
+		if ( ! empty( $countries ) ) {
+			return $countries;
+		}
+
+		$countries = array(
 			'AF' => __( 'Afghanistan', 'gravityforms' ),
 			'AX' => __( 'Åland Islands', 'gravityforms' ),
 			'AL' => __( 'Albania', 'gravityforms' ),
@@ -904,21 +918,33 @@ class GF_Field_Address extends GF_Field {
 			'ZM' => __( 'Zambia', 'gravityforms' ),
 			'ZW' => __( 'Zimbabwe', 'gravityforms' ),
 		);
+
+		return $countries;
 	}
 
 	/**
 	 * Returns the ISO 3166-1 alpha-2 code for the supplied country name.
 	 *
 	 * @since Unknown
+	 * @since 3.0.3 Added the optional $bypass_is_code_check param.
 	 *
-	 * @param string $country_name The country name.
+	 * @param string $country_name         The country name.
+	 * @param bool   $bypass_is_code_check Whether to bypass the check for $country_name already being an ISO 3166-1 alpha-2 code. Defaults to false.
 	 *
-	 * @return string|null
+	 * @return string
 	 */
-	public function get_country_code( $country_name ) {
+	public function get_country_code( $country_name, $bypass_is_code_check = false ) {
+		if ( empty( $country_name ) ) {
+			return '';
+		}
+
+		if ( ! $bypass_is_code_check && $this->is_country_code( $country_name ) ) {
+			return $country_name;
+		}
+
 		$codes = $this->get_country_codes();
 
-		return rgar( $codes, GFCommon::safe_strtoupper( $country_name ) );
+		return rgar( $codes, GFCommon::safe_strtoupper( $country_name ), '' );
 	}
 
 	/**
@@ -931,9 +957,42 @@ class GF_Field_Address extends GF_Field {
 	 * @return array
 	 */
 	public function get_country_codes() {
-		$countries = array_map( array( 'GFCommon', 'safe_strtoupper' ), $this->get_default_countries() );
+		static $countries;
+		if ( empty( $countries ) ) {
+			$countries = array_flip( array_map( array( 'GFCommon', 'safe_strtoupper' ), $this->get_default_countries() ) );
+		}
 
-		return array_flip( $countries );
+		return $countries;
+	}
+
+	/**
+	 * Checks if the given value is an ISO 3166-1 alpha-2 country code that exists in our default list of countries.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param string $value The value to check.
+	 *
+	 * @return bool
+	 */
+	public function is_country_code( $value ) {
+		return ! empty( $value ) && array_key_exists( $value, $this->get_default_countries() );
+	}
+
+	/**
+	 * Returns the country name for the given ISO 3166-1 alpha-2 country code.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param string $country_code The ISO 3166-1 alpha-2 country code.
+	 *
+	 * @return string
+	 */
+	public function get_country_name( $country_code ) {
+		if ( empty( $country_code ) ) {
+			return '';
+		}
+
+		return rgar( $this->get_default_countries(), $country_code, '' );
 	}
 
 	/**
@@ -944,76 +1003,95 @@ class GF_Field_Address extends GF_Field {
 	 * @return array The array of US states.
 	 */
 	public function get_us_states() {
+		$states = array_values( $this->get_default_us_states() );
+
 		/**
 		 * Filters the US states array.
 		 *
 		 * @since Unknown
 		 *
-		 * @param array The array of US states.
+		 * @param array $states The array of US states.
 		 */
-		return apply_filters(
-			'gform_us_states', array(
-				__( 'Alabama', 'gravityforms' ),
-				__( 'Alaska', 'gravityforms' ),
-				__( 'American Samoa', 'gravityforms' ),
-				__( 'Arizona', 'gravityforms' ),
-				__( 'Arkansas', 'gravityforms' ),
-				__( 'California', 'gravityforms' ),
-				__( 'Colorado', 'gravityforms' ),
-				__( 'Connecticut', 'gravityforms' ),
-				__( 'Delaware', 'gravityforms' ),
-				__( 'District of Columbia', 'gravityforms' ),
-				__( 'Florida', 'gravityforms' ),
-				_x( 'Georgia', 'US State', 'gravityforms' ),
-				__( 'Guam', 'gravityforms' ),
-				__( 'Hawaii', 'gravityforms' ),
-				__( 'Idaho', 'gravityforms' ),
-				__( 'Illinois', 'gravityforms' ),
-				__( 'Indiana', 'gravityforms' ),
-				__( 'Iowa', 'gravityforms' ),
-				__( 'Kansas', 'gravityforms' ),
-				__( 'Kentucky', 'gravityforms' ),
-				__( 'Louisiana', 'gravityforms' ),
-				__( 'Maine', 'gravityforms' ),
-				__( 'Maryland', 'gravityforms' ),
-				__( 'Massachusetts', 'gravityforms' ),
-				__( 'Michigan', 'gravityforms' ),
-				__( 'Minnesota', 'gravityforms' ),
-				__( 'Mississippi', 'gravityforms' ),
-				__( 'Missouri', 'gravityforms' ),
-				__( 'Montana', 'gravityforms' ),
-				__( 'Nebraska', 'gravityforms' ),
-				__( 'Nevada', 'gravityforms' ),
-				__( 'New Hampshire', 'gravityforms' ),
-				__( 'New Jersey', 'gravityforms' ),
-				__( 'New Mexico', 'gravityforms' ),
-				__( 'New York', 'gravityforms' ),
-				__( 'North Carolina', 'gravityforms' ),
-				__( 'North Dakota', 'gravityforms' ),
-				__( 'Northern Mariana Islands', 'gravityforms' ),
-				__( 'Ohio', 'gravityforms' ),
-				__( 'Oklahoma', 'gravityforms' ),
-				__( 'Oregon', 'gravityforms' ),
-				__( 'Pennsylvania', 'gravityforms' ),
-				__( 'Puerto Rico', 'gravityforms' ),
-				__( 'Rhode Island', 'gravityforms' ),
-				__( 'South Carolina', 'gravityforms' ),
-				__( 'South Dakota', 'gravityforms' ),
-				__( 'Tennessee', 'gravityforms' ),
-				__( 'Texas', 'gravityforms' ),
-				__( 'Utah', 'gravityforms' ),
-				__( 'U.S. Virgin Islands', 'gravityforms' ),
-				__( 'Vermont', 'gravityforms' ),
-				__( 'Virginia', 'gravityforms' ),
-				__( 'Washington', 'gravityforms' ),
-				__( 'West Virginia', 'gravityforms' ),
-				__( 'Wisconsin', 'gravityforms' ),
-				__( 'Wyoming', 'gravityforms' ),
-				__( 'Armed Forces Americas', 'gravityforms' ),
-				__( 'Armed Forces Europe', 'gravityforms' ),
-				__( 'Armed Forces Pacific', 'gravityforms' ),
-			)
+		return gf_apply_filters( array( 'gform_us_states' ), $states );
+	}
+
+	/**
+	 * Returns the default array of US states using the 2-character state codes as the keys.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @return array
+	 */
+	public function get_default_us_states() {
+		static $states;
+
+		if ( ! empty( $states ) ) {
+			return $states;
+		}
+
+		$states = array(
+			'AL' => __( 'Alabama', 'gravityforms' ),
+			'AK' => __( 'Alaska', 'gravityforms' ),
+			'AS' => __( 'American Samoa', 'gravityforms' ),
+			'AZ' => __( 'Arizona', 'gravityforms' ),
+			'AR' => __( 'Arkansas', 'gravityforms' ),
+			'CA' => __( 'California', 'gravityforms' ),
+			'CO' => __( 'Colorado', 'gravityforms' ),
+			'CT' => __( 'Connecticut', 'gravityforms' ),
+			'DE' => __( 'Delaware', 'gravityforms' ),
+			'DC' => __( 'District of Columbia', 'gravityforms' ),
+			'FL' => __( 'Florida', 'gravityforms' ),
+			'GA' => _x( 'Georgia', 'US State', 'gravityforms' ),
+			'GU' => __( 'Guam', 'gravityforms' ),
+			'HI' => __( 'Hawaii', 'gravityforms' ),
+			'ID' => __( 'Idaho', 'gravityforms' ),
+			'IL' => __( 'Illinois', 'gravityforms' ),
+			'IN' => __( 'Indiana', 'gravityforms' ),
+			'IA' => __( 'Iowa', 'gravityforms' ),
+			'KS' => __( 'Kansas', 'gravityforms' ),
+			'KY' => __( 'Kentucky', 'gravityforms' ),
+			'LA' => __( 'Louisiana', 'gravityforms' ),
+			'ME' => __( 'Maine', 'gravityforms' ),
+			'MD' => __( 'Maryland', 'gravityforms' ),
+			'MA' => __( 'Massachusetts', 'gravityforms' ),
+			'MI' => __( 'Michigan', 'gravityforms' ),
+			'MN' => __( 'Minnesota', 'gravityforms' ),
+			'MS' => __( 'Mississippi', 'gravityforms' ),
+			'MO' => __( 'Missouri', 'gravityforms' ),
+			'MT' => __( 'Montana', 'gravityforms' ),
+			'NE' => __( 'Nebraska', 'gravityforms' ),
+			'NV' => __( 'Nevada', 'gravityforms' ),
+			'NH' => __( 'New Hampshire', 'gravityforms' ),
+			'NJ' => __( 'New Jersey', 'gravityforms' ),
+			'NM' => __( 'New Mexico', 'gravityforms' ),
+			'NY' => __( 'New York', 'gravityforms' ),
+			'NC' => __( 'North Carolina', 'gravityforms' ),
+			'ND' => __( 'North Dakota', 'gravityforms' ),
+			'MP' => __( 'Northern Mariana Islands', 'gravityforms' ),
+			'OH' => __( 'Ohio', 'gravityforms' ),
+			'OK' => __( 'Oklahoma', 'gravityforms' ),
+			'OR' => __( 'Oregon', 'gravityforms' ),
+			'PA' => __( 'Pennsylvania', 'gravityforms' ),
+			'PR' => __( 'Puerto Rico', 'gravityforms' ),
+			'RI' => __( 'Rhode Island', 'gravityforms' ),
+			'SC' => __( 'South Carolina', 'gravityforms' ),
+			'SD' => __( 'South Dakota', 'gravityforms' ),
+			'TN' => __( 'Tennessee', 'gravityforms' ),
+			'TX' => __( 'Texas', 'gravityforms' ),
+			'UT' => __( 'Utah', 'gravityforms' ),
+			'VI' => __( 'U.S. Virgin Islands', 'gravityforms' ),
+			'VT' => __( 'Vermont', 'gravityforms' ),
+			'VA' => __( 'Virginia', 'gravityforms' ),
+			'WA' => __( 'Washington', 'gravityforms' ),
+			'WV' => __( 'West Virginia', 'gravityforms' ),
+			'WI' => __( 'Wisconsin', 'gravityforms' ),
+			'WY' => __( 'Wyoming', 'gravityforms' ),
+			'AA' => __( 'Armed Forces Americas', 'gravityforms' ),
+			'AE' => __( 'Armed Forces Europe', 'gravityforms' ),
+			'AP' => __( 'Armed Forces Pacific', 'gravityforms' ),
 		);
+
+		return $states;
 	}
 
 	/**
@@ -1026,76 +1104,23 @@ class GF_Field_Address extends GF_Field {
 	 * @return string The two-letter US state code.
 	 */
 	public function get_us_state_code( $state_name ) {
-		$states = array(
-			GFCommon::safe_strtoupper( __( 'Alabama', 'gravityforms' ) )                  => 'AL',
-			GFCommon::safe_strtoupper( __( 'Alaska', 'gravityforms' ) )                   => 'AK',
-			GFCommon::safe_strtoupper( __( 'American Samoa', 'gravityforms' ) )           => 'AS',
-			GFCommon::safe_strtoupper( __( 'Arizona', 'gravityforms' ) )                  => 'AZ',
-			GFCommon::safe_strtoupper( __( 'Arkansas', 'gravityforms' ) )                 => 'AR',
-			GFCommon::safe_strtoupper( __( 'California', 'gravityforms' ) )               => 'CA',
-			GFCommon::safe_strtoupper( __( 'Colorado', 'gravityforms' ) )                 => 'CO',
-			GFCommon::safe_strtoupper( __( 'Connecticut', 'gravityforms' ) )              => 'CT',
-			GFCommon::safe_strtoupper( __( 'Delaware', 'gravityforms' ) )                 => 'DE',
-			GFCommon::safe_strtoupper( __( 'District of Columbia', 'gravityforms' ) )     => 'DC',
-			GFCommon::safe_strtoupper( __( 'Florida', 'gravityforms' ) )                  => 'FL',
-			GFCommon::safe_strtoupper( _x( 'Georgia', 'US State', 'gravityforms' ) )      => 'GA',
-			GFCommon::safe_strtoupper( __( 'Guam', 'gravityforms' ) )                     => 'GU',
-			GFCommon::safe_strtoupper( __( 'Hawaii', 'gravityforms' ) )                   => 'HI',
-			GFCommon::safe_strtoupper( __( 'Idaho', 'gravityforms' ) )                    => 'ID',
-			GFCommon::safe_strtoupper( __( 'Illinois', 'gravityforms' ) )                 => 'IL',
-			GFCommon::safe_strtoupper( __( 'Indiana', 'gravityforms' ) )                  => 'IN',
-			GFCommon::safe_strtoupper( __( 'Iowa', 'gravityforms' ) )                     => 'IA',
-			GFCommon::safe_strtoupper( __( 'Kansas', 'gravityforms' ) )                   => 'KS',
-			GFCommon::safe_strtoupper( __( 'Kentucky', 'gravityforms' ) )                 => 'KY',
-			GFCommon::safe_strtoupper( __( 'Louisiana', 'gravityforms' ) )                => 'LA',
-			GFCommon::safe_strtoupper( __( 'Maine', 'gravityforms' ) )                    => 'ME',
-			GFCommon::safe_strtoupper( __( 'Maryland', 'gravityforms' ) )                 => 'MD',
-			GFCommon::safe_strtoupper( __( 'Massachusetts', 'gravityforms' ) )            => 'MA',
-			GFCommon::safe_strtoupper( __( 'Michigan', 'gravityforms' ) )                 => 'MI',
-			GFCommon::safe_strtoupper( __( 'Minnesota', 'gravityforms' ) )                => 'MN',
-			GFCommon::safe_strtoupper( __( 'Mississippi', 'gravityforms' ) )              => 'MS',
-			GFCommon::safe_strtoupper( __( 'Missouri', 'gravityforms' ) )                 => 'MO',
-			GFCommon::safe_strtoupper( __( 'Montana', 'gravityforms' ) )                  => 'MT',
-			GFCommon::safe_strtoupper( __( 'Nebraska', 'gravityforms' ) )                 => 'NE',
-			GFCommon::safe_strtoupper( __( 'Nevada', 'gravityforms' ) )                   => 'NV',
-			GFCommon::safe_strtoupper( __( 'New Hampshire', 'gravityforms' ) )            => 'NH',
-			GFCommon::safe_strtoupper( __( 'New Jersey', 'gravityforms' ) )               => 'NJ',
-			GFCommon::safe_strtoupper( __( 'New Mexico', 'gravityforms' ) )               => 'NM',
-			GFCommon::safe_strtoupper( __( 'New York', 'gravityforms' ) )                 => 'NY',
-			GFCommon::safe_strtoupper( __( 'North Carolina', 'gravityforms' ) )           => 'NC',
-			GFCommon::safe_strtoupper( __( 'North Dakota', 'gravityforms' ) )             => 'ND',
-			GFCommon::safe_strtoupper( __( 'Northern Mariana Islands', 'gravityforms' ) ) => 'MP',
-			GFCommon::safe_strtoupper( __( 'Ohio', 'gravityforms' ) )                     => 'OH',
-			GFCommon::safe_strtoupper( __( 'Oklahoma', 'gravityforms' ) )                 => 'OK',
-			GFCommon::safe_strtoupper( __( 'Oregon', 'gravityforms' ) )                   => 'OR',
-			GFCommon::safe_strtoupper( __( 'Pennsylvania', 'gravityforms' ) )             => 'PA',
-			GFCommon::safe_strtoupper( __( 'Puerto Rico', 'gravityforms' ) )              => 'PR',
-			GFCommon::safe_strtoupper( __( 'Rhode Island', 'gravityforms' ) )             => 'RI',
-			GFCommon::safe_strtoupper( __( 'South Carolina', 'gravityforms' ) )           => 'SC',
-			GFCommon::safe_strtoupper( __( 'South Dakota', 'gravityforms' ) )             => 'SD',
-			GFCommon::safe_strtoupper( __( 'Tennessee', 'gravityforms' ) )                => 'TN',
-			GFCommon::safe_strtoupper( __( 'Texas', 'gravityforms' ) )                    => 'TX',
-			GFCommon::safe_strtoupper( __( 'Utah', 'gravityforms' ) )                     => 'UT',
-			GFCommon::safe_strtoupper( __( 'U.S. Virgin Islands', 'gravityforms' ) )      => 'VI',
-			GFCommon::safe_strtoupper( __( 'Vermont', 'gravityforms' ) )                  => 'VT',
-			GFCommon::safe_strtoupper( __( 'Virginia', 'gravityforms' ) )                 => 'VA',
-			GFCommon::safe_strtoupper( __( 'Washington', 'gravityforms' ) )               => 'WA',
-			GFCommon::safe_strtoupper( __( 'West Virginia', 'gravityforms' ) )            => 'WV',
-			GFCommon::safe_strtoupper( __( 'Wisconsin', 'gravityforms' ) )                => 'WI',
-			GFCommon::safe_strtoupper( __( 'Wyoming', 'gravityforms' ) )                  => 'WY',
-			GFCommon::safe_strtoupper( __( 'Armed Forces Americas', 'gravityforms' ) )    => 'AA',
-			GFCommon::safe_strtoupper( __( 'Armed Forces Europe', 'gravityforms' ) )      => 'AE',
-			GFCommon::safe_strtoupper( __( 'Armed Forces Pacific', 'gravityforms' ) )     => 'AP',
-		);
+		static $states;
 
-		$state_name = GFCommon::safe_strtoupper( $state_name );
-		$code       = isset( $states[ $state_name ] ) ? $states[ $state_name ] : $state_name;
+		if ( empty( $states ) ) {
+			$states = array_flip( array_map( array( 'GFCommon', 'safe_strtoupper' ), $this->get_default_us_states() ) );
+		}
 
-		return $code;
+		return rgar( $states, GFCommon::safe_strtoupper( $state_name ), '' );
 	}
 
 	public function get_canadian_provinces() {
-		return array(
+		static $provinces;
+
+		if ( ! empty( $provinces ) ) {
+			return $provinces;
+		}
+
+		$provinces = array(
 			__( 'Alberta', 'gravityforms' ),
 			__( 'British Columbia', 'gravityforms' ),
 			__( 'Manitoba', 'gravityforms' ),
@@ -1110,6 +1135,8 @@ class GF_Field_Address extends GF_Field {
 			__( 'Saskatchewan', 'gravityforms' ),
 			__( 'Yukon', 'gravityforms' ),
 		);
+
+		return $provinces;
 	}
 
 	public function get_state_dropdown( $states, $selected_state = '', $placeholder = '' ) {
@@ -1174,9 +1201,15 @@ class GF_Field_Address extends GF_Field {
 	}
 
 	public function get_country_dropdown( $selected_country = '', $placeholder = '' ) {
-		$str       = '';
+		$str = '';
+
+		if ( ! $this->is_country_code( $selected_country ) ) {
+			$selected_country = $this->get_country_code( $selected_country, true );
+		}
+
 		$selected_country = strtolower( $selected_country );
-		$countries = array_merge( array( '' ), $this->get_countries() );
+		$countries        = array_merge( array( '' ), $this->get_countries() );
+
 		foreach ( $countries as $code => $country ) {
 			if ( is_numeric( $code ) ) {
 				$code = $country;
@@ -1184,11 +1217,63 @@ class GF_Field_Address extends GF_Field {
 			if ( empty( $country ) ) {
 				$country = $placeholder;
 			}
-			$selected = strtolower( esc_attr( $code ) ) == $selected_country ? "selected='selected'" : '';
+			$selected = $selected_country && strtolower( esc_attr( $code ) ) === $selected_country ? "selected='selected'" : '';
+
 			$str .= "<option value='" . esc_attr( $code ) . "' $selected>" . esc_html( $country ) . '</option>';
 		}
 
 		return $str;
+	}
+
+	/**
+	 * Format the entry value for when the field/input merge tag is processed. Not called for the {all_fields} merge tag.
+	 *
+	 * Returns the country name instead of the country code, unless the `code` modifier is used.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param string|array $value      The field value. Depending on the location the merge tag is being used the following functions may have already been applied to the value: esc_html, nl2br, and urlencode.
+	 * @param string       $input_id   The field or input ID from the merge tag currently being processed.
+	 * @param array        $entry      The Entry Object currently being processed.
+	 * @param array        $form       The Form Object currently being processed.
+	 * @param string       $modifier   The merge tag modifier. e.g. value
+	 * @param string|array $raw_value  The raw field value from before any formatting was applied to $value.
+	 * @param bool         $url_encode Indicates if the urlencode function may have been applied to the $value.
+	 * @param bool         $esc_html   Indicates if the esc_html function may have been applied to the $value.
+	 * @param string       $format     The format requested for the location the merge is being used. Possible values: html, text or url.
+	 * @param bool         $nl2br      Indicates if the nl2br function may have been applied to the $value.
+	 *
+	 * @return string
+	 */
+	public function get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br ) {
+		if ( $input_id !== "{$this->id}.6" || ! $this->is_country_code( $value ) || in_array( 'code', $this->get_modifiers() ) ) {
+			return parent::get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br );
+		}
+
+		return GFCommon::format_variable_value( $this->get_country_name( $value ), $url_encode, $esc_html, $format, $nl2br );
+	}
+
+	/**
+	 * Format the entry value for display on the entries list page.
+	 *
+	 * Returns the country name instead of the country code.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param string|array $value    The field value.
+	 * @param array        $entry    The Entry Object currently being processed.
+	 * @param string       $field_id The field or input ID currently being processed.
+	 * @param array        $columns  The properties for the columns being displayed on the entry list page.
+	 * @param array        $form     The Form Object currently being processed.
+	 *
+	 * @return string
+	 */
+	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
+		if ( $field_id !== "{$this->id}.6" || ! $this->is_country_code( $value ) ) {
+			return parent::get_value_entry_list( $value, $entry, $field_id, $columns, $form );
+		}
+
+		return esc_html( $this->get_country_name( $value ) );
 	}
 
 	/**
@@ -1213,6 +1298,10 @@ class GF_Field_Address extends GF_Field {
 			$state_value   = trim( rgget( $this->id . '.4', $value ) );
 			$zip_value     = trim( rgget( $this->id . '.5', $value ) );
 			$country_value = trim( rgget( $this->id . '.6', $value ) );
+
+			if ( $this->is_country_code( $country_value ) ) {
+				$country_value = $this->get_country_name( $country_value );
+			}
 
 			if ( $format === 'html' ) {
 				$street_value  = esc_html( $street_value );
@@ -1302,7 +1391,8 @@ class GF_Field_Address extends GF_Field {
 		}
 
 		if ( $this->defaultCountry ) {
-			$this->defaultCountry = wp_strip_all_tags( $this->defaultCountry );
+			// Ensures the value is a valid country code, or sets it to an empty string.
+			$this->defaultCountry = $this->get_country_code( $this->defaultCountry );
 		}
 
 		if ( $this->defaultProvince ) {
@@ -1443,9 +1533,9 @@ class GF_Field_Address extends GF_Field {
 		$country_id    = "{$id}.6";
 		$country_input = GFFormsModel::get_input( $this, $country_id );
 		if ( ! empty( $type['country'] ) ) {
-			$return[ $country_id ] = rgar( $value, $country_id, $type['country'] );
+			$return[ $country_id ] = $this->get_country_code( $type['country'] );
 		} elseif ( rgar( $country_input, 'isHidden' ) ) {
-			$return[ $country_id ] = rgar( $value, $country_id, $this->defaultCountry );
+			$return[ $country_id ] = $this->get_country_code( rgar( $value, $country_id, $this->defaultCountry ) );
 		} else {
 			$return[ $country_id ] = $this->get_choices_for_state_hash( $this->get_countries() );
 		}
@@ -1469,6 +1559,28 @@ class GF_Field_Address extends GF_Field {
 		}
 
 		return $values;
+	}
+
+	/**
+	 * Actions to be performed after the field has been converted to an object.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @return void
+	 */
+	public function post_convert_field() {
+		parent::post_convert_field();
+
+		if ( $this->defaultCountry ) {
+			// Updates the property to use the country code, if it's still using the country name.
+			$code = $this->get_country_code( $this->defaultCountry );
+			if ( empty( $code ) && get_user_locale() !== 'en_US' ) {
+				// If we couldn't get a code for the country name, try again after translating it.
+				$translated = translate( $this->defaultCountry, 'gravityforms' ); // phpcs:ignore WordPress.WP.I18n.LowLevelTranslationFunction, WordPress.WP.I18n.NonSingularStringLiteralText
+				$code       = $translated !== $this->defaultCountry ? $this->get_country_code( $translated ) : '';
+			}
+			$this->defaultCountry = $code;
+		}
 	}
 
 }

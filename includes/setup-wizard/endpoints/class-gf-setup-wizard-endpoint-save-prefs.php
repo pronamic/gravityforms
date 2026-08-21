@@ -70,7 +70,7 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 	 * @since 2.7
 	 */
 	public function remove_setup_data() {
-		foreach( $this->telemetry_options_map() as $key ) {
+		foreach ( $this->telemetry_options_map() as $key ) {
 			$option_name = $this->get_option_name( $key );
 			delete_option( $option_name );
 		}
@@ -99,13 +99,17 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 	public function handle() {
 		check_ajax_referer( self::ACTION_NAME );
 
+		if ( ! $this->current_user_can_update_settings() ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to update settings.', 'gravityforms' ) ), 403 );
+		}
+
 		// Loop through each actual telemetry value we want to save and store it if present.
 		foreach ( $this->telemetry_options_map() as $name ) {
 			if ( ! isset( $_POST[ $name ] ) ) {
 				continue;
 			}
 
-			$value = $this->sanitize_posted_value( rgpost( $name ) );
+			$value       = $this->sanitize_posted_value( rgpost( $name ) );
 			$option_name = $this->get_option_name( $name );
 
 			update_option( $option_name, $value );
@@ -124,7 +128,7 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 			\GFFormsModel::update_license_key( md5( $license ) );
 		}
 
-		if ( ! empty( rgpost( self::PARAM_EMAIL ) && ( ! empty( rgpost( self::PARAM_EMAIL_CONSENT ) ) && rgpost( self::PARAM_EMAIL_CONSENT ) != 'false' ) ) ) {
+		if ( ! empty( rgpost( self::PARAM_EMAIL ) && ( ! empty( rgpost( self::PARAM_EMAIL_CONSENT ) ) && rgpost( self::PARAM_EMAIL_CONSENT ) !== 'false' ) ) ) {
 			$sent = $this->api->send_email_to_hubspot( rgpost( self::PARAM_EMAIL ) );
 
 			if ( is_wp_error( $sent ) ) {
@@ -133,6 +137,17 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 		}
 
 		wp_send_json_success( __( 'Preferences updated.', 'gravityforms' ) );
+	}
+
+	/**
+	 * Determines if the current user can update setup wizard settings.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @return bool
+	 */
+	protected function current_user_can_update_settings() {
+		return \GFCommon::current_user_can_any( 'gravityforms_edit_settings' );
 	}
 
 	/**
@@ -186,7 +201,7 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 	 *
 	 * @since 2.7
 	 *
-	 * @param $value
+	 * @param mixed $value
 	 *
 	 * @return bool|mixed|string
 	 */
@@ -232,5 +247,4 @@ class GF_Setup_Wizard_Endpoint_Save_Prefs {
 		// Save the version in the DB
 		update_option( 'rg_form_version', \GFForms::$version, false );
 	}
-
 }

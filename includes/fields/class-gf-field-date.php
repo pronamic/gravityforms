@@ -485,6 +485,8 @@ class GF_Field_Date extends GF_Field {
 							{$button_contents}
 						</button>";
 
+			$mask = $this->get_format_mask();
+
 			return "<div class='ginput_container ginput_container_date'>
 					<input
 					{$date_picker_placeholder}
@@ -498,11 +500,38 @@ class GF_Field_Date extends GF_Field {
 					{$required_attribute}
 					{$tabindex} 
 					{$disabled_text}
+					{$mask}
 					/>
 				<kbd id='keyboardHint_{$field_id}' hidden class='down'></kbd>
 				{$button}
 			</div>";
 		}
+	}
+
+	/**
+	 * Returns the input mask attribute to be applied to the datepicker input.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @return string
+	 */
+	public function get_format_mask() {
+		$map = array(
+			'mdy'       => '99/99/9999',
+			'dmy'       => '99/99/9999',
+			'dmy_dash'  => '99-99-9999',
+			'dmy_dot'   => '99.99.9999',
+			'ymd_slash' => '9999/99/99',
+			'ymd_dash'  => '9999-99-99',
+			'ymd_dot'   => '9999.99.99',
+		);
+
+		$mask = rgar( $map, $this->dateFormat ?: 'mdy', '' );
+		if ( empty( $mask ) ) {
+			return '';
+		}
+
+		return sprintf( 'data-mask="%s"', esc_attr( $mask ) );
 	}
 
 	/**

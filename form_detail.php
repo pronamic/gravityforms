@@ -510,13 +510,13 @@ class GFFormDetail {
 									</select>
 								</div>
 								<div class="percentage_custom_container">
-									<label for="percentage_background_color" style="display:block;">
+									<label for="percentage_background_color" style="display:block;" class="section_label">
 										<?php esc_html_e( 'Text Color', 'gravityforms' ); ?>
 									</label>
 									<?php self::color_picker( 'percentage_style_custom_color', '' ); ?>
 								</div>
 								<div class="percentage_custom_container">
-									<label for="percentage_background_bgcolor" style="display:block;">
+									<label for="percentage_background_bgcolor" style="display:block;" class="section_label">
 										<?php esc_html_e( 'Background Color', 'gravityforms' ); ?>
 									</label>
 									<?php self::color_picker( 'percentage_style_custom_bgcolor', '' ); ?>

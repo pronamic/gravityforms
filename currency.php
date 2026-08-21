@@ -49,9 +49,9 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 			$clean_number = '';
 			foreach ( $array as $char ) {
 
-				if ( ( $char >= '0' && $char <= '9' ) || $char == $this->currency['decimal_separator'] ) {
+				if ( ( $char >= '0' && $char <= '9' ) || $char === $this->currency['decimal_separator'] ) {
 					$clean_number .= $char;
-				} elseif ( $char == '-' ) {
+				} elseif ( $char === '-' ) {
 					$is_negative = true;
 				}
 			}
@@ -61,12 +61,12 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 			//Removing thousand separators but keeping decimal point
 			$array        = str_split( $clean_number );
 			$float_number = '';
-			for ( $i = 0, $count = sizeof( $array ); $i < $count; $i ++ ) {
+			for ( $i = 0, $count = sizeof( $array ); $i < $count; $i++ ) {
 				$char = $array[ $i ];
 
 				if ( $char >= '0' && $char <= '9' ) {
 					$float_number .= $char;
-				} elseif ( $char == $decimal_separator ) {
+				} elseif ( $char === $decimal_separator ) {
 					$float_number .= '.';
 				}
 			}
@@ -106,7 +106,7 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 			}
 
 			$negative = '';
-			if ( strpos( strval( $number ), '-' ) !== false ) {
+			if ( str_contains( strval( $number ), '-' ) ) {
 				$negative = '-';
 				$number   = floatval( substr( $number, 1 ) );
 			}
@@ -144,10 +144,20 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 		 *
 		 * @since unknown.
 		 * @since 2.5.13 add currency code to the configuration array.
+		 * @since 3.0.3  Added static caching and the $bypass_cache param.
+		 *
+		 * @param bool $bypass_cache If true, the cache will not be used.
 		 *
 		 * @return array
+		 * @throws Throwable
 		 */
-		public static function get_currencies() {
+		public static function get_currencies( $bypass_cache = false ) {
+			static $currencies;
+
+			if ( ! $bypass_cache && ! empty( $currencies ) && is_array( $currencies ) ) {
+				return $currencies;
+			}
+
 			$currencies = array(
 				'USD' => array(
 					'name'               => esc_html__( 'U.S. Dollar', 'gravityforms' ),
@@ -402,12 +412,32 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 				),
 			);
 
-			return apply_filters( 'gform_currencies', $currencies );
+			/**
+			 * Allows the available currencies to be filtered.
+			 *
+			 * @since unknown.
+			 *
+			 * @param array[] $currencies {
+			 *     An associative array of currency properties, keyed by currency code.
+			 *
+			 *     @type string $name               The currency display name.
+			 *     @type string $symbol_left        The currency symbol to the left of the amount or an empty string.
+			 *     @type string $symbol_right       The currency symbol to the right of the amount or an empty string.
+			 *     @type string $symbol_padding     Zero or more spaces to add between the symbol and the amount.
+			 *     @type string $thousand_separator The character (e.g. comma or period) to use as a thousands separator.
+			 *     @type string $decimal_separator  The character (e.g. period or comma) to use as a decimonal separator.
+			 *     @type int    $decimals           The number of decimal places to display.
+			 *     @type string $code               The currency code.
+			 * }
+			 */
+			$currencies = gf_apply_filters( array( 'gform_currencies' ), $currencies );
+
+			return $currencies;
 		}
 
 		/**
 		 * Returns a sorted data object with filterable common currencies listed first, then all currencies either listed in
-		 * alphabetical or original order as found in self::get_currencies() above. Designed to drive a select 
+		 * alphabetical or original order as found in self::get_currencies() above. Designed to drive a select
 		 * in a format that select2 and our react select component understands.
 		 *
 		 * @since 2.7
@@ -416,8 +446,8 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 		 * @param $sort
 		 *
 		 * @return array|array[]
+		 * @throws Throwable
 		 */
-
 		public static function get_grouped_currency_options( $placeholder = true, $sort = true ) {
 			/**
 			 * Filter the common currencies shown in currency selects that use this data. You'll
@@ -426,41 +456,47 @@ if ( ! class_exists( 'RGCurrency' ) ) {
 			 *
 			 * @since 2.7
 			 *
-			 * @param array The currency keys to include.
+			 * @param array $common_currency_keys The currency keys to include.
 			 */
-			$common_currency_keys = apply_filters( 'gform_common_currencies', array(
-				'USD',
-				'GBP',
-				'EUR',
-			) );
+			$common_currency_keys = gf_apply_filters(
+				array( 'gform_common_currencies' ),
+				array(
+					'USD',
+					'GBP',
+					'EUR',
+				)
+			);
 
 			$common_options = array_intersect_key( self::get_currencies(), array_flip( $common_currency_keys ) );
 			$all_options    = self::get_currencies();
 
 			if ( $sort ) {
-				uasort( $all_options, function( $a, $b ) {
-					return strcmp( strtolower( $a[ 'name' ] ), strtolower( $b[ 'name' ] ) );
-				} );
+				uasort(
+					$all_options,
+					function ( $a, $b ) {
+						return strcmp( strtolower( $a['name'] ), strtolower( $b['name'] ) );
+					}
+				);
 			}
 
 			$options = $placeholder ? array(
 				array(
 					'label' => esc_html__( 'Select a Currency', 'gravityforms' ),
 					'value' => '',
-				)
+				),
 			) : array();
 
-			foreach( $common_options as $item ) {
+			foreach ( $common_options as $item ) {
 				$options[] = array(
-					'label' => esc_html__( $item['name'] ),
-					'value' => esc_html__( $item['code'] ),
+					'label' => esc_html( $item['name'] ),
+					'value' => esc_html( $item['code'] ),
 				);
 			}
 
-			foreach( $all_options as $item ) {
+			foreach ( $all_options as $item ) {
 				$options[] = array(
-					'label' => esc_html__( $item['name'] ),
-					'value' => esc_html__( $item['code'] ),
+					'label' => esc_html( $item['name'] ),
+					'value' => esc_html( $item['code'] ),
 				);
 			}
 

@@ -110,22 +110,40 @@ class GFAsyncUpload {
 		$chunk         = isset( $_REQUEST['chunk'] ) ? intval( $_REQUEST['chunk'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$chunks        = isset( $_REQUEST['chunks'] ) ? intval( $_REQUEST['chunks'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$chunk_data    = $chunks && $file_name ? rgar( $_REQUEST, str_replace( '.', '_', $file_name ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$chunk_data    = is_array( $chunk_data ) ? $chunk_data : array();
 		$tmp_file_name = '';
+		$write_offset  = 0;
 
-		if ( $chunk ) {
-			if ( empty( $chunk_data['hash'] ) || ( $chunk_data['hash'] !== self::get_chunk_hash( $chunk_data['temp_filename'], ( $chunk - 1 ), $form_id, $field_id, $uploaded_filename ) ) ) {
+		if ( $chunks < 0 || $chunk < 0 || ( ! $chunks && $chunk ) || ( $chunks && $chunk >= $chunks ) ) {
+			self::die_error( 105, __( 'Upload unsuccessful', 'gravityforms' ) . ' ' . $uploaded_filename );
+		}
+
+		if ( $chunks && $chunk ) {
+			$submitted_tmp_file_name = rgar( $chunk_data, 'temp_filename' );
+			$chunk_state             = self::decode_chunk_token( rgar( $chunk_data, 'hash' ) );
+
+			if ( ! self::is_valid_chunk_state( $chunk_state, $submitted_tmp_file_name, $chunk, $form_id, $field_id, $chunks, $uploaded_filename ) ) {
 				GFCommon::log_debug( __METHOD__ . sprintf( '(): Invalid hash for chunk #%d.', $chunk ) );
 				self::die_error( 105, __( 'Upload unsuccessful', 'gravityforms' ) . ' ' . $uploaded_filename );
 			}
-			$tmp_file_name = $chunk_data['temp_filename'];
+
+			$tmp_file_name = $chunk_state['temp_filename'];
+			$write_offset  = $chunk_state['offset'];
 		}
 
 		if ( empty( $tmp_file_name ) ) {
-			$tmp_file_name = $form_unique_id . '_input_' . $field_id . '_' . GFCommon::random_str( 16 ) . '_' . $file_name;
+			$tmp_file_name = 'gf_' . GFCommon::random_str( 32 ) . '.' . pathinfo( $file_name, PATHINFO_EXTENSION );
 		}
 
 		$tmp_file_name = sanitize_file_name( $tmp_file_name );
-		$file_path     = $target_dir . $tmp_file_name;
+		if ( ! self::is_valid_temp_filename( $tmp_file_name ) ) {
+			self::die_error( 105, __( 'Upload unsuccessful', 'gravityforms' ) . ' ' . $uploaded_filename );
+		}
+
+		$file_path = $target_dir . $tmp_file_name;
+		if ( $chunks && $chunk && ( ! file_exists( "{$file_path}.part" ) || filesize( "{$file_path}.part" ) !== $write_offset ) ) {
+			self::die_error( 105, __( 'Upload unsuccessful', 'gravityforms' ) . ' ' . $uploaded_filename );
+		}
 
 		if ( ! $field->is_check_type_and_ext_disabled() && ! $chunks ) {
 
@@ -169,14 +187,22 @@ class GFAsyncUpload {
 		if ( strpos( $contentType, 'multipart' ) !== false ) {
 			if ( isset( $_FILES['file']['tmp_name'] ) && is_uploaded_file( $_FILES['file']['tmp_name'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 				// Open temp file
-				$out = @fopen( "{$file_path}.part", $chunk == 0 ? 'wb' : 'ab' );
+				$out = @fopen( "{$file_path}.part", $chunk === 0 ? 'wb' : 'c+b' );
 				if ( $out ) {
-					// Read binary input stream and append it to temp file
+					if ( $chunk && fseek( $out, $write_offset ) !== 0 ) {
+						self::die_error( 102, __( 'Failed to seek output stream.', 'gravityforms' ) );
+					}
+
+					// Read binary input stream and write it at the expected offset.
 					$in = @fopen( $_FILES['file']['tmp_name'], 'rb' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 
 					if ( $in ) {
 						while ( $buff = fread( $in, 4096 ) ) {
-							fwrite( $out, $buff ); // nosemgrep audit.php.lang.security.file.read-write-delete
+							$bytes_written = fwrite( $out, $buff ); // nosemgrep audit.php.lang.security.file.read-write-delete
+							if ( false === $bytes_written ) {
+								self::die_error( 102, __( 'Failed to write output stream.', 'gravityforms' ) );
+							}
+							$write_offset += $bytes_written;
 						}
 					} else {
 						self::die_error( 101, __( 'Failed to open input stream.', 'gravityforms' ) );
@@ -193,14 +219,22 @@ class GFAsyncUpload {
 			}
 		} else {
 			// Open temp file
-			$out = @fopen( "{$file_path}.part", $chunk == 0 ? 'wb' : 'ab' );
+			$out = @fopen( "{$file_path}.part", $chunk === 0 ? 'wb' : 'c+b' );
 			if ( $out ) {
-				// Read binary input stream and append it to temp file
+				if ( $chunk && fseek( $out, $write_offset ) !== 0 ) {
+					self::die_error( 102, __( 'Failed to seek output stream.', 'gravityforms' ) );
+				}
+
+				// Read binary input stream and write it at the expected offset.
 				$in = @fopen( 'php://input', 'rb' );
 
 				if ( $in ) {
 					while ( $buff = fread( $in, 4096 ) ) {
-						fwrite( $out, $buff ); // nosemgrep audit.php.lang.security.file.read-write-delete
+						$bytes_written = fwrite( $out, $buff ); // nosemgrep audit.php.lang.security.file.read-write-delete
+						if ( false === $bytes_written ) {
+							self::die_error( 102, __( 'Failed to write output stream.', 'gravityforms' ) );
+						}
+						$write_offset += $bytes_written;
 					}
 				} else {
 					self::die_error( 101, __( 'Failed to open input stream.', 'gravityforms' ) );
@@ -215,7 +249,9 @@ class GFAsyncUpload {
 
 		if ( ! $chunks || $chunk == $chunks - 1 ) {
 			// Upload is complete. Strip the temp .part suffix off
-			rename( "{$file_path}.part", $file_path );
+			if ( ! rename( "{$file_path}.part", $file_path ) ) {
+				self::die_error( 105, __( 'Upload unsuccessful', 'gravityforms' ) . ' ' . $uploaded_filename );
+			}
 
 			if ( file_exists( $file_path ) ) { // nosemgrep audit.php.lang.security.file.phar-deserialization
 				if ( $chunks && ! $field->is_check_type_and_ext_disabled() ) {
@@ -254,8 +290,8 @@ class GFAsyncUpload {
 			),
 		);
 
-		if ( $chunks && ( $chunk != $chunks - 1 ) ) {
-			$output['data']['hash'] = self::get_chunk_hash( $tmp_file_name, $chunk, $form_id, $field_id, $uploaded_filename );
+		if ( $chunks && ( $chunk !== $chunks - 1 ) ) {
+			$output['data']['hash'] = self::get_chunk_hash( $tmp_file_name, $chunk + 1, $form_id, $field_id, $uploaded_filename, $write_offset, $chunks );
 		}
 
 		$output = json_encode( $output );
@@ -415,30 +451,135 @@ class GFAsyncUpload {
 	 * Returns a hash created using the given arguments.
 	 *
 	 * @since 2.9.24
+	 * @since 3.0.2.7 Added offset and chunks for better hash security.
 	 *
 	 * @param string $tmp_file_name     The temporary file name.
 	 * @param int    $chunk             The chunk number.
 	 * @param int    $form_id           The form ID.
 	 * @param int    $field_id          The field ID.
 	 * @param string $uploaded_filename The uploaded file name.
+	 * @param int    $offset            Bytes written so far.
+	 * @param int    $chunks            Total chunk count.
 	 *
-	 * @return false|string
+	 * @return string
 	 */
-	private static function get_chunk_hash( $tmp_file_name, $chunk, $form_id, $field_id, $uploaded_filename ) {
-		return wp_hash(
-			implode(
-				'|',
-				array(
-					$tmp_file_name,
-					$chunk,
-					$form_id,
-					$field_id,
-					$uploaded_filename,
-				)
+	private static function get_chunk_hash( $tmp_file_name, $chunk, $form_id, $field_id, $uploaded_filename, $offset, $chunks ) {
+		$payload = wp_json_encode(
+			array(
+				'temp_filename'     => (string) $tmp_file_name,
+				'next_chunk'        => (int) $chunk,
+				'form_id'           => (int) $form_id,
+				'field_id'          => (int) $field_id,
+				'uploaded_filename' => (string) $uploaded_filename,
+				'offset'            => (int) $offset,
+				'total_chunks'      => (int) $chunks,
 			)
 		);
+
+		$encoded_payload = rtrim( strtr( base64_encode( $payload ), '+/', '-_' ), '=' );
+
+		return $encoded_payload . '.' . hash_hmac( 'sha256', 'gravityforms-upload-chunk-v1|' . $encoded_payload, wp_salt( 'auth' ) );
 	}
 
+	/**
+	 * Decodes and verifies a signed chunk state token.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param mixed $token The signed chunk state token.
+	 *
+	 * @return array|false
+	 */
+	private static function decode_chunk_token( $token ) {
+		if ( ! is_string( $token ) || substr_count( $token, '.' ) !== 1 ) {
+			return false;
+		}
+
+		list( $encoded_payload, $signature ) = explode( '.', $token, 2 );
+		$expected_signature                  = hash_hmac( 'sha256', 'gravityforms-upload-chunk-v1|' . $encoded_payload, wp_salt( 'auth' ) );
+		if ( $encoded_payload === '' || ! hash_equals( $expected_signature, $signature ) ) {
+			return false;
+		}
+
+		// Restore stripped Base64 padding so the URL-safe token can be decoded, basically how many '=' to add to the end of the string.
+		$padding = ( 4 - strlen( $encoded_payload ) % 4 ) % 4;
+		$payload = base64_decode( strtr( $encoded_payload, '-_', '+/' ) . str_repeat( '=', $padding ), true );
+		$state   = is_string( $payload ) ? json_decode( $payload, true ) : null;
+
+		return is_array( $state ) ? $state : false;
+	}
+
+	/**
+	 * Determines whether a temporary filename is a safe server-side basename.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param mixed $tmp_file_name Temporary filename.
+	 *
+	 * @return bool
+	 */
+	private static function is_valid_temp_filename( $tmp_file_name ) {
+		if ( ! is_string( $tmp_file_name ) || $tmp_file_name === '' ) {
+			return false;
+		}
+
+		if ( sanitize_file_name( $tmp_file_name ) !== $tmp_file_name ) {
+			return false;
+		}
+
+		if ( wp_basename( $tmp_file_name ) !== $tmp_file_name ) {
+			return false;
+		}
+
+		if ( GFCommon::file_name_has_disallowed_extension( $tmp_file_name ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Determines whether the supplied chunk state matches the signed token.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @param mixed $chunk_state          Decoded chunk state token.
+	 * @param mixed $tmp_file_name        Client-supplied temporary filename.
+	 * @param int   $chunk                Current chunk number.
+	 * @param int   $form_id              Form ID.
+	 * @param int   $field_id             Field ID.
+	 * @param int   $chunks               Total chunk count.
+	 * @param string $uploaded_filename   Uploaded filename.
+	 *
+	 * @return bool
+	 */
+	private static function is_valid_chunk_state( $chunk_state, $tmp_file_name, $chunk, $form_id, $field_id, $chunks, $uploaded_filename ) {
+		if ( ! self::is_valid_temp_filename( $tmp_file_name ) || ! is_array( $chunk_state ) ) {
+			return false;
+		}
+
+		$state_form_id       = rgar( $chunk_state, 'form_id' );
+		$state_field_id      = rgar( $chunk_state, 'field_id' );
+		$state_filename      = rgar( $chunk_state, 'uploaded_filename' );
+		$state_temp_filename = rgar( $chunk_state, 'temp_filename' );
+		$state_total_chunks  = rgar( $chunk_state, 'total_chunks' );
+		$state_next_chunk    = rgar( $chunk_state, 'next_chunk' );
+		$state_offset        = rgar( $chunk_state, 'offset' );
+
+		if ( $state_form_id !== $form_id || $state_field_id !== $field_id ) {
+			return false;
+		}
+
+		if ( $state_filename !== $uploaded_filename || $state_temp_filename !== $tmp_file_name ) {
+			return false;
+		}
+
+		if ( $state_total_chunks !== $chunks || $state_next_chunk !== $chunk || $state_offset < 0 ) {
+			return false;
+		}
+
+		return true;
+	}
 }
 
 GFAsyncUpload::upload();

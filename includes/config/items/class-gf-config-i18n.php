@@ -33,6 +33,7 @@ class GF_Config_I18n extends GF_Config {
 		];
 		return [
 			'datepicker' => [
+				'wdOffset'            => (int) get_option( 'start_of_week' ),
 				'helpTextShort'       => esc_html__( 'Press F1 for help', 'gravityforms' ),
 				'helpText'            => esc_html__( 'Press the arrow keys to navigate by day, PageUp and PageDown to navigate by month, Alt+PageUp and Alt+PageDown to navigate by year, or Escape to cancel.', 'gravityforms' ),
 				'openOnFocusHelpText' => esc_html__( 'Press Down arrow to browse the calendar, or Escape to close.', 'gravityforms' ),

@@ -2128,6 +2128,9 @@ class GFCommon {
 
 			$upload_fields = GFCommon::get_fields_by_type( $form, array( 'fileupload' ) );
 			$entry_id      = (int) rgar( $lead, 'id' );
+			$tmp_location  = GFFormsModel::get_tmp_upload_location( rgar( $form, 'id' ) );
+			$tmp_root_url  = rgar( $tmp_location, 'url' );
+			$tmp_root_path = rgar( $tmp_location, 'path' );
 
 			foreach ( $upload_fields as $upload_field ) {
 
@@ -2149,9 +2152,16 @@ class GFCommon {
 
 				// Loop through attachment URLs; replace URL with path and add to attachments.
 				foreach ( $files as $file ) {
+					$is_tmp_file = false;
+
+					if ( is_array( $file ) ) {
+						$file        = rgar( $file, 'tmp_url' ) ?: rgar( $file, 'url' );
+						$is_tmp_file = is_string( $file ) && ! empty( $tmp_root_url ) && ! empty( $tmp_root_path ) && str_starts_with( $file, $tmp_root_url );
+					}
+
 					if ( is_string( $file ) ) {
-						$root_url = rgar( GF_Field_FileUpload::get_file_upload_path_info( $file, $entry_id ), 'url' );
-						if ( ! str_starts_with( $file, $root_url ) ) {
+						$root_url = $is_tmp_file ? $tmp_root_url : rgar( GF_Field_FileUpload::get_file_upload_path_info( $file, $entry_id ), 'url' );
+						if ( empty( $root_url ) || ! str_starts_with( $file, $root_url ) ) {
 							self::log_debug( __METHOD__ . sprintf( '(): Not attaching file from URL: %s', $file ) );
 							continue;
 						}
@@ -2167,15 +2177,13 @@ class GFCommon {
 							continue;
 						}
 
-						$file_path = GFFormsModel::get_physical_file_path( $file, rgar( $lead, 'id' ) );
+						$file_path = $is_tmp_file ? str_replace( trailingslashit( $tmp_root_url ), trailingslashit( $tmp_root_path ), $file ) : GFFormsModel::get_physical_file_path( $file, rgar( $lead, 'id' ) );
 						if ( ! file_exists( $file_path ) ) {
 							self::log_error( __METHOD__ . sprintf( '(): Not attaching file; %s does not exist.', $file_path ) );
 							continue;
 						}
 
 						$attachments[] = $file_path;
-					} elseif ( ! empty( $file['tmp_path'] ) && file_exists( $file['tmp_path'] ) ) {
-						$attachments[] = $file['tmp_path'];
 					}
  				}
 
@@ -2823,6 +2831,17 @@ Content-Type: text/html;
 		$has_full_access = current_user_can( 'gform_full_access' );
 
 		return $has_full_access;
+	}
+
+	/**
+	 * Determines if the current user can access the entry list column selector.
+	 *
+	 * @since 3.0.3
+	 *
+	 * @return bool
+	 */
+	public static function current_user_can_select_columns() {
+		return self::current_user_can_any( array( 'gravityforms_view_entries', 'gravityforms_edit_forms' ) );
 	}
 
 	public static function current_user_can_which( $caps ) {
@@ -5205,6 +5224,11 @@ Content-Type: text/html;
 			} else {
 				$source_field = GFFormsModel::get_field( $form, $rule_field_id );
 				$source_value = empty( $entry ) ? GFFormsModel::get_field_value( $source_field, array() ) : GFFormsModel::get_lead_field_value( $entry, $source_field );
+
+				// Back-compat for rules based on the address field country input that are still using the country name instead of the code.
+				if ( ! empty( $rule['value'] ) && $source_field instanceof GF_Field_Address && str_ends_with( $rule_field_id, '.6' ) && ! $source_field->is_country_code( $rule['value'] ) ) {
+					$rule['value'] = $source_field->get_country_code( $rule['value'], true );
+				}
 			}
 
 			/**
@@ -5821,8 +5845,9 @@ Content-Type: text/html;
 	 * Outputs the gf_global and returns either the gf_global var declaration or the array containing the gf_global values.
 	 *
 	 *
-	 * @since 2.4.7		Added the $return_array parameter
 	 * @since unknown
+	 * @since 2.4.7 Added the $return_array parameter
+	 * @since 3.0.3 Included the default countries list.
 	 *
 	 * @param bool $echo         If true, outputs the inline gf_global var declaration.
 	 * @param bool $return_array If true, returns the array containing the gf_global values.
@@ -5835,6 +5860,7 @@ Content-Type: text/html;
 		$gf_global['base_url']           = GFCommon::get_base_url();
 		$gf_global['number_formats']     = array();
 		$gf_global['version_hash']       = wp_hash( GFForms::$version );
+		$gf_global['countries']          = GF_Fields::get( 'address' )->get_default_countries();
 
 		$gf_global['strings'] = array(
 			'newRowAdded' => __( 'New row added.', 'gravityforms' ),
@@ -7397,7 +7423,6 @@ Content-Type: text/html;
 	 * @return string
 	 */
 	public static function maybe_sanitize_confirmation_message( $confirmation_message ) {
-		// Default during deprecation period = false
 		$sanitize_confirmation_nessage = false;
 
 		/**
@@ -7405,7 +7430,7 @@ Content-Type: text/html;
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param bool $sanitize_confirmation_nessage Whether to sanitize the confirmation message. default: true
+		 * @param bool $sanitize_confirmation_nessage Whether to sanitize the confirmation message. default: false
 		 */
 		$sanitize_confirmation_nessage = apply_filters( 'gform_sanitize_confirmation_message', $sanitize_confirmation_nessage );
 		if ( $sanitize_confirmation_nessage ) {

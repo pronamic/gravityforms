@@ -4224,6 +4224,8 @@ function SetDateFormat( format ) {
 				.attr( 'placeholder', formatLabel );
 		}
 	}
+
+	RefreshSelectedFieldPreview();
 }
 
 function SetCalendarIconType(iconType, isInit){
@@ -5766,4 +5768,3 @@ gform.addAction('gform_post_set_field_property', function(name, field, value, pr
 		RefreshSelectedFieldPreview();
 	}
 });
-

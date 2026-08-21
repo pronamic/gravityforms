@@ -94,9 +94,10 @@ class Card extends Radio {
 		foreach ( $choices as $i => $choice ) {
 
 			// Prepare choice attributes.
-			$choice['id']   = rgempty( 'id', $choice ) ? sprintf( '%s%s', $this->name, $i ) : $choice['id'];
-			$choice_value   = rgar( $choice, 'value' ) ? $choice['value'] : $choice['label'];
-			$choice_tooltip = $this->settings->maybe_get_tooltip( $choice );
+			$choice['id']               = rgempty( 'id', $choice ) ? sprintf( '%s%s', $this->name, $i ) : $choice['id'];
+			$choice['aria-describedby'] = $choice['id'] . '_desc';
+			$choice_value               = rgar( $choice, 'value' ) ? $choice['value'] : $choice['label'];
+			$choice_tooltip             = $this->settings->maybe_get_tooltip( $choice );
 
 			// Get input.
 			$choice_input = sprintf(
@@ -123,7 +124,7 @@ class Card extends Radio {
 			}
 
 			// Get description markup.
-			$description_markup = '<div class="gform-settings-card--description"><div class="gform-settings-card--description-content">';
+			$description_markup = '<div class="gform-settings-card--description" id="' . esc_attr( $choice['id'] ) . '_desc"><div class="gform-settings-card--description-content">';
 			if ( rgar( $choice, 'title' ) ) {
 				$description_markup .= '<strong>' . esc_html( $choice['title'] ) . '</strong>';
 			}
