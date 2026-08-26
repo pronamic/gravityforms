@@ -359,6 +359,15 @@ class Checkbox extends Base {
 			$value = $this->get_value( $this->name, array() );
 		}
 
+		if ( null === $value || '' === $value ) {
+			$value = array();
+		}
+
+		if ( ! is_array( $value ) ) {
+			$this->set_error( esc_html__( 'Invalid selection.', 'gravityforms' ) );
+			return;
+		}
+
 		// If field does not have choices defined, exit.
 		if ( $choices === false || empty( $choices ) ) {
 			return;

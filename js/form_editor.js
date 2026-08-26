@@ -775,6 +775,7 @@ function LoadFieldSettings() {
 	jQuery("#field_required").prop("checked", field.isRequired == true ? true : false);
 	jQuery("#field_margins").prop("checked", field.disableMargins == true ? true : false);
 	jQuery("#field_no_duplicates").prop("checked", field.noDuplicates == true ? true : false);
+	jQuery("#field_no_urls").prop("checked", !! field.noURLs);
 	jQuery("#field_default_value").val(field.defaultValue == undefined ? "" : field.defaultValue);
 	jQuery("#field_default_value_textarea").val(field.defaultValue == undefined ? "" : field.defaultValue);
 	jQuery("#field_autocomplete_attribute").val(field.autocompleteAttribute);

@@ -34,6 +34,15 @@ class GF_Field_Name extends GF_Field {
 	protected $_supports_state_validation = true;
 
 	/**
+	 * Whether this field allows links/URLs in the value.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @var bool
+	 */
+	public $noURLs = true;
+
+	/**
 	 * Returns the HTML tag for the field container.
 	 *
 	 * @since 2.5

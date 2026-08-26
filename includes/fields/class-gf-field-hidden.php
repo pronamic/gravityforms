@@ -55,6 +55,8 @@ class GF_Field_Hidden extends GF_Field {
 			'prepopulate_field_setting',
 			'label_setting',
 			'default_value_setting',
+			'rules_setting',
+			'no_urls_setting',
 		);
 	}
 
@@ -68,8 +70,9 @@ class GF_Field_Hidden extends GF_Field {
 
 		$disabled_text = $is_form_editor ? 'disabled="disabled"' : '';
 
-		$field_type         = $is_entry_detail || $is_form_editor ? 'text' : 'hidden';
-		$class_attribute    = $is_entry_detail || $is_form_editor ? '' : "class='gform_hidden'";
+		$is_visible         = $this->failed_validation || $is_entry_detail || $is_form_editor;
+		$field_type         = $is_visible ? 'text' : 'hidden';
+		$class_attribute    = $is_visible ? '' : "class='gform_hidden'";
 		$required_attribute = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute  = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
 

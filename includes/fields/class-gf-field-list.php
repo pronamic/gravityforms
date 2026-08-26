@@ -86,6 +86,7 @@ class GF_Field_List extends GF_Field {
 			'visibility_setting',
 			'description_setting',
 			'css_class_setting',
+			'no_urls_setting',
 		);
 	}
 
@@ -1009,6 +1010,23 @@ class GF_Field_List extends GF_Field {
 		}
 
 		return GFCommon::implode_non_blank( ', ', $column_values );
+	}
+
+	/**
+	 * Returns the string value to be used for URL detection.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string|array $value The value to be prepared for validation.
+	 *
+	 * @return string
+	 */
+	public function prepare_value_for_url_detection( $value ) {
+		if ( $this->enableColumns && is_array( $value ) ) {
+			$value = array_merge( ...array_map( 'array_values', $value ) );
+		}
+
+		return parent::prepare_value_for_url_detection( $value );
 	}
 
 	// # FIELD FILTER UI HELPERS ---------------------------------------------------------------------------------------

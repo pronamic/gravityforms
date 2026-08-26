@@ -107,8 +107,10 @@ class GFFormSettings {
 	 */
 	public static function form_settings_fields( $form ) {
 
+		$open_in_new_tab = '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span> <span class="gform-icon gform-icon--external-link" aria-hidden="true"></span>';
+
 		// Handles the deprecation notice for the confirmation ready classes in the CSS class field of form settings.
-		$deprecated_confirmation_classes_field_notice = function ( $value, $field ) use ( $form ) {
+		$deprecated_confirmation_classes_field_notice = function ( $value, $field ) use ( $form, $open_in_new_tab ) {
 			if ( GFCommon::is_legacy_markup_enabled_og( $form ) ) {
 				return false;
 			}
@@ -128,8 +130,8 @@ class GFFormSettings {
 					   ' <a href="https://docs.gravityforms.com/migrating-your-forms-from-ready-classes/" target="_blank" title="' .
 					   esc_attr__( 'Deprecation of Ready Classes in Gravity Forms 4.0', 'gravityforms' ) . '">' .
 					   esc_html__( 'Learn more', 'gravityforms' ) .
-					   '<span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'gravityforms' ) . '</span>&nbsp;' .
-					   '<span class="gform-icon gform-icon--external-link" aria-hidden="true"></span></a></p>
+					   $open_in_new_tab .
+					   '</a></p>
 					</div>
 				</div>';
 			}
@@ -154,6 +156,9 @@ class GFFormSettings {
 					</div>
 				</div>';
 		};
+
+		// Translators: %1$s: The opening a tag. %2$s: The external link icon, screen reader text, and closing a tag.
+		$spam_description = '<p>' . sprintf( esc_html__( 'For information about the following settings and additional solutions for detecting spam, see the %1$sSpam Detection and Protection documentation%2$s.', 'gravityforms' ), '<a href="https://docs.gravityforms.com/category/user-guides/spam-detection-and-protection/" target="_blank">', $open_in_new_tab . '</a>' ) . '</p>';
 
 		$fields = array(
 			'form_basics'       => array(
@@ -429,8 +434,8 @@ class GFFormSettings {
 						),
 						'description'   => sprintf(
 							'<div class="alert warning"><p>%s</p><p>%s</p></div>',
-							esc_html( 'This feature stores potentially private and sensitive data on this server and protects it with a unique link which is displayed to the user on the page in plain, unencrypted text. The link is similar to a password so it\'s strongly advisable to ensure that the page enforces a secure connection (HTTPS) before activating this setting.', 'gravityforms' ),
-							esc_html( 'When this setting is activated two confirmations and one notification are automatically generated and can be modified in their respective editors. When this setting is deactivated the confirmations and the notification will be deleted automatically and any modifications will be lost.', 'gravityforms' )
+							esc_html__( 'This feature stores potentially private and sensitive data on this server and protects it with a unique link which is displayed to the user on the page in plain, unencrypted text. The link is similar to a password so it\'s strongly advisable to ensure that the page enforces a secure connection (HTTPS) before activating this setting.', 'gravityforms' ),
+							esc_html__( 'When this setting is activated two confirmations and one notification are automatically generated and can be modified in their respective editors. When this setting is deactivated the confirmations and the notification will be deleted automatically and any modifications will be lost.', 'gravityforms' )
 						),
 					),
 				),
@@ -611,20 +616,47 @@ class GFFormSettings {
 				),
 			),
 			'spam'              => array(
-				'title'  => esc_html__( 'Spam Detection', 'gravityforms' ),
-				'fields' => array(
+				'title'       => esc_html__( 'Spam Detection', 'gravityforms' ),
+				'description' => $spam_description,
+				'fields'      => array(
 					array(
 						'name'    => 'enableHoneypot',
 						'type'    => 'toggle',
-						'label'   => esc_html__( 'Honeypot', 'gravityforms' ),
+						'label'   => esc_html__( 'Detect spam using the Advanced Honeypot', 'gravityforms' ),
 						'tooltip' => gform_tooltip( 'form_honeypot', '', true ),
+					),
+					array(
+						'name'          => 'detectURLsAction',
+						'type'          => 'radio',
+						'default_value' => 'spam',
+						'horizontal'    => true,
+						'label'         => esc_html__( 'If Links/URLs are found in supported fields:', 'gravityforms' ),
+						'tooltip'       => gform_tooltip( 'form_detectURLsAction', '', true ),
+						'choices'       => array(
+							array(
+								'label' => esc_html__( 'Mark the field as invalid during validation', 'gravityforms' ),
+								'value' => 'fail_validation',
+							),
+							array(
+								'label' => esc_html__( 'Flag the submission as spam', 'gravityforms' ),
+								'value' => 'spam',
+							),
+						),
+						'dependency'    => array(
+							'live'   => true,
+							'fields' => array(
+								array(
+									'field' => 'enableHoneypot',
+								),
+							),
+						),
 					),
 					array(
 						'name'          => 'honeypotAction',
 						'type'          => 'radio',
 						'default_value' => 'spam',
 						'horizontal'    => true,
-						'label'         => esc_html__( 'If the honeypot flags a submission as spam:', 'gravityforms' ),
+						'label'         => esc_html__( 'If the Advanced Honeypot flags a submission as spam:', 'gravityforms' ),
 						'dependency'    => array(
 							'live'   => true,
 							'fields' => array(
@@ -965,8 +997,15 @@ class GFFormSettings {
 					$form['scheduleMessage']        = rgar( $values, 'scheduleMessage' );
 
 					// Spam Detection.
-					$form['enableHoneypot'] = (bool) rgar( $values, 'enableHoneypot' );
-					$form['honeypotAction'] = GFCommon::whitelist(
+					$form['enableHoneypot']   = (bool) rgar( $values, 'enableHoneypot' );
+					$form['detectURLsAction'] = GFCommon::whitelist(
+						rgar( $values, 'detectURLsAction' ),
+						array(
+							'spam',
+							'fail_validation',
+						)
+					);
+					$form['honeypotAction']   = GFCommon::whitelist(
 						rgar( $values, 'honeypotAction' ),
 						array(
 							'spam',

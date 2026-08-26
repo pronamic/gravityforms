@@ -162,6 +162,7 @@ class GF_Field_Repeater extends GF_Field {
 
 		$summary_errors = array();
 		$is_empty       = null;
+		$is_spam        = null;
 
 		$repeater_item_index = $this->get_context_property( 'index_chain' );
 		$repeater_item_index = is_null( $repeater_item_index ) ? '' : $repeater_item_index . '-';
@@ -233,11 +234,17 @@ class GF_Field_Repeater extends GF_Field {
 
 				$result['failed_state_validation'] = (bool) $field->get_context_property( 'failed_state_validation' );
 				$result['is_empty_1']              = $field->get_context_property( 'is_empty_1' );
+				$result['is_value_spam']           = $field->get_context_property( 'is_value_spam' );
+
 				GFCommon::log_debug( __METHOD__ . sprintf( '(): row %s; field #%d; value = %s; result = %s', $i, $field->id, print_r( $field_value, true ), print_r( $result, true ) ) );
 				$this->set_sub_field_validation_result( $field, $i, $result );
 
 				if ( ! is_null( $result['is_empty_1'] ) && ( is_null( $is_empty ) || $is_empty ) ) {
 					$is_empty = $result['is_empty_1'];
+				}
+
+				if ( is_null( $is_spam ) && $result['is_value_spam'] ) {
+					$is_spam = $result['is_value_spam'];
 				}
 
 				if ( $field->failed_validation ) {
@@ -264,12 +271,18 @@ class GF_Field_Repeater extends GF_Field {
 				$field->set_context_property( 'itemIndex', null );
 				$field->set_context_property( 'failed_state_validation', null );
 				$field->set_context_property( 'is_empty_1', null );
+				$field->set_context_property( 'is_value_spam', null );
 			}
 		}
 
 		if ( ! is_null( $is_empty ) ) {
 			// Cache the result for the checks performed by GFFormDisplay::is_form_empty().
 			$this->set_context_property( 'is_empty_0', $is_empty );
+		}
+
+		if ( $is_spam ) {
+			// The Partial Entries Add-On checks this property to determine if it should abort saving.
+			$this->set_context_property( 'is_value_spam', true );
 		}
 
 		if ( ! empty( $summary_errors ) ) {
@@ -703,6 +716,7 @@ class GF_Field_Repeater extends GF_Field {
 		$field->validation_message = rgar( $result, 'message' );
 		$field->set_context_property( 'failed_state_validation', rgar( $result, 'failed_state_validation' ) );
 		$field->set_context_property( 'is_empty_1', rgar( $result, 'is_empty_1' ) );
+		$field->set_context_property( 'is_value_spam', rgar( $result, 'is_value_spam' ) );
 	}
 
 	/*

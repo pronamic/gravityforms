@@ -66,6 +66,7 @@ class GF_Honeypot_Service_Provider extends GF_Service_Provider {
 
 		$honeypot_handler = $container->get( self::GF_HONEYPOT_HANDLER );
 
+		add_filter( 'gform_field_validation', array( $honeypot_handler, 'field_validation_detect_urls' ), 1, 4 );
 		add_filter( 'gform_validation', array( $honeypot_handler, 'cache_invalid_state_counts' ), 1 );
 
 		// Maybe abort early. If configured not to create entry.

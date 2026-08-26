@@ -84,6 +84,15 @@ class GF_Field extends stdClass implements ArrayAccess {
 	public $duplicatable = true;
 
 	/**
+	 * Whether this field allows links/URLs in the value.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @var bool
+	 */
+	public $noURLs = false;
+
+	/**
 	 * Whether the field can be used in a repeater.
 	 *
 	 * @since 3.0
@@ -1062,6 +1071,63 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 */
 	public function validate( $value, $form ) {
 		//
+	}
+
+	/**
+	 * Uses regex to determine if the value contains a link or URL.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string|array $value The field value to be checked.
+	 *
+	 * @return bool
+	 */
+	public function value_contains_url( $value ) {
+		$value = $this->prepare_value_for_url_detection( $value );
+		if ( empty( $value ) || ! is_string( $value ) || is_numeric( $value ) ) {
+			return false;
+		}
+
+		$pattern = '/' .
+						// plain URLs: http://, https:// or www.
+						'(?:https?:\/\/|www\.)[^\s<>\)\]]+' .
+						'|' .
+						// HTML anchor tags with href="..." or href='...'
+						'<a\b[^>]*\bhref\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)[^>]*>' .
+						'|' .
+						// Markdown links: [text](url)
+						'\[[^\]]+\]\([^)]+\)' .
+					'/iu';
+
+		return preg_match( $pattern, $value ) === 1;
+	}
+
+	/**
+	 * Returns the string value to be used for URL detection.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string|array $value The value to be prepared for validation.
+	 *
+	 * @return string
+	 */
+	public function prepare_value_for_url_detection( $value ) {
+		if ( empty( $value ) || ! is_array( $value ) ) {
+			return $value;
+		}
+
+		return implode( ', ', array_filter( $value ) );
+	}
+
+	/**
+	 * Determines if Links/URLs should be detected.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @return bool
+	 */
+	public function should_detect_urls() {
+		return $this->noURLs;
 	}
 
 	/**
@@ -2971,6 +3037,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		if ( isset( $this->validateState ) ) {
 			$this->validateState = (bool) $this->validateState;
+		}
+
+		if ( isset( $this->noURLs ) ) {
+			$this->noURLs = (bool) $this->noURLs;
 		}
 
 		$this->allowsPrepopulate = (bool) $this->allowsPrepopulate;

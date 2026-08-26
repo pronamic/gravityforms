@@ -55,6 +55,7 @@ class GF_Field_Textarea extends GF_Field {
 			'description_setting',
 			'css_class_setting',
 			'rich_text_editor_setting',
+			'no_urls_setting',
 		);
 	}
 

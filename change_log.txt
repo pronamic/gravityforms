@@ -1,3 +1,13 @@
+### 3.1.0 | 2026-08-25
+- Added the [Abilities API integration](https://docs.gravityforms.com/gravity-forms-mcp-server-overview/).
+- Added support for detecting links/URLs in supported fields. This includes Single Line Text, Paragraph, List, and Hidden fields with the No Links/URLs setting enabled, as well as Name, Address, and Phone fields using the International (unformatted) format. When a link or URL is detected, the field can fail validation, or, if the Advanced Honeypot is enabled, the submission can be flagged as spam.
+- Fixed performance issue on product forms with large number of radio option fields.
+- Fixed format of tooltip on field Visibility setting.
+- Fixed an issue with Option field pricing labels that can be displayed incorrectly when field is hidden/shown with conditional logic.
+- Updated the minimum WordPress version (for support) on the System Status page to 7.0.
+- Renamed the Honeypot to Advanced Honeypot.
+- API: Fixed an issue where the draft submission is not saved when using `GFAPI::submit_form()` with `$input_values['gform_save']` set and the honeypot is enabled.
+
 ### 3.0.3 | 2026-08-20
 - Added security enhancements.
 - Added new icons to the Common Icons library.
@@ -14,7 +24,7 @@
 - Fixed inconsistent spacing for all color picker settings in the form editor sidebar.
 - Fixed an issue where an extra colon appears next to feed status indicators on mobile devices.
 - Fixed a performance issue where default lists containing translatable strings (e.g., currencies, countries, US states, and Canadian provinces) can be translated multiple times per page load.
-- Fixed an issue where the enhanced UI is initalized for some Drop Down and Multi Select fields that don't have it enabled.
+- Fixed an issue where the enhanced UI is initialized for some Drop Down and Multi Select fields that don't have it enabled.
 - Fixed an issue with the International (formatted) type Phone field where the sub-labels remain visible when the Sub-Label Placement setting is set to Hidden.
 - Fixed an issue where GFAPI::update_entry_field() does not update entry values when numeric strings contained leading zeros.
 - Fixed Datepicker parsing and editor preview for selected date formats.
@@ -24,7 +34,7 @@
 - Fixed an issue where the gform_disable_css filter does not disable Gravity Forms CSS completely when using the Orbital theme.
 - Fixed an issue where a warning is thrown on console when using the Coupons Add-On and creating a new coupon.
 - Fixed an issue where the selected value of the Address field default country setting can be lost when the user/site locale changes.
-- Fixed an issue with the order of the choices in the Address field country drop down when translsated.
+- Fixed an issue with the order of the choices in the Address field country drop down when translated.
 - API: Fixed an issue that prevents the gform_product_total filter from being triggered if the form doesn't have a total field.
 
 ### 3.0.2 | 2026-08-05

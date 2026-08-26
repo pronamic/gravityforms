@@ -17,6 +17,15 @@ class GF_Field_Address extends GF_Field {
 	 */
 	protected $_supports_state_validation = true;
 
+	/**
+	 * Whether this field allows links/URLs in the value.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @var bool
+	 */
+	public $noURLs = true;
+
 	function get_form_editor_field_settings() {
 		return array(
 			'conditional_logic_field_setting',

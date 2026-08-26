@@ -2185,6 +2185,12 @@ class GFFormDetail {
 											<label for="field_no_duplicates" class="inline"><?php esc_html_e( 'No Duplicates', 'gravityforms' ); ?><?php gform_tooltip( 'form_field_no_duplicate' ); ?></label>
 										</div>
 									</li>
+									<li>
+										<div class="no_urls_setting field_setting">
+											<input type="checkbox" id="field_no_urls" onclick="SetFieldProperty('noURLs', this.checked);" onkeypress="SetFieldProperty('noURLs', this.checked);"/>
+											<label for="field_no_urls" class="inline"><?php esc_html_e( 'No Links/URLs', 'gravityforms' ); ?><?php gform_tooltip( 'form_field_no_urls' ); ?></label>
+										</div>
+									</li>
 								</ul>
 
 							</li>

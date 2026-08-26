@@ -7531,7 +7531,7 @@ Content-Type: text/html;
 			$markup[] = sprintf( '<b>%s</b><br>%s', $option['label'], $option['description'] );
 		}
 
-		$markup = sprintf( '<ul><li>%s</li></ul>', implode( '</li><li>', $markup ) );
+		$markup = implode( '<br><br>', $markup );
 
 		return sprintf( '<strong>%s</strong> %s<br><br>%s', __( 'Visibility', 'gravityforms' ), __( 'Select the visibility for this field.', 'gravityforms' ), $markup );
 	}

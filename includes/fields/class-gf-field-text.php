@@ -57,6 +57,7 @@ class GF_Field_Text extends GF_Field {
 			'description_setting',
 			'css_class_setting',
 			'autocomplete_setting',
+			'no_urls_setting',
 		);
 	}
 

@@ -721,6 +721,8 @@ function gf_reset_to_default(targetId, defaultValue){
 			}
 			else{
 				jQuery(this).prop('checked', doCheck).change();
+				// Triggering native change event so that non-jQuery code can listen to it.
+				this.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 			}
 
 		}

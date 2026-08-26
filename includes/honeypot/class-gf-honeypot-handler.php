@@ -197,6 +197,15 @@ class GF_Honeypot_Handler {
 			return false;
 		}
 
+		$url_detected = $this->maybe_detect_urls( $form );
+		if ( ! rgar( $url_detected, 'is_valid' ) ) {
+			\GFCommon::log_debug( __METHOD__ . '(): Is submission valid? No.' );
+			$result['message'] = rgar( $url_detected, 'message' );
+			$this->cache_result( $form_id, $result );
+
+			return false;
+		}
+
 		$is_state_valid = $this->is_state_valid( $form_id );
 		if ( ! rgar( $is_state_valid, 'is_valid' ) ) {
 			\GFCommon::log_debug( __METHOD__ . '(): Is submission valid? No.' );
@@ -249,6 +258,132 @@ class GF_Honeypot_Handler {
 		$this->cache_result( $form_id, $result );
 
 		return true;
+	}
+
+	/**
+	 * gform_field_validation callback; Checks the value for links/URL and sets the field is_value_spam context property and validation result.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param array     $result The field validation result.
+	 * @param string    $value  The field value to be checked.
+	 * @param array     $form   The current Form object.
+	 * @param \GF_Field $field  The current Field object.
+	 *
+	 * @return array
+	 */
+	public function field_validation_detect_urls( $result, $value, $form, $field ) {
+		if ( ! rgar( $result, 'is_valid' ) || ! $field->should_detect_urls() || ! $field->value_contains_url( $value ) ) {
+			return $result;
+		}
+
+		// This context property is checked by was_url_detected() and the Partial Entries Add-On.
+		$field->set_context_property( 'is_value_spam', 'url' );
+
+		if ( rgar( $form, 'enableHoneypot' ) && rgar( $form, 'detectURLsAction', 'spam' ) === 'spam' ) {
+			return $result;
+		}
+
+		$result['is_valid'] = false;
+		$result['message']  = $field->errorMessage ?: esc_html__( 'Links/URLs are not allowed.', 'gravityforms' );
+
+		return $result;
+	}
+
+	/**
+	 * Checks if links or URLs were detected if the detectURLsAction setting is set to 'spam'.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param array $form The current form object.
+	 *
+	 * @return array
+	 */
+	private function maybe_detect_urls( $form ) {
+		if ( rgar( $form, 'detectURLsAction', 'spam' ) !== 'spam' ) {
+			\GFCommon::log_debug( __METHOD__ . '(): Skipping; Links/URLs detection occurred during field validation.' );
+
+			return array(
+				'is_valid' => true,
+				'message'  => '',
+			);
+		}
+
+		$url_detected = $this->was_url_detected( rgar( $form, 'fields' ) );
+		if ( rgar( $url_detected, 'is_valid' ) ) {
+			\GFCommon::log_debug( __METHOD__ . '(): No links/URLs detected.' );
+		}
+
+		return $url_detected;
+	}
+
+	/**
+	 * Checks if links or URLs were detected in the given fields during validation.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param \GF_Field[] $fields    The fields to check.
+	 * @param bool        $is_nested Whether the fields are nested in a repeater field.
+	 *
+	 * @return array
+	 */
+	private function was_url_detected( $fields, $is_nested = false ) {
+		$result = array(
+			'is_valid' => true,
+			'message'  => '',
+		);
+
+		if ( empty( $fields ) ) {
+			return $result;
+		}
+
+		foreach ( $fields as $field ) {
+			if ( $field->displayOnly ) {
+				continue;
+			}
+
+			if ( $field instanceof \GF_Field_Repeater ) {
+				$result = $this->was_url_detected( $field->fields, true );
+				if ( ! rgar( $result, 'is_valid' ) ) {
+					return $result;
+				}
+				continue;
+			}
+
+			if ( $is_nested ) {
+				$nested_results = $field->get_context_property( 'repeater_validation_results' );
+				if ( empty( $nested_results ) || ! is_array( $nested_results ) ) {
+					continue;
+				}
+
+				foreach ( $nested_results as $nested_result ) {
+					if ( rgar( $nested_result, 'is_value_spam' ) !== 'url' ) {
+						continue;
+					}
+
+					\GFCommon::log_debug( __METHOD__ . sprintf( '(): A link or URL was found in field: %s (#%d - %s).', $field->label, $field->id, $field->type ) );
+
+					return array(
+						'is_valid' => false,
+						'message'  => sprintf( 'A link or URL was found in field: %s (#%d - %s).', $field->label, $field->id, $field->type ),
+					);
+				}
+				continue;
+			}
+
+			if ( $field->get_context_property( 'is_value_spam' ) !== 'url' ) {
+				continue;
+			}
+
+			\GFCommon::log_debug( __METHOD__ . sprintf( '(): A link or URL was found in field: %s (#%d - %s).', $field->label, $field->id, $field->type ) );
+
+			return array(
+				'is_valid' => false,
+				'message'  => sprintf( 'A link or URL was found in field: %s (#%d - %s).', $field->label, $field->id, $field->type ),
+			);
+		}
+
+		return $result;
 	}
 
 	/**

@@ -1703,11 +1703,16 @@ class GFAPI {
 
 		self::hydrate_post( $form_id, $input_values, $field_values, $target_page, $source_page );
 
+		require_once GFCommon::get_base_path() . '/form_display.php';
+		if ( rgpost( 'gform_save' ) ) {
+			// Ensure the state is populated when saving a draft submission.
+			self::submit_form_filter_gform_pre_validation( $form );
+		}
+
 		// Ensure that confirmation handler doesn't send a redirect header or add redirect JavaScript.
 		add_filter( 'gform_suppress_confirmation_redirect', '__return_true' );
 
 		try {
-			require_once GFCommon::get_base_path() . '/form_display.php';
 			$initiated_by = GFCommon::whitelist( $initiated_by, array( GFFormDisplay::SUBMISSION_INITIATED_BY_API, GFFormDisplay::SUBMISSION_INITIATED_BY_WEBFORM ) );
 			GFFormDisplay::process_form( $form_id, $initiated_by );
 		} catch ( Exception $ex ) {

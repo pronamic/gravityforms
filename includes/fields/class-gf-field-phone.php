@@ -25,6 +25,15 @@ class GF_Field_Phone extends GF_Field {
 	public $type = 'phone';
 
 	/**
+	 * Whether this field allows links/URLs in the value.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @var bool
+	 */
+	public $noURLs = true;
+
+	/**
 	 * Defines the field title to be used in the form editor.
 	 *
 	 * @since  Unknown
@@ -220,6 +229,17 @@ class GF_Field_Phone extends GF_Field {
 				? $this->errorMessage
 				: sprintf( esc_html__( 'Phone format: %s', 'gravityforms' ), rgar( $phone_format, 'instruction' ) );
 		}
+	}
+
+	/**
+	 * Determines if Links/URLs should be detected.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @return bool
+	 */
+	public function should_detect_urls() {
+		return parent::should_detect_urls() && $this->phoneFormat === 'international';
 	}
 
 	/**
