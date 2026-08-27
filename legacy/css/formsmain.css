@@ -435,7 +435,8 @@ body .gform_legacy_markup_wrapper ul li.field_description_below div.ginput_conta
     margin-top: 16px;
 }
 
-.gform_legacy_markup_wrapper .hidden_label .gfield_label {
+.gform_legacy_markup_wrapper .hidden_label > .gfield_label,
+.gform_legacy_markup_wrapper .gfield--type-repeater.hidden_label > .gfield_repeater_wrapper > .gfield_repeater_container > .gfield_label {
     clip: rect(1px, 1px, 1px, 1px);
     height: 1px;
     overflow: hidden;

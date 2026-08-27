@@ -185,7 +185,7 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 		// has not enabled the integration. Added before the is_enabled() guard so
 		// the gate applies whether or not MCP is currently on.
 		add_filter(
-			'mcp_adapter_create_default_server',
+			'gform_mcp_adapter_create_default_server',
 			static function ( $create ) {
 				return $create && \GF_MCP_Settings::is_enabled();
 			}
@@ -197,13 +197,13 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 
 		$logger->register_execution_hooks();
 
-		add_filter( 'mcp_adapter_tools_list', array( $this, 'filter_tools_by_permission' ) );
+		add_filter( 'gform_mcp_adapter_tools_list', array( $this, 'filter_tools_by_permission' ) );
 
 		add_action( 'wp_abilities_api_categories_init', array( $this, 'register_categories' ) );
 		add_action( 'wp_abilities_api_init', array( $this, 'register_abilities' ) );
 
 		if ( \GF_MCP_Settings::is_dedicated_endpoint() ) {
-			add_action( 'mcp_adapter_init', array( $this, 'register_dedicated_server' ), 20 );
+			add_action( 'gform_mcp_adapter_init', array( $this, 'register_dedicated_server' ), 20 );
 		}
 	}
 
@@ -414,7 +414,7 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 	/**
 	 * Register a dedicated Gravity Forms MCP server.
 	 *
-	 * Called on 'mcp_adapter_init' at priority 20 (after default server at 10)
+	 * Called on 'gform_mcp_adapter_init' at priority 20 (after default server at 10)
 	 * to ensure abilities are already registered and resolvable.
 	 *
 	 * @since 3.1.0

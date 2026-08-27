@@ -226,13 +226,17 @@ function gf_is_checkable_empty( $inputs ) {
 
 function gf_is_match_default( $input, rule, formId, fieldId ) {
 
-	var val           = $input.val(),
-		values        = ( val instanceof Array ) ? val : [ val ], // transform regular value into array to support multi-select (which returns an array of selected items)
+	var val = $input.val();
+	if ( val === undefined ) {
+		val = [];
+	}
+
+	var values        = ( val instanceof Array ) ? val : [ val ], // transform regular value into array to support multi-select (which returns an array of selected items)
 		matchCount    = 0,
 		valuesLength  = Math.max( values.length, 1 ); // jQuery 3.0: Make sure our length is at least 1 so that the following loop fires.
 
 	// Back-compat for rules based on the address field country input that are still using the country name instead of the code; gets the code from the default countries list in gf_global.
-	if ( rule.fieldId === `${ fieldId }.6` && rule.value.length > 2 && val.length === 2 && $input.closest( '.ginput_container_address' ).length === 1 ) {
+	if ( rule.fieldId === `${ fieldId }.6` && rule.value.length > 2 && $input.closest( '.ginput_container_address' ).length === 1 && val.length === 2 ) {
 		const ruleValueLowerCase = rule.value.toLowerCase();
 
 		rule.value = Object.entries( window.gf_global?.countries || {} ).find(

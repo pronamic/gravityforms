@@ -95,6 +95,6 @@ class InitializeHandler {
 		 * @param \Gravity_Forms\Gravity_Forms\WP\McpSchema\Common\Protocol\DTO\InitializeResult $result The initialize result DTO.
 		 * @param \Gravity_Forms\Gravity_Forms\WP\MCP\Core\McpServer                             $server The MCP server instance.
 		 */
-		return apply_filters( 'mcp_adapter_initialize_response', $result, $this->mcp );
+		return apply_filters( 'gform_mcp_adapter_initialize_response', $result, $this->mcp );
 	}
 }

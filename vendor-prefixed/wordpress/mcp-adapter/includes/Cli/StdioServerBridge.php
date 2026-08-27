@@ -90,11 +90,11 @@ class StdioServerBridge {
 		 *
 		 * @param bool $enabled Whether STDIO transport is enabled. Default true.
 		 */
-		$enable_serve = apply_filters( 'mcp_adapter_enable_stdio_transport', true );
+		$enable_serve = apply_filters( 'gform_mcp_adapter_enable_stdio_transport', true );
 
 		if ( ! $enable_serve ) {
 			throw new \RuntimeException(
-				'The STDIO transport is disabled. Enable it by setting the "mcp_adapter_enable_stdio_transport" filter to true.'
+				'The STDIO transport is disabled. Enable it by setting the "gform_mcp_adapter_enable_stdio_transport" filter to true.'
 			);
 		}
 

@@ -107,7 +107,7 @@ class McpComponentRegistry {
 		 * @param \Gravity_Forms\Gravity_Forms\WP\MCP\Core\McpServer $server        The McpServer instance owning the registry.
 		 */
 		$this->should_record_component_registration = apply_filters(
-			'mcp_adapter_observability_record_component_registration',
+			'gform_mcp_adapter_observability_record_component_registration',
 			false,
 			$this->mcp_server->get_server_id(),
 			$this->mcp_server

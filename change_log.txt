@@ -1,3 +1,15 @@
+### 3.1.0.2
+- Fixed an issue where selecting a date in the Datepicker could overwrite the configured minimum or maximum date.
+- Fixed an issue that causes fields inside repeaters to have their labels hidden when the repeater field is configured with hidden labels.
+- Fixed an issue that causes the button spinner to remain visible when an AJAX submission is aborted.
+- Fixed a fatal error caused by filters not being prefixed in private mcp_adapter.
+- Fixed an issue where expanded Forms and Feeds list rows are squished on mobile.
+
+### 3.1.0.1
+- Fixed an issue where the Gravity Forms Color Picker component override GenerateBlocks color picker styles in the block editor.
+- Fixed a CSS validation error for form grid styles in Gravity Theme.
+- Fixed a JavaScript error that occurs, preventing form display, when there is conditional logic based on the last name input of the Name field and the input is not present.
+
 ### 3.1.0 | 2026-08-25
 - Added the [Abilities API integration](https://docs.gravityforms.com/gravity-forms-mcp-server-overview/).
 - Added support for detecting links/URLs in supported fields. This includes Single Line Text, Paragraph, List, and Hidden fields with the No Links/URLs setting enabled, as well as Name, Address, and Phone fields using the International (unformatted) format. When a link or URL is detected, the field can fail validation, or, if the Advanced Honeypot is enabled, the submission can be flagged as spam.

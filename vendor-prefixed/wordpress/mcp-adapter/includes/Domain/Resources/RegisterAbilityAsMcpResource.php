@@ -267,7 +267,7 @@ class RegisterAbilityAsMcpResource {
 		 * @param string $uri The validated resource URI.
 		 * @param \WP_Ability $ability The source ability instance.
 		 */
-		$filtered_uri = apply_filters( 'mcp_adapter_resource_uri', $uri, $this->ability );
+		$filtered_uri = apply_filters( 'gform_mcp_adapter_resource_uri', $uri, $this->ability );
 
 		// Validate post-filter.
 		if ( ! is_string( $filtered_uri ) || ! McpValidator::validate_resource_uri( $filtered_uri ) ) {
@@ -414,7 +414,7 @@ class RegisterAbilityAsMcpResource {
 		 * @param string $name The resource name.
 		 * @param \WP_Ability $ability The source ability instance.
 		 */
-		$filtered_name = apply_filters( 'mcp_adapter_resource_name', $name, $this->ability );
+		$filtered_name = apply_filters( 'gform_mcp_adapter_resource_name', $name, $this->ability );
 
 		// Resource names have no charset restrictions, so just ensure it's a non-empty string.
 		if ( is_string( $filtered_name ) && '' !== trim( $filtered_name ) ) {
@@ -463,7 +463,7 @@ class RegisterAbilityAsMcpResource {
 		}
 
 		// Optional deep validation if enabled.
-		$mcp_validation_enabled = apply_filters( 'mcp_adapter_validation_enabled', false );
+		$mcp_validation_enabled = apply_filters( 'gform_mcp_adapter_validation_enabled', false );
 		if ( $mcp_validation_enabled ) {
 			$validation_result = McpResourceValidator::validate_resource_dto( $resource_dto );
 			if ( is_wp_error( $validation_result ) ) {

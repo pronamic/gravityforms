@@ -93,7 +93,7 @@ class GF_MCP_Settings {
 	 *
 	 * This value is defined in the MCP Adapter package's DefaultServerFactory
 	 * as a plain string — no constant or getter is exposed upstream. Hardcoded
-	 * here to match. If the adapter changes this, the mcp_adapter_default_server_config
+	 * here to match. If the adapter changes this, the gform_mcp_adapter_default_server_config
 	 * filter would be the signal.
 	 *
 	 * @since 3.1.0

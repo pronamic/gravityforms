@@ -4,7 +4,7 @@
     'name' => 'gravityforms/gravityforms',
     'pretty_version' => 'dev-master',
     'version' => 'dev-master',
-    'reference' => '6e595ab16fe856bf9b6421ae72a1c58825813b9a',
+    'reference' => '56fec31cf62dd878461810198d978ae3dfb618de',
     'type' => 'wordpress-plugin',
     'install_path' => __DIR__ . '/../',
     'aliases' => 

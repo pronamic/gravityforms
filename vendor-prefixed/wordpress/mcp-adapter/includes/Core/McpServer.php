@@ -165,7 +165,7 @@ class McpServer {
 		 * @param string    $server_id The server ID being configured.
 		 * @param \Gravity_Forms\Gravity_Forms\WP\MCP\Core\McpServer $server    The McpServer instance being constructed.
 		 */
-		$this->mcp_validation_enabled = apply_filters( 'mcp_adapter_validation_enabled', false, $this->server_id, $this );
+		$this->mcp_validation_enabled = apply_filters( 'gform_mcp_adapter_validation_enabled', false, $this->server_id, $this );
 
 		// Setup handlers and components
 		$this->setup_handlers( $error_handler, $observability_handler );

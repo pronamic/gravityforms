@@ -85,7 +85,7 @@ class DefaultServerFactory {
 		 *     @type string[] $prompts                Prompt ability names to expose.
 		 * }
 		 */
-		$config = apply_filters( 'mcp_adapter_default_server_config', $wordpress_defaults );
+		$config = apply_filters( 'gform_mcp_adapter_default_server_config', $wordpress_defaults );
 
 		// Ensure config is an array and merge with defaults
 		if ( ! is_array( $config ) ) {

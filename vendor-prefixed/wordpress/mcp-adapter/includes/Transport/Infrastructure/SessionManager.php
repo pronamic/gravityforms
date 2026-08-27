@@ -242,7 +242,7 @@ final class SessionManager {
 		 *
 		 * @param int $max_sessions Maximum sessions per user. Default 32.
 		 */
-		$max_sessions = (int) apply_filters( 'mcp_adapter_session_max_per_user', self::DEFAULT_MAX_SESSIONS );
+		$max_sessions = (int) apply_filters( 'gform_mcp_adapter_session_max_per_user', self::DEFAULT_MAX_SESSIONS );
 
 		/**
 		 * Filters the session inactivity timeout in seconds.
@@ -254,7 +254,7 @@ final class SessionManager {
 		 *
 		 * @param int $timeout Inactivity timeout in seconds. Default DAY_IN_SECONDS (86400 / 24 hours).
 		 */
-		$inactivity_timeout = (int) apply_filters( 'mcp_adapter_session_inactivity_timeout', self::DEFAULT_INACTIVITY_TIMEOUT );
+		$inactivity_timeout = (int) apply_filters( 'gform_mcp_adapter_session_inactivity_timeout', self::DEFAULT_INACTIVITY_TIMEOUT );
 
 		/**
 		 * Filters the minimum interval between session last_activity writes.
@@ -267,7 +267,7 @@ final class SessionManager {
 		 *
 		 * @param int $interval Minimum seconds between writes. Default 60.
 		 */
-		$activity_update_interval = (int) apply_filters( 'mcp_adapter_session_activity_update_interval', self::DEFAULT_ACTIVITY_UPDATE_INTERVAL );
+		$activity_update_interval = (int) apply_filters( 'gform_mcp_adapter_session_activity_update_interval', self::DEFAULT_ACTIVITY_UPDATE_INTERVAL );
 
 		// Clamp: interval must be less than inactivity timeout to prevent
 		// sessions from expiring despite active use.

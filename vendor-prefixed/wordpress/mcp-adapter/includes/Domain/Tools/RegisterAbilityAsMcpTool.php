@@ -81,7 +81,7 @@ class RegisterAbilityAsMcpTool {
 		}
 
 		// Optional deep validation if enabled.
-		$mcp_validation_enabled = apply_filters( 'mcp_adapter_validation_enabled', false );
+		$mcp_validation_enabled = apply_filters( 'gform_mcp_adapter_validation_enabled', false );
 		if ( $mcp_validation_enabled ) {
 			$validation_result = McpToolValidator::validate_tool_dto( $tool_dto );
 			if ( is_wp_error( $validation_result ) ) {
@@ -222,7 +222,7 @@ class RegisterAbilityAsMcpTool {
 		 * @param string $name The sanitized tool name.
 		 * @param \WP_Ability $ability The source ability instance.
 		 */
-		$filtered_name = apply_filters( 'mcp_adapter_tool_name', $sanitized_name, $this->ability );
+		$filtered_name = apply_filters( 'gform_mcp_adapter_tool_name', $sanitized_name, $this->ability );
 
 		// Validate post-filter (in case filter broke it).
 		if ( ! is_string( $filtered_name ) || ! McpValidator::validate_name( $filtered_name ) ) {

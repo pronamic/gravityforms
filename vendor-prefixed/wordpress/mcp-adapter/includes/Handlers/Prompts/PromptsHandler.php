@@ -82,9 +82,9 @@ class PromptsHandler {
 		 * @param \Gravity_Forms\Gravity_Forms\WP\MCP\Core\McpServer                         $server  The MCP server instance.
 		 */
 		$prompts = $this->validate_filtered_list(
-			apply_filters( 'mcp_adapter_prompts_list', $prompts, $this->mcp ),
+			apply_filters( 'gform_mcp_adapter_prompts_list', $prompts, $this->mcp ),
 			$prompts,
-			'mcp_adapter_prompts_list',
+			'gform_mcp_adapter_prompts_list',
 			$this->mcp->get_error_handler()
 		);
 
@@ -154,7 +154,7 @@ class PromptsHandler {
 			 * @param \Gravity_Forms\Gravity_Forms\WP\MCP\Domain\Prompts\McpPrompt   $mcp_prompt  The MCP prompt instance.
 			 * @param \Gravity_Forms\Gravity_Forms\WP\MCP\Core\McpServer             $server      The MCP server instance.
 			 */
-			$arguments = apply_filters( 'mcp_adapter_pre_prompt_get', $arguments, $prompt_name, $mcp_prompt, $this->mcp );
+			$arguments = apply_filters( 'gform_mcp_adapter_pre_prompt_get', $arguments, $prompt_name, $mcp_prompt, $this->mcp );
 
 			// Allow pre-filter to short-circuit execution by returning WP_Error.
 			if ( is_wp_error( $arguments ) ) {
@@ -177,7 +177,7 @@ class PromptsHandler {
 			 * @param \Gravity_Forms\Gravity_Forms\WP\MCP\Domain\Prompts\McpPrompt   $mcp_prompt  The MCP prompt instance.
 			 * @param \Gravity_Forms\Gravity_Forms\WP\MCP\Core\McpServer             $server      The MCP server instance.
 			 */
-			$result = apply_filters( 'mcp_adapter_prompt_get_result', $result, $arguments, $prompt_name, $mcp_prompt, $this->mcp );
+			$result = apply_filters( 'gform_mcp_adapter_prompt_get_result', $result, $arguments, $prompt_name, $mcp_prompt, $this->mcp );
 
 			if ( is_wp_error( $result ) ) {
 				$this->mcp->get_error_handler()->log(

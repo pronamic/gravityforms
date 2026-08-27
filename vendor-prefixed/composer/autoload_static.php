@@ -4,7 +4,7 @@
 
 namespace Gravity_Forms\Gravity_Forms\Composer\Autoload;
 
-class ComposerStaticInit49751edc136d2c5c128db9706324f10f
+class ComposerStaticInitb4d3e6033432a687b2b5e8321fbb10f4
 {
     public static $prefixLengthsPsr4 = array (
         'G' =>
@@ -292,9 +292,9 @@ class ComposerStaticInit49751edc136d2c5c128db9706324f10f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit49751edc136d2c5c128db9706324f10f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit49751edc136d2c5c128db9706324f10f::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit49751edc136d2c5c128db9706324f10f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitb4d3e6033432a687b2b5e8321fbb10f4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitb4d3e6033432a687b2b5e8321fbb10f4::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitb4d3e6033432a687b2b5e8321fbb10f4::$classMap;
 
         }, null, ClassLoader::class);
     }
