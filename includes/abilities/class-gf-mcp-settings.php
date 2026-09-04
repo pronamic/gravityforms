@@ -93,7 +93,7 @@ class GF_MCP_Settings {
 	 *
 	 * This value is defined in the MCP Adapter package's DefaultServerFactory
 	 * as a plain string — no constant or getter is exposed upstream. Hardcoded
-	 * here to match. If the adapter changes this, the gform_mcp_adapter_default_server_config
+	 * here to match. If the adapter changes this, the mcp_adapter_default_server_config
 	 * filter would be the signal.
 	 *
 	 * @since 3.1.0
@@ -538,14 +538,14 @@ class GF_MCP_Settings {
 	 * Check if all MCP dependencies are available.
 	 *
 	 * Requires the WordPress Abilities API (wp_register_ability) — WordPress 6.9+ core.
-	 * The MCP adapter is always bundled via Composer and vendor-prefixed by Strauss.
+	 * Requires the canonical WordPress MCP Adapter package loaded by Composer.
 	 *
 	 * @since 3.1.0
 	 *
 	 * @return bool
 	 */
 	public static function is_mcp_available() {
-		return self::has_abilities_api();
+		return self::has_abilities_api() && class_exists( '\WP\MCP\Core\McpAdapter' );
 	}
 
 	/**

@@ -4598,6 +4598,7 @@ abstract class GFAddOn {
 	 * Override plugin_page() in order to provide a custom plugin page
 	 */
 	public function plugin_page_container() {
+		GFCommon::gf_root_wrapper_open();
 		?>
 		<div class="wrap">
 			<?php
@@ -4615,7 +4616,8 @@ abstract class GFAddOn {
 			$this->plugin_page();
 			?>
 		</div>
-	<?php
+		<?php
+		GFCommon::gf_root_wrapper_close();
 	}
 
 	/**

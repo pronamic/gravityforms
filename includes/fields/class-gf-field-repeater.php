@@ -1688,7 +1688,7 @@ class GF_Field_Repeater extends GF_Field {
 
 					if ( 'list' === $field->get_input_type() && ! empty( $field_value[ $field->id ] ) ) {
 
-						$list_rows = maybe_unserialize( $field_value[ $field->id ] );
+						$list_rows = GFCommon::maybe_unserialize( $field_value[ $field->id ] );
 
 						if ( is_array( $list_rows[0] ) ) {
 							$lines = array();

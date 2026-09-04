@@ -458,7 +458,7 @@ class GFFormDisplay {
 	 */
 	private static function sanitize_file_uploads_for_save( $form ) {
 		$form_id       = absint( rgar( $form, 'id' ) );
-		$upload_fields = GFCommon::get_fields_by_type( $form, array( 'fileupload' ) );
+		$upload_fields = GFCommon::get_fields_by_type( $form, array( 'fileupload', 'post_image' ) );
 
 		foreach ( $upload_fields as $field ) {
 			if ( ! $field instanceof GF_Field_FileUpload ) {

@@ -1240,7 +1240,7 @@ class GFFormSettings {
 
 		self::page_header( __( 'Personal Data', 'gravityforms' ) );
 
-		require_once( 'includes/class-personal-data.php' );
+		require_once( 'includes/personal-data/class-personal-data.php' );
 
 		$form_id = absint( rgget( 'id' ) );
 
@@ -1275,6 +1275,7 @@ class GFFormSettings {
 	 * @return void
 	 */
 	public static function page_header( $title = '' ) {
+		GFCommon::gf_root_wrapper_open();
 
 		// Print admin styles.
 		wp_print_styles( array( 'jquery-ui-styles', 'gform_admin', 'gform_settings', 'wp-pointer' ) );

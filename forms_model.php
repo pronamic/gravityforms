@@ -5870,9 +5870,46 @@ class GFFormsModel {
 	private static function move_temp_file( $form_id, $tempfile_info ) {
 		_deprecated_function( 'move_temp_file', '1.9', 'GF_Field_Fileupload::move_temp_file' );
 
-		$target       = self::get_file_upload_path( $form_id, $tempfile_info['uploaded_filename'] );
+		$temp_filename     = (string) rgar( $tempfile_info, 'temp_filename' );
+		$uploaded_filename = (string) rgar( $tempfile_info, 'uploaded_filename' );
+
+		if (
+			GFCommon::file_name_has_disallowed_extension( $temp_filename ) ||
+			GFCommon::file_name_has_disallowed_extension( $uploaded_filename )
+		) {
+			GFCommon::log_debug( 'GFFormsModel::move_temp_file(): Aborting; the file has a disallowed extension.' );
+
+			return '';
+		}
+
+		$temp_file_extension     = strtolower( pathinfo( $temp_filename, PATHINFO_EXTENSION ) );
+		$uploaded_file_extension = strtolower( pathinfo( $uploaded_filename, PATHINFO_EXTENSION ) );
+
+		if ( empty( $temp_file_extension ) || empty( $uploaded_file_extension ) || $temp_file_extension !== $uploaded_file_extension ) {
+			GFCommon::log_debug( 'GFFormsModel::move_temp_file(): Aborting; temporary file extension does not match uploaded file extension.' );
+
+			return '';
+		}
+
+		$target       = self::get_file_upload_path( $form_id, $uploaded_filename );
 		$tmp_location = GFFormsModel::get_tmp_upload_location( $form_id );
-		$source       = $tmp_location['path'] . $tempfile_info['temp_filename'];
+		$source       = $tmp_location['path'] . wp_basename( $temp_filename );
+
+		if ( ! (bool) apply_filters( 'gform_file_upload_whitelisting_disabled', false ) ) {
+			$check_result = GFCommon::check_type_and_ext(
+				array(
+					'tmp_name' => $source,
+					'name'     => $uploaded_filename,
+				),
+				$uploaded_filename
+			);
+
+			if ( is_wp_error( $check_result ) ) {
+				GFCommon::log_debug( sprintf( 'GFFormsModel::move_temp_file(): Aborting; %s; %s', $check_result->get_error_code(), $check_result->get_error_message() ) );
+
+				return '';
+			}
+		}
 
 		if ( rename( $source, $target['path'] ) ) {
 			self::set_permissions( $target['path'] );
@@ -5896,6 +5933,24 @@ class GFFormsModel {
 	 */
 	public static function upload_file( $form_id, $file ) {
 		_deprecated_function( 'upload_file', '1.9', 'GF_Field_Fileupload::upload_file' );
+
+		$file_name = (string) rgar( $file, 'name' );
+		if ( GFCommon::file_name_has_disallowed_extension( $file_name ) ) {
+			GFCommon::log_debug( 'GFFormsModel::upload_file(): Aborting; the file has a disallowed extension.' );
+
+			return '';
+		}
+
+		if ( ! (bool) apply_filters( 'gform_file_upload_whitelisting_disabled', false ) ) {
+			$check_result = GFCommon::check_type_and_ext( $file, $file_name );
+
+			if ( is_wp_error( $check_result ) ) {
+				GFCommon::log_debug( sprintf( 'GFFormsModel::upload_file(): Aborting; %s; %s', $check_result->get_error_code(), $check_result->get_error_message() ) );
+
+				return '';
+			}
+		}
+
 		$target = self::get_file_upload_path( $form_id, $file['name'] );
 		if ( ! $target ) {
 			GFCommon::log_debug( 'GFFormsModel::upload_file(): FAILED (Upload folder could not be created.)' );
@@ -6838,6 +6893,7 @@ class GFFormsModel {
 	 *
 	 * @since Unknown
 	 * @since 2.9.1 Updated to return the referring URL for requests made via admin-ajax.php.
+	 * @since 3.1.1 Updated to use the new Ajax `current_page_url` input as a fallback.
 	 *
 	 * @param bool $force_ssl Indicates if the URL should start with https.
 	 *
@@ -6850,11 +6906,23 @@ class GFFormsModel {
 		}
 		$pageURL .= '://' . rgar( $_SERVER, 'HTTP_HOST' ) . rgar( $_SERVER, 'REQUEST_URI' );
 
-		if ( str_starts_with( $pageURL, admin_url( 'admin-ajax.php' ) ) ) {
-			return wp_get_referer();
+		if ( ! str_starts_with( $pageURL, admin_url( 'admin-ajax.php' ) ) ) {
+			return $pageURL;
 		}
 
-		return $pageURL;
+		$referer = wp_get_referer();
+		if ( ! empty( $referer ) ) {
+			return $referer;
+		}
+
+		// Reaching here can indicate the "Referrer-Policy: no-referrer" header is in use.
+		// The `current_page_url` input is set when the new Ajax submission handler is in use.
+		$url = rgpost( 'current_page_url' );
+		if ( ! empty( $url ) ) {
+			$url = sanitize_url( rawurldecode( $url ) );
+		}
+
+		return $url ?: $pageURL;
 	}
 
 	public static function get_submitted_fields( $form_id ) {

@@ -198,7 +198,7 @@ class GFAutoUpgrade {
 	 * @since 2.4.15
 	 */
 	public function ajax_display_changelog() {
-		check_admin_referer();
+		check_admin_referer( 'gf_get_changelog' );
 
 		$this->display_changelog();
 	}
@@ -231,7 +231,7 @@ class GFAutoUpgrade {
 
 		$version_info = GFCommon::get_version_info( $use_cache );
 
-		$info = array( 
+		$info = array(
 			'is_valid_key'         => rgar( $version_info, 'is_valid_key' ),
 			'version'              => rgars( $version_info, "offerings/{$offering}/version" ),
 			'url'                  => rgars( $version_info, "offerings/{$offering}/url" ),

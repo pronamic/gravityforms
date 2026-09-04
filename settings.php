@@ -447,7 +447,11 @@ class GFSettings {
 						'class'               => 'gform-admin-input',
 						'validation_callback' => array( 'GFSettings', 'license_key_validation_callback' ),
 						'hidden'              => $is_hidden,
+						'disabled'            => defined( 'GF_LICENSE_KEY' ) ? 'disabled' : '',
 						'after_input'         => function () {
+							if ( defined( 'GF_LICENSE_KEY' ) ) {
+								return '<div class="alert gforms_note_warning">' . esc_html__( 'The license key is set via a constant. To edit the license key here, first remove the constant.', 'gravityforms' ) . '</div>';
+							}
 							/**
 							 * @var License\GF_License_API_Connector $license_connector
 							 */
@@ -490,6 +494,11 @@ class GFSettings {
 							return $license_info->get_usability();
 						},
 						'save_callback'       => function( $field, $value ) {
+							// Do not allow saving when the key is defined via constant.
+							if ( defined( 'GF_LICENSE_KEY' ) ) {
+								return GF_LICENSE_KEY;
+							}
+
 							// Remove non-alphanumeric characters.
 							$value = preg_replace( '/[^a-zA-Z0-9]/', '', $value );
 							if ( isset( $_POST['_gform_setting_license_key'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -979,7 +988,7 @@ class GFSettings {
 		require_once( GFCommon::get_base_path() . '/tooltips.php' );
 
 		$initial_values = array(
-			'license_key'                => GFCommon::get_key(),
+			'license_key'                => defined( 'GF_LICENSE_KEY' ) ? GF_LICENSE_KEY : GFCommon::get_key(),
 			'default_theme'              => get_option( 'rg_gforms_default_theme', 'gravity-theme' ),
 			'currency'                   => GFCommon::get_currency(),
 			'disable_css'                => ! (bool) get_option( 'rg_gforms_disable_css' ),
@@ -1494,6 +1503,8 @@ class GFSettings {
 	 */
 	public static function page_header( $title = '', $message = '' ) {
 
+		GFCommon::gf_root_wrapper_open();
+
 		// Print admin styles.
 		wp_print_styles( array( 'jquery-ui-styles', 'gform_admin', 'gform_settings' ) );
 
@@ -1644,14 +1655,14 @@ class GFSettings {
 	 */
 	public static function page_footer() {
 		?>
+					</div>
+					<!-- / gform-settings__content -->
 				</div>
-				<!-- / gform-settings__content -->
+				<!-- / gform-settings__wrapper -->
 			</div>
-			<!-- / gform-settings__wrapper -->
-
-		</div> <!-- / wrap -->
-
+			<!-- / wrap -->
 		<?php
+		GFCommon::gf_root_wrapper_close();
 	}
 
     /**

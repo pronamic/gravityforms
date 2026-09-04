@@ -179,6 +179,8 @@ if ( ! class_exists( 'GFResults' ) ) {
 		}
 
 		public function results_page($form_id, $page_title, $gf_page, $gf_view ) {
+			GFForms::admin_header( array(), true );
+
 			$form_id = absint( $form_id );
 			if ( empty( $form_id ) ) {
 				$forms = RGFormsModel::get_forms();
@@ -215,6 +217,7 @@ if ( ! class_exists( 'GFResults' ) ) {
 				$init_vars['filters'] = $filters;
 			}
 			?>
+
 			<script type="text/javascript">
 				var gresultsFields = <?php echo json_encode( $all_fields ); ?>;
 				var gresultsFilterSettings = <?php echo json_encode( $filter_settings ); ?>;
@@ -224,102 +227,86 @@ if ( ! class_exists( 'GFResults' ) ) {
 				<?php GFCommon::gf_vars() ?>
 			</script>
 
-			<div class="wrap gforms_edit_form <?php echo esc_attr( GFCommon::get_browser_class() ); ?>">
+			<?php if ( false === empty( $all_fields ) ) : ?>
+				<div id="poststuff" class="metabox-holder has-right-sidebar">
+					<div id="side-info-column" class="inner-sidebar">
+						<div id="gresults-results-filter" class="gform-settings-panel__content postbox">
+							<h2><?php echo esc_html( $this->_search_title ); ?></h2>
+							<div id="gresults-results-filter-content">
+								<form id="gresults-results-filter-form" action="" method="GET">
+									<?php wp_nonce_field( 'gf_results', '_gf_results_nonce' );  ?>
+									<input type="hidden" id="gresults-page-slug" name="page"
+											value="<?php echo esc_attr( $gf_page ); ?>">
+									<input type="hidden" id="gresults-view-slug" name="view"
+											value="<?php echo esc_attr( $gf_view ); ?>">
+									<input type="hidden" id="gresults-form-id" name="id"
+											value="<?php echo esc_attr( $form_id ); ?>">
 
-				<?php //GFCommon::form_page_title( $form ); ?>
-				<?php //GFCommon::display_dismissible_message(); ?>
-				<?php //GFForms::top_toolbar(); ?>
-				<?php GFForms::admin_header(array(), true ) ;?>
-				<?php if ( false === empty( $all_fields ) ) : ?>
+									<?php
+									$filter_ui = array(
+										'fields'     => array(
+											'label'   => esc_attr__( 'Include results if', 'gravityforms' ),
+											'tooltip' => 'gresults_filters',
+											'markup'  => '<div class="gform-settings-field__conditional-logic"><div id="gresults-results-field-filters-container">
+															<!-- placeholder populated by js -->
+															</div></div>',
+										),
+										'start_date' => array(
+											'label'   => esc_attr__( 'Start date', 'gravityforms' ),
+											'markup'  => '<div class="gform-settings-field gform-settings-field__date_time">
+																<span class="gform-settings-input__container"><input type="text" id="gresults-results-filter-date-start" class="gform-datepicker ymd_dash" name="start" value="' . esc_attr( $start_date ) . '"/>' . $this->get_button_markup( 'gresults-results-filter-date-start' ) . '</span>
+															</div>',
+										),
+										'end_date'   => array(
+											'label'   => esc_attr__( 'End date', 'gravityforms' ),
+											'markup'  => '<div class="gform-settings-field gform-settings-field__date_time" >
+																<span class="gform-settings-input__container"><input type="text" id="gresults-results-filter-date-end" class="gform-datepicker ymd_dash" name="end" value="' . esc_attr( $end_date ) . '"/>' . $this->get_button_markup( 'gresults-results-filter-date-end' ) . '</span>
+															</div>',
+										),
+									);
+									$filter_ui = apply_filters( 'gform_filter_ui', $filter_ui, $form_id, $page_title, $gf_page, $gf_view );
 
-					<div id="poststuff" class="metabox-holder has-right-sidebar">
-						<div id="side-info-column" class="inner-sidebar">
-							<div id="gresults-results-filter" class="gform-settings-panel__content postbox">
-								<h2><?php echo esc_html( $this->_search_title ); ?></h2>
-
-								<div id="gresults-results-filter-content">
-									<form id="gresults-results-filter-form" action="" method="GET">
-										<?php wp_nonce_field( 'gf_results', '_gf_results_nonce' );  ?>
-										<input type="hidden" id="gresults-page-slug" name="page"
-										       value="<?php echo esc_attr( $gf_page ); ?>">
-										<input type="hidden" id="gresults-view-slug" name="view"
-										       value="<?php echo esc_attr( $gf_view ); ?>">
-										<input type="hidden" id="gresults-form-id" name="id"
-										       value="<?php echo esc_attr( $form_id ); ?>">
-
-										<?php
-										$filter_ui = array(
-											'fields'     => array(
-												'label'   => esc_attr__( 'Include results if', 'gravityforms' ),
-												'tooltip' => 'gresults_filters',
-												'markup'  => '<div class="gform-settings-field__conditional-logic"><div id="gresults-results-field-filters-container">
-																<!-- placeholder populated by js -->
-															 </div></div>',
-											),
-											'start_date' => array(
-												'label'   => esc_attr__( 'Start date', 'gravityforms' ),
-												'markup'  => '<div class="gform-settings-field gform-settings-field__date_time">
-																	<span class="gform-settings-input__container"><input type="text" id="gresults-results-filter-date-start" class="gform-datepicker ymd_dash" name="start" value="' . esc_attr( $start_date ) . '"/>' . $this->get_button_markup( 'gresults-results-filter-date-start' ) . '</span>
-																</div>',
-											),
-											'end_date'   => array(
-												'label'   => esc_attr__( 'End date', 'gravityforms' ),
-												'markup'  => '<div class="gform-settings-field gform-settings-field__date_time" >
-																	<span class="gform-settings-input__container"><input type="text" id="gresults-results-filter-date-end" class="gform-datepicker ymd_dash" name="end" value="' . esc_attr( $end_date ) . '"/>' . $this->get_button_markup( 'gresults-results-filter-date-end' ) . '</span>
-																</div>',
-											),
-										);
-										$filter_ui = apply_filters( 'gform_filter_ui', $filter_ui, $form_id, $page_title, $gf_page, $gf_view );
-
-										foreach ( $filter_ui as $name => $filter ) {
-											?>
-											<div class="gform-settings-field__header"><label class='gform-settings-label'><?php echo esc_html( $filter['label'] ); ?><?php gform_tooltip( rgar( $filter, 'tooltip' ), 'tooltip_bottomleft' ) ?></label></div>
-											<?php
-											echo $filter['markup']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-										}
-
+									foreach ( $filter_ui as $name => $filter ) {
 										?>
+										<div class="gform-settings-field__header"><label class='gform-settings-label'><?php echo esc_html( $filter['label'] ); ?><?php gform_tooltip( rgar( $filter, 'tooltip' ), 'tooltip_bottomleft' ) ?></label></div>
+										<?php
+										echo $filter['markup']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									}
+									?>
 
-
-										<div id="gresults-results-filter-buttons">
-											<input type="submit" id="gresults-results-filter-submit-button"
-											       class="button primary large"
-											       value="<?php esc_attr_e( 'Apply filters', 'gravityforms' ); ?>">
-											<input type="button" id="gresults-results-filter-clear-button"
-											       class="button large"
-											       value="<?php esc_attr_e( 'Clear', 'gravityforms' ); ?>"
-											       onclick="gresults.clearFilterForm();"
-											       onkeypress="gresults.clearFilterForm();">
-
-											<div class="gresults-filter-loading"
-											     style="display:none; float:right; margin-top:5px;">
-												<i class='gform-spinner'></i>
-											</div>
+									<div id="gresults-results-filter-buttons">
+										<input type="submit" id="gresults-results-filter-submit-button"
+												class="button primary large"
+												value="<?php esc_attr_e( 'Apply filters', 'gravityforms' ); ?>">
+										<input type="button" id="gresults-results-filter-clear-button"
+												class="button large"
+												value="<?php esc_attr_e( 'Clear', 'gravityforms' ); ?>"
+												onclick="gresults.clearFilterForm();"
+												onkeypress="gresults.clearFilterForm();">
+										<div class="gresults-filter-loading"
+												style="display:none; float:right; margin-top:5px;">
+											<i class='gform-spinner'></i>
 										</div>
-									</form>
-								</div>
+									</div>
+								</form>
 							</div>
 						</div>
 					</div>
-					<div class="gresults-filter-loading" style="display:none;margin:0 5px 10px 0;">
-						<i class='gform-spinner'></i>&nbsp;
-						<a href="javascript:void(0);" onclick="javascript:gresultsAjaxRequest.abort()" onkeypress="javascript:gresultsAjaxRequest.abort()"><?php esc_html_e( 'Cancel', 'gravityforms' ); ?></a>
+				</div>
+				<div class="gresults-filter-loading" style="display:none;margin:0 5px 10px 0;">
+					<i class='gform-spinner'></i>&nbsp;
+					<a href="javascript:void(0);" onclick="javascript:gresultsAjaxRequest.abort()" onkeypress="javascript:gresultsAjaxRequest.abort()"><?php esc_html_e( 'Cancel', 'gravityforms' ); ?></a>
+				</div>
+				<div id="gresults-results-wrapper">
+					<div id="gresults-results">&nbsp;
 					</div>
+				</div>
+			<?php
+			else :
+				esc_html_e( 'This form does not have any fields that can be used for results', 'gravityforms' );
+			endif ?>
 
-					<div id="gresults-results-wrapper">
-						<div id="gresults-results">&nbsp;
-						</div>
-					</div>
-
-				<?php
-				else :
-					esc_html_e( 'This form does not have any fields that can be used for results', 'gravityforms' );
-				endif ?>
-			</div>
-
-			<?php GFForms::admin_footer() ?>
-
-
+			<?php GFForms::admin_footer(); ?>
 		<?php
 		}
 

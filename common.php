@@ -451,6 +451,24 @@ class GFCommon {
 	}
 
 	/**
+	 * Unserialize data when it is serialized, without instantiating PHP objects by default.
+	 *
+	 * @since 3.1.1
+	 *
+	 * @param mixed      $data            Data that may be serialized.
+	 * @param bool|array $allowed_classes Class names allowed during unserialization. False prevents object instantiation.
+	 *
+	 * @return mixed
+	 */
+	public static function maybe_unserialize( $data, $allowed_classes = false ) {
+		if ( is_serialized( $data ) ) {
+			return @unserialize( trim( $data ), array( 'allowed_classes' => $allowed_classes ) ); // @phpcs:ignore
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Determines if provided string is a JSON object.
 	 *
 	 * @since 2.5
@@ -2974,10 +2992,15 @@ Content-Type: text/html;
 	 *
 	 * @since unknown
 	 * @since 2.8.17 Added the network option fallback.
+	 * @since 3.1.1  Check the `GF_LICENSE_KEY` constant before checking the database for the license key.
 	 *
 	 * @return string|false
 	 */
 	public static function get_key() {
+		if ( defined( 'GF_LICENSE_KEY' ) ) {
+			return md5( GF_LICENSE_KEY );
+		}
+
 		$key = get_option( GFForms::LICENSE_KEY_OPT );
 
 		if ( ! $key && ! is_main_site() ) {
@@ -6479,6 +6502,52 @@ Content-Type: text/html;
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignoreWordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Recommended
 
 		return file_get_contents( GFCommon::get_base_path() . '/js/gforms_hooks' . $min . '.js' );
+	}
+
+	/**
+	 * Display the Gravity Forms admin root opening wrapper.
+	 *
+	 * @since 3.1.1
+	 *
+	 * @return void
+	 */
+	public static function gf_root_wrapper_open() {
+		?>
+		<div class="gform-admin" data-js="gform-admin-root">
+		<?php
+
+		/**
+		 * Fires inside the Gravity Forms admin root wrapper, immediately after the opening tag.
+		 *
+		 * Allows extensions and React app providers to inject markup inside the `.gform-admin`
+		 * wrapper, ensuring scoped styles and JS targeting `[data-js="gform-admin-root"]` work as expected.
+		 *
+		 * @since 3.1.1
+		 */
+		do_action( 'gform_admin_root_open' );
+	}
+
+	/**
+	 * Display the Gravity Forms admin root closing wrapper.
+	 *
+	 * @since 3.1.1
+	 *
+	 * @return void
+	 */
+	public static function gf_root_wrapper_close() {
+		/**
+		 * Fires inside the Gravity Forms admin root wrapper, immediately before the closing tag.
+		 *
+		 * Allows extensions and React app providers to inject markup inside the `.gform-admin`
+		 * wrapper, ensuring scoped styles and JS targeting `[data-js="gform-admin-root"]` work as expected.
+		 *
+		 * @since 3.1.1
+		 */
+		do_action( 'gform_admin_root_close' );
+		?>
+		</div>
+		<!-- / .gform-admin -->
+		<?php
 	}
 
 	/**

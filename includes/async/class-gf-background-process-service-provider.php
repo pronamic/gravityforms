@@ -14,6 +14,7 @@ use Gravity_Forms\Gravity_Forms\Bulk_Actions\GF_Entry_Bulk_Action_Processor;
 use Gravity_Forms\Gravity_Forms\Bulk_Actions\Endpoints\GF_Bulk_Action_Endpoint_Start;
 use Gravity_Forms\Gravity_Forms\Bulk_Actions\Endpoints\GF_Bulk_Action_Endpoint_Status;
 use Gravity_Forms\Gravity_Forms\Bulk_Actions\Endpoints\GF_Bulk_Action_Endpoint_Cancel;
+use Gravity_Forms\Gravity_Forms\Personal_Data\GF_Personal_Data_Processor;
 use GFForms;
 use GF_Background_Upgrader;
 use GF_Feed_Processor;
@@ -34,6 +35,7 @@ class GF_Background_Process_Service_Provider extends GF_Service_Provider {
 	const NOTIFICATIONS               = 'notifications_processor';
 	const TELEMETRY                   = 'telemetry_processor';
 	const BULK_ACTION                 = 'bulk_action_processor';
+	const PERSONAL_DATA               = 'personal_data_processor';
 	const BULK_ACTION_ENDPOINT_START  = 'bulk_action_endpoint_start';
 	const BULK_ACTION_ENDPOINT_STATUS = 'bulk_action_endpoint_status';
 	const BULK_ACTION_ENDPOINT_CANCEL = 'bulk_action_endpoint_cancel';
@@ -51,6 +53,7 @@ class GF_Background_Process_Service_Provider extends GF_Service_Provider {
 		self::NOTIFICATIONS => GF_Notifications_Processor::class,
 		self::TELEMETRY     => GF_Telemetry_Processor::class,
 		self::BULK_ACTION   => GF_Entry_Bulk_Action_Processor::class,
+		self::PERSONAL_DATA => GF_Personal_Data_Processor::class,
 	);
 
 	/**
@@ -66,6 +69,7 @@ class GF_Background_Process_Service_Provider extends GF_Service_Provider {
 		require_once GF_PLUGIN_DIR_PATH . 'includes/async/class-gf-notifications-processor.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/telemetry/class-gf-telemetry-processor.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/bulk-actions/class-gf-entry-bulk-action-processor.php';
+		require_once GF_PLUGIN_DIR_PATH . 'includes/personal-data/class-gf-personal-data-processor.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/bulk-actions/endpoints/class-gf-bulk-action-endpoint-start.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/bulk-actions/endpoints/class-gf-bulk-action-endpoint-status.php';
 		require_once GF_PLUGIN_DIR_PATH . 'includes/bulk-actions/endpoints/class-gf-bulk-action-endpoint-cancel.php';

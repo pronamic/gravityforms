@@ -1,14 +1,24 @@
-### 3.1.0.2
+### 3.1.1 | 2026-09-03
+- Added security enhancements.
+- Added the [`gform_state_lifespan`](https://docs.gravityforms.com/gform_state_lifespan/) filter to allow modifying the lifespan of the state during validation.
+- Added a new option to the Export Entries page to select the status for the entries to export.
+- Updated admin pages to use a scoped `.gform-admin` root wrapper and only add the `.gform-admin` body class on pages that use our components, reducing style conflicts in the WordPress admin.
+- Updated the license check to always check for the `GF_LICENSE_KEY` constant first, then the license key stored in the database, and to prevent editing the license key on the settings page if it is set by the constant.
+- Updated the MCP integration to use the canonical WordPress MCP Adapter package to avoid conflicts with other MCP-enabled plugins.
+- Fixed an issue where personal data retention can time out when many entries match the retention policy by processing deletions in background batches.
+- Fixed an issue where selecting a date using enter in the datepicker navigates (to the next field) and/or submits the form in a conversational form.
+- Fixed a PHP warning that can appear when viewing the changelog.
+- Fixed an issue that causes the Datepicker field F1 key and keyboard navigation to not work properly.
+- Fixed an issue where the default country is not selected on form display when the gform_countries filter returns an indexed array. Recomendation: If you are using the gform_countries filter, update the callback to return an associative array using the country codes as the keys to the country names.
 - Fixed an issue where selecting a date in the Datepicker could overwrite the configured minimum or maximum date.
 - Fixed an issue that causes fields inside repeaters to have their labels hidden when the repeater field is configured with hidden labels.
 - Fixed an issue that causes the button spinner to remain visible when an AJAX submission is aborted.
 - Fixed a fatal error caused by filters not being prefixed in private mcp_adapter.
 - Fixed an issue where expanded Forms and Feeds list rows are squished on mobile.
-
-### 3.1.0.1
 - Fixed an issue where the Gravity Forms Color Picker component override GenerateBlocks color picker styles in the block editor.
 - Fixed a CSS validation error for form grid styles in Gravity Theme.
 - Fixed a JavaScript error that occurs, preventing form display, when there is conditional logic based on the last name input of the Name field and the input is not present.
+- API: Fixed an issue where `GFFormsModel::get_current_page_url()` can return the wrong URL when processing a submission via new Ajax and the site is using the "Referrer-Policy: no-referrer" header.
 
 ### 3.1.0 | 2026-08-25
 - Added the [Abilities API integration](https://docs.gravityforms.com/gravity-forms-mcp-server-overview/).

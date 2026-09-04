@@ -288,6 +288,7 @@ class GFEntryDetail {
 		if ( empty( $form_id ) ) {
 			GFCommon::add_error_message( esc_html__( "Oops! We couldn't find your form. Please try again.", 'gravityforms' ) );
 			GFForms::admin_header();
+			GFForms::admin_footer();
 
 			return;
 		}
@@ -296,6 +297,7 @@ class GFEntryDetail {
 		if ( is_wp_error( $lead ) || ! $lead ) {
 			GFCommon::add_error_message( esc_html__( "Oops! We couldn't find your entry. Please try again.", 'gravityforms' ) );
 			GFForms::admin_header();
+			GFForms::admin_footer();
 
 			return;
 		}
@@ -822,6 +824,7 @@ class GFEntryDetail {
 			</div>
 		</form>
 		<?php
+		GFForms::admin_footer();
 	}
 
 	public static function lead_detail_edit( $form, $lead ) {

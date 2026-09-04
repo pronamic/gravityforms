@@ -661,7 +661,7 @@ class GF_Field_List extends GF_Field {
 			return '';
 		}
 
-		$value = maybe_unserialize( $value );
+		$value = GFCommon::maybe_unserialize( $value );
 
 		if( ! is_array( $value ) || ! isset( $value[0] ) ) {
 			return '';
@@ -938,10 +938,7 @@ class GF_Field_List extends GF_Field {
 
 			return $value;
 		} elseif ( is_serialized( $value ) ) {
-			$value = @unserialize(
-				trim( $value ),
-				array( 'allowed_classes' => false )
-			);
+			$value = GFCommon::maybe_unserialize( $value );
 			return is_array( $value ) ? $value : $default;
 		}
 
@@ -990,7 +987,7 @@ class GF_Field_List extends GF_Field {
 		}
 
 		$value = rgar( $entry, $input_id );
-		$value = maybe_unserialize( $value );
+		$value = GFCommon::maybe_unserialize( $value );
 
 		if ( empty( $value ) || $is_csv ) {
 			return $value;

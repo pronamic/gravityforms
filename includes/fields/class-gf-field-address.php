@@ -1221,7 +1221,7 @@ class GF_Field_Address extends GF_Field {
 
 		foreach ( $countries as $code => $country ) {
 			if ( is_numeric( $code ) ) {
-				$code = $country;
+				$code = $this->get_country_code( $country, true );
 			}
 			if ( empty( $country ) ) {
 				$country = $placeholder;
@@ -1546,7 +1546,7 @@ class GF_Field_Address extends GF_Field {
 		} elseif ( rgar( $country_input, 'isHidden' ) ) {
 			$return[ $country_id ] = $this->get_country_code( rgar( $value, $country_id, $this->defaultCountry ) );
 		} else {
-			$return[ $country_id ] = $this->get_choices_for_state_hash( $this->get_countries() );
+			$return[ $country_id ] = $this->get_choices_for_state_hash( $this->get_countries(), true );
 		}
 
 		return $return;
@@ -1556,15 +1556,21 @@ class GF_Field_Address extends GF_Field {
 	 * Prepares the array of choice values for the state hash.
 	 *
 	 * @since 3.0
+	 * @since 3.1.1 Added the $is_country param.
 	 *
-	 * @param null|array $choices Optional. The choices to parse or null to use the field choices property.
+	 * @param null|array $choices    Optional. The choices to parse or null to use the field choices property.
+	 * @param bool       $is_country Optional. Indicates if the choices are for the country input. Defaults to false.
 	 *
 	 * @return array
 	 */
-	protected function get_choices_for_state_hash( $choices = null ) {
+	protected function get_choices_for_state_hash( $choices = null, $is_country = false ) {
 		$values = array();
 		foreach ( $choices as $key => $choice ) {
-			$values[] = is_numeric( $key ) ? $choice : $key;
+			if ( is_numeric( $key ) ) {
+				$values[] = $is_country ? $this->get_country_code( $choice, true ) : $choice;
+			} else {
+				$values[] = $key;
+			}
 		}
 
 		return $values;
