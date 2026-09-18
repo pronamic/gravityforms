@@ -1,3 +1,21 @@
+### 3.1.2 | 2026-09-17
+- Added security enhancements.
+- Added the [`gform_addon_pages_using_components`](https://docs.gravityforms.com/gform_addon_pages_using_components/) filter to allow modifying the add-on pages that use Gravity Forms components.
+- Added merge tag modifiers for the Phone and Time fields so that phone numbers can be output without formatting and time values can be output as the hour, minute, or AM/PM.
+- Updated the legacy reCAPTCHA v2 settings page to include a way to remove the keys from the read-only settings.
+- Updated the license key setting to be editable when GoDaddy defines an expired Starter license using the `GF_LICENSE_KEY` constant.
+- Updated the default behavior of the International Formatted Phone Field merge tags.  The `{all_fields}` merge tag now only displays the formatted phone number, and the `{Phone:1}` merge tag now only displays the formatted phone number.
+- Fixed a JavaScript error when adding or removing a List field row while editing an entry.
+- Fixed the interface for the List field multiple columns setting.
+- Fixed a fatal error that can occur when a Radio or Checkbox field receives a malformed array value.
+- Fixed an issue where multi-file asynchronous uploads could exceed the configured Maximum File Size when uploaded in chunks.
+- Fixed an issue where fields using custom icons could not be dragged properly in the form editor.
+- Fixed an issue where the strings for the datepicker day initials use the wrong translation function.
+- Fixed an issue where the "value was sanitized" logging statement is recorded on form display for some field types when the field value is empty.
+- Fixed an issue where the entry list star toggle is not accessible via keyboard or screen readers.
+- Fixed an issue where the "Choose File" button overlaps with the field border in conversational forms when using Safari.
+- Removed an extra slash from the Jetpack Autoloader file path used to include the canonical WordPress MCP Adapter package.
+
 ### 3.1.1 | 2026-09-03
 - Added security enhancements.
 - Added the [`gform_state_lifespan`](https://docs.gravityforms.com/gform_state_lifespan/) filter to allow modifying the lifespan of the state during validation.

@@ -2997,7 +2997,8 @@ Content-Type: text/html;
 	 * @return string|false
 	 */
 	public static function get_key() {
-		if ( defined( 'GF_LICENSE_KEY' ) ) {
+		// GoDaddy hasn't removed their old starter license code, so the GD_GF_LICENSE_KEY check allows impacted customers to edit the key on the settings page.
+		if ( defined( 'GF_LICENSE_KEY' ) && ! ( defined( 'GD_GF_LICENSE_KEY' ) && GF_LICENSE_KEY === GD_GF_LICENSE_KEY ) ) {
 			return md5( GF_LICENSE_KEY );
 		}
 
@@ -4346,7 +4347,7 @@ Content-Type: text/html;
 		}
 
 		if ( ! is_array( $entry ) ) {
-			trigger_error( 'Since version 2.9.29 GFCommon::get_lead_field_display() expects the entry array as the third parameter. Trace: ' . esc_html( wp_debug_backtrace_summary( null, 1 ) ), E_USER_WARNING );
+			trigger_error( 'Since version 2.9.29 GFCommon::get_lead_field_display() expects the entry array as the third parameter. Trace: ' . esc_html( wp_debug_backtrace_summary( null, 1 ) ), E_USER_WARNING ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 			$entry = array( 'currency' => $entry );
 		}
 

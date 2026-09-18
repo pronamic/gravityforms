@@ -553,6 +553,7 @@ class GFEntryDetail {
 
 		?>
 		<script type="text/javascript">
+			<?php GFCommon::gf_global(); ?>
 			var formId = <?php echo absint( $form_id ); ?>;
 
 			jQuery(document).ready(function () {

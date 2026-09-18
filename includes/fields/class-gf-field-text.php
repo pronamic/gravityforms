@@ -240,8 +240,7 @@ class GF_Field_Text extends GF_Field {
 				// The value is unsafe so encode the value.
 				$return = esc_html( $value );
 			} else {
-				// The value contains HTML but the value was sanitized before saving.
-				$return = $value;
+				$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
 			}
 		} else {
 			$return = $value;
@@ -279,8 +278,7 @@ class GF_Field_Text extends GF_Field {
 			// The value is unsafe so encode the value.
 			$return = esc_html( $value );
 		} else {
-			// The value contains HTML but the value was sanitized before saving.
-			$return = $value;
+			$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
 		}
 
 		return $return;
@@ -315,8 +313,7 @@ class GF_Field_Text extends GF_Field {
 				// The value is unsafe so encode the value.
 				$return = esc_html( $value );
 			} else {
-				// The value contains HTML but the value was sanitized before saving.
-				$return = $value;
+				$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
 			}
 		} else {
 			$return = $value;

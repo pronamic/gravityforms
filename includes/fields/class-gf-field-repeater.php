@@ -1018,11 +1018,11 @@ class GF_Field_Repeater extends GF_Field {
 							continue;
 						}
 					}
-					$value = wp_kses( $sub_field->get_value_recursive( $sub_field_value, $entry, $use_text, $format, $field_ids, $context, $already_filtered ), wp_kses_allowed_html( 'post' ) );
+					$value = wp_kses( $sub_field->get_value_recursive( $sub_field_value, $entry, $use_text, $format, $field_ids, $context, $already_filtered ), $this->get_entry_allowed_html() );
 				} elseif ( $context === 'all_fields_merge_tag' ) {
-					$value = wp_kses( $sub_field->get_value_all_fields_merge_tag( $sub_field_value, $entry, $use_text, $format, $field_ids ), wp_kses_allowed_html( 'post' ) );
+					$value = wp_kses( $sub_field->get_value_all_fields_merge_tag( $sub_field_value, $entry, $use_text, $format, $field_ids ), $this->get_entry_allowed_html() );
 				} else {
-					$value = wp_kses( $sub_field->get_value_entry_detail( $sub_field_value, $entry, $use_text, $format ), wp_kses_allowed_html( 'post' ) );
+					$value = wp_kses( $sub_field->get_value_entry_detail( $sub_field_value, $entry, $use_text, $format ), $this->get_entry_allowed_html() );
 				}
 
 				if ( $this->displayEmptyFields || ! rgblank( $value ) ) {

@@ -691,7 +691,7 @@ class GF_Field_Radio extends GF_Field {
 	 */
 	public function sanitize_entry_value( $value, $form_id ) {
 
-		if ( is_array( $value ) ) {
+		if ( is_array( $value ) || rgblank( $value ) ) {
 			return '';
 		}
 

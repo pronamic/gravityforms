@@ -595,6 +595,25 @@ class GF_Field_Phone extends GF_Field {
 	}
 
 	/**
+	 * Returns the formatted phone number prefixed with the country dial code when available.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @param array $decoded Decoded phone value.
+	 *
+	 * @return string|false
+	 */
+	private function get_formatted_with_country_code( $decoded ) {
+		if ( ! is_array( $decoded ) || ! isset( $decoded['formatted'], $decoded['country'] ) ) {
+			return false;
+		}
+
+		$dial_code = self::get_dial_code( $decoded['country'] );
+
+		return $dial_code ? '+' . $dial_code . ' ' . $decoded['formatted'] : $decoded['formatted'];
+	}
+
+	/**
 	 * Gets the value of the submitted field.
 	 *
 	 * @since  Unknown
@@ -629,13 +648,20 @@ class GF_Field_Phone extends GF_Field {
 	 * @param string $value   The value to be sanitized.
 	 * @param int    $form_id The form ID of the submitted item.
 	 *
-	 * @return array|array[]|string[] The sanitized value.
+	 * @return string|string[] The sanitized value.
 	 */
 	public function sanitize_entry_value( $value, $form_id ) {
+		if ( rgblank( $value ) ) {
+			return '';
+		}
+
 		if ( is_array( $value ) ) {
-			return array_map( function( $v ) use ( $form_id ) {
-				return $this->sanitize_entry_value( $v, $form_id );
-			}, $value );
+			return array_map(
+				function ( $v ) use ( $form_id ) {
+					return $this->sanitize_entry_value( $v, $form_id );
+				},
+				$value
+			);
 		}
 
 		$sanitized = sanitize_text_field( $value );
@@ -740,6 +766,50 @@ class GF_Field_Phone extends GF_Field {
 	}
 
 	/**
+	 * Gets the value for the {all_fields} merge tag.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @param $value
+	 * @param $entry
+	 * @param $use_text
+	 * @param $format
+	 *
+	 * @return array|false|mixed|string
+	 */
+	public function get_value_all_fields_merge_tag( $value, $entry, $use_text, $format ) {
+		// For non-formatted phone fields, return the entry detail display
+		if ( $this->phoneFormat !== 'formatted' ) {
+			return $this->get_value_entry_detail( $value, $entry, $use_text, $format, 'email' );
+		}
+
+		// For formatted phone fields, return the formatted number with country code prefix
+		if ( ! empty( $value ) && GFCommon::is_json( $value ) ) {
+			$decoded = $this->to_array( $value );
+			if ( $decoded ) {
+				$formatted_with_country_code = $this->get_formatted_with_country_code( $decoded );
+				if ( $formatted_with_country_code !== false ) {
+					/*
+					 * Allow users to filter the value of the phone field when used in the {all_fields} merge tag.
+					 *
+					 * @since 3.1.2
+					 *
+					 * @param string $formatted_with_country_code The default output of the phone field with country code.
+					 * @param string $value The original field value.
+					 * @param array  $entry The Entry Object.
+					 * @param bool   $use_text Whether to use the text format.
+					 * @param string $format The format requested for the location the merge is being used.
+					 * @param GF_Field_Phone $field The phone field object.
+					 */
+					return gf_apply_filters( array( 'gform_phone_formatted_all_fields', $entry['form_id'] ), $formatted_with_country_code, $value, $entry, $use_text, $format, $this );
+				}
+			}
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Gets the value to be displayed on the entries list page.
 	 *
 	 * @since: next
@@ -757,11 +827,11 @@ class GF_Field_Phone extends GF_Field {
 		if ( ! empty( $value ) && GFCommon::is_json( $value ) ) {
 			$decoded = $this->to_array( $value );
 			if ( $decoded && isset( $decoded['formatted'] ) ) {
-				return $decoded['formatted'];
+				return esc_html( $decoded['formatted'] );
 			}
 		}
 
-		return $value;
+		return esc_html( $value );
 	}
 
 	/**
@@ -787,15 +857,22 @@ class GF_Field_Phone extends GF_Field {
 		if ( $this->phoneFormat == 'formatted' && ! empty( $raw_value ) && GFCommon::is_json( $raw_value ) ) {
 			$decoded = $this->to_array( $raw_value );
 			if ( $decoded ) {
-				// Support modifiers for object keys, like {Phone:1:country} or {Phone:1:e164}
+				if ( in_array( 'clean', $this->get_modifiers() ) && ! empty( $decoded['e164'] ) ) {
+					return str_replace( '+', '', $decoded['e164'] );
+				}
+				// Support modifiers for object keys, like {Phone:1:country} or {Phone:1:national}
 				if ( $modifier && isset( $decoded[ $modifier ] ) ) {
 					return $decoded[ $modifier ];
 				}
-				// Default to formatted value
-				if ( isset( $decoded['formatted'] ) ) {
-					return $decoded['formatted'];
+				// Default to formatted value with country code prefix
+				$formatted_with_country_code = $this->get_formatted_with_country_code( $decoded );
+				if ( $formatted_with_country_code !== false ) {
+					return $formatted_with_country_code;
 				}
 			}
+		}
+		if ( in_array( 'clean', $this->get_modifiers() ) ) {
+			return preg_replace( '/[^\d]/', '', $value );
 		}
 
 		return $value;

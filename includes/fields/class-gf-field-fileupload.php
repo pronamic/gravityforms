@@ -253,6 +253,20 @@ class GF_Field_FileUpload extends GF_Field {
 	}
 
 	/**
+	 * Returns a hash created from the temp filename and uploaded filename for a tmp folder file.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @param string $temp_filename     The temporary file name.
+	 * @param string $uploaded_filename The uploaded file name.
+	 *
+	 * @return string
+	 */
+	private static function get_tmp_file_hash( $temp_filename, $uploaded_filename ) {
+		return hash_hmac( 'sha256', $temp_filename . '|' . $uploaded_filename, wp_salt( 'auth' ) );
+	}
+
+	/**
 	 * Returns a hash for the given populated file URL details.
 	 *
 	 * @since 2.9.23
@@ -364,6 +378,13 @@ class GF_Field_FileUpload extends GF_Field {
 
 			return $this->get_invalid_file_result( $file, $message, 'url' );
 		} elseif ( ! empty( $file['temp_filename'] ) ) {
+			if ( empty( $file['hash'] ) || ! hash_equals( self::get_tmp_file_hash( $file['temp_filename'], rgar( $file, 'uploaded_filename' ) ), $file['hash'] ) ) {
+				GFCommon::log_debug( __METHOD__ . '(): Hash is missing or invalid for temp file.' );
+				$message = $this->errorMessage ? $this->errorMessage : esc_html__( 'The file is not valid.', 'gravityforms' );
+
+				return $this->get_invalid_file_result( $file, $message, $name_key );
+			}
+
 			$temp_file_extension     = strtolower( pathinfo( $file['temp_filename'], PATHINFO_EXTENSION ) );
 			$uploaded_file_extension = strtolower( pathinfo( $file_name, PATHINFO_EXTENSION ) );
 
@@ -1929,6 +1950,7 @@ class GF_Field_FileUpload extends GF_Field {
 			'uploaded_filename' => $uploaded_filename,
 			'temp_filename'     => sanitize_file_name( $tmp_file_name ),
 			'id'                => $uuid,
+			'hash'              => self::get_tmp_file_hash( sanitize_file_name( $tmp_file_name ), $uploaded_filename ),
 		);
 
 		GFCommon::log_debug( __METHOD__ . '(): Details to use for new temporary file are: ' . json_encode( $tmp_file ) );

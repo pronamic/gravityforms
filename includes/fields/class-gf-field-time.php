@@ -577,6 +577,45 @@ class GF_Field_Time extends GF_Field {
 		}
 	}
 
+	/**
+	 * Gets the merge tag value.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @param string       $value      The merge tag value to be filtered.
+	 * @param string       $input_id   The field or input ID from the merge tag.
+	 * @param array        $entry      The Entry Object.
+	 * @param array        $form       The Form Object.
+	 * @param string       $modifier   The merge tag modifier.
+	 * @param string|array $raw_value  The raw field value from before formatting.
+	 * @param bool         $url_encode Whether to encode the value for URLs.
+	 * @param bool         $esc_html   Whether to encode HTML entities.
+	 * @param string       $format     The format requested for the location the merge is being used.
+	 * @param bool         $nl2br      Whether to convert newlines to HTML line breaks.
+	 *
+	 * @return string
+	 */
+	public function get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br ) {
+
+		if ( rgblank( $raw_value ) ) {
+			return GFCommon::format_variable_value( $raw_value, $url_encode, $esc_html, $format, $nl2br );
+		}
+
+		preg_match( '/^(\d*):(\d*) ?(.*)$/', $raw_value, $matches );
+
+		if ( in_array( 'hour', $this->get_modifiers() ) ) {
+			$value = (string) intval( rgar( $matches, 1 ) );
+		} else if ( in_array( 'minute', $this->get_modifiers() ) ) {
+			$value = sprintf( '%02d', intval( rgar( $matches, 2 ) ) );
+		} else if ( in_array( 'ampm', $this->get_modifiers() ) ) {
+			$value = strtolower( trim( rgar( $matches, 3 ) ) );
+		} else{
+			$value = $raw_value;
+		}
+
+		return GFCommon::format_variable_value( $value, $url_encode, $esc_html, $format, $nl2br );
+	}
+
 }
 
 // Register the Time field with the field framework.

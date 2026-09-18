@@ -949,11 +949,43 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	function _column_is_starred( $entry, $classes, $data, $primary ) {
 		echo '<td class="manage-column column-is_starred">';
 		if ( $this->filter !== 'trash' ) {
-			$action = GFCommon::current_user_can_any( 'gravityforms_edit_entries' ) ? "ToggleStar(this, '" . intval( $entry['id'] ) . "','" . esc_attr( $this->filter ) . "');" : 'return false;';
-			?>
-			<img role="presentation" id="star_image_<?php echo esc_attr( $entry['id'] ) ?>" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/star<?php echo intval( $entry['is_starred'] ) ?>.svg" onclick="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" />
-			<?php
+			$is_starred = intval( $entry['is_starred'] );
+			$can_edit   = GFCommon::current_user_can_any( 'gravityforms_edit_entries' );
+
+			$img_attributes = array(
+				'id'  => 'star_image_' . $entry['id'],
+				'src' => GFCommon::get_base_url() . '/images/star' . $is_starred . '.svg',
+			);
+
+			if ( $can_edit ) {
+				$img_attributes['role'] = 'presentation';
+				$img_attributes['alt']  = '';
+			} else {
+				$img_attributes['alt'] = $is_starred ? esc_html__( 'Starred entry', 'gravityforms' ) : esc_html__( 'Entry not starred', 'gravityforms' );
+			}
+
+			$img_html = '<img';
+			foreach ( $img_attributes as $name => $value ) {
+				$img_html .= sprintf( ' %s="%s"', $name, 'src' === $name ? esc_url( $value ) : esc_attr( $value ) );
+			}
+			$img_html .= ' />';
+
+			if ( $can_edit ) {
+				printf(
+					'<button type="button" class="entry_star_button" aria-pressed="%1$s" aria-label="%2$s" onclick="ToggleStar(this, \'%3$s\',\'%4$s\');">%5$s</button>',
+					esc_attr( $is_starred ? 'true' : 'false' ),
+					esc_attr( sprintf( /* translators: %s: The entry ID. */ esc_html__( 'Toggle star for entry #%s', 'gravityforms' ), $entry['id'] ) ),
+					esc_js( intval( $entry['id'] ) ),
+					esc_js( $this->filter ),
+					//built from escaped attributes above, so no need to escape again.
+					$img_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+			} else {
+				//built from escaped attributes above, so no need to escape again.
+				echo $img_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
 		}
+
 		echo '</td>';
 	}
 
@@ -1728,12 +1760,22 @@ final class GF_Entry_List_Table extends WP_List_Table {
 				document.location = location;
 			}
 
-			function ToggleStar(img, lead_id, filter) {
+			function ToggleStar(star_button, lead_id, filter) {
+				var img = star_button.tagName === "IMG" ? star_button : star_button.querySelector("img");
 				var is_starred = img.src.indexOf("star1.svg") >= 0;
 				if (is_starred)
 					img.src = img.src.replace("star1.svg", "star0.svg");
 				else
 					img.src = img.src.replace("star0.svg", "star1.svg");
+
+				if (star_button != img) {
+					star_button.setAttribute("aria-pressed", is_starred ? "false" : "true");
+				} 
+
+				var announcement = is_starred
+					? <?php echo json_encode( esc_html__( 'Star removed from entry.', 'gravityforms' ) ); ?>
+					: <?php echo json_encode( esc_html__( 'Entry starred.', 'gravityforms' ) ); ?>;
+				wp.a11y.speak(announcement);
 
 				jQuery("#entry_row_" + lead_id).toggleClass("entry_starred");
 				//if viewing the starred entries, hide the row and adjust the paging counts

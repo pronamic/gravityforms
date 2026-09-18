@@ -127,9 +127,13 @@ class GF_Field_Post_Title extends GF_Field {
 	 * @return string
 	 */
 	public function sanitize_entry_value( $value, $form_id ) {
+		if ( rgblank( $value ) ) {
+			return '';
+		}
 
 		$sanitized = wp_strip_all_tags( $value );
 		$this->post_entry_value_sanitization( $value, $sanitized, 'wp_strip_all_tags' );
+
 		return $sanitized;
 	}
 

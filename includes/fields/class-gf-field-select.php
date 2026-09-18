@@ -250,6 +250,10 @@ class GF_Field_Select extends GF_Field {
 			return parent::sanitize_entry_value( $value, $form_id );
 		}
 
+		if ( rgblank( $value ) ) {
+			return '';
+		}
+
 		$sanitized = wp_strip_all_tags( $value );
 		$this->post_entry_value_sanitization( $value, $sanitized, 'wp_strip_all_tags' );
 
