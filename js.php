@@ -1564,7 +1564,7 @@ console.log( form['fields'] );
 			str += '<i class="field-choice-handle gform-choice__handle gform-icon gform-icon--drag" focusable="true"></i>';
 			str += "<input type='" + type + "' class='" + elementNames.choiceTypeInput + "' name='choice_selected' id='" + inputType + "_choice_selected_" + i + "' " + checked
 					+ " onclick=\"SetFieldChoice('" + inputType + "', " + i + ");\" onkeypress=\"SetFieldChoice('" + inputType + "', " + i + ");\" /> ";
-			
+
 			// Prevent default choice selector being output for List field multiple columns setting.
 			if ( inputType !== 'list' ) {
 				str += "<label class='" + elementNames.labelClass + "' for='" + inputType + "_choice_selected_" + i + "'><i class='gform-choice__selected-icon gform-icon gform-icon--check' /></i></label>";
@@ -1694,6 +1694,8 @@ console.log( form['fields'] );
 			previous_button_setting: <?php echo json_encode( esc_html__( 'Image buttons may introduce accessibility problems. If setting an image button, ensure that all text in the image passes color contrast and define alternative text that matches text in the image. If no alternative text is entered, it will default to \'Previous\'.', 'gravityforms' ) ); ?>,
 			last_page_button_setting: <?php echo json_encode( esc_html__( 'Image buttons may introduce accessibility problems. If setting an image button, ensure that all text in the image passes color contrast and define alternative text that matches text in the image. If no alternative text is entered, it will default to \'Previous\'.', 'gravityforms' ) ); ?>,
 			rich_text_editor_setting: <?php echo json_encode( esc_html__( 'The Rich Text Editor is not accessible for users who rely on a screen reader. Please disable the Rich Text Editor to improve the accessibility of your form.', 'gravityforms' ) ); ?>,
+			input_mask_phone_international: <?php echo json_encode( esc_html__( 'The phone input mask is not accessible for all users.  The Phone Field with International (formatted) format is easier to use for all users.', 'gravityforms' ) ); ?>,
+			input_mask_date: <?php echo json_encode( esc_html__( 'The date format input mask is not accessible for all users. The Date field is easier to use for all users.', 'gravityforms' ) ); ?>,
 			label_setting:
 			<?php
 			/* translators: 1. Open abbr tag 2. Close abbr tag */
@@ -1722,6 +1724,12 @@ console.log( form['fields'] );
 		var fieldTypes = [ 'captcha', 'multiselect' ];
 		if ( fieldTypes.includes( fieldSetting ) ) {
 			fieldSetting = 'label_setting';
+		}
+
+		// Map input mask accessibility warnings to the input_mask_setting container.
+		var inputMaskFieldTypes = [ 'input_mask_phone_international', 'input_mask_date' ];
+		if ( inputMaskFieldTypes.includes( fieldSetting ) ) {
+			fieldSetting = 'input_mask_setting';
 		}
 
 		var warningDiv = '<div class="gform-alert gform-alert--accessibility gform-alert--inline" data-field-setting="' + fieldSetting + '">';

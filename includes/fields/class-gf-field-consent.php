@@ -293,7 +293,7 @@ class GF_Field_Consent extends GF_Field {
 
 			$css_class .= ' gfield_consent_description';
 
-			return "<div class='$css_class' id='$id'><div class='gfield_consent_description_text' tabindex='0'>" . nl2br( $description ) . '</div></div>';
+			return "<div class='$css_class' id='$id'><div class='gfield_consent_description_text gform-theme__no-reset--children' tabindex='0'>" . nl2br( $description ) . '</div></div>';
 		}
 
 		return parent::get_description( $description, $css_class );

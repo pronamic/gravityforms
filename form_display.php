@@ -3873,10 +3873,6 @@ class GFFormDisplay {
 			self::add_init_script( $form['id'], 'currency_format', self::ON_PAGE_RENDER, self::get_currency_format_init_script( $form ) );
 		}
 
-		if ( self::has_currency_copy_values_option( $form ) ) {
-			self::add_init_script( $form['id'], 'copy_values', self::ON_PAGE_RENDER, self::get_copy_values_init_script( $form ) );
-		}
-
 		if ( self::has_placeholder( $form ) ) {
 			self::add_init_script( $form['id'], 'placeholders', self::ON_PAGE_RENDER, self::get_placeholders_init_script( $form ) );
 		}
@@ -3981,15 +3977,6 @@ class GFFormDisplay {
 		}
 
 		return "gformInitCurrencyFormatFields('" . implode( ',', $currency_fields ) . "');";
-	}
-
-	public static function get_copy_values_init_script( $form ) {
-		$script = "jQuery('.copy_values_activated').on('click', function(){
-                        var inputId = this.id.replace('_copy_values_activated', '');
-                        jQuery('#' + inputId).toggle(!this.checked);
-                    });";
-
-		return $script;
 	}
 
 	public static function get_placeholders_init_script( $form ) {
@@ -4236,18 +4223,6 @@ class GFFormDisplay {
 			foreach ( $form['fields'] as $field ) {
 				$input_type = RGFormsModel::get_input_type( $field );
 				if ( $input_type == 'number' && $field->numberFormat == 'currency' ) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private static function has_currency_copy_values_option( $form ) {
-		if ( is_array( $form['fields'] ) ) {
-			foreach ( $form['fields'] as $field ) {
-				if ( $field->enableCopyValuesOption == true ) {
 					return true;
 				}
 			}

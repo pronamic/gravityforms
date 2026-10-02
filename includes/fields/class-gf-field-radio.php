@@ -696,17 +696,8 @@ class GF_Field_Radio extends GF_Field {
 		}
 
 		$allowable_tags = $this->get_allowable_tags( $form_id );
-
-		if ( $allowable_tags !== true ) {
-			$value = strip_tags( $value, $allowable_tags );
-		}
-
 		$original_value = $value;
-
-		$allowed_protocols = wp_allowed_protocols();
-		$value             = wp_kses_no_null( $value, array( 'slash_zero' => 'keep' ) );
-		$value             = wp_kses_hook( $value, 'post', $allowed_protocols );
-		$value             = wp_kses_split( $value, 'post', $allowed_protocols );
+		$value          = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
 
 		$this->post_entry_value_sanitization( $original_value, $value, 'wp_kses' );
 

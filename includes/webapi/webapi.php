@@ -1933,7 +1933,7 @@ if ( class_exists( 'GFForms' ) ) {
 				foreach ( $form['fields'] as $field ) {
 					/* @var GF_Field $field */
 					if ( $field->get_input_type() == 'list' ) {
-						$new_value = maybe_unserialize( $entry[ $field->id ] );
+						$new_value = GFCommon::maybe_unserialize( $entry[ $field->id ] );
 
 						if ( ! $this->is_json( $new_value ) ) {
 							$new_value = json_encode( $new_value );

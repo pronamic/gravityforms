@@ -1718,7 +1718,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 			$value .= ' (' . $price . ')';
 		}
 
-		return empty( $choice ) ? wp_strip_all_tags( $value ) : wp_kses_post( $value );
+		return empty( $choice ) ? wp_strip_all_tags( $value ) : wp_kses( $value, $this->get_entry_allowed_html() );
 	}
 
 	/**
@@ -2292,9 +2292,11 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * @return string HTML for required indicator.
 	 */
 	public function get_hidden_admin_markup() {
+		if ( ! $this->is_form_editor() ) {
+			return '';
+		}
 
-		 return '<div class="admin-hidden-markup"><i class="gform-icon gform-icon--hidden" aria-hidden="true" title="'. esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) .'"></i><span>'. esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) .'</span></div>';
-
+		return '<div class="admin-hidden-markup"><i class="gform-icon gform-icon--hidden" aria-hidden="true" title="' . esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) . '"></i><span>' . esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) . '</span></div>';
 	}
 
 	/**
@@ -3021,8 +3023,8 @@ class GF_Field extends stdClass implements ArrayAccess {
 		if ( $allowable_tags === true ) {
 
 			// HTML is expected. Output will not be encoded so the value will stripped of scripts and some tags and encoded.
-			$return = wp_kses_post( $value );
-			$this->post_entry_value_sanitization( $value, $return, 'wp_kses_post' );
+			$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+			$this->post_entry_value_sanitization( $value, $return, 'wp_kses' );
 
 		} elseif ( $allowable_tags === false ) {
 
@@ -3031,13 +3033,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		} else {
 
-			// Some HTML is expected. Output will not be encoded so the value will stripped of scripts and some tags and encoded.
-			$sanitized = wp_kses_post( $value );
-			$this->post_entry_value_sanitization( $value, $sanitized, 'wp_kses_post' );
-
-			// Strip all tags except those allowed by the gform_allowable_tags filter.
-			$return = strip_tags( $value, $allowable_tags );
-			$this->post_entry_value_sanitization( $sanitized, $return, 'strip_tags' );
+			// Some HTML is expected. Restrict both tags and attributes to the entry policy.
+			$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+			$this->post_entry_value_sanitization( $value, $return, 'wp_kses' );
 		}
 
 		return $return;

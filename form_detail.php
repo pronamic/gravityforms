@@ -2055,7 +2055,7 @@ class GFFormDetail {
 										</div>
 									</div>
 
-									<select id="field_mask_select" onchange="SetFieldProperty('inputMaskValue', jQuery(this).val());">
+									<select id="field_mask_select" onchange="SetFieldProperty('inputMaskValue', jQuery(this).val()); CheckFieldMaskAccessibility();">
 										<option value=""><?php esc_html_e( 'Select a Mask', 'gravityforms' ); ?></option>
 										<?php
 										$masks = RGFormsModel::get_input_masks();

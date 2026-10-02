@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 3.1.2
+Version: 3.1.3
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -255,7 +255,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '3.1.2';
+	public static $version = '3.1.3';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -476,10 +476,6 @@ class GFForms {
 		add_action( 'admin_head', array( 'GFForms', 'load_admin_bar_styles' ) );
 		add_action( 'wp_head', array( 'GFForms', 'load_admin_bar_styles' ) );
 		add_action( 'dynamic_sidebar_before', array( 'GFCommon', 'check_for_gf_widgets' ), 10 );
-
-		if ( self::get_page() === 'form_editor' ) {
-			add_action( 'admin_head', array( 'GFForms', 'preload_webfonts' ), 0, 0 );
-		}
 
 		if ( self::get_page() === 'form_editor' ) {
 			add_action( 'admin_head', array( 'GFForms', 'preload_webfonts' ), 0, 0 );
@@ -1560,7 +1556,7 @@ class GFForms {
 			if ( is_wp_error( $addons_api ) || empty( $addons_api['body'] ) ) {
 				return;
 			}
-			$addons_list = maybe_unserialize( $addons_api['body'] );
+			$addons_list = GFCommon::maybe_unserialize( $addons_api['body'] );
 			if ( ! is_array( $addons_list ) ) {
 				return;
 			}
@@ -2054,7 +2050,7 @@ class GFForms {
 
 		$page = GFForms::get_page();
 
-		if ( $page === false ) {
+		if ( in_array( $page, array( false, 'block_editor', 'export_entry_ajax' ), true ) ) {
 			return $admin_title;
 		}
 

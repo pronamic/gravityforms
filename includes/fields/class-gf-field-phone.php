@@ -521,7 +521,7 @@ class GF_Field_Phone extends GF_Field {
 		$dial_code_display = $dial_code ? '+' . esc_attr( $dial_code ) : '';
 
 		$html = sprintf( '
-			<div class="%1$s" role="application">
+			<div class="%1$s">
 				<div class="gform-phone__input-wrapper">
 					<span class="ginput_country-selector_container">
 						%2$s
@@ -755,14 +755,17 @@ class GF_Field_Phone extends GF_Field {
 		if ( ! empty( $value ) && GFCommon::is_json( $value ) ) {
 			$decoded = $this->to_array( $value );
 			if ( $decoded && isset( $decoded['formatted'] ) && isset( $decoded['e164'] ) && isset( $decoded['country'] ) ) {
+				$formatted = $this->format_entry_output_value( $decoded['formatted'], $format );
+				$e164      = $this->format_entry_output_value( $decoded['e164'], $format );
+				$country   = $this->format_entry_output_value( strtoupper( $decoded['country'] ), $format );
 
 				// Format: formatted value on first line, E.164 (country) on second line
-				$line_break = $format == 'html' ? '<br />' : "\n";
-				return $decoded['formatted'] . $line_break . __( 'Raw E.164 value:', 'gravityforms' ) . ' ' . $decoded['e164'] . ' (' . strtoupper( $decoded['country'] ) . ')';
+				$line_break = $format === 'html' ? '<br />' : "\n";
+				return $formatted . $line_break . esc_html__( 'Raw E.164 value:', 'gravityforms' ) . ' ' . $e164 . ' (' . $country . ')';
 			}
 		}
 
-		return $value;
+		return $this->format_entry_output_value( $value, $format );
 	}
 
 	/**
@@ -801,12 +804,14 @@ class GF_Field_Phone extends GF_Field {
 					 * @param string $format The format requested for the location the merge is being used.
 					 * @param GF_Field_Phone $field The phone field object.
 					 */
-					return gf_apply_filters( array( 'gform_phone_formatted_all_fields', $entry['form_id'] ), $formatted_with_country_code, $value, $entry, $use_text, $format, $this );
+					$formatted_with_country_code = gf_apply_filters( array( 'gform_phone_formatted_all_fields', $entry['form_id'] ), $formatted_with_country_code, $value, $entry, $use_text, $format, $this );
+
+					return $this->format_entry_output_value( $formatted_with_country_code, $format );
 				}
 			}
 		}
 
-		return $value;
+		return $this->format_entry_output_value( $value, $format );
 	}
 
 	/**
@@ -858,24 +863,38 @@ class GF_Field_Phone extends GF_Field {
 			$decoded = $this->to_array( $raw_value );
 			if ( $decoded ) {
 				if ( in_array( 'clean', $this->get_modifiers() ) && ! empty( $decoded['e164'] ) ) {
-					return str_replace( '+', '', $decoded['e164'] );
+					return $this->format_entry_output_value( str_replace( '+', '', $decoded['e164'] ), $format );
 				}
 				// Support modifiers for object keys, like {Phone:1:country} or {Phone:1:national}
 				if ( $modifier && isset( $decoded[ $modifier ] ) ) {
-					return $decoded[ $modifier ];
+					return $this->format_entry_output_value( $decoded[ $modifier ], $format );
 				}
 				// Default to formatted value with country code prefix
 				$formatted_with_country_code = $this->get_formatted_with_country_code( $decoded );
 				if ( $formatted_with_country_code !== false ) {
-					return $formatted_with_country_code;
+					return $this->format_entry_output_value( $formatted_with_country_code, $format );
 				}
 			}
 		}
 		if ( in_array( 'clean', $this->get_modifiers() ) ) {
-			return preg_replace( '/[^\d]/', '', $value );
+			return $this->format_entry_output_value( preg_replace( '/[^\d]/', '', $value ), $format );
 		}
 
-		return $value;
+		return $this->format_entry_output_value( $value, $format );
+	}
+
+	/**
+	 * Escape Phone values when they are formatted for an HTML output context.
+	 *
+	 * @since 3.1.3
+	 *
+	 * @param mixed  $value  The Phone value.
+	 * @param string $format The requested output format.
+	 *
+	 * @return mixed
+	 */
+	private function format_entry_output_value( $value, $format ) {
+		return $format === 'html' ? esc_html( (string) $value ) : $value;
 	}
 
 	/**

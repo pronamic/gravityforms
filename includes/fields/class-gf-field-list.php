@@ -673,7 +673,7 @@ class GF_Field_List extends GF_Field {
 			$items = '';
 			foreach ( $value as $key => $item ) {
 				if ( ! empty( $item ) ) {
-					$item = wp_kses_post( $item );
+					$item = wp_kses( $item, $this->get_entry_allowed_html() );
 					switch ( $format ) {
 						case 'text' :
 							$items .= $item . ', ';
@@ -716,7 +716,9 @@ class GF_Field_List extends GF_Field {
 							$list .= "\n\n" . $this->label . ': ';
 						}
 
-						$item = array_map( 'wp_kses_post', $item );
+						$item = array_map( function ( $value ) {
+							return wp_kses( $value, $this->get_entry_allowed_html() );
+						}, $item );
 
 						$list .= implode( ',', array_values( $item ) );
 
@@ -726,7 +728,9 @@ class GF_Field_List extends GF_Field {
 
 				case 'url' :
 					foreach ( $value as $item ) {
-						$item = array_map( 'wp_kses_post', $item );
+						$item = array_map( function ( $value ) {
+							return wp_kses( $value, $this->get_entry_allowed_html() );
+						}, $item );
 						$list .= implode( "|", array_values( $item ) ) . ',';
 					}
 					if ( ! empty( $list ) ) {
@@ -750,7 +754,7 @@ class GF_Field_List extends GF_Field {
 							$list .= '<tr>';
 							foreach ( $columns as $column ) {
 								$val = rgar( $item, $column );
-								$val = wp_kses_post( $val );
+								$val = wp_kses( $val, $this->get_entry_allowed_html() );
 								$list .= "<td style='padding: 6px 10px; border-right: 1px solid #DFDFDF; border-bottom: 1px solid #DFDFDF; border-top: 1px solid #FFF; font-family: sans-serif; font-size:12px;'>{$val}</td>\n";
 							}
 
@@ -772,7 +776,7 @@ class GF_Field_List extends GF_Field {
 							$list .= '<tr>';
 							foreach ( $columns as $column ) {
 								$val = rgar( $item, $column );
-								$val = wp_kses_post( $val );
+								$val = wp_kses( $val, $this->get_entry_allowed_html() );
 								$list .= "<td>{$val}</td>\n";
 							}
 
@@ -817,12 +821,38 @@ class GF_Field_List extends GF_Field {
 			$first_row     = is_array( $value ) ? reset( $value ) : null;
 			$is_structured = $this->is_administrative() && $this->allowsPrepopulate && is_array( $first_row );
 			$value         = $is_structured ? array_values( $value ) : $this->create_list_array( $value );
+			$value         = $this->sanitize_list_value( $value, $form['id'] );
 			$value         = serialize( $value );
 		}
 
 		$value_safe = $this->sanitize_entry_value( $value, $form['id'] );
 
 		return $value_safe;
+	}
+
+	/**
+	 * Sanitize each scalar List value before the rows are serialized.
+	 *
+	 * @since 3.1.3
+	 *
+	 * @param array $value   The List rows to sanitize.
+	 * @param int   $form_id The current form ID.
+	 *
+	 * @return array
+	 */
+	public function sanitize_list_value( $value, $form_id ) {
+		$allowed_html = $this->get_entry_allowed_html( $this->get_allowable_tags( $form_id ) );
+
+		array_walk_recursive(
+			$value,
+			function ( &$item ) use ( $allowed_html ) {
+				if ( is_string( $item ) ) {
+					$item = wp_kses( $item, $allowed_html );
+				}
+			}
+		);
+
+		return $value;
 	}
 
 	/**

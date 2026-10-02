@@ -1206,7 +1206,7 @@ JS;
 			return false;
 		}
 
-		$plugin_data  = maybe_unserialize( rgar( $raw_response, 'body' ) );
+		$plugin_data  = GFCommon::maybe_unserialize( rgar( $raw_response, 'body' ) );
 		$download_url = is_array( $plugin_data ) ? rgar( $plugin_data, 'download_url' ) : '';
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';

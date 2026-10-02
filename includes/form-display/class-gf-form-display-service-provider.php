@@ -5,6 +5,7 @@ namespace Gravity_Forms\Gravity_Forms\Form_Display;
 use Gravity_Forms\Gravity_Forms\Config\GF_Config_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Form_Display\Config\GF_Product_Meta_Config;
 use Gravity_Forms\Gravity_Forms\Form_Display\Config\GF_Pagination_Config;
+use Gravity_Forms\Gravity_Forms\Fields\Config\GF_Field_Address_Frontend_Config;
 use Gravity_Forms\Gravity_Forms\Fields\Config\GF_Field_Phone_Frontend_Config;
 use Gravity_Forms\Gravity_Forms\Form_Display\Full_Screen\Full_Screen_Handler;
 use Gravity_Forms\Gravity_Forms\Form_Display\Block_Styles\Block_Styles_Handler;
@@ -25,13 +26,14 @@ use \GFFormDisplay;
  */
 class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 
-	const FULL_SCREEN_HANDLER   = 'full_screen_handler';
-	const BLOCK_STYLES_HANDLER  = 'block_styles_handler';
-	const STATE_HANDLER         = 'state_handler';
-	const BLOCK_STYLES_DEFAULTS = 'block_styles_defaults';
-	const PRODUCT_META_CONFIG   = 'products_meta_config';
-	const PAGINATION_CONFIG     = 'pagination_config';
-	const PHONE_FIELD_FRONTEND_CONFIG = 'phone_field_frontend_config';
+	const FULL_SCREEN_HANDLER           = 'full_screen_handler';
+	const BLOCK_STYLES_HANDLER          = 'block_styles_handler';
+	const STATE_HANDLER                 = 'state_handler';
+	const BLOCK_STYLES_DEFAULTS         = 'block_styles_defaults';
+	const PRODUCT_META_CONFIG           = 'products_meta_config';
+	const PAGINATION_CONFIG             = 'pagination_config';
+	const ADDRESS_FIELD_FRONTEND_CONFIG = 'address_field_frontend_config';
+	const PHONE_FIELD_FRONTEND_CONFIG   = 'phone_field_frontend_config';
 
 	/**
 	 * Register services to the container.
@@ -49,6 +51,7 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 		require_once $base_path . '/config/class-gf-product-meta-config.php';
 		require_once $base_path . '/config/class-gf-pagination-config.php';
 		require_once $base_path . '/state/class-state-handler.php';
+		require_once $base_path . '/../fields/config/class-gf-field-address-frontend-config.php';
 		require_once $base_path . '/../fields/config/class-gf-field-phone-frontend-config.php';
 
 		$container->add( self::FULL_SCREEN_HANDLER, function() use ( $container ) {
@@ -107,6 +110,15 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 			return new GF_Pagination_Config( $container->get( GF_Config_Service_Provider::DATA_PARSER ) );
 		});
 		$container->get( GF_Config_Service_Provider::CONFIG_COLLECTION )->add_config( $container->get( self::PAGINATION_CONFIG ) );
+
+		// Address Field Frontend config.
+		$container->add(
+			self::ADDRESS_FIELD_FRONTEND_CONFIG,
+			function () use ( $container ) {
+				return new GF_Field_Address_Frontend_Config( $container->get( GF_Config_Service_Provider::DATA_PARSER ) );
+			}
+		);
+		$container->get( GF_Config_Service_Provider::CONFIG_COLLECTION )->add_config( $container->get( self::ADDRESS_FIELD_FRONTEND_CONFIG ) );
 
 		// Phone Field Frontend config.
 		$container->add( self::PHONE_FIELD_FRONTEND_CONFIG, function () use ( $container ) {

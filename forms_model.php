@@ -5164,7 +5164,7 @@ class GFFormsModel {
 				}
 				switch ( RGFormsModel::get_input_type( $custom_field ) ) {
 					case 'list':
-						$value = maybe_unserialize( $value );
+						$value = GFCommon::maybe_unserialize( $value );
 						if ( is_array( $value ) ) {
 							foreach ( $value as $item ) {
 								if ( is_array( $item ) ) {
