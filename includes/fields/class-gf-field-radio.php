@@ -691,13 +691,22 @@ class GF_Field_Radio extends GF_Field {
 	 */
 	public function sanitize_entry_value( $value, $form_id ) {
 
-		if ( is_array( $value ) || rgblank( $value ) ) {
+		if ( is_array( $value ) ) {
 			return '';
 		}
 
 		$allowable_tags = $this->get_allowable_tags( $form_id );
+
+		if ( $allowable_tags !== true ) {
+			$value = strip_tags( $value, $allowable_tags );
+		}
+
 		$original_value = $value;
-		$value          = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+
+		$allowed_protocols = wp_allowed_protocols();
+		$value             = wp_kses_no_null( $value, array( 'slash_zero' => 'keep' ) );
+		$value             = wp_kses_hook( $value, 'post', $allowed_protocols );
+		$value             = wp_kses_split( $value, 'post', $allowed_protocols );
 
 		$this->post_entry_value_sanitization( $original_value, $value, 'wp_kses' );
 

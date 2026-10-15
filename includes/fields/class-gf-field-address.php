@@ -418,15 +418,12 @@ class GF_Field_Address extends GF_Field {
 		$copy_values_option = '';
 		$input_style        = '';
 		if ( ( $this->enableCopyValuesOption || $is_form_editor ) && ! $is_entry_detail ) {
-			$source_field                 = GFFormsModel::get_field( $form, $this->copyValuesOptionField );
-			$source_field_label           = $source_field ? esc_attr( wp_strip_all_tags( $source_field->get_field_label() ) ) : '';
-			$destination_field_label      = esc_attr( wp_strip_all_tags( $this->get_field_label() ) );
-			$copy_values_label            = esc_html( $this->copyValuesOptionLabel );
-			$copy_values_style            = $is_form_editor && ! $this->enableCopyValuesOption ? "style='display:none;'" : '';
-			$copy_values_is_checked       = isset( $value[ $this->id . '_copy_values_activated' ] ) ? (bool) $value[ $this->id . '_copy_values_activated' ] : (bool) $this->copyValuesOptionDefault;
-			$copy_values_checked          = checked( true, $copy_values_is_checked, false );
-			$copy_values_option           = "<div id='{$field_id}_copy_values_option_container' class='copy_values_option_container' {$copy_values_style}>
-                                        <input type='checkbox' id='{$field_id}_copy_values_activated' class='copy_values_activated' value='1' data-source_field_id='" . absint( $this->copyValuesOptionField ) . "' data-source-field-label='{$source_field_label}' data-destination-field-label='{$destination_field_label}' name='input_{$id}_copy_values_activated' {$disabled_text} {$copy_values_checked}/>
+			$copy_values_label      = esc_html( $this->copyValuesOptionLabel );
+			$copy_values_style      = $is_form_editor && ! $this->enableCopyValuesOption ? "style='display:none;'" : '';
+			$copy_values_is_checked = isset( $value[$this->id . '_copy_values_activated'] ) ? $value[$this->id . '_copy_values_activated'] == true : $this->copyValuesOptionDefault == true;
+			$copy_values_checked    = checked( true, $copy_values_is_checked, false );
+			$copy_values_option     = "<div id='{$field_id}_copy_values_option_container' class='copy_values_option_container' {$copy_values_style}>
+                                        <input type='checkbox' id='{$field_id}_copy_values_activated' class='copy_values_activated' value='1' data-source_field_id='" . absint( $this->copyValuesOptionField ) . "' name='input_{$id}_copy_values_activated' {$disabled_text} {$copy_values_checked}/>
                                         <label for='{$field_id}_copy_values_activated' id='{$field_id}_copy_values_option_label' class='copy_values_option_label inline gform-field-label gform-field-label--type-inline'>{$copy_values_label}</label>
                                     </div>";
 			if ( $copy_values_is_checked ) {
@@ -1224,7 +1221,7 @@ class GF_Field_Address extends GF_Field {
 
 		foreach ( $countries as $code => $country ) {
 			if ( is_numeric( $code ) ) {
-				$code = $this->get_country_code( $country, true );
+				$code = $country;
 			}
 			if ( empty( $country ) ) {
 				$country = $placeholder;
@@ -1549,7 +1546,7 @@ class GF_Field_Address extends GF_Field {
 		} elseif ( rgar( $country_input, 'isHidden' ) ) {
 			$return[ $country_id ] = $this->get_country_code( rgar( $value, $country_id, $this->defaultCountry ) );
 		} else {
-			$return[ $country_id ] = $this->get_choices_for_state_hash( $this->get_countries(), true );
+			$return[ $country_id ] = $this->get_choices_for_state_hash( $this->get_countries() );
 		}
 
 		return $return;
@@ -1559,21 +1556,15 @@ class GF_Field_Address extends GF_Field {
 	 * Prepares the array of choice values for the state hash.
 	 *
 	 * @since 3.0
-	 * @since 3.1.1 Added the $is_country param.
 	 *
-	 * @param null|array $choices    Optional. The choices to parse or null to use the field choices property.
-	 * @param bool       $is_country Optional. Indicates if the choices are for the country input. Defaults to false.
+	 * @param null|array $choices Optional. The choices to parse or null to use the field choices property.
 	 *
 	 * @return array
 	 */
-	protected function get_choices_for_state_hash( $choices = null, $is_country = false ) {
+	protected function get_choices_for_state_hash( $choices = null ) {
 		$values = array();
 		foreach ( $choices as $key => $choice ) {
-			if ( is_numeric( $key ) ) {
-				$values[] = $is_country ? $this->get_country_code( $choice, true ) : $choice;
-			} else {
-				$values[] = $key;
-			}
+			$values[] = is_numeric( $key ) ? $choice : $key;
 		}
 
 		return $values;

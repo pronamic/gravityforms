@@ -458,11 +458,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 		return;
 	}
 
-	// Fields that shouldn't be displayed by logic rules.
-	const isHiddenType = ! $target.hasClass( 'gfield_error' ) && $target.is( '.gfield--input-type-hidden, .gfield--input-type-hiddenproduct, .gfield_visibility_hidden' );
-
 	if(action == "show"){
-
 		// reset tabindex for selects
 		$target.find( 'select' ).each( function() {
 			var $select = jQuery( this );
@@ -475,13 +471,8 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 				if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 					gf_show_button( $target );
 				}
-
-				if ( ! isHiddenType ) {
-					$target.slideDown(callback);
-				}
-
+				$target.slideDown(callback);
 				$target.attr( 'data-conditional-logic', 'visible' );
-
 			} else if(callback){
 				callback();
 			}
@@ -499,10 +490,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 				gf_show_button( $target );
 			} else {
-				if ( ! isHiddenType ) {
-					$target.css( 'display', display );
-				}
-
+				$target.css( 'display', display );
 				if( display == 'none' ) {
 					$target.attr( 'data-conditional-logic', 'hidden' );
 				} else {
@@ -542,9 +530,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 				gf_hide_button( $target );
 			} else if ( $target.length > 0 && $target.is( ":visible" ) ) {
-				if ( ! isHiddenType ) {
-					$target.slideUp( callback );
-				}
+				$target.slideUp( callback );
 				$target.attr( 'data-conditional-logic', 'hidden' );
 			} else if ( callback ) {
 				callback();
@@ -555,9 +541,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 				gf_hide_button( $target );
 			} else {
-				if ( ! isHiddenType ) {
-					$target.css( 'display', 'none' );
-				}
+				$target.css( 'display', 'none' );
 				$target.attr( 'data-conditional-logic', 'hidden' );
 			}
 			$target.find(':input:hidden:not(.gf-default-disabled)').attr( 'disabled', 'disabled' );
