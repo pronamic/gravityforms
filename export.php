@@ -746,6 +746,47 @@ class GFExport {
 		}
 	}
 
+	/**
+	 * Returns the status choices available on the export entries page.
+	 *
+	 * Each choice is an array containing 'label' and 'value' keys. This allows add-ons,
+	 * such as Moderation, to add custom choices, like "Toxic", via the filter below.
+	 *
+	 * @since 3.1.1
+	 *
+	 * @return array
+	 */
+	private static function get_export_status_choices() {
+
+		/**
+		 * Allows the status choices on the export entries page to be filtered/extended.
+		 *
+		 * Each choice should be an array containing 'label' and 'value' keys. This allows
+		 * add-ons, such as Moderation, to add custom choices, like "Toxic".
+		 *
+		 * @since 3.1.1
+		 *
+		 * @param array $statuses The array of status choices. Defaults to Active, Spam and Trash.
+		 */
+		return apply_filters(
+			'gform_export_entries_status_choices',
+			array(
+				array(
+					'label' => esc_html__( 'Active', 'gravityforms' ),
+					'value' => 'active',
+				),
+				array(
+					'label' => esc_html__( 'Spam', 'gravityforms' ),
+					'value' => 'spam',
+				),
+				array(
+					'label' => esc_html__( 'Trash', 'gravityforms' ),
+					'value' => 'trash',
+				),
+			)
+		);
+	}
+
 	public static function export_lead_page() {
 
 		if ( ! GFCommon::current_user_can_any( 'gravityforms_export_entries' ) ) {
@@ -788,7 +829,7 @@ class GFExport {
 				gform.utils.trigger( { event: 'gform/page_loader/hide' } );
 
 				if (aryFields.length == 0) {
-					jQuery("#export_field_container, #export_date_container, #export_submit_container").hide()
+					jQuery("#export_field_container, #export_status_container, #export_date_container, #export_submit_container").hide()
 					return;
 				}
 
@@ -798,7 +839,7 @@ class GFExport {
 				}
 				jQuery("#export_field_list").html(fieldList);
 
-				jQuery("#export_field_container, #export_filter_container, #export_date_container, #export_submit_container").hide().show();
+				jQuery("#export_field_container, #export_status_container, #export_filter_container, #export_date_container, #export_submit_container").hide().show();
 
 				gf_vars.filterAndAny = <?php echo json_encode( esc_html__( 'Export entries if {0} of the following match:', 'gravityforms' ) ); ?>;
 				jQuery("#export_filters").gfFilterUI(filterSettings);
@@ -909,6 +950,23 @@ class GFExport {
 								<ul id="export_field_list"></ul>
 							</div>
 						</fieldset>
+						<div id="export_status_container" style="display: none;">
+							<label for="export_status" class="gform-settings-column--left">
+								<?php esc_html_e( 'Select Status', 'gravityforms' ); ?>
+								<?php gform_tooltip( 'export_select_status' ); ?>
+							</label>
+							<div class="gform-settings-column--right">
+								<select id="export_status" name="export_status">
+									<?php
+									foreach ( self::get_export_status_choices() as $export_status ) {
+										?>
+										<option value="<?php echo esc_attr( $export_status['value'] ); ?>" <?php selected( 'active', $export_status['value'] ); ?>><?php echo esc_html( $export_status['label'] ); ?></option>
+										<?php
+									}
+									?>
+								</select>
+							</div>
+						</div>
 						<fieldset id="export_filter_container" class="form-table" style="display: none;">
 							<legend class="gform-settings-column--left">
 								<?php esc_html_e( 'Conditional Logic', 'gravityforms' ); ?>
@@ -1045,7 +1103,10 @@ class GFExport {
 		$start_date = rgpost( 'export_date_start' );
 		$end_date   = rgpost( 'export_date_end' );
 
-		$search_criteria['status']        = 'active';
+		$allowed_statuses = wp_list_pluck( self::get_export_status_choices(), 'value' );
+		$status           = strtolower( rgpost( 'export_status' ) );
+
+		$search_criteria['status']        = GFCommon::whitelist( $status, $allowed_statuses );
 		$search_criteria['field_filters'] = GFCommon::get_field_filters_from_post( $form );
 		if ( ! empty( $start_date ) ) {
 			$search_criteria['start_date'] = $start_date;

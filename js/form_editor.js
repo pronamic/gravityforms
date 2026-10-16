@@ -989,6 +989,11 @@ function LoadFieldSettings() {
 	ToggleInputMask(true);
 	ToggleInputMaskOptions(true);
 
+	// Check for input mask accessibility warnings
+	if (field.inputMask && isStandardMask) {
+		CheckFieldMaskAccessibility();
+	}
+
 	InitAutocompleteOptions(true);
 	InitDisplayInColumns( true )
 
@@ -2069,6 +2074,8 @@ function ToggleInputMask(isInit){
 		SetFieldProperty('inputMask', false);
 		SetFieldProperty('inputMaskValue', '');
 		SetFieldProperty('inputMaskIsCustom', false);
+		// Reset accessibility warnings when input mask is disabled
+		ResetFieldAccessibilityWarning('input_mask_setting');
 	}
 }
 
@@ -2084,8 +2091,27 @@ function ToggleInputMaskOptions(isInit){
 	if (!isInit) {
 		SetFieldProperty('inputMaskValue', '');
 		SetFieldProperty('inputMaskIsCustom', !isStandard);
+		// Reset accessibility warnings when switching mask types
+		ResetFieldAccessibilityWarning('input_mask_setting');
 	}
 }
+
+function CheckFieldMaskAccessibility(){
+	var selectedValue = jQuery('#field_mask_select').val();
+
+	// Clear any existing input mask accessibility warnings
+	ResetFieldAccessibilityWarning('input_mask_setting');
+
+	// Check for phone number patterns that have more accessible alternatives
+	if (selectedValue === '(999) 999-9999' || selectedValue === '(999) 999-9999? x99999') {
+		SetFieldAccessibilityWarning('input_mask_phone_international', 'below');
+	}
+	// Check for date pattern that has a more accessible alternative
+	else if (selectedValue === '99/99/9999') {
+		SetFieldAccessibilityWarning('input_mask_date', 'below');
+	}
+}
+
 
 function ToggleAutoresponder(){
 	if(jQuery("#form_autoresponder_enabled").is(":checked"))

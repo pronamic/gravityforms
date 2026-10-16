@@ -1450,12 +1450,13 @@ class GF_Field extends stdClass implements ArrayAccess {
 					$return = esc_html( $value );
 				}
 			} else {
-				// The value contains HTML but the value was sanitized before saving.
 				if ( is_array( $raw_value ) ) {
 					$return = rgar( $raw_value, $input_id );
 				} else {
 					$return = $raw_value;
 				}
+
+				$return = wp_kses( $return, $this->get_entry_allowed_html( $allowable_tags ) );
 			}
 
 			if ( $nl2br ) {
@@ -1491,14 +1492,60 @@ class GF_Field extends stdClass implements ArrayAccess {
 		$allowable_tags = $this->get_allowable_tags( $form['id'] );
 
 		if ( $allowable_tags === false ) {
-			// The value is unsafe so encode the value.
+			// No html accepted and should be escaped completely.
 			$return = esc_html( $value );
 		} else {
-			// The value contains HTML but the value was sanitized before saving.
-			$return = $value;
+			$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Returns the allowed HTML for entry values displayed as HTML.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @param bool|string|array $allowable_tags The tags permitted by the field and form policy.
+	 *
+	 * @return array
+	 */
+	public function get_entry_allowed_html( $allowable_tags = true ) {
+		$allowed = wp_kses_allowed_html( 'post' );
+
+		foreach ( $allowed as $tag => $attributes ) {
+			// wp_kses normally allows data-* attributes, so we explicitly remove them preventing stored entry values from activating admin behaviors such as data-dialog-confirm.
+			unset( $attributes['data-*'] );
+			$allowed[ $tag ] = $attributes;
+		}
+
+		if ( $allowable_tags === true ) {
+			return $allowed;
+		}
+
+		if ( is_string( $allowable_tags ) ) {
+			preg_match_all( '/<\s*([a-z][a-z0-9-]*)\b/i', $allowable_tags, $matches );
+			$allowable_tags = $matches[1];
+		}
+
+		if ( ! is_array( $allowable_tags ) ) {
+			$allowable_tags = array();
+		}
+
+		$allowed_tags = array();
+		foreach ( $allowable_tags as $tag ) {
+			$tag = strtolower( trim( $tag ) );
+			if ( ! preg_match( '/^[a-z][a-z0-9-]*$/', $tag ) ) {
+				continue;
+			}
+
+			// Explicitly listed custom tags are allowed without attributes.
+			$allowed_tags[ $tag ] = isset( $allowed[ $tag ] ) ? $allowed[ $tag ] : array();
+		}
+
+		$allowed = $allowed_tags;
+
+		return $allowed;
 	}
 
 	/**
@@ -1569,8 +1616,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 				// The value is unsafe so encode the value.
 				$return = esc_html( $value );
 			} else {
-				// The value contains HTML but the value was sanitized before saving.
-				$return = $value;
+				$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
 			}
 		} else {
 			$return = $value;
@@ -1672,7 +1718,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 			$value .= ' (' . $price . ')';
 		}
 
-		return empty( $choice ) ? wp_strip_all_tags( $value ) : wp_kses_post( $value );
+		return empty( $choice ) ? wp_strip_all_tags( $value ) : wp_kses( $value, $this->get_entry_allowed_html() );
 	}
 
 	/**
@@ -2246,9 +2292,11 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * @return string HTML for required indicator.
 	 */
 	public function get_hidden_admin_markup() {
+		if ( ! $this->is_form_editor() ) {
+			return '';
+		}
 
-		 return '<div class="admin-hidden-markup"><i class="gform-icon gform-icon--hidden" aria-hidden="true" title="'. esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) .'"></i><span>'. esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) .'</span></div>';
-
+		return '<div class="admin-hidden-markup"><i class="gform-icon gform-icon--hidden" aria-hidden="true" title="' . esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) . '"></i><span>' . esc_attr( __( 'This field is hidden when viewing the form', 'gravityforms' ) ) . '</span></div>';
 	}
 
 	/**
@@ -2966,7 +3014,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 */
 	public function sanitize_entry_value( $value, $form_id ) {
 
-		if ( is_array( $value ) ) {
+		if ( is_array( $value ) || rgblank( $value ) ) {
 			return '';
 		}
 
@@ -2975,8 +3023,8 @@ class GF_Field extends stdClass implements ArrayAccess {
 		if ( $allowable_tags === true ) {
 
 			// HTML is expected. Output will not be encoded so the value will stripped of scripts and some tags and encoded.
-			$return = wp_kses_post( $value );
-			$this->post_entry_value_sanitization( $value, $return, 'wp_kses_post' );
+			$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+			$this->post_entry_value_sanitization( $value, $return, 'wp_kses' );
 
 		} elseif ( $allowable_tags === false ) {
 
@@ -2985,13 +3033,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		} else {
 
-			// Some HTML is expected. Output will not be encoded so the value will stripped of scripts and some tags and encoded.
-			$sanitized = wp_kses_post( $value );
-			$this->post_entry_value_sanitization( $value, $sanitized, 'wp_kses_post' );
-
-			// Strip all tags except those allowed by the gform_allowable_tags filter.
-			$return = strip_tags( $value, $allowable_tags );
-			$this->post_entry_value_sanitization( $sanitized, $return, 'strip_tags' );
+			// Some HTML is expected. Restrict both tags and attributes to the entry policy.
+			$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+			$this->post_entry_value_sanitization( $value, $return, 'wp_kses' );
 		}
 
 		return $return;

@@ -62,7 +62,9 @@ class GF_Splash_Page_Service_Provider extends GF_Service_Provider {
 		}, 10, 1 );
 
 		add_action( 'gform_system_status_page_about', function () use ( $container ) {
+			\GFCommon::gf_root_wrapper_open();
 			$container->get( self::SPLASH_PAGE )->about_page();
+			\GFCommon::gf_root_wrapper_close();
 		} );
 
 		add_action( 'gform_post_upgrade', function ( $version, $from_db_version, $force_upgrade ) use ( $container ) {

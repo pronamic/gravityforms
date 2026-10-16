@@ -19,6 +19,8 @@ class GFFormDetail {
 			return;
 		}
 
+		GFCommon::gf_root_wrapper_open();
+
 		self::update_recent_forms( $form_id );
 		/**
 		* @var Gravity_Forms\Gravity_Forms\Save_Form\GF_Save_Form_Helper $save_form_helper
@@ -49,7 +51,6 @@ class GFFormDetail {
 			</script>
 			<?php
 		}
-
 
 		wp_print_styles( array( 'thickbox' ) );
 
@@ -2054,7 +2055,7 @@ class GFFormDetail {
 										</div>
 									</div>
 
-									<select id="field_mask_select" onchange="SetFieldProperty('inputMaskValue', jQuery(this).val());">
+									<select id="field_mask_select" onchange="SetFieldProperty('inputMaskValue', jQuery(this).val()); CheckFieldMaskAccessibility();">
 										<option value=""><?php esc_html_e( 'Select a Mask', 'gravityforms' ); ?></option>
 										<?php
 										$masks = RGFormsModel::get_input_masks();
@@ -2910,6 +2911,7 @@ class GFFormDetail {
 
 		require_once( GFCommon::get_base_path() . '/js.php' );
 
+		GFCommon::gf_root_wrapper_close();
 	}
 
 	/**

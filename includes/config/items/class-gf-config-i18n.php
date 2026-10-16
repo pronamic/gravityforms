@@ -23,13 +23,13 @@ class GF_Config_I18n extends GF_Config {
 	 */
 	public function data() {
 		$days = [
-			[ 's' => esc_html__( 'S', 'gravityforms' ), 'l' => esc_html__( 'Sunday', 'gravityforms' ) ],
-			[ 's' => esc_html__( 'M', 'gravityforms' ), 'l' => esc_html__( 'Monday', 'gravityforms' ) ],
-			[ 's' => esc_html__( 'T', 'gravityforms' ), 'l' => esc_html__( 'Tuesday', 'gravityforms' ) ],
-			[ 's' => esc_html__( 'W', 'gravityforms' ), 'l' => esc_html__( 'Wednesday', 'gravityforms' ) ],
-			[ 's' => esc_html__( 'T', 'gravityforms' ), 'l' => esc_html__( 'Thursday', 'gravityforms' ) ],
-			[ 's' => esc_html__( 'F', 'gravityforms' ), 'l' => esc_html__( 'Friday', 'gravityforms' ) ],
-			[ 's' => esc_html__( 'S', 'gravityforms' ), 'l' => esc_html__( 'Saturday', 'gravityforms' ) ],
+			[ 's' => esc_html_x( 'S', 'Sunday initial', 'gravityforms' ), 'l' => esc_html__( 'Sunday', 'gravityforms' ) ],
+			[ 's' => esc_html_x( 'M', 'Monday initial', 'gravityforms' ), 'l' => esc_html__( 'Monday', 'gravityforms' ) ],
+			[ 's' => esc_html_x( 'T', 'Tuesday initial', 'gravityforms' ), 'l' => esc_html__( 'Tuesday', 'gravityforms' ) ],
+			[ 's' => esc_html_x( 'W', 'Wednesday initial', 'gravityforms' ), 'l' => esc_html__( 'Wednesday', 'gravityforms' ) ],
+			[ 's' => esc_html_x( 'T', 'Thursday initial', 'gravityforms' ), 'l' => esc_html__( 'Thursday', 'gravityforms' ) ],
+			[ 's' => esc_html_x( 'F', 'Friday initial', 'gravityforms' ), 'l' => esc_html__( 'Friday', 'gravityforms' ) ],
+			[ 's' => esc_html_x( 'S', 'Saturday initial', 'gravityforms' ), 'l' => esc_html__( 'Saturday', 'gravityforms' ) ],
 		];
 		return [
 			'datepicker' => [

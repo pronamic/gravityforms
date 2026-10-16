@@ -379,8 +379,7 @@ class GF_Field_Textarea extends GF_Field {
 				$return = nl2br( $value );
 
 			} else {
-				// The value contains HTML but the value was sanitized before saving.
-				$return = wpautop( $value );
+				$return = wpautop( wp_kses( $value, $this->get_entry_allowed_html() ) );
 			}
 		} else {
 			$return = $value;
@@ -422,8 +421,7 @@ class GF_Field_Textarea extends GF_Field {
 				// Run nl2br() to preserve line breaks when auto-formatting is disabled on notifications/confirmations.
 				$return = nl2br( $return );
 			} else {
-				// The value contains HTML but the value was sanitized before saving.
-				$return = wpautop( $raw_value );
+				$return = wpautop( wp_kses( $raw_value, $this->get_entry_allowed_html( $allowable_tags ) ) );
 			}
 		} else {
 			$return = $value;

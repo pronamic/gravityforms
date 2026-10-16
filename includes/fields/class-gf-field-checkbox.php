@@ -701,6 +701,10 @@ class GF_Field_Checkbox extends GF_Field {
 
 		} else {
 
+			if ( $format === 'html' && ! rgblank( $value ) ) {
+				return wp_kses( $value, $this->get_entry_allowed_html() );
+			}
+
 			return $value;
 
 		}
@@ -1333,25 +1337,15 @@ class GF_Field_Checkbox extends GF_Field {
 	public function sanitize_entry_value( $value, $form_id ) {
 
 		// If the value is an array, return an empty string.
-		if ( is_array( $value ) ) {
+		if ( is_array( $value ) || rgblank( $value ) ) {
 			return '';
 		}
 
 		// Get allowable tags for field value.
 		$allowable_tags = $this->get_allowable_tags( $form_id );
 
-		// If allowable tags are defined, strip unallowed tags.
-		if ( $allowable_tags !== true ) {
-			$value = strip_tags( $value, $allowable_tags );
-		}
-
 		$original_value = $value;
-
-		// Sanitize value.
-		$allowed_protocols = wp_allowed_protocols();
-		$value             = wp_kses_no_null( $value, array( 'slash_zero' => 'keep' ) );
-		$value             = wp_kses_hook( $value, 'post', $allowed_protocols );
-		$value             = wp_kses_split( $value, 'post', $allowed_protocols );
+		$value          = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
 
 		$this->post_entry_value_sanitization( $original_value, $value, 'wp_kses' );
 

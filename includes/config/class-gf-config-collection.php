@@ -42,7 +42,7 @@ class GF_Config_Collection {
 	 */
 	public function handle( $localize = true, $args = null ) {
 
-		$scripts          = $this->get_configs_by_script();
+		$scripts          = $this->get_configs_by_script( $args );
 		$data_to_localize = array();
 
 		foreach ( $scripts as $script => $items ) {
@@ -175,12 +175,16 @@ class GF_Config_Collection {
 	 *
 	 * @since 2.6
 	 *
+	 * @param array|null $args The arguments to pass to the config objects before evaluating should_enqueue().
+	 *
 	 * @return array
 	 */
-	private function get_configs_by_script() {
+	private function get_configs_by_script( $args = null ) {
 		$data_to_localize = array();
 
 		foreach ( $this->configs as $config ) {
+			$config->set_args( $args );
+
 			if ( ( ! defined( 'GFORMS_DOING_MOCK' ) || ! GFORMS_DOING_MOCK ) && ! $config->should_enqueue() ) {
 				continue;
 			}

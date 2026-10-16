@@ -148,8 +148,7 @@ class GF_Field_Post_Excerpt extends GF_Field {
 				// The value is unsafe so encode the value.
 				$return = esc_html( $value );
 			} else {
-				// The value contains HTML but the value was sanitized before saving.
-				$return = $value;
+				$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
 			}
 
 			// If $nl2br is true nl2br() may have already been run in GFCommon::format_variable_value().

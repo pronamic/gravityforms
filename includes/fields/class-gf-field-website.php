@@ -150,6 +150,26 @@ class GF_Field_Website extends GF_Field {
 		return $value ? $value : '';
 	}
 
+
+	/**
+	 * Format the entry value safe for displaying on the entry list page.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @uses GF_Field::get_allowable_tags()
+	 *
+	 * @param string $value    The field value.
+	 * @param array  $entry    The Entry Object currently being processed.
+	 * @param string $field_id The field or input ID currently being processed.
+	 * @param array  $columns  The properties for the columns being displayed on the entry list page.
+	 * @param array  $form     The Form Object currently being processed.
+	 *
+	 * @return string
+	 */
+	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
+		return esc_url( wp_strip_all_tags( $value ) );
+	}
+
 	// # FIELD FILTER UI HELPERS ---------------------------------------------------------------------------------------
 
 	/**
