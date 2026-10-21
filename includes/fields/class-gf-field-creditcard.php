@@ -19,15 +19,6 @@ class GF_Field_CreditCard extends GF_Field {
 	public $duplicatable = false;
 
 	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = false;
-
-	/**
 	 * Indicates the field is used to capture payments.
 	 *
 	 * @since 2.9.23
@@ -115,15 +106,27 @@ class GF_Field_CreditCard extends GF_Field {
 
 		$describedby_attributes = array();
 		$warning_container_id   = ! GFCommon::is_ssl() && ! ( $this->is_form_editor() || $this->is_entry_detail() ) ? "field_{$this->formId}_{$this->id}_creditcard_warning_message" : '';
+		$description_id         = ! empty( $this->description ) ? "gfield_description_{$this->formId}_{$this->id}" : '';
 
 		foreach ( $this->inputs as $input ) {
 			$input_id    = str_replace( $this->id . '.', '', $input['id'] );
 			$input_value = GFForms::get( $input['id'], $values );
-			if ( ! empty( $_POST[ 'is_submit_' . $this->formId ] ) && $this->isRequired && in_array( $input_id, $required_inputs_ids ) &&  empty( $input_value ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-				$describedby_attributes[ $input_id ] = "aria-describedby='validation_message_{$this->formId}_{$this->id} {$warning_container_id}'";
-			} else {
-				$describedby_attributes[ $input_id ] = empty( $warning_container_id ) ? '' : "aria-describedby='{$warning_container_id}'";
+			$ids         = array();
+
+			if ( ! empty( $_POST[ 'is_submit_' . $this->formId ] ) && $this->isRequired && in_array( $input_id, $required_inputs_ids ) && empty( $input_value ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$ids[] = "validation_message_{$this->formId}_{$this->id}";
 			}
+
+			// Field description is associated with the first input (card number).
+			if ( $input_id === '1' && $description_id ) {
+				$ids[] = $description_id;
+			}
+
+			if ( $warning_container_id ) {
+				$ids[] = $warning_container_id;
+			}
+
+			$describedby_attributes[ $input_id ] = empty( $ids ) ? '' : "aria-describedby='" . implode( ' ', $ids ) . "'";
 		}
 
 		return $describedby_attributes;
@@ -317,6 +320,7 @@ class GF_Field_CreditCard extends GF_Field {
 
 		// Aria attributes.
 		$number_aria_attributes = $this->get_aria_attributes( $value, '1' );
+		$card_number_labelledby = $this->get_aria_labelledby( "{$field_id}_1_label" );
 		$expiration_month_aria_attributes = $this->get_aria_attributes( $value, '2_month' );
 		$expiration_year_aria_attributes = $this->get_aria_attributes( $value, '2_year' );
 		$security_aria_attributes = $this->get_aria_attributes( $value, '3' );
@@ -334,12 +338,12 @@ class GF_Field_CreditCard extends GF_Field {
 			$card_field = "<span class='ginput_full{$class_suffix} gform-grid-col' id='{$field_id}_1_container' >
                                     {$card_icons}
                                     <label for='{$field_id}_1' id='{$field_id}_1_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$card_number_label}</label>
-                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$validation_helper} {$card_number_placeholder} {$number_aria_attributes}/>
+                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$validation_helper} {$card_number_placeholder} {$number_aria_attributes} {$card_number_labelledby}/>
                                  </span>";
 		} else {
 			$card_field = "<span class='ginput_full{$class_suffix} gform-grid-col' id='{$field_id}_1_container' >
                                     {$card_icons}
-                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$validation_helper} {$card_number_placeholder} {$number_aria_attributes}/>
+                                    <input type='text' name='input_{$id}.1' id='{$field_id}_1' value='{$card_number}' {$tabindex} {$disabled_text} {$onchange} {$onkeyup} {$autocomplete} {$validation_helper} {$card_number_placeholder} {$number_aria_attributes} {$card_number_labelledby}/>
                                     <label for='{$field_id}_1' id='{$field_id}_1_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$card_number_label}</label>
                                  </span>";
 		}

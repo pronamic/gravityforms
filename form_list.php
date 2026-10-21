@@ -308,6 +308,7 @@ class GFFormList {
 					labelPlacement:'top_label',
 					descriptionPlacement:'below',
 					validationPlacement:'below',
+					columnLayout:'fixed',
 					button: {
 						type: 'text',
 						text: <?php echo json_encode( esc_html__( 'Submit', 'gravityforms' ) ); ?>,

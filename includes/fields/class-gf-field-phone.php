@@ -25,6 +25,15 @@ class GF_Field_Phone extends GF_Field {
 	public $type = 'phone';
 
 	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
+	/**
 	 * Whether this field allows links/URLs in the value.
 	 *
 	 * @since 3.1.0
@@ -309,7 +318,7 @@ class GF_Field_Phone extends GF_Field {
 		$placeholder_attribute  = $this->phoneFormat !== 'formatted' ? $this->get_field_placeholder_attribute() : '';
 		$required_attribute     = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute      = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
-		$aria_describedby       = $this->get_aria_describedby();
+		$aria_describedby       = $this->phoneFormat === 'formatted' ? '' : $this->get_aria_describedby();
 		$autocomplete_attribute = $this->enableAutocomplete ? $this->get_field_autocomplete_attribute() : '';
 
 		$tabindex = $this->get_tabindex();
@@ -491,7 +500,7 @@ class GF_Field_Phone extends GF_Field {
 		$phone_sublabel_text   = esc_html( $this->phoneSublabel ?: __( 'Phone Number', 'gravityforms' ) );
 		$country_sublabel      = "<label for='" . esc_attr( $button_id ) . "' id='" . esc_attr( $button_id . '_label' ) . "' class='gform-field-label gform-field-label--type-sub {$hidden_sublabel_class}'>{$country_sublabel_text}</label>";
 		$phone_sublabel        = "<label for='" . esc_attr( $visible_input_id ) . "' id='" . esc_attr( $visible_input_id . '_label' ) . "' class='gform-field-label gform-field-label--type-sub {$hidden_sublabel_class}'>{$phone_sublabel_text}</label>";
-
+	
 		$is_sublabel_above = $this->is_sub_label_above( $form );
 
 		$country_sublabel_above = $is_sublabel_above ? $country_sublabel : '';
@@ -572,7 +581,7 @@ class GF_Field_Phone extends GF_Field {
 			esc_attr( $i18n['searchCountriesAriaLabel'] ),      // 22
 			esc_attr( $dropdown_id ),                           // 23: list id prefix
 			esc_attr( $dropdown_id ),                           // 24: list id
-			esc_attr( $i18n['countryListAriaLabel'] )           // 25
+			esc_attr( $i18n['countryListAriaLabel'] ),          // 25
 		);
 
 		return $html;
@@ -898,24 +907,22 @@ class GF_Field_Phone extends GF_Field {
 	}
 
 	/**
-	 * Gets the value to be used when exporting the entry.
+	 * Format a single Phone field value for export.
 	 *
-	 * @since: next
-	 * @access public
+	 * @since 3.2.0
 	 *
-	 * @param array  $entry    The Entry Object.
-	 * @param string $input_id The field or input ID.
-	 * @param bool   $use_text Whether to use the text value.
-	 * @param bool   $is_csv   Whether the export is for CSV.
+	 * @param mixed      $value    The raw value for $input_id.
+	 * @param array      $entry    The entry currently being processed.
+	 * @param string|int $input_id The field or input ID.
+	 * @param bool       $use_text Not used.
+	 * @param bool       $is_csv   Not used.
 	 *
 	 * @return string
 	 */
-	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
-		if ( empty( $input_id ) ) {
-			$input_id = $this->id;
+	protected function format_value_export( $value, $entry, $input_id = '', $use_text = false, $is_csv = false ) {
+		if ( is_array( $value ) ) {
+			return '';
 		}
-
-		$value = rgar( $entry, $input_id );
 
 		if ( $this->phoneFormat == 'formatted' && ! empty( $value ) && GFCommon::is_json( $value ) ) {
 			$decoded = $this->to_array( $value );
@@ -924,7 +931,7 @@ class GF_Field_Phone extends GF_Field {
 			}
 		}
 
-		return $value;
+		return (string) $value;
 	}
 
 	/**

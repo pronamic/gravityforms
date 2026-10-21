@@ -1050,10 +1050,11 @@ class GF_MCP_Settings {
 	/**
 	 * Get the endpoint URL preview HTML.
 	 *
-	 * Renders a styled URL display whose value the admin JS (settings/pages/mcp.js)
-	 * live-updates when the endpoint mode radio changes. The base URL and the
-	 * per-mode paths ride on data attributes so PHP stays the single source of
-	 * truth for the route slugs — the JS never re-derives them.
+	 * Renders a readonly input + Copy button (same pattern as the REST API key
+	 * settings) whose value the admin JS (settings/pages/mcp.js) live-updates
+	 * when the endpoint mode radio changes. The base URL and the per-mode paths
+	 * ride on data attributes so PHP stays the single source of truth for the
+	 * route slugs — the JS never re-derives them.
 	 *
 	 * @since 3.1.0
 	 *
@@ -1069,13 +1070,28 @@ class GF_MCP_Settings {
 
 		return sprintf(
 			'<div class="gform-mcp-endpoint-preview" data-gfmcp-base-url="%1$s" data-gfmcp-paths="%2$s">'
-			. '<span class="gform-mcp-endpoint-preview__label">%3$s</span>'
-			. '<code id="gform-mcp-endpoint-url" class="gform-mcp-endpoint-preview__url">%4$s</code>'
+			. '<div class="gform-input-wrapper gform-input-wrapper--theme-cosmos gform-input-wrapper--input gform-input-wrapper--with-action gform-input-wrapper--border-default">'
+			. '<label for="gform-mcp-endpoint-url" class="gform-settings-label">%3$s</label>'
+			. '<div class="gform-input__action-wrapper">'
+			. '<div class="gform-input__wrapper">'
+			. '<input class="gform-input gform-typography--size-text-sm gform-input--size-r gform-input--text" id="gform-mcp-endpoint-url" type="text" value="%4$s" readonly aria-describedby="gform-mcp-endpoint-url-description" />'
+			. '</div>'
+			. '<button type="button" class="gform-button gform-button--size-r gform-button--white gform-button--width-auto gform-button--icon-leading gform-input__action-button" data-copy-label="%5$s" data-copied-label="%6$s">'
+			. '<span class="gform-icon gform-icon--copy gform-button__icon"></span>'
+			. '<span class="gform-button__text gform-button__text--inactive">%7$s</span>'
+			. '</button>'
+			. '<span id="gform-mcp-endpoint-url-description" class="screen-reader-text">%8$s</span>'
+			. '</div>'
+			. '</div>'
 			. '</div>',
 			esc_attr( $base_url ),
 			esc_attr( wp_json_encode( $paths ) ),
 			esc_html__( 'Endpoint URL', 'gravityforms' ),
-			esc_html( $current_url )
+			esc_attr( $current_url ),
+			esc_attr__( 'Copy', 'gravityforms' ),
+			esc_attr__( 'Copied!', 'gravityforms' ),
+			esc_html__( 'Copy', 'gravityforms' ),
+			esc_html__( 'This is your MCP endpoint URL. Click "Copy" to copy it to the clipboard.', 'gravityforms' )
 		);
 	}
 

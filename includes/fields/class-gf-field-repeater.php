@@ -16,6 +16,15 @@ class GF_Field_Repeater extends GF_Field {
 	public $type = 'repeater';
 
 	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
+	/**
 	 * Repeater field constructor.
 	 *
 	 * @since 3.0
@@ -82,14 +91,6 @@ class GF_Field_Repeater extends GF_Field {
 		return 'gform-icon--repeater';
 	}
 
-	public function get_form_editor_button() {
-		if ( apply_filters( 'gform_enable_repeater_field_button', false ) ) {
-			return parent::get_form_editor_button();
-		} else {
-			return array();
-		}
-	}
-
 	/**
 	 * Returns the field settings for the form editor.
 	 *
@@ -100,17 +101,16 @@ class GF_Field_Repeater extends GF_Field {
 	public function get_form_editor_field_settings() {
 		return array(
 			'conditional_logic_field_setting',
-			'error_message_setting',
 			'label_setting',
 			'label_placement_setting',
 			'admin_label_setting',
-			'rules_setting',
 			'visibility_setting',
 			'description_setting',
 			'css_class_setting',
 			'max_items_setting',
 			'add_button_text_setting',
 			'remove_button_text_setting',
+			'repeater_row_label_setting',
 		);
 	}
 
@@ -124,21 +124,46 @@ class GF_Field_Repeater extends GF_Field {
 	 * @return bool
 	 */
 	public function is_value_submission_empty( $form_id ) {
-		return false;
+		return $this->is_value_empty( $this->get_value_submission( array() ) );
 	}
 
 	/**
-	 * Is the given value considered empty for this field.
+	 * A repeater value is empty when every sub-field in every row is empty.
 	 *
 	 * @since 3.0
 	 *
 	 * @param null|array $value The field value.
 	 *
-	 * @return bool
+	 * @return bool Returns true if every field in the repeater is blank. Returns false otherwise.
 	 */
 	public function is_value_empty( $value ) {
-		return GFCommon::is_empty_array( $value );
+		if ( ! is_array( $value ) ) {
+			return true;
+		}
+
+		foreach ( $value as $item ) {
+			foreach ( $this->fields as $field ) {
+				if ( ! $field->is_value_empty( $this->get_field_value( $field, $item ) ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
+
+		/**
+	 * Whether this field should show a validation error in the markup.
+	 *
+	 * Repeater fields keep failed_validation for their subfields, and do not show the error class or message themselves.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return bool
+	 */
+		public function should_show_validation_error() {
+			return false;
+		}
 
 	/**
 	 * Validates each sub-field.
@@ -157,7 +182,7 @@ class GF_Field_Repeater extends GF_Field {
 			return;
 		}
 
-		$items   = empty( $value ) ? array( array() ) : array_values( $value );
+		$items   = empty( $value ) ? array( array() ) : $value;
 		$context = GFFormDisplay::get_submission_context();
 
 		$summary_errors = array();
@@ -166,11 +191,12 @@ class GF_Field_Repeater extends GF_Field {
 
 		$repeater_item_index = $this->get_context_property( 'index_chain' );
 		$repeater_item_index = is_null( $repeater_item_index ) ? '' : $repeater_item_index . '-';
-		$repeater_label      = '';
 
 		$no_duplicate_values = array();
+		$position            = 0;
 
 		foreach ( $items as $i => $item ) {
+			$position++;
 			foreach ( $fields as $field ) {
 				$field_index_chain = $repeater_item_index . $i;
 				if ( $field instanceof GF_Field_Repeater ) {
@@ -239,8 +265,8 @@ class GF_Field_Repeater extends GF_Field {
 				GFCommon::log_debug( __METHOD__ . sprintf( '(): row %s; field #%d; value = %s; result = %s', $i, $field->id, print_r( $field_value, true ), print_r( $result, true ) ) );
 				$this->set_sub_field_validation_result( $field, $i, $result );
 
-				if ( ! is_null( $result['is_empty_1'] ) && ( is_null( $is_empty ) || $is_empty ) ) {
-					$is_empty = $result['is_empty_1'];
+				if ( is_null( $is_empty ) || $is_empty ) {
+					$is_empty = $field->is_value_empty( $field_value );
 				}
 
 				if ( is_null( $is_spam ) && $result['is_value_spam'] ) {
@@ -254,12 +280,8 @@ class GF_Field_Repeater extends GF_Field {
 					if ( $field instanceof GF_Field_Repeater ) {
 						$summary_errors = array_merge( $summary_errors, $field->get_context_property( 'validation_summary_errors' ) );
 					} else {
-						if ( empty( $repeater_label ) ) {
-							$repeater_label = $this->get_field_label();
-						}
-
 						$summary_errors[] = array(
-							'field_label'    => sprintf( '%s (#%d - %s)', $field->get_field_label(), $i + 1, $repeater_label ),
+							'field_label'    => sprintf( '%s %d %s',  $this->get_repeater_row_label(), $position, $field->get_field_label() ),
 							'field_selector' => sprintf( '#field_%d_%d-%s', $field->formId, $field->id, $field_index_chain ),
 							'message'        => $result['message'],
 						);
@@ -267,7 +289,7 @@ class GF_Field_Repeater extends GF_Field {
 				}
 
 				// Reset the field properties.
-				unset( $field->failed_validation, $field->validation_messsage );
+				unset( $field->failed_validation, $field->validation_message );
 				$field->set_context_property( 'itemIndex', null );
 				$field->set_context_property( 'failed_state_validation', null );
 				$field->set_context_property( 'is_empty_1', null );
@@ -308,6 +330,57 @@ class GF_Field_Repeater extends GF_Field {
 		}
 		$results[ $index ] = $result;
 		$field->set_context_property( 'repeater_validation_results', $results );
+	}
+
+	/**
+	 * Applies a sub field's default value to each submitted row of the repeater. This is used by administrative fields inside a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param GF_Field $field         An administrative field inside a repeater.
+	 * @param mixed    $default_value The field default value.
+	 *
+	 * @return array Returns the values data structure with the default value populated in every row. Empty when no repeater rows were submitted.
+	 */
+	public function get_sub_field_default_value( $field, $default_value ) {
+
+		// Reverse nestingPath so the outermost repeater is first.
+		$repeater_ids = array_reverse( $field->nestingPath );
+
+		// Getting submitted values for outermost repeater so that we can get all submitted repeater rows.
+		$rows = $this->get_value_submission( array() );
+
+		// This helper method recursively creates the default value data structure for the field, following the same format as $rows.
+		// This ensures a default value will be added for the field in each repeater row.
+		$fill = function ( $rows, $repeater_path, $default_value ) use ( &$fill ) {
+			$repeater_id = array_shift( $repeater_path );
+			$repeater    = ( (int) $repeater_id === (int) $this->id ) ? $this : GFFormsModel::get_field( $this->formId, $repeater_id );
+
+			// An administrative repeater should not submit any default values, return an empty array.
+			if ( $repeater->is_administrative() ) {
+				return array();
+			}
+
+			$values            = array();
+			$child_repeater_id = $repeater_path ? $repeater_path[0] : null;
+			foreach ( $rows as $index => $row ) {
+				if ( ! $child_repeater_id ) {
+					$values[ $index ] = $default_value;
+					continue;
+				}
+				// Recursing into a nested repeater.
+				$child_rows = rgar( $row, $child_repeater_id, array() );
+				if ( empty( $child_rows ) ) {
+					// Ensuring nested repeaters get populated when inside a row with only blank fields
+					$child_rows = array( array() );
+				}
+				$values[ $index ] = $fill( $child_rows, $repeater_path, $default_value );
+			}
+			return $values;
+		};
+
+		// Recursivelly create the data structure for this field's default value based on $rows.
+		return $fill( $rows, $repeater_ids, $default_value );
 	}
 
 	/**
@@ -410,6 +483,25 @@ class GF_Field_Repeater extends GF_Field {
 				}
 				$items = array_merge( $items, $field_items );
 			}
+
+			// Row indicators mark rows whose fields were omitted from the request, such as an unchecked radio.
+			// Record a blank value for any indicated row that has no submitted value yet, using the first single-value subfield.
+			if ( $get_from_post_global_var ) {
+				$posted_rows = rgpost( 'input_' . $this->id . '_row' );
+				if ( is_array( $posted_rows ) ) {
+					foreach ( $this->fields as $sub_field ) {
+						if ( is_array( $sub_field->fields ) || is_array( $sub_field->get_repeater_inputs() ) ) {
+							continue;
+						}
+						foreach ( $this->flatten( $posted_rows, $sub_field->id . '_' ) as $key => $unused ) {
+							if ( ! array_key_exists( $key, $items ) ) {
+								$items[ $key ] = '';
+							}
+						}
+						break;
+					}
+				}
+			}
 		} else {
 			$values      = $this->get_value_submission( $field_values, $get_from_post_global_var );
 			$field_items = $this->flatten( $values, $this->id . '_', $this->is_value_submission_array() );
@@ -439,13 +531,20 @@ class GF_Field_Repeater extends GF_Field {
 		}
 		foreach ( $ary as $key => $value ) {
 			if ( is_array( $value ) ) {
-				if ( $field_value_is_array && ! is_array( $value[0] ) ) {
+				if ( $field_value_is_array && ! is_array( rgar( $value, 0 ) ) ) {
 					$result[ $prefix . $key ] = $value;
 				} else {
-					$result = $result + $this->flatten( $value, $prefix . $key . '_' );
+					$result = $result + $this->flatten( $value, $prefix . $key . '_', $field_value_is_array );
 				}
 			} else {
-				$index = $prefix ? $prefix . $key : $key . '_0'; // if no prefix, add '_0' so that prepopulation of complex fields work correctly.
+				// Prepopulated values have no posted row index. Append '_0' so complex fields match a repeater row, and one more '_0' per ancestor so nested repeaters match the same depth as a submission.
+				$nesting_level = (int) $this->nestingLevel;
+				$has_row_index = $prefix && substr_count( rtrim( $prefix, '_' ), '_' ) > 0;
+				if ( $prefix ) {
+					$index = $has_row_index ? $prefix . $key : $prefix . str_repeat( '0_', $nesting_level ) . $key;
+				} else {
+					$index = $key . str_repeat( '_0', $nesting_level + 1 );
+				}
 				$result[ $index ] = $value;
 			}
 		}
@@ -490,6 +589,8 @@ class GF_Field_Repeater extends GF_Field {
 		$input_bottom  = $this->get_input_bottom();
 		$description   = $this->get_description( $this->description, 'gfield_description' );
 		$limit_message = $this->get_limit_message();
+		$label         = esc_html( $this->get_field_label( $this->is_form_editor() ) );
+		$required_div  = $this->isRequired ? sprintf( "<span class='gfield_required'>%s</span>", $this->get_required_indicator() ) : '';
 
 		$description_above = '';
 		$description_below = '';
@@ -513,9 +614,13 @@ class GF_Field_Repeater extends GF_Field {
 
 		$html = $input_top . $description_above . $items . $description_below . $input_bottom;
 
-		$max_items = intval( $this->maxItems );
+		$max_items         = intval( $this->maxItems );
+		$next_unique_id    = ( is_array( $values ) && $values ) ? (int) max( array_keys( $values ) ) + 1 : 0;
+		$repeater_label_id = $this->get_repeater_label_id();
 
-		return $message . sprintf( "<div class='gfield_repeater_wrapper gfield_repeater_id_{$this->id}' data-max_items='{$max_items}'>%s</div>", $html );
+		$admin_hidden_markup = ( $this->visibility === 'hidden' ) ? $this->get_hidden_admin_markup() : '';
+
+		return $message . $admin_hidden_markup . "<legend id='" . esc_attr( $repeater_label_id ) . "' class='gfield_label gform-field-label'><span><span class='gform-field-label__text'>{$label}</span>{$required_div}</span></legend><div class='gfield_repeater_wrapper gfield_repeater_id_{$this->id}' data-max_items='{$max_items}' data-next-unique-id='{$next_unique_id}'>{$html}</div>";
 	}
 
 	/**
@@ -578,14 +683,19 @@ class GF_Field_Repeater extends GF_Field {
 			$field = new self;
 		}
 
-		$inner_html = '<div class="gfield-repeater-spacer" id="#spacer_id" data-groupid="#space_group_id" style="grid-column: span 6"></div>
+		$inner_html = '<div class="gfield-repeater-spacer" id="#spacer_id" data-group-id="#space_group_id" style="grid-column: span 6"></div>
 			<div class="gform-box gform-repeater-fields-list-empty-wrapper">
 				<span class="gform-empty-repeater-text">' . esc_html__( 'Drag Fields Here', 'gravityforms' ) . '</span>
 			</div>' . $field->get_buttons( array() );
 
+		$repeat_label = wp_strip_all_tags( $field->get_repeater_row_label() );
+		$legend_text  = $repeat_label ? esc_html( $repeat_label ) . '&nbsp;1' : '';
+
 		return sprintf(
-			'<div class="gfield_repeater_items"><div class="gfield_repeater_item gform-repeater-fields-list" data-repeater-field-id="%s">%s</div></div>',
+			'<div class="gfield_repeater_items gfield_repeater_empty_wrapper"><fieldset class="gfield_repeater_item gform-repeater-fields-list" data-repeater-field-id="%s" data-repeat-label="%s"><legend class="gfield_label gform-field-label gform-repeat-label">%s</legend>%s</fieldset></div>',
 			esc_attr( $field->id ),
+			esc_attr( $repeat_label ),
+			$legend_text,
 			$inner_html
 		);
 	}
@@ -602,12 +712,8 @@ class GF_Field_Repeater extends GF_Field {
 	 * @return string
 	 */
 	public function get_input_top( $values ) {
-		$html                = $this->get_repeater_template( $this->id, $values );
-		$html               .= "<div class='gfield_repeater gfield_repeater_container'>\n";
-		$label               = esc_html( $this->label );
-		$required_div        = $this->isRequired ? sprintf( "<span class='gfield_required'>%s</span>", $this->get_required_indicator() ) : '';
-		$admin_hidden_markup = ( $this->visibility === 'hidden' ) ? $this->get_hidden_admin_markup() : '';
-		$html               .= "{$admin_hidden_markup}<legend class='gfield_label gform-field-label'><span><span class='gform-field-label__text'>{$label}</span>{$required_div}</span></legend>";
+		$html  = $this->get_repeater_template( $this->id, $values );
+		$html .= "<div class='gfield_repeater gfield_repeater_container'>\n";
 		return $html;
 	}
 
@@ -630,6 +736,8 @@ class GF_Field_Repeater extends GF_Field {
 		}
 
 		$rows = '<div class="gfield_repeater_items">';
+
+		ksort( $values, SORT_NUMERIC );
 
 		foreach ( $values as $index => $value ) {
 			$row   = $this->get_repeater_row( $index, $values, $value, $entry );
@@ -672,27 +780,175 @@ class GF_Field_Repeater extends GF_Field {
 			$i = $index;
 		}
 
-		$row = "<div class='gfield_repeater_item gform-repeater-fields-list' data-repeater-field-id='{$this->id}' data-repeater-index='{$i}' data-nesting-level='{$this->nestingLevel}'>";
+		$legend_class    = $this->showRepeaterRowLabel !== true ? ' screen-reader-text' : '';
+		$repeat_label    = wp_strip_all_tags( $this->get_repeater_row_label() );
+		$repeater_number = $template ? '' : $i + 1;
+		$item_class      = $this->showRepeaterRowLabel !== true ? ' gfield_repeater_item--no-visible-label' : '';
+		$row_legend_id   = "gfield_repeater_item_label_{$this->formId}_{$this->id}_{$i}";
+
+		$row = sprintf(
+			'<fieldset class="gfield_repeater_item gform-repeater-fields-list%1$s" data-repeater-field-id="%2$s" data-repeater-index="%3$s" data-nesting-level="%4$s" data-repeat-label="%5$s"><legend id="%6$s" class="gfield_label gform-field-label gform-repeat-label %7$s">%8$s%9$s</legend>',
+			esc_attr( $item_class ), // 1
+			esc_attr( $this->id ), // 2
+			esc_attr( $i ), // 3
+			esc_attr( $this->nestingLevel ), // 4
+			esc_attr( $repeat_label ), // 5
+			esc_attr( $row_legend_id ), // 6
+			esc_attr( $legend_class ), // 7
+			esc_html( $repeat_label ), // 8
+			$repeater_number ? '&nbsp;' . esc_html( $repeater_number ) : '' //9
+		);
+
+		$is_first_row               = ! $template && (string) $i === '0';
+		$row_aria_attributes_added  = false;
+		$row_aria_describedby_ids   = $is_first_row ? $this->get_row_aria_reference_ids() : array();
+		$inherited_describedby_ids  = $this->get_context_property( 'repeater_aria_describedby_ids' );
+		$inherited_labelledby_ids   = $this->get_context_property( 'repeater_aria_labelledby_ids' );
+		$has_inherited_aria_context = ! $this->get_context_property( 'repeater_aria_attributes_added' )
+			&& ( ! empty( $inherited_describedby_ids ) || ! empty( $inherited_labelledby_ids ) );
+
+		if ( $has_inherited_aria_context ) {
+			$row_aria_describedby_ids = array_merge( $row_aria_describedby_ids, (array) $inherited_describedby_ids );
+		}
+
+		// Skip row validation when rendering repeater templates in top level and nested repeaters.
+		$skip_row_validation = $template || $this->get_context_property( 'rendering_repeater_template' );
 
 		foreach ( $fields as $field ) {
-			if ( ! $template ) {
+			$field->set_context_property( 'itemIndex', $i );
+			if ( $skip_row_validation ) {
+				$field->set_context_property( 'rendering_repeater_template', true );
+				unset( $field->failed_validation, $field->validation_message );
+			} elseif ( is_array( $field->get_context_property( 'repeater_validation_results' ) ) ) {
+				// Results are stored on the shared field object. Validate this row's value so the error class and message match the row being rendered.
+				$this->apply_row_validation_state( $field, $form, $value );
+			} else {
 				$this->restore_sub_field_validation_result( $field, $i );
 			}
+			$this->maybe_set_input_aria_attributes( $template, $row_aria_attributes_added, $row_legend_id, $is_first_row, $has_inherited_aria_context, $inherited_labelledby_ids, $row_aria_describedby_ids, $field );
 
-			$field->set_context_property( 'itemIndex', $i );
 			$field_value = $this->get_field_value( $field, $value );
 			$field_input = $this->get_sub_field_input( $field, $form, $field_value, $entry, $i, $template );
 
 			$row .= $field_input;
 
+			$row_aria_attributes_added = $row_aria_attributes_added || (bool) $field->get_context_property( 'repeater_aria_attributes_added' );
 			$field->set_context_property( 'itemIndex', null );
+			$field->set_context_property( 'rendering_repeater_template', null );
+			$this->reset_aria_context( $field );
+		}
+
+		if ( $has_inherited_aria_context && $row_aria_attributes_added ) {
+			$this->set_context_property( 'repeater_aria_attributes_added', true );
 		}
 
 		$buttons = $this->get_buttons( $values );
 		$row    .= $buttons;
-		$row    .= '</div>';
+		$row    .= $this->get_row_indicator_input( $i );
+		$row    .= '</fieldset>';
 
 		return $row;
+	}
+
+	/* *
+	 * Sets the aria-describedby and aria-labelledby attributes for the first input if they haven't already been set.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param bool   $template                    Whether this is a template row.
+	 * @param bool   $row_aria_attributes_added   Whether the row has already had its aria attributes added.
+	 * @param string $row_legend_id               The ID of the row legend.
+	 * @param bool   $is_first_row                Whether this is the first row in the repeater.
+	 * @param bool   $has_inherited_aria_context  Whether there are inherited aria attributes from a parent repeater.
+	 * @param array  $inherited_labelledby_ids    The inherited aria-labelledby IDs from a parent repeater.
+	 * @param array  $row_aria_describedby_ids    The aria-describedby IDs for the current row.
+	 * @param GF_Field $field                     The current sub field.
+	 *
+	 * @return void
+	 */
+	private function maybe_set_input_aria_attributes( $template, $row_aria_attributes_added, $row_legend_id, $is_first_row, $has_inherited_aria_context, $inherited_labelledby_ids, $row_aria_describedby_ids, $field ) {
+		if ( ! $template && ! $row_aria_attributes_added ) {
+			$labelledby_ids = array( $row_legend_id );
+			if ( $is_first_row ) {
+				$labelledby_ids[] = $this->get_repeater_label_id();
+			}
+			if ( $has_inherited_aria_context ) {
+				$labelledby_ids = array_merge( $labelledby_ids, (array) $inherited_labelledby_ids );
+			}
+
+			$field->set_context_property( 'repeater_aria_describedby_ids', $row_aria_describedby_ids );
+			$field->set_context_property( 'repeater_aria_labelledby_ids', $labelledby_ids );
+			$field->set_context_property( 'repeater_aria_attributes_added', false );
+		}
+	}
+
+	/**
+	 * Resets the aria context properties for the given field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param GF_Field $field The current sub field.
+	 *
+	 * @return void
+	 */
+	private function reset_aria_context( $field ) {
+		$field->set_context_property( 'repeater_aria_describedby_ids', null );
+		$field->set_context_property( 'repeater_aria_labelledby_ids', null );
+		$field->set_context_property( 'repeater_aria_attributes_added', null );
+	}
+
+	/**
+	 * Returns the ID of the repeater legend.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string
+	 */
+	private function get_repeater_label_id() {
+		return "gfield_repeater_label_{$this->formId}_{$this->id}";
+	}
+
+	/**
+	 * Retrieve the description and limit message IDs for the repeater to be used in aria-describedby.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return array The IDs needed for the first input's aria-describedby attribute.
+	 */
+	private function get_row_aria_reference_ids() {
+		$ids = array();
+
+		if ( ! empty( $this->description ) ) {
+			$ids[] = "gfield_description_{$this->formId}_{$this->id}";
+		}
+
+		if ( $this->get_limit_message_text() ) {
+			$ids[] = "gfield_repeater_max_message_{$this->formId}_{$this->id}";
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Runs validation for the subfield value in this row.
+	 *
+	 * The error class and message both read failed_validation while the field is rendered. A nested repeater reuses one field object, so the previous row's failure has to be cleared before this row is checked.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param GF_Field     $field The subfield being rendered.
+	 * @param array|null   $form  The form being rendered.
+	 * @param array|string $value The current repeater row value.
+	 *
+	 * @return void
+	 */
+	private function apply_row_validation_state( $field, $form, $value ) {
+		unset( $field->failed_validation, $field->validation_message );
+		$field->set_context_property( 'failed_state_validation', null );
+		$field->set_context_property( 'is_empty_1', null );
+		$field->set_context_property( 'is_value_spam', null );
+
+		GFFormDisplay::validate_field( $field, $form, GFFormDisplay::get_submission_context(), $this->get_field_value( $field, $value ) );
 	}
 
 	/**
@@ -738,14 +994,29 @@ class GF_Field_Repeater extends GF_Field {
 		}
 
 		$template    = "<div class='gfield_repeater_template' data-repeater-template-id='{$field_id}' style='display:none;'>";
-		$first_value = reset( $values );
-		$template   .= $this->get_repeater_row( '{ID}', $values, $first_value, null, true );
+
+		$template   .= $this->get_repeater_row( '{ID}', $values, $this->get_template_row_value(), null, true );
 		$template   .= '</div>';
 
 		// Replace the name attribute with template_name so that it won't be submitted in the POST data.
 		$template = str_replace( 'name=', 'template_name=', $template );
 
 		return $template;
+	}
+
+	/**
+	 * Calculates the value to be populated into repeater templates, taking prepopulation into account.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return array|string
+	 */
+	private function get_template_row_value() {
+		parse_str( GFForms::post( 'gform_field_values' ), $field_values );
+
+		$template_values = rgar( $this->hydrate( $this->get_value_submission_recursive( $field_values, false ) ), $this->id );
+
+		return is_array( $template_values ) ? reset( $template_values ) : '';
 	}
 
 	/**
@@ -777,27 +1048,51 @@ class GF_Field_Repeater extends GF_Field {
 	 * @return string
 	 */
 	public function get_buttons( $values ) {
-		$is_form_editor = $this->is_form_editor();
+		$is_form_editor  = $this->is_form_editor();
+		$delete_display  = count( $values ) === 1 ? 'visibility:hidden;' : '';
 
-		$delete_display = count( $values ) === 1 ? 'visibility:hidden;' : '';
+		// The aria labels also function as the default button text if user doesn't enter their own
+		$default_add_button_text    = $this->get_default_button_text( __( 'Add', 'gravityforms' ) );
+		$default_remove_button_text = $this->get_default_button_text( __( 'Remove', 'gravityforms' ) );
+		$add_button_text            = $this->addButtonText ? esc_attr( $this->addButtonText ) : esc_attr( $default_add_button_text );
+		$remove_button_text         = $this->removeButtonText ? esc_attr( $this->removeButtonText ) : esc_attr( $default_remove_button_text );
 
-		$add_events    = $is_form_editor ? '' : "onclick='gformAddRepeaterItem(this)'";
-		$delete_events = $is_form_editor ? '' : sprintf( "onclick='if(confirm(\"%s\")){gformDeleteRepeaterItem(this)};'", esc_js( __( 'Are you sure you want to remove this item?', 'gravityforms' ) ) );
+		// Setting add and delete button click events.
+		$add_events    = "onclick='gformAddRepeaterItem(this)'";
+		$delete_events = "onclick='gformDeleteRepeaterItem(this);'";
 
+		// Setting aria labels
+		$add_button_aria    = 'aria-label="' . esc_attr( $add_button_text ) . '"';
+		$remove_button_aria = 'aria-label="' . esc_attr( $remove_button_text ) . '"';
+
+		$disabled            = $is_form_editor ? 'disabled' : '';
 		$disabled_icon_class = ! empty( $this->maxItems ) && count( $values ) >= intval( $this->maxItems ) ? 'gfield_icon_disabled' : '';
-
-		$add_button_text    = $this->addButtonText ? $this->addButtonText : esc_html__( 'Add', 'gravityforms' );
-		$remove_button_text = $this->removeButtonText ? $this->removeButtonText : esc_html__( 'Remove', 'gravityforms' );
-
-		$add_button_class    = $this->addButtonText ? 'add_repeater_item_text' : 'add_repeater_item_plus';
-		$remove_button_class = $this->removeButtonText ? 'remove_repeater_item_text' : 'remove_repeater_item_minus';
 
 		$add_button_data = "data-repeater-id='{$this->id}'";
 
 		return "<div class='gfield_repeater_buttons'>
-					<button type='button' class='add_repeater_item gform-theme-button gform-theme-button--size-sm add_repeater_item {$disabled_icon_class}' {$add_events} {$add_button_data}>{$add_button_text}</button>
-		        	<button type='button' class='remove_repeater_item gform-theme-button gform-theme-button--size-sm remove_repeate_item' {$delete_events} style='{$delete_display}'>{$remove_button_text}</button>
+					<button type='button' {$disabled} class='add_repeater_item gform-theme-button gform-theme-button--size-sm {$disabled_icon_class}' {$add_events} {$add_button_data} {$add_button_aria}>{$add_button_text}</button>
+		        	<button type='button' {$disabled} class='remove_repeater_item gform-theme-button gform-theme-button--size-sm' {$delete_events} style='{$delete_display}' {$remove_button_aria}>{$remove_button_text}</button>
 		        	</div>";
+	}
+
+	/**
+     * Returns the default button text for the repeater add/remove buttons.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param $action
+	 *
+	 * @return string
+	 */
+	public function get_default_button_text( $action ) {
+		if ( ! empty( $this->repeaterRowLabel ) ) {
+			$button_text = sprintf( '%s %s', $action, $this->repeaterRowLabel );
+		} else {
+			$button_text = $action;
+		}
+
+		return $button_text;
 	}
 
 	/**
@@ -833,8 +1128,19 @@ class GF_Field_Repeater extends GF_Field {
 
 		$max = intval( $this->maxItems );
 
-		// translators: %s: the maximum number of repeated fields.
-		return sprintf( esc_html__( 'Add up to %s repeated fields.', 'gravityforms' ), "<strong>$max</strong>" );
+		// translators: %s: the maximum number of rows.
+		return sprintf( esc_html__( 'Add up to %s rows.', 'gravityforms' ), "<strong>$max</strong>" );
+	}
+
+	/**
+	 * Returns the row label for individual repeats of the repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string
+	 */
+	public function get_repeater_row_label() {
+		return $this->repeaterRowLabel ? $this->repeaterRowLabel : esc_html__( 'Row', 'gravityforms' );
 	}
 
 	/**
@@ -890,7 +1196,7 @@ class GF_Field_Repeater extends GF_Field {
 			$merge_tag = $this->get_value_recursive( $raw_value, $entry, $use_text, $format, $field_ids, 'merge_tag' );
 		} else {
 			$value_only = in_array( 'value', $modifiers );
-			$merge_tag  = $this->get_value_export_recursive( $entry, $input_id, $use_text, false, 0, '&nbsp;&nbsp;&nbsp;&nbsp;', $field_ids, $value_only );
+			$merge_tag  = $this->get_value_export_recursive( $entry, $input_id, $use_text, false, 0, '    ', $field_ids, $value_only );
 		}
 
 		return $merge_tag;
@@ -974,7 +1280,14 @@ class GF_Field_Repeater extends GF_Field {
 			return '';
 		}
 		if ( $format === 'text' ) {
-			return $this->get_value_export_recursive( array( $this->id => $item_values ), $this->id, $use_text, false, 0, '&nbsp;&nbsp;&nbsp;&nbsp;' );
+			$export = $this->get_value_export_recursive( array( $this->id => $item_values ), $this->id, $use_text, false, 0, '    ' );
+
+			// Adding line break after main label.
+			if ( $context === 'all_fields_merge_tag' && $export !== '' ) {
+				return "\n" . $export;
+			}
+
+			return $export;
 		}
 		$fields = $this->fields;
 		if ( ! empty( $field_ids ) && ! $already_filtered ) {
@@ -1002,12 +1315,16 @@ class GF_Field_Repeater extends GF_Field {
 					continue;
 				}
 
+				if ( $this->get_context_property( 'use_admin_label' ) ) {
+					$sub_field->set_context_property( 'use_admin_label', true );
+				}
+
 				if ( $sub_field->fields ) {
 					$sub_field_value = rgar( $item_value, $sub_field->id );
 				} else {
 					$sub_field_value = $this->get_field_value( $sub_field, $item_value );
 				}
-				$label = wp_kses( $sub_field->get_field_label( true, $item_values ), wp_kses_allowed_html( 'post' ) );
+				$label = wp_kses( $sub_field->get_field_label( false, $item_values ), wp_kses_allowed_html( 'post' ) );
 
 				if ( $sub_field->type === 'repeater' ) {
 					if ( $context === 'entry_detail' ) {
@@ -1058,6 +1375,31 @@ class GF_Field_Repeater extends GF_Field {
 			}
 		}
 		return $html;
+	}
+
+	/**
+	 * Checks if the repeater contains a product field at any nesting level.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return bool
+	 */
+	public function has_product_fields() {
+		if ( ! is_array( $this->fields ) ) {
+			return false;
+		}
+
+		foreach ( $this->fields as $sub_field ) {
+			if ( GFCommon::is_product_field( $sub_field->type ) ) {
+				return true;
+			}
+
+			if ( $sub_field->type === 'repeater' && $sub_field->has_product_fields() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1180,7 +1522,8 @@ class GF_Field_Repeater extends GF_Field {
 	public function get_sub_field_input( $field, $form, $field_value, $entry, $index, $is_template = false ) {
 		$field_content = $this->get_sub_field_content( $field, $field_value, $form, $entry );
 
-		if ( $this->is_form_editor() ) {
+		// Administrative fields are omitted outside the admin, so there is no markup to rewrite.
+		if ( $this->is_form_editor() || empty( $field_content ) ) {
 			return $field_content;
 		}
 
@@ -1207,7 +1550,7 @@ class GF_Field_Repeater extends GF_Field {
 		// Adjust id attributes for all elements
 		do {
 			$id = $html_processor->get_attribute( 'id' );
-			if ( $id && ( str_starts_with( $id, 'field_' ) || str_starts_with( $id, 'input_' ) || str_starts_with( $id, 'choice_' ) ) ) {
+			if ( $id && ( str_starts_with( $id, 'field_' ) || str_starts_with( $id, 'input_' ) || str_starts_with( $id, 'choice_' ) || str_starts_with( $id, 'gfield_label_' ) ) ) {
 				$new_id_attr = $this->update_dash_attribute( $id, $index, $is_template );
 				$html_processor->set_attribute( 'id', $new_id_attr );
 			}
@@ -1229,9 +1572,15 @@ class GF_Field_Repeater extends GF_Field {
 			// Adjust aria-describedby attributes
 			while ( $html_processor->next_tag() ) {
 				$aria_describedby = $html_processor->get_attribute( 'aria-describedby' );
-				if ( $aria_describedby && str_starts_with( $aria_describedby, 'validation_message_' ) ) {
-					$new_aria_attr = $this->update_dash_attribute( $aria_describedby, $index, $is_template );
-					$html_processor->set_attribute( 'aria-describedby', $new_aria_attr );
+				if ( $aria_describedby ) {
+					$describedby_ids = preg_split( '/\s+/', trim( $aria_describedby ) );
+					foreach ( $describedby_ids as &$describedby_id ) {
+						if ( str_starts_with( $describedby_id, 'validation_message_' ) ) {
+							$describedby_id = $this->update_dash_attribute( $describedby_id, $index, $is_template );
+						}
+					}
+					unset( $describedby_id );
+					$html_processor->set_attribute( 'aria-describedby', implode( ' ', $describedby_ids ) );
 				}
 			}
 
@@ -1383,7 +1732,7 @@ class GF_Field_Repeater extends GF_Field {
 			require_once GFCommon::get_base_path() . '/form_display.php';
 		}
 
-		return GFFormDisplay::get_field( $field, $value, true, $form );
+		return GFFormDisplay::get_field( $field, $value, $this->is_form_editor(), $form );
 	}
 
 	/**
@@ -1400,6 +1749,23 @@ class GF_Field_Repeater extends GF_Field {
 	public function hydrate( $entry, $apply_filters = false ) {
 		$entry[ $this->id ] = $this->get_repeater_items( $entry, '', '', $apply_filters );
 		return $entry;
+	}
+
+	/**
+	 * Hidden input posted with each repeater row so the row exists even when its fields are omitted from the request.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param int|string $index The row index, or a template placeholder such as {ID}.
+	 *
+	 * @return string
+	 */
+	private function get_row_indicator_input( $index ) {
+		if ( $this->is_form_editor() ) {
+			return '';
+		}
+
+		return sprintf( "<input type='hidden' class='gform_hidden' name='input_%d_row[%s]' value='1' />", (int) $this->id, esc_attr( $index ) );
 	}
 
 	/**
@@ -1493,6 +1859,8 @@ class GF_Field_Repeater extends GF_Field {
 				}
 			}
 		}
+
+		ksort( $items, SORT_NUMERIC );
 
 		return $items;
 	}
@@ -1601,11 +1969,12 @@ class GF_Field_Repeater extends GF_Field {
 	 * @param bool|false $use_text When processing choice based fields should the choice text be returned instead of the value.
 	 * @param bool|false $is_csv   Is the value going to be used in the .csv entries export?
 	 *
-	 * @return string|array
+	 * @return string
 	 */
 	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
-		$export = $this->get_value_export_recursive( $entry, $input_id, $use_text, $is_csv );
-		return $export;
+		$export = $this->get_value_export_recursive( $entry, $input_id, $use_text, $is_csv, 0, '    ', '', false, true );
+
+		return wp_json_encode( $export );
 	}
 
 	/**
@@ -1613,40 +1982,59 @@ class GF_Field_Repeater extends GF_Field {
 	 *
 	 * @since 2.4
 	 * @since 3.0 Added the $field_ids and $value_only parameters.
+	 * @since 3.2.0 Added the $is_json parameter.
 	 *
-	 * @param array        $entry    The entry currently being processed.
-	 * @param string       $input_id The field or input ID.
-	 * @param bool|false   $use_text When processing choice based fields should the choice text be returned instead of the value.
-	 * @param bool|false   $is_csv   Is the value going to be used in the .csv entries export?
-	 * @param int          $depth    The current depth of the recursion.
-	 * @param string       $padding  The string used for padding based on the depth.
-	 * @param string|array $field_ids The field IDs to include in the export.
+	 * @param array        $entry      The entry currently being processed.
+	 * @param string       $input_id   The field or input ID.
+	 * @param bool|false   $use_text   When processing choice based fields should the choice text be returned instead of the value.
+	 * @param bool|false   $is_csv     Is the value going to be used in the .csv entries export?
+	 * @param int          $depth      The current depth of the recursion.
+	 * @param string       $padding    The string used for padding based on the depth.
+	 * @param string|array $field_ids  The field IDs to include in the export.
 	 * @param bool         $value_only Whether to return only the values without labels.
+	 * @param bool         $is_json    Whether to return a structured array keyed like $items instead of a CSV string.
 	 *
 	 * @return string|array
 	 */
-	public function get_value_export_recursive( $entry, $input_id = '', $use_text = false, $is_csv = false, $depth = 0, $padding = '    ', $field_ids = '', $value_only = false ) {
+	public function get_value_export_recursive( $entry, $input_id = '', $use_text = false, $is_csv = false, $depth = 0, $padding = '    ', $field_ids = '', $value_only = false, $is_json = false ) {
 		if ( empty( $input_id ) ) {
 			$input_id = $this->id;
 		}
 
 		$items = rgar( $entry, $input_id );
+		if ( empty( $items ) && ! empty( $this->nestingPath ) && is_array( $this->nestingPath ) ) {
+			$items = array();
+			foreach ( $this->get_nested_values( $entry, $this->nestingPath, $input_id ) as $value ) {
+				if ( ! is_array( $value ) ) {
+					continue;
+				}
+				foreach ( $value as $row ) {
+					$items[] = $row;
+				}
+			}
+		}
 		if ( empty( $items ) ) {
-			return '';
+			return $is_json ? array() : '';
 		}
 
 		/* @var GF_Field[] $fields */
 		$fields = $this->fields;
 
 		$csv       = array();
+		$json      = array();
 		$separator = "\n";
 
 		foreach ( $items as $item ) {
+			$json_item = array();
 
 			foreach ( $fields as $field ) {
 				// Skip password fields for consistency with main entry detail display
 				if ( $field->get_input_type() === 'password' ) {
 					continue;
+				}
+
+				if ( $this->get_context_property( 'use_admin_label' ) ) {
+					$field->set_context_property( 'use_admin_label', true );
 				}
 
 				// If field_ids is set, skip fields that are not in the list
@@ -1661,9 +2049,9 @@ class GF_Field_Repeater extends GF_Field {
 				if ( is_array( $inputs ) ) {
 					$field_value = array();
 					$field_keys  = array_keys( $item );
-					foreach ( $field_keys as $input_id ) {
-						if ( is_numeric( $input_id ) && absint( $input_id ) === absint( $field->id ) ) {
-							$field_value[ $input_id ] = $item[ $input_id ];
+					foreach ( $field_keys as $item_input_id ) {
+						if ( is_numeric( $item_input_id ) && absint( $item_input_id ) === absint( $field->id ) ) {
+							$field_value[ $item_input_id ] = $item[ $item_input_id ];
 						}
 					}
 				} else {
@@ -1678,11 +2066,21 @@ class GF_Field_Repeater extends GF_Field {
 					$label = str_repeat( $padding, $depth ) . GFFormsModel::get_label( $field ) . ': ';
 				}
 
+				$lines      = null;
+				$json_value = null;
+
 				if ( is_array( $field->fields ) ) {
 					$new_depth = $depth + 1;
-					$line      = $label . "\n" . $field->get_value_export_recursive( $field_value, $field->id, $use_text, $is_csv, $new_depth, $padding );
-					if ( $depth === 0 ) {
-						$line .= "\n";
+					$nested    = $field->get_value_export_recursive( $field_value, $field->id, $use_text, $is_csv, $new_depth, $padding, $field_ids, $value_only, $is_json );
+
+					if ( $is_json ) {
+						$line = '';
+						$json_item[ (string) $field->id ] = $nested;
+					} else {
+						$line = $label . "\n" . $nested;
+						if ( $depth === 0 ) {
+							$line .= "\n";
+						}
 					}
 				} else {
 
@@ -1691,7 +2089,8 @@ class GF_Field_Repeater extends GF_Field {
 						$list_rows = GFCommon::maybe_unserialize( $field_value[ $field->id ] );
 
 						if ( is_array( $list_rows[0] ) ) {
-							$lines = array();
+							$lines      = array();
+							$json_value = array();
 							foreach ( $list_rows as $i => $list_row ) {
 								$row_label = str_repeat( $padding, $depth ) . GFFormsModel::get_label( $field ) . ' ' . ( $i + 1 ) . ': ';
 
@@ -1702,7 +2101,8 @@ class GF_Field_Repeater extends GF_Field {
 									$row_value = "'" . $row_value;
 								}
 
-								$lines[] = $row_label . $row_value;
+								$lines[]      = $row_label . $row_value;
+								$json_value[] = $row_value;
 							}
 							$line = implode( "\n", $lines );
 						} else {
@@ -1711,18 +2111,25 @@ class GF_Field_Repeater extends GF_Field {
 								// Prevent Excel formulas
 								$value = "'" . $value;
 							}
-							$line = $label . $value;
+							$line       = $label . $value;
+							$json_value = $value;
 						}
 					} else {
-						$line = $label . $field->get_value_export( $field_value, $field->id, $use_text, $is_csv );
+						$value      = $field->get_value_export( $field_value, $field->id, $use_text, $is_csv );
+						$line       = $label . $value;
+						$json_value = $value;
 					}
+
+					$json_item[ (string) $field->id ] = $json_value;
 				}
 
 				$csv[] = $line;
 			}
+
+			$json[] = $json_item;
 		}
 
-		return implode( $separator, $csv );
+		return $is_json ? $json : implode( $separator, $csv );
 	}
 
 	/**

@@ -9,6 +9,15 @@ class GF_Field_Number extends GF_Field {
 
 	public $type = 'number';
 
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Number', 'gravityforms' );
 	}
@@ -69,12 +78,17 @@ class GF_Field_Number extends GF_Field {
 		$value = $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
 
 		if ( is_array( $value ) ) {
-			// account for nested arrays, from nested repeater fields
-			$value = array_map( function( $v ) {
-				if ( is_array( $v ) ) {
-					return array_map( 'trim', $v );
+			// Repeater rows stay in the entered format. Cleaning them here turns an invalid "1.5" into "15" before validation.
+			$trim_leaf = function( $leaf ) {
+				return is_string( $leaf ) ? trim( $leaf ) : $leaf;
+			};
+
+			$value = array_map( function( $row ) use ( $trim_leaf ) {
+				if ( is_array( $row ) ) {
+					return array_map( $trim_leaf, $row );
 				}
-				return trim( $v );
+
+				return $trim_leaf( $row );
 			}, $value );
 		} else {
 			if ( is_string( $value ) ) {
@@ -112,11 +126,16 @@ class GF_Field_Number extends GF_Field {
 	public function validate( $value, $form ) {
 
 		// The POST value has already been converted from currency or decimal_comma to decimal_dot and then cleaned in get_field_value().
+		// Repeater values are the exception: they are still in the format the user entered.
 		$value = GFCommon::maybe_add_leading_zero( $value );
 
-		// Raw value will be tested against the is_numeric() function to make sure it is in the right format.
-		// If the POST value is an array then the field is inside a repeater so use $value.
-		$raw_value = isset( $_POST[ 'input_' . $this->id ] ) && ! is_array( $_POST[ 'input_' . $this->id ] ) ? GFCommon::maybe_add_leading_zero( rgpost( 'input_' . $this->id ) ) : $value; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$is_repeater_value = isset( $_POST[ 'input_' . $this->id ] ) && is_array( $_POST[ 'input_' . $this->id ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( $is_repeater_value ) {
+			$raw_value = $value;
+			$value     = GFCommon::maybe_add_leading_zero( $this->clean_value( $value ) );
+		} else {
+			$raw_value = isset( $_POST[ 'input_' . $this->id ] ) ? GFCommon::maybe_add_leading_zero( rgpost( 'input_' . $this->id ) ) : $value; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		}
 
 		$has_raw_value         = ! rgblank( trim( $raw_value ) );
 		$requires_valid_number = $has_raw_value && ! $this->has_calculation();
@@ -256,7 +275,14 @@ class GF_Field_Number extends GF_Field {
 		$max_attr = is_numeric( $max ) ? "max='{$max}'" : '';
 
 		$include_thousands_sep = apply_filters( 'gform_include_thousands_sep_pre_format_number', $html_input_type == 'text', $this );
-		$value                 = GFCommon::format_number( $value, $this->numberFormat, rgar( $entry, 'currency' ), $include_thousands_sep );
+
+		// A top-level submission is cleaned before it is formatted, so an invalid decimal-comma value such as "1.5" redisplays as "15". Repeater rows are still in the entered format at this point.
+		$is_repeater_submission = ! $is_entry_detail && ! $is_form_editor && null !== $this->get_context_property( 'itemIndex' ) && rgpost( 'is_submit_' . $this->formId );
+		if ( $is_repeater_submission && is_string( $value ) ) {
+			$value = $this->clean_value( trim( $value ) );
+		}
+
+		$value = GFCommon::format_number( $value, $this->numberFormat, rgar( $entry, 'currency' ), $include_thousands_sep );
 
 		$placeholder_attribute = $this->get_field_placeholder_attribute();
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';

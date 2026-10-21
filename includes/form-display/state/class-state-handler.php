@@ -269,7 +269,13 @@ class State_Handler {
 	 * @return false|string
 	 */
 	private function hash_field_value( $value, $field ) {
-		return wp_hash( GFFormsModel::maybe_trim_input( $value, $field->formId, $field ) );
+		$value = GFFormsModel::maybe_trim_input( $value, $field->formId, $field );
+
+		if ( is_null( $value ) ) {
+			$value = '';
+		}
+
+		return wp_hash( $value );
 	}
 
 	/**
@@ -506,6 +512,10 @@ class State_Handler {
 	 * @return bool
 	 */
 	private function value_matches_state( $value, $state ) {
+		if ( is_null( $value ) ) {
+			$value = '';
+		}
+
 		$hash           = wp_hash( $value );
 		$is_state_array = is_array( $state );
 

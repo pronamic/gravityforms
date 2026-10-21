@@ -17,15 +17,6 @@ class GF_Field_Post_Excerpt extends GF_Field {
 	 */
 	public $duplicatable = false;
 
-	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = false;
-
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Excerpt', 'gravityforms' );
 	}

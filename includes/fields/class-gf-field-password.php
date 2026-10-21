@@ -303,6 +303,7 @@ class GF_Field_Password extends GF_Field {
 		}
 
 		$aria_describedby = $this->get_aria_describedby( $describedby_extra_id );
+		$aria_labelledby  = $this->is_confirm_input_enabled() ? $this->get_aria_labelledby( "{$field_id}_label" ) : '';
 
 		$password_autocomplete = $this->enableAutocomplete ? $this->get_input_autocomplete_attribute( $enter_password_field_input ) : '';
 		$confirm_autocomplete  = $this->enableAutocomplete ? $this->get_input_autocomplete_attribute( $confirm_password_field_input ) : '';
@@ -313,14 +314,14 @@ class GF_Field_Password extends GF_Field {
 			if ( $is_sub_label_above ) {
 				return "<div class='ginput_complex$class_suffix ginput_container ginput_container_password gform-grid-row' id='{$field_id}_container'>
 						<span id='{$field_id}_1_container' class='ginput_password ginput_left gform-grid-col gform-grid-col--size-auto'>
-							<label for='{$field_id}' class='gform-field-label gform-field-label--type-sub {$sub_label_class}' {$confirm_style}>{$enter_password_label}</label>
+							<label for='{$field_id}' id='{$field_id}_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}' {$confirm_style}>{$enter_password_label}</label>
 							<span class='password_input_container'>
-							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
+							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} {$aria_labelledby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
 							{$enter_password_toggle}
 							</span>
 						</span>
 						<span id='{$field_id}_2_container' class='ginput_password ginput_right gform-grid-col gform-grid-col--size-auto' {$confirm_style}>
-							<label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_password_label}</label>
+							<label for='{$field_id}_2' id='{$field_id}_2_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_password_label}</label>
 							<span class='password_input_container'>
 							<input type='password' name='input_{$id}_2' id='{$field_id}_2' {$onkeyup} {$onchange} value='{$confirmation_value}' {$last_tabindex} {$confirm_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$confirm_autocomplete} />
 							{$confirm_password_toggle}
@@ -332,17 +333,17 @@ class GF_Field_Password extends GF_Field {
 				return "<div class='ginput_complex$class_suffix ginput_container ginput_container_password gform-grid-row' id='{$field_id}_container'>
 						<span id='{$field_id}_1_container' class='ginput_password ginput_left gform-grid-col gform-grid-col--size-auto'>
 							<span class='password_input_container'>
-							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
+							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} {$aria_labelledby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
 							{$enter_password_toggle}
 							</span>
-							<label for='{$field_id}' class='gform-field-label gform-field-label--type-sub {$sub_label_class}' {$confirm_style}>{$enter_password_label}</label>
+							<label for='{$field_id}' id='{$field_id}_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}' {$confirm_style}>{$enter_password_label}</label>
 						</span>
 						<span id='{$field_id}_2_container' class='ginput_password ginput_right gform-grid-col gform-grid-col--size-auto' {$confirm_style}>
 							<span class='password_input_container'>
 							<input type='password' name='input_{$id}_2' id='{$field_id}_2' {$onkeyup} {$onchange} value='{$confirmation_value}' {$last_tabindex} {$confirm_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$confirm_autocomplete} />
 							{$confirm_password_toggle}
 							</span>
-							<label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_password_label}</label>
+							<label for='{$field_id}_2' id='{$field_id}_2_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_password_label}</label>
 						</span>
 						<div class='gf_clear gf_clear_complex'></div>
 					</div>{$strength}";
@@ -354,14 +355,14 @@ class GF_Field_Password extends GF_Field {
 			if ( $is_sub_label_above ) {
 				return "<div class='ginput_complex$class_suffix ginput_container ginput_container_password gform-grid-row' id='{$field_id}_container'>
 						<span id='{$field_id}_1_container' class='ginput_password ginput_left gform-grid-col gform-grid-col--size-auto'>
-							<label for='{$field_id}' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_password_label}</label>
+							<label for='{$field_id}' id='{$field_id}_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_password_label}</label>
 							<span class='password_input_container'>
-							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
+							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} {$aria_labelledby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
 							{$enter_password_toggle}
 							</span>
 						</span>
 						<span id='{$field_id}_2_container' class='ginput_password ginput_right gform-grid-col gform-grid-col--size-auto'>
-							<label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_password_label}</label>
+							<label for='{$field_id}_2' id='{$field_id}_2_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_password_label}</label>
 							<span class='password_input_container'>
 							<input type='password' name='input_{$id}_2' id='{$field_id}_2' {$onkeyup} {$onchange} value='{$confirmation_value}' {$last_tabindex} {$confirm_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$confirm_autocomplete} />
 							{$confirm_password_toggle}
@@ -373,17 +374,17 @@ class GF_Field_Password extends GF_Field {
 				return "<div class='ginput_complex$class_suffix ginput_container ginput_container_password gform-grid-row' id='{$field_id}_container'>
 						<span id='{$field_id}_1_container' class='ginput_password ginput_left gform-grid-col gform-grid-col--size-auto'>
 							<span class='password_input_container'>
-							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
+							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} {$aria_labelledby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
 							{$enter_password_toggle}
 							</span>
-							<label for='{$field_id}' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_password_label}</label>
+							<label for='{$field_id}' id='{$field_id}_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_password_label}</label>
 						</span>
 						<span id='{$field_id}_2_container' class='ginput_password ginput_right gform-grid-col gform-grid-col--size-auto'>
 							<span class='password_input_container'>
 							<input type='password' name='input_{$id}_2' id='{$field_id}_2' {$onkeyup} {$onchange} value='{$confirmation_value}' {$last_tabindex} {$confirm_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$confirm_autocomplete} />
 							{$confirm_password_toggle}
 							</span>
-							<label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_password_label}</label>
+							<label for='{$field_id}_2' id='{$field_id}_2_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_password_label}</label>
 						</span>
 						<div class='gf_clear gf_clear_complex'></div>
 					</div>{$strength}";
@@ -393,7 +394,7 @@ class GF_Field_Password extends GF_Field {
 			return "<div class='ginput_container ginput_container_password'>
 						<span id='{$field_id}_1_container' class='ginput_password {$size}'>
 							<span class='password_input_container'>
-							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
+							<input type='password' name='input_{$id}' id='{$field_id}' {$onkeyup} {$onchange} {$aria_describedby} {$aria_labelledby} value='{$password_value}' {$first_tabindex} {$enter_password_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text} {$password_autocomplete} />
 							{$enter_password_toggle}
 							</span>
 						</span>

@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 3.1.3
+Version: 3.2.0
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -255,7 +255,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '3.1.3';
+	public static $version = '3.2.0';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -1837,7 +1837,7 @@ class GFForms {
 	/**
 	 * Determines if the current page uses Gravity Forms components.
 	 *
-	 * Returns true if the current page is a Gravity Forms page or first-party add-on page that relies on Gravity Forms components.
+	 * Returns true if the current page is a Gravity Forms page, the block editor, or a first-party add-on page that relies on Gravity Forms components.
 	 *
 	 * @since 3.1.1
 	 *
@@ -1856,7 +1856,7 @@ class GFForms {
 		 */
 		$gf_addon_pages = gf_apply_filters( array( 'gform_addon_pages_using_components' ), $gf_addon_pages );
 
-		return self::is_gravity_page() || in_array( $current_page, $gf_addon_pages );
+		return self::is_gravity_page() || GFCommon::is_block_editor_page() || in_array( $current_page, $gf_addon_pages );
 	}
 
 	/**
@@ -3566,6 +3566,7 @@ class GFForms {
 				'defaultSubmit'     => __( 'Submit', 'gravityforms' ),
 				'addButtonText'     => __( 'Add', 'gravityforms' ),
 				'removeButtonText'  => __( 'Remove', 'gravityforms' ),
+				'repeaterRowLabel'  => __( 'Row', 'gravityforms' ),
 			);
 			wp_localize_script( 'gform_form_editor', 'gform_form_strings', $form_strings );
 			wp_enqueue_media();

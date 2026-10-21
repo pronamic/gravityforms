@@ -33,13 +33,13 @@ class GF_Field_Consent extends GF_Field {
 	public $duplicatable = true;
 
 	/**
-	 * Whether the field can be used in a repeater. Consent field is currently not supported in repeaters.
+	 * Whether the field can be used in a repeater.
 	 *
-	 * @since 3.0.0
+	 * @since 3.2.0
 	 *
 	 * @var bool
 	 */
-	public $repeatable = false;
+	public $repeatable = true;
 
 	/**
 	 * Checked indicator URL.
@@ -249,8 +249,10 @@ class GF_Field_Consent extends GF_Field {
 		$description           = $is_entry_detail ? $this->get_field_description_from_revision( $revision_id ) : $this->description;
 		$extra_describedby_ids = empty( $description ) ? array() : array( "gfield_consent_description_{$form['id']}_{$this->id}" );
 		$aria_describedby      = $this->get_aria_describedby( $extra_describedby_ids );
+		$consent_label_id      = "{$target_input_id}_label";
+		$aria_labelledby       = $this->get_aria_labelledby( $consent_label_id );
 
-		$input  = "<input name='input_{$id}.1' id='{$target_input_id}' type='{$html_input_type}' value='1' {$tabindex} {$aria_describedby} {$required_attribute} {$invalid_attribute} {$disabled_text} {$checked} /> <label {$label_class_attribute} {$for_attribute} ><span class='gform-field-label__text'>{$checkbox_label}</span>{$required_div}</label>";
+		$input  = "<input name='input_{$id}.1' id='{$target_input_id}' type='{$html_input_type}' value='1' {$tabindex} {$aria_describedby} {$aria_labelledby} {$required_attribute} {$invalid_attribute} {$disabled_text} {$checked} /> <label id='{$consent_label_id}' {$label_class_attribute} {$for_attribute} ><span class='gform-field-label__text'>{$checkbox_label}</span>{$required_div}</label>";
 		$input .= "<input type='hidden' name='input_{$id}.2' value='" . esc_attr( $checkbox_label ) . "' class='gform_hidden' />";
 		$input .= "<input type='hidden' name='input_{$id}.3' value='" . esc_attr( $revision_id ) . "' class='gform_hidden' />";
 
@@ -338,6 +340,23 @@ class GF_Field_Consent extends GF_Field {
 	 */
 	public function is_value_submission_empty( $form_id ) {
 		return rgblank( rgpost( 'input_' . $this->id . '_1' ) );
+	}
+
+	/**
+	 * Determines if the Consent checkbox has been checked.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string|array $value The field value.
+	 *
+	 * @return bool
+	 */
+	public function is_value_empty( $value ) {
+		if ( is_array( $value ) ) {
+			$value = rgar( $value, $this->id . '.1' );
+		}
+
+		return rgblank( $value );
 	}
 
 	/**
@@ -470,6 +489,36 @@ class GF_Field_Consent extends GF_Field {
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Format a consent value for export.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param mixed      $value    The raw value for $input_id, or an array of input values for the whole field.
+	 * @param array      $entry    The entry currently being processed.
+	 * @param string|int $input_id The field or input ID.
+	 * @param bool       $use_text When processing choice based fields should the choice text be returned instead of the value.
+	 * @param bool       $is_csv   Is the value going to be used in the .csv entries export?
+	 *
+	 * @return string
+	 */
+	protected function format_value_export( $value, $entry, $input_id = '', $use_text = false, $is_csv = false ) {
+		if ( ! is_array( $value ) ) {
+			return (string) $value;
+		}
+
+		$parts = array();
+		foreach ( $this->get_entry_inputs() as $input ) {
+			$id        = (string) rgar( $input, 'id' );
+			$formatted = $this->get_value_export( $value, $id, $use_text, $is_csv );
+			if ( $formatted !== '' ) {
+				$parts[] = $formatted;
+			}
+		}
+
+		return implode( ', ', $parts );
 	}
 
 	/**

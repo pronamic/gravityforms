@@ -11,6 +11,15 @@ class GF_Field_Radio extends GF_Field {
 	public $type = 'radio';
 
 	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
+	/**
 	 * Indicates if this field supports state validation.
 	 *
 	 * @since 2.5.11
@@ -332,6 +341,8 @@ class GF_Field_Radio extends GF_Field {
 		}
 
 		$aria_describedby = $this->add_aria_description( $checked, $choice_id ) ? $this->get_aria_describedby() : '';
+		// choice_id is post-incremented above; 1 means this is the first choice.
+		$aria_labelledby  = ( $choice_id === 1 ) ? $this->get_aria_labelledby( "label_{$id}" ) : '';
 
 		$tabindex = $this->get_tabindex();
 		$label    = sprintf( "<label for='choice_%s' id='label_%s' class='gform-field-label gform-field-label--type-inline'>%s</label>", $id, $id, $choice['text'] );
@@ -361,10 +372,10 @@ class GF_Field_Radio extends GF_Field {
 
 		$choice_markup = sprintf( "
 			<div class='gchoice gchoice_$id'>
-					<input class='gfield-choice-input' name='input_%d' type='radio' value='%s' %s id='choice_%s' onchange='gformToggleRadioOther( this )' %s $tabindex %s />
+					<input class='gfield-choice-input' name='input_%d' type='radio' value='%s' %s id='choice_%s' onchange='gformToggleRadioOther( this )' %s %s $tabindex %s />
 					%s
 			</div>",
-			$this->id, esc_attr( $field_value ), $checked, $id, $aria_describedby, $disabled_text, $label
+			$this->id, esc_attr( $field_value ), $checked, $id, $aria_describedby, $aria_labelledby, $disabled_text, $label
 		);
 
 		/**
@@ -671,14 +682,25 @@ class GF_Field_Radio extends GF_Field {
 		return true;
 	}
 
-	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
-		if ( empty( $input_id ) ) {
-			$input_id = $this->id;
+	/**
+	 * Format a single Radio field value for export.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param mixed      $value    The raw value for $input_id.
+	 * @param array      $entry    The entry currently being processed.
+	 * @param string|int $input_id The field or input ID.
+	 * @param bool       $use_text When processing choice based fields should the choice text be returned instead of the value.
+	 * @param bool       $is_csv   Is the value going to be used in the .csv entries export?
+	 *
+	 * @return string
+	 */
+	protected function format_value_export( $value, $entry, $input_id = '', $use_text = false, $is_csv = false ) {
+		if ( is_array( $value ) ) {
+			return '';
 		}
 
-		$value = rgar( $entry, $input_id );
-
-		return $is_csv ? $value : GFCommon::selection_display( $value, $this, rgar( $entry, 'currency' ), $use_text );
+		return $is_csv ? (string) $value : GFCommon::selection_display( $value, $this, rgar( $entry, 'currency' ), $use_text );
 	}
 
 	/**
@@ -728,6 +750,31 @@ class GF_Field_Radio extends GF_Field {
 	 */
 	public function get_entry_inputs() {
 		return null;
+	}
+
+	/**
+	 * Determines if the specified $value is considered empty for a radio button field. Handles fields in a repeater and the Multiple Choice and Image Choice field types.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param mixed $value The field value.
+	 *
+	 * @return bool Returns true if $value is "empty". Returns false otherwise.
+	 */
+	public function is_value_empty( $value ) {
+		if ( is_array( $value ) ) {
+			foreach ( $value as $input ) {
+				$input     = GFCommon::trim_deep( $input );
+				$sanitized = $this->sanitize_entry_value( (string) $input, $this->formId );
+				if ( GFCommon::safe_strlen( trim( $sanitized ) ) <= 0 ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		return empty( $value );
 	}
 
 }

@@ -1,3 +1,30 @@
+### 3.2.0 | 2026-10-20
+- Added new Repeater field allowing users to add multiple sets of fields to a form and submit them all at once.
+- Added security enhancements.
+- Added a "copy" button next to the endpoint URL in the MCP settings.
+- Added a Column Layout form setting to control how columns behave when they are hidden by conditional logic. Fixed: Fields will not move into empty space. Slide: Fields will slide left to fill empty space in the same row, but will not move between rows. Fill: Fields will slide left or move up a row to fill empty space.
+- Added a meta tag to the default HTML template for notifications to define the content type and charset.
+- Added aria attributes to the first inputs in fieldsets to ensure screen readers read the labels and descriptions correctly.
+- Added MCP compatibility for Repeater fields.
+- Added support for linking to a page within a multi-page form, and improved accessibility by making links in the validation summary go to the correct page.
+- Added the `gform/conditional_logic/field_action/end` JS event, which fires when a field is shown or hidden by conditional logic.
+- Updated the About page link to point to the general release tag instead of the security release tag.
+- Fixed a bug that prevented the "Reset Defaults" button in the block editor from working.
+- Fixed a PHP fatal error that could happen if entry retrieval failed during a call to GF_Results_Cache::update_entry_status()
+- Fixed a PHP fatal error that occurs when some field values are sanitized and the theme or another plugin is using the `wp_kses_allowed_html` filter incorrectly.
+- Fixed an issue that caused the field id to not change in the form editor when switching between fields in Firefox.
+- Fixed an issue that prevented Multi-File Upload from working on the Post Custom Field type.
+- Fixed an issue that prevented the value for Text fields from being saved when the field uses conditional logic and is set to Hidden visibility.
+- Fixed an issue where ampersands in Radio and Checkbox field values could prevent matching entries from appearing in search results and cause `GFAPI::get_entries()` to return encoded values.
+- Fixed an issue where conditional logic comparisons could fail when field values contained an ampersand, preventing those values from appearing in confirmations and notifications.
+- Fixed an issue where embedding a form in an existing page or post when the Gravity Forms block is not registered on the site caused the block editor to hide all other blocks.
+- Fixed an issue where screen readers were not notified when users selected or cleared the Address field’s “Same as previous” option.
+- Fixed an issue where the Month and Year dropdown selections in the Datepicker did not stick on the first try on mobile.
+- Fixed an issue where the side arrows for the Month and Year dropdowns in the Datepicker are not in the correct position on mobile.
+- Removed the [`gform_enable_repeater_field_button`](https://docs.gravityforms.com/gform_enable_repeater_field_button/) filter. Repeater fields are now always enabled.
+- AF: Fixed an issue where `GFFeedAddOn::delay_feed()` is not called when a conditional logic rule based on the payment status is being used to delay feed processing.
+- AF: Fixed an issue where updates aren't offered for the AbuseIPDB Add-On.
+
 ### 3.1.3 | 2026-10-01
 - Added security enhancements.
 - Added accessibility improvements to the International (Formatted) phone field.

@@ -337,6 +337,8 @@ function InitializeFieldSettings(){
 			}
 		} );
 
+	jQuery('#repeater_row_label').on('input propertychange', function(){ SetRepeaterRowLabel( this.value ); });
+
 	var $submitButton = jQuery( '#gform_submit_button_' + form.id );
 
 	jQuery( '#submit_text' ).on('input propertychange', function(){
@@ -357,14 +359,14 @@ function InitializeFieldSettings(){
 		}
 	}).on('change blur', function() {
 		$submitButton.attr( 'src', this.value );
-		
+
 		if ( $submitButton.find( 'img' ).length ) {
 			$submitButton.find( 'img' ).attr( 'src', this.value );
 		} else {
 			var altText = jQuery( '#submit_text' ).val() || gf_vars.buttonText;
 			$submitButton.html( '<img alt="' + altText + '" src="' + this.value + '">' );
 		}
-		
+
 		ToggleSubmitType( false );
 	});
 
@@ -403,10 +405,10 @@ function InitializeFieldSettings(){
             var targetElements;
 
             if ( field.type === 'repeater' ) {
-                // find labels/titles where this field is the immediate parent
+                // find labels/titles where this field is the immediate parent, excluding the repeater row label
                 var allCandidates = fieldElement.querySelectorAll( '.gfield_label, .gsection_title' );
                 targetElements = Array.from( allCandidates ).filter( function( el ) {
-                    return el.closest( '.gfield' ) === fieldElement;
+                    return el.closest( '.gfield' ) === fieldElement && ! el.classList.contains( 'gform-repeat-label' );
                 } );
             } else {
                 targetElements = fieldElement.querySelectorAll( '.gfield_label, .gsection_title' );
@@ -462,7 +464,7 @@ function InitializeFieldSettings(){
 		var isLastPage = button_name === 'last_page';
 		var targetObj = isLastPage ? form : GetSelectedField();
 		var propName = isLastPage ? 'lastPageButton' : button_name + "Button";
-		
+
 		if ( ! targetObj[ propName ] ) {
 			targetObj[ propName ] = new Button();
 		}
@@ -477,7 +479,7 @@ function InitializeFieldSettings(){
 		var isLastPage = button_name === 'last_page';
 		var targetObj = isLastPage ? form : GetSelectedField();
 		var propName = isLastPage ? 'lastPageButton' : button_name + "Button";
-		
+
 		if ( ! targetObj[ propName ] ) {
 			targetObj[ propName ] = new Button();
 		}
@@ -760,12 +762,13 @@ function LoadFieldSettings() {
 	if (field.type == "html") {
 		jQuery(".tooltip_form_field_label").hide();
 		jQuery(".tooltip_form_field_label_html").show();
-		//jQuery(".tooltip_form_field_label").hide();
 	} else {
 		jQuery(".tooltip_form_field_label").show();
 		jQuery(".tooltip_form_field_label_html").hide();
 	}
 
+	jQuery("#repeater_row_label").val(field.repeaterRowLabel == undefined ? "" : field.repeaterRowLabel);
+	jQuery("#show_repeater_row_label").prop("checked", field.showRepeaterRowLabel === true);
 	jQuery("#field_admin_label").val(field.adminLabel);
 	jQuery("#field_content").val(field["content"] == undefined ? "" : field["content"]);
 	jQuery("#post_custom_field_type").val(field.inputType);
@@ -852,8 +855,8 @@ function LoadFieldSettings() {
 	jQuery("#gfield_min_strength").val(field.minPasswordStrength == undefined ? "" : field.minPasswordStrength);
 	TogglePasswordStrength(true);
 	jQuery("#max_items_setting").val(field.maxItems == undefined ? "" : field.maxItems);
-	jQuery("#add_button_text").val(field.addButtonText ? field.addButtonText : gform_form_strings.addButtonText);
-	jQuery("#remove_button_text").val(field.removeButtonText ? field.removeButtonText : gform_form_strings.removeButtonText );
+	jQuery("#add_button_text").val(field.addButtonText ? field.addButtonText : gform_form_strings.addButtonText + ( field.repeaterRowLabel ? ' ' + field.repeaterRowLabel : '' ));
+	jQuery("#remove_button_text").val(field.removeButtonText ? field.removeButtonText : gform_form_strings.removeButtonText + ( field.repeaterRowLabel ? ' ' + field.repeaterRowLabel : '' ));
 
 	jQuery("#gfield_email_confirm_enabled").prop("checked", field.emailConfirmEnabled == true ? true : false);
 
@@ -1395,7 +1398,7 @@ function LoadFieldSettings() {
 	if ( field.nextButton ) {
 		TogglePageButton( 'next', true );
 	}
-	
+
 	if ( field.previousButton ) {
 		TogglePageButton( 'previous', true );
 	}
@@ -2220,6 +2223,12 @@ function SetNextButtonConditionalLogic(isChecked){
 	field.nextButton.conditionalLogic = isChecked ? new ConditionalLogic() : null;
 }
 
+function ToggleRepeaterRowLabel() {
+	var isChecked = jQuery("#show_repeater_row_label").is(":checked");
+	SetFieldProperty('showRepeaterRowLabel', isChecked);
+	RefreshSelectedFieldPreview();
+}
+
 /**
  * Sets the conditonal logic for the submit button.
  *
@@ -2470,13 +2479,15 @@ function proceedWithDeletion(fieldId) {
 
 	const parentType = fieldInfo?.parent?.type === 'repeater' ? 'repeater' : 'form';
 	const repeaterId = parentType === 'repeater' ? fieldInfo?.parent.id : null;
-	// Initialize deleted field property.
-	if ( ! fieldParent.deletedFields ) {
-		fieldParent.deletedFields = [];
-	}
 
-	// Add field ID to form object.
-	fieldParent.deletedFields.push( fieldId );
+	// Keeping a list of all deleted fields, including children, so that they can be properly deleted (i.e. entry data, files, etc...) when the form is saved.
+	if ( ! form.deletedFields ) {
+		form.deletedFields = [];
+	}
+	form.deletedFields.push( fieldId );
+	getDescendantFieldIds( fieldInfo?.field ).forEach( function( childId ) {
+		form.deletedFields.push( childId );
+	} );
 
 	let deletedField = null;
 	// Loop through form fields.
@@ -2526,6 +2537,7 @@ function proceedWithDeletion(fieldId) {
 				gform.tools.trigger( 'gform/form_editor/field_deleted', document, false, {
 					form,
 					field: deletedField,
+					fieldIndex: i,
                     repeaterId
 				} );
 
@@ -2546,6 +2558,30 @@ function proceedWithDeletion(fieldId) {
 
 	// Run field deleted action.
 	jQuery( document ).trigger( 'gform_field_deleted', [ form, fieldId ] );
+}
+
+/**
+ * Field ids nested inside a field, including children of nested repeaters.
+ *
+ * @since 3.2.0
+ *
+ * @param {object|null} field The field being deleted.
+ *
+ * @return {Array} Descendant field ids.
+ */
+function getDescendantFieldIds( field ) {
+	var ids = [];
+
+	if ( ! field || ! Array.isArray( field.fields ) ) {
+		return ids;
+	}
+
+	for ( var i = 0; i < field.fields.length; i++ ) {
+		ids.push( field.fields[ i ].id );
+		ids = ids.concat( getDescendantFieldIds( field.fields[ i ] ) );
+	}
+
+	return ids;
 }
 
 /**
@@ -2979,21 +3015,30 @@ function EndAddField(field, fieldString, index){
     var $parentElement = jQuery( '#gform_fields' );
     var parentObject = form;
 
-    const repeaterDrop = gform.formEditor.getRepeaterDrop();
-	if ( repeaterDrop ) {
-        $parentElement = jQuery( repeaterDrop?.repeaterFieldElement.querySelector( '.gform-repeater-fields-list' ) );
-        parentObject = GetFieldById( repeaterDrop?.repeaterFieldElement.id.replace( 'field_' , '' ) );
-        if ( ! 'fields' in parentObject || ! Array.isArray( parentObject.fields ) ) {
-            parentObject.fields = [];
-        }
+	const repeaterDrop = gform.formEditor.getRepeaterDrop();
+	const hasInsertIndex = typeof index !== 'undefined';
+	
+	if ( repeaterDrop && hasInsertIndex ) {
+		const repeaterElement = repeaterDrop.repeaterFieldElement;
+		$parentElement = jQuery( repeaterElement.querySelector( '.gform-repeater-fields-list' ) );
+		parentObject = GetFieldById( repeaterElement.id.replace( 'field_', '' ) );
+		if ( ! ( 'fields' in parentObject ) || ! Array.isArray( parentObject.fields ) ) {
+			parentObject.fields = [];
+		}
 	}
 	//sets up DOM for new field
-	if( typeof index != 'undefined' ){
+	if ( hasInsertIndex ) {
 		parentObject.fields.splice( index, 0, field );
+		// Insert relative to fields/spacers only so repeater legends and buttons don't shift the index.
+		const $siblings = $parentElement.children( '.gfield, .gfield-repeater-spacer' );
 		if ( index === 0 ) {
-			$parentElement.prepend( fieldString );
+			if ( $siblings.length ) {
+				$siblings.eq( 0 ).before( fieldString );
+			} else {
+				$parentElement.prepend( fieldString );
+			}
 		} else {
-			$parentElement.children().eq( index - 1 ).after( fieldString );
+			$siblings.eq( index - 1 ).after( fieldString );
 		}
 	} else {
 		if ( jQuery( '#field_submit' ).length ) {
@@ -3349,13 +3394,17 @@ function ShowSettings( element ) {
 
 	// Show field icon and description in sidebar
 	jQuery( '#nothing_selected' ).hide();
-	jQuery( '#sidebar_field_label' )
+	var $sidebarFieldLabel = jQuery( '#sidebar_field_label' )
 		.removeClass( 'no-id' )
 		.text( label )
 		.attr( 'data-fieldId-label', gf_vars.idString )
 		.attr( 'data-fieldId', fieldObject.id );
-	if( 'submit' === fieldObject.type ) {
-		jQuery( '#sidebar_field_label' ).addClass( 'no-id' );
+	if ( 'submit' === fieldObject.type ) {
+		$sidebarFieldLabel.addClass( 'no-id' );
+	} else {
+		jQuery( '<span class="sidebar_field_id"></span>' )
+			.text( gf_vars.idString + fieldObject.id )
+			.appendTo( $sidebarFieldLabel );
 	}
 	jQuery( '#sidebar_field_text' ).text( description );
 	// Reset icon classes
@@ -4546,7 +4595,7 @@ function SetSelectedCategories(){
 }
 
 function SetFieldLabel(label){
-	var existingLabel = jQuery( ".field_selected.gfield--type-repeater > .gfield-admin-wrapper > .gfield_repeater_wrapper > .gfield_repeater_container > .gform-field-label .gform-field-label__text, .field_selected:not(.gfield--type-repeater) label.gfield_label .gform-field-label__text, .field_selected:not(.gfield--type-repeater) .gsection_title, .field_selected:not(.gfield--type-repeater) legend.gfield_label .gform-field-label__text" );
+	var existingLabel = jQuery( ".field_selected.gfield--type-repeater > .gfield-admin-wrapper > legend.gfield_label .gform-field-label__text, .field_selected:not(.gfield--type-repeater) label.gfield_label .gform-field-label__text, .field_selected:not(.gfield--type-repeater) .gsection_title, .field_selected:not(.gfield--type-repeater) legend.gfield_label .gform-field-label__text" );
 	var requiredElement = existingLabel.find(".gfield_required")[0]
 
 	existingLabel.text(label).append(requiredElement);
@@ -4554,6 +4603,33 @@ function SetFieldLabel(label){
 
 	var nativeEvent = new Event('gform/form_editor/set_field_label');
 	document.dispatchEvent(nativeEvent);
+}
+
+function SetRepeaterRowLabel( label ) {
+	var field = GetSelectedField();
+	field.repeaterRowLabel = label;
+	SetFieldProperty( 'repeaterRowLabel', label );
+
+	var displayLabel = label || gform_form_strings.repeaterRowLabel;
+
+	// Update the repeater legend
+	jQuery( '.field_selected' ).find( 'legend.gform-repeat-label' ).first().text( displayLabel + ' 1' );
+
+	// Get default text for add and remove buttons
+	var addText    = gform_form_strings.addButtonText + ( label ? ' ' + label : '' );
+	var removeText = gform_form_strings.removeButtonText + ( label ? ' ' + label : '' );
+
+	// Only update the add and remove button text if user hasn't entered custom text.
+	if ( ! field.addButtonText ) {
+		jQuery( '#add_button_text' ).val( addText );
+	}
+	if ( ! field.removeButtonText ) {
+		jQuery( '#remove_button_text' ).val( removeText );
+	}
+
+	// Update the button text in the field preview.
+	jQuery( '.field_selected' ).find( 'button.add_repeater_item' ).first().text( field.addButtonText ? field.addButtonText : addText );
+	jQuery( '.field_selected' ).find( 'button.remove_repeater_item' ).first().text( field.removeButtonText ? field.removeButtonText : removeText );
 }
 
 /**
@@ -5009,6 +5085,9 @@ function SetupUnsavedChangesWarning() {
 				delete current.fields[ i ].layoutGroupId;
 			} );
 		}
+		// Ignore movedFields when comparing.
+		delete original.movedFields;
+		delete current.movedFields;
 		if ( JSON.stringify( original ) !== JSON.stringify( current ) && ! gf_vars.isFormTrash ) {
 			return "You have unsaved changes.";
 		}

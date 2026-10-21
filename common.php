@@ -1602,6 +1602,25 @@ class GFCommon {
 		}
 	}
 
+	/**
+	 * Returns the column layout mode for a form when fields are hidden by conditional logic.
+	 *
+	 * - fill: Fields slide left or move up a row to fill vacated slots (default).
+	 * - fixed: Spacers reserve vacated slots so fields stay in their own columns.
+	 * - slide: Fields in the same row slide left to fill vacated slots; spacers collect at the end of the row.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $form The form object.
+	 *
+	 * @return string Either 'fill', 'fixed', or 'slide'.
+	 */
+	public static function get_form_column_layout( $form ) {
+		$layout = rgar( $form, 'columnLayout', 'fill' );
+
+		return in_array( $layout, array( 'fill', 'fixed', 'slide' ), true ) ? $layout : 'fill';
+	}
+
 	public static function get_ul_classes( $form ) {
 
 		$label_class       = rgempty( 'labelPlacement', $form ) ? 'top_label' : rgar( $form, 'labelPlacement' );
@@ -1928,6 +1947,11 @@ class GFCommon {
 					} else if ( GFFormsModel::is_field_hidden( $form, $field, array(), $lead ) ) {
 						// ignore fields hidden by conditional logic
 						break;
+					}
+
+					// Look for product fields inside the repeater, including nested repeaters.
+					if ( ! $display_product_summary && $field instanceof GF_Field_Repeater && $field->has_product_fields() ) {
+						$display_product_summary = apply_filters( 'gform_display_product_summary', true, $field, $form, $lead );
 					}
 
 					$field->set_modifiers( $options_array );
@@ -5978,6 +6002,7 @@ Content-Type: text/html;
 		$gf_vars['confirmationInvalidRedirect']      = __( 'Please enter a URL.', 'gravityforms' );
 		$gf_vars['confirmationInvalidName']          = __( 'Please enter a confirmation name.', 'gravityforms' );
 		$gf_vars['confirmationDeleteField']          = __( "Deleting this field will also delete all entry data associated with it. 'Cancel' to abort. 'OK' to delete.", 'gravityforms' );
+		$gf_vars['confirmationMoveRepeaterField']    = __( "Moving this field into or out of a repeater will delete all entry data associated with it. 'Cancel' to abort. 'OK' to move.", 'gravityforms' );
 		$gf_vars['confirmationDeleteDisplayField']   = __( "You're about to delete this field. 'Cancel' to stop. 'OK' to delete", 'gravityforms' );
 
 		$gf_vars['confirmationDeleteDisplayFieldTitle'] = __( 'Warning', 'gravityforms' );
@@ -6109,7 +6134,8 @@ Content-Type: text/html;
 					'select'           => file_get_contents( GFCommon::get_base_path() . '/js/components/form_editor/conditional_flyout/views/select.html' ),
 					'a11yWarning'      => file_get_contents( GFCommon::get_base_path() . '/js/components/form_editor/conditional_flyout/views/a11y_warning.html' ),
 				),
-				'conditionalLogicHelperText' => __( 'To use conditional logic, please create a field that supports conditional logic.', 'gravityforms' ),
+				'conditionalLogicHelperText'          => __( 'To use conditional logic, please create a field that supports conditional logic.', 'gravityforms' ),
+				'conditionalLogicRepeaterHelperText'  => __( 'Conditional logic is not yet available for fields inside a Repeater.', 'gravityforms' ),
 				'categories'                 => GFForms::get_post_category_options(),
 				'addressOptions'             => GFForms::get_address_rule_value_options( rgget( 'id' ) ),
 				'addRuleText'                => __( 'add another rule', 'gravityforms' ),
@@ -6901,7 +6927,8 @@ Content-Type: text/html;
 		}
 
 		foreach ( $fields_to_check as $field ) {
-			if ( $field->type === 'fileupload' && $field->multipleFiles ) {
+
+			if ( $field instanceof GF_Field_FileUpload && $field->multipleFiles ) {
 				return true;
 			}
 
@@ -7649,6 +7676,7 @@ Content-Type: text/html;
 			$template =
 				"<html>
 	<head>
+		<meta http-equiv='Content-type' content='text/html; charset={charset}' />
 		<title>{subject}</title>
 	</head>
 	<body>
@@ -7667,6 +7695,7 @@ Content-Type: text/html;
 
 			$message = str_replace( '{message}', $message, $template );
 			$message = str_replace( '{subject}', $subject, $message );
+			$message = str_replace( '{charset}', esc_attr( get_option( 'blog_charset' ) ), $message );
 		}
 
 		return $message;

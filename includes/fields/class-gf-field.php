@@ -96,10 +96,11 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * Whether the field can be used in a repeater.
 	 *
 	 * @since 3.0
+	 * @since 3.2.0 Changed default to false.
 	 *
 	 * @var bool
 	 */
-	public $repeatable = true;
+	public $repeatable = false;
 
 	public function __construct( $data = array() ) {
 		if ( empty( $data ) ) {
@@ -615,7 +616,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		}
 
 		$validation_message_id = 'validation_message_' . $form_id . '_' . $this->id;
-		$validation_message = ( $this->failed_validation && ! empty( $this->validation_message ) ) ? sprintf( "<div id='%s' class='gfield_description validation_message gfield_validation_message'>%s</div>", $validation_message_id, $this->validation_message ) : '';
+		$validation_message    = ( $this->should_show_validation_error() && ! empty( $this->validation_message ) ) ? sprintf( "<div id='%s' class='gfield_description validation_message gfield_validation_message'>%s</div>", $validation_message_id, $this->validation_message ) : '';
 
 		$is_form_editor  = $this->is_form_editor();
 		$is_entry_detail = $this->is_entry_detail();
@@ -646,9 +647,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 		}
 
 		$field_content = sprintf(
-			"%s%s<$label_tag class='%s' $for_attribute>$legend_wrapper<span class='gform-field-label__text'>%s</span>%s$legend_wrapper_close</$label_tag>%s%s{FIELD}%s%s$clear",
+			"%s%s<$label_tag id='%s' class='%s' $for_attribute>$legend_wrapper<span class='gform-field-label__text'>%s</span>%s$legend_wrapper_close</$label_tag>%s%s{FIELD}%s%s$clear",
 			$admin_buttons,
 			$admin_hidden_markup,
+			esc_attr( $this->get_field_label_id() ),
 			esc_attr( $this->get_field_label_class() ),
 			$field_label,
 			$required_div,
@@ -717,9 +719,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 			'aria-live'           => '',
 			'data-field-class'    => '',
 			'data-field-position' => '',
+			'data-group-id'       => '',
+			'data-field-span'     => '',
 		) );
 
-		$tabindex_string     = ( rgar( $atts, 'tabindex' ) ) === '' ?  '' : ' tabindex="' . esc_attr( $atts['tabindex'] ) . '"';
 		$disable_ajax_reload = $this->disable_ajax_reload();
 		$ajax_reload_id      = $disable_ajax_reload === 'skip' || $disable_ajax_reload === 'true' || $disable_ajax_reload === true ? 'true' : esc_attr( rgar( $atts, 'id' ) );
 		$is_form_editor      = $this->is_form_editor();
@@ -753,21 +756,22 @@ class GF_Field extends stdClass implements ArrayAccess {
 				$atts['aria-invalid'] = 'true';
 			}
 		}
-		return sprintf(
-			'<%1$s id="%2$s" class="%3$s" %4$s%5$s%6$s%7$s%8$s%9$s %10$s>%11$s{FIELD_CONTENT}</%1$s>',
-			$tag,
-			esc_attr( rgar( $atts, 'id' ) ),
-			esc_attr( rgar( $atts, 'class' ) ),
-			rgar( $atts, 'style' ) ? ' style="' . esc_attr( $atts['style'] ) . '"' : '',
-			( rgar( $atts, 'tabindex' ) ) === false ? '' : $tabindex_string,
-			rgar( $atts, 'aria-atomic' ) ? ' aria-atomic="' . esc_attr( $atts['aria-atomic'] ) . '"' : '',
-			rgar( $atts, 'aria-live' ) ? ' aria-live="' . esc_attr( $atts['aria-live'] ) . '"' : '',
-			rgar( $atts, 'data-field-class' ) ? ' data-field-class="' . esc_attr( $atts['data-field-class'] ) . '"' : '',
-			rgar( $atts, 'data-field-position' ) ? ' data-field-position="' . esc_attr( $atts['data-field-position'] ) . '"' : '',
-			rgar( $atts, 'aria-invalid' ) ? ' aria-invalid="true"' : '',
-			empty( $sidebar_message_content ) ? '' : '<span class="field-sidebar-message-content field-sidebar-message-content--type-' . $sidebar_message_type . ' hidden">' . \GFCommon::maybe_wp_kses( $sidebar_message_content ) . '</span>'
-		);
 
+		$id                  = esc_attr( rgar( $atts, 'id' ) );
+		$class               = esc_attr( rgar( $atts, 'class' ) );
+		$style               = rgar( $atts, 'style' ) ? ' style="' . esc_attr( $atts['style'] ) . '"' : '';
+		$tabindex            = rgar( $atts, 'tabindex' ) === false || rgar( $atts, 'tabindex' ) === '' ? '' : ' tabindex="' . esc_attr( $atts['tabindex'] ) . '"';
+		$aria_atomic         = rgar( $atts, 'aria-atomic' ) ? ' aria-atomic="' . esc_attr( $atts['aria-atomic'] ) . '"' : '';
+		$aria_live           = rgar( $atts, 'aria-live' ) ? ' aria-live="' . esc_attr( $atts['aria-live'] ) . '"' : '';
+		$data_field_class    = rgar( $atts, 'data-field-class' ) ? ' data-field-class="' . esc_attr( $atts['data-field-class'] ) . '"' : '';
+		$data_field_position = rgar( $atts, 'data-field-position' ) ? ' data-field-position="' . esc_attr( $atts['data-field-position'] ) . '"' : '';
+		$data_group_id       = rgar( $atts, 'data-group-id' ) ? ' data-group-id="' . esc_attr( $atts['data-group-id'] ) . '"' : '';
+		$data_field_span     = rgar( $atts, 'data-field-span' ) ? ' data-field-span="' . esc_attr( $atts['data-field-span'] ) . '"' : '';
+		$aria_invalid        = rgar( $atts, 'aria-invalid' ) ? ' aria-invalid="true"' : '';
+		$currency_format     = ( isset( $this->numberFormat ) && 'currency' === $this->numberFormat ) ? " data-currency-format='1'" : '';
+		$sidebar_message     = empty( $sidebar_message_content ) ? '' : '<span class="field-sidebar-message-content field-sidebar-message-content--type-' . $sidebar_message_type . ' hidden">' . \GFCommon::maybe_wp_kses( $sidebar_message_content ) . '</span>';
+
+		return "<{$tag} id=\"{$id}\" class=\"{$class}\"{$style}{$tabindex}{$aria_atomic}{$aria_live}{$data_field_class}{$data_field_position}{$data_group_id}{$data_field_span}{$aria_invalid}{$currency_format}>{$sidebar_message}{FIELD_CONTENT}</{$tag}>";
 	}
 
 	/**
@@ -805,6 +809,17 @@ class GF_Field extends stdClass implements ArrayAccess {
 		$class .= is_array( $this->inputs ) ? ' gfield_label_before_complex' : '';
 
 		return $class;
+	}
+
+	/**
+	 * Get field label ID.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return string
+	 */
+	public function get_field_label_id() {
+		return 'gfield_label_' . $this->formId . '_' . $this->id;
 	}
 
 	/**
@@ -1128,6 +1143,19 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 */
 	public function should_detect_urls() {
 		return $this->noURLs;
+	}
+
+	/**
+	 * Whether this field should show a validation error in the markup.
+	 *
+	 * Repeater fields keep failed_validation for their subfields, and do not show the error class or message themselves.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return bool
+	 */
+	public function should_show_validation_error() {
+		return (bool) $this->failed_validation;
 	}
 
 	/**
@@ -1512,8 +1540,16 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 */
 	public function get_entry_allowed_html( $allowable_tags = true ) {
 		$allowed = wp_kses_allowed_html( 'post' );
+		if ( ! is_array( $allowed ) ) {
+			$allowed = array();
+		}
 
 		foreach ( $allowed as $tag => $attributes ) {
+			if ( ! is_array( $attributes ) ) {
+				$allowed[ $tag ] = array();
+				continue;
+			}
+
 			// wp_kses normally allows data-* attributes, so we explicitly remove them preventing stored entry values from activating admin behaviors such as data-dialog-confirm.
 			unset( $attributes['data-*'] );
 			$allowed[ $tag ] = $attributes;
@@ -1540,12 +1576,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 			}
 
 			// Explicitly listed custom tags are allowed without attributes.
-			$allowed_tags[ $tag ] = isset( $allowed[ $tag ] ) ? $allowed[ $tag ] : array();
+			$allowed_tags[ $tag ] = rgar( $allowed, $tag, array() );
 		}
 
-		$allowed = $allowed_tags;
-
-		return $allowed;
+		return $allowed_tags;
 	}
 
 	/**
@@ -1642,7 +1676,184 @@ class GF_Field extends stdClass implements ArrayAccess {
 			$input_id = $this->id;
 		}
 
-		return rgar( $entry, $input_id );
+		if ( $this->has_nested_value( $entry, $input_id ) ) {
+			$values = array();
+			foreach ( $this->get_nested_values( $entry, $this->nestingPath, $input_id ) as $value ) {
+				$formatted = $this->format_value_export( $value, $entry, $input_id, $use_text, $is_csv );
+				if ( is_array( $formatted ) || rgblank( $formatted ) ) {
+					continue;
+				}
+				$values[] = (string) $formatted;
+			}
+
+			return implode( ', ', $values );
+		}
+
+		return $this->format_value_export( $this->get_input_values( $entry, $input_id ), $entry, $input_id, $use_text, $is_csv );
+	}
+
+	/**
+	 * Get the raw field or input value(s) from an entry for export formatting.
+	 *
+	 * For a whole-field multi-input id, returns an array of sub-input values keyed by input id.
+	 * Otherwise returns the scalar value stored at $input_id.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array      $entry    The entry currently being processed.
+	 * @param string|int $input_id The field or input ID.
+	 *
+	 * @return mixed
+	 */
+	protected function get_input_values( $entry, $input_id ) {
+		$value = rgar( $entry, $input_id );
+
+		$entry_inputs = $this->get_entry_inputs();
+		if ( is_array( $entry_inputs ) && absint( $input_id ) == $input_id ) {
+			$value = array();
+			foreach ( $entry_inputs as $input ) {
+				$id = rgar( $input, 'id' );
+				if ( rgblank( $id ) ) {
+					continue;
+				}
+				$value[ $id ] = rgar( $entry, $id );
+			}
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Format a single raw field value for export. Ensures a string is returned.
+	 * Used for both top-level and nested (per-instance) export values.
+	 * Override in sub-classes to implement custom formatting.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param mixed      $value    The raw value for $input_id, or a nested item array for multi-input whole-field values.
+	 * @param array      $entry    The entry currently being processed.
+	 * @param string|int $input_id The field or input ID.
+	 * @param bool       $use_text When processing choice based fields should the choice text be returned instead of the value.
+	 * @param bool       $is_csv   Is the value going to be used in the .csv entries export?
+	 *
+	 * @return string|array
+	 */
+	protected function format_value_export( $value, $entry, $input_id = '', $use_text = false, $is_csv = false ) {
+		return is_array( $value ) ? '' : (string) $value;
+	}
+
+	/**
+	 * Whether export helpers should read this field via nestingPath.
+	 *
+	 * True when the field is nested and the entry does not already contain this field's
+	 * data at the top level (whole-field id, or any sub-input — as with synthetic mini-entries
+	 * from repeater recursion).
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array      $entry    The entry currently being processed.
+	 * @param string|int $input_id The field or input ID.
+	 *
+	 * @return bool
+	 */
+	protected function has_nested_value( $entry, $input_id ) {
+		if ( empty( $this->nestingPath ) || ! is_array( $this->nestingPath ) ) {
+			return false;
+		}
+
+		if ( array_key_exists( $input_id, $entry ) ) {
+			return false;
+		}
+
+		// Multi-input fields (Name, Address, etc.) store values under input ids on mini-entries.
+		if ( is_array( $this->inputs ) ) {
+			foreach ( $this->inputs as $input ) {
+				if ( array_key_exists( $input['id'], $entry ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Collect values for a nested field from hydrated repeater entry data.
+	 *
+	 * Walks nestingPath to the parent items and returns whatever is stored at $input_id
+	 * for each parent instance (scalars for nested fields, item arrays for nested repeaters).
+	 * When the whole field id is requested and the item only has sub-inputs (e.g. Name),
+	 * the item array is returned so format_value_export() can compose the value.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array      $entry         The entry currently being processed.
+	 * @param array      $nesting_path  Closest-parent-first repeater IDs from the field's nestingPath.
+	 * @param string|int $input_id      The field or input ID to collect.
+	 *
+	 * @return array
+	 */
+	protected function get_nested_values( $entry, $nesting_path, $input_id ) {
+		if ( empty( $nesting_path ) || ! is_array( $nesting_path ) ) {
+			return array();
+		}
+
+		$path        = array_reverse( array_values( $nesting_path ) );
+		$level_items = rgar( $entry, $path[0] );
+
+		if ( ! is_array( $level_items ) ) {
+			return array();
+		}
+
+		$path_count = count( $path );
+		for ( $i = 1; $i < $path_count; $i++ ) {
+			$next_id    = $path[ $i ];
+			$next_items = array();
+
+			foreach ( $level_items as $item ) {
+				if ( ! is_array( $item ) ) {
+					continue;
+				}
+
+				$nested = rgar( $item, $next_id );
+				if ( ! is_array( $nested ) ) {
+					continue;
+				}
+
+				foreach ( $nested as $nested_item ) {
+					$next_items[] = $nested_item;
+				}
+			}
+
+			$level_items = $next_items;
+		}
+
+		$values      = array();
+		$is_field_id = absint( $input_id ) == $input_id;
+		$prefix      = $input_id . '.';
+
+		foreach ( $level_items as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+
+			if ( array_key_exists( $input_id, $item ) ) {
+				$values[] = rgar( $item, $input_id );
+				continue;
+			}
+
+			// Whole-field id with only sub-inputs on the item (Name, Address, Checkbox).
+			if ( $is_field_id ) {
+				foreach ( array_keys( $item ) as $key ) {
+					if ( strpos( $key, $prefix ) === 0 ) {
+						$values[] = $item;
+						break;
+					}
+				}
+			}
+		}
+
+		return $values;
 	}
 
 	/**
@@ -2127,8 +2338,6 @@ class GF_Field extends stdClass implements ArrayAccess {
 						'data-type'  => $this->type,
 						'data-duplicatable' => $this->duplicatable,
 						'data-repeatable'   => $this->repeatable,
-						'onclick'           => "StartAddField('{$this->type}', '', '{$this->duplicatable}', '{$this->repeatable}');",
-						'onkeypress'        => "StartAddField('{$this->type}', '', '{$this->duplicatable}', '{$this->repeatable}');",
 					);
 					break;
 				}
@@ -2371,16 +2580,121 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * @return string The aria-describedby text or a blank string.
 	 */
 	public function maybe_add_aria_describedby( $input, $field_id, $form_id ) {
+		if ( $this->get_context_property( 'repeater_aria_labelledby_ids' ) && ! $this->get_context_property( 'repeater_aria_attributes_added' ) ) {
+			return $this->get_aria_describedby();
+		}
+
 		$first_input_for_field = $this->get_first_input_id( GFFormsModel::get_form_meta( $form_id ) );
 		$field_id_as_array     = explode( '_', $field_id );
 		$first_input_as_array  = explode( '_', $first_input_for_field );
 		$subelement_id         = end( $field_id_as_array ) . '.' . end( $first_input_as_array );
 
-		if ( $input['id'] === $subelement_id ) {
+		if ( rgar( $input, 'id' ) === $subelement_id ) {
+			return $this->get_aria_describedby();
+		}
+
+		if ( $this->is_first_input( $input ) ) {
 			return $this->get_aria_describedby();
 		}
 
 		return '';
+	}
+
+	/**
+	 * Returns the aria-labelledby attribute linking an input label and the fieldset legend.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string $input_label_id The ID of the input's label element.
+	 *
+	 * @return string
+	 */
+	public function get_aria_labelledby( $input_label_id = '' ) {
+		$ids = array();
+
+		if ( ! empty( $input_label_id ) ) {
+			$ids[] = $input_label_id;
+		}
+
+		$ids[] = $this->get_field_label_id();
+
+		return 'aria-labelledby="' . esc_attr( implode( ' ', $ids ) ) . '"';
+	}
+
+	/**
+	 * Set the aria-labelledby attribute for an input if it is the first input in a fieldset.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array  $input          The current input.
+	 * @param string $field_id       The ID of the field we're working with.
+	 * @param int    $form_id        The ID of the form object.
+	 * @param string $input_label_id The ID of the input's label element.
+	 *
+	 * @return string The aria-labelledby attribute or a blank string.
+	 */
+	public function maybe_add_aria_labelledby( $input, $field_id, $form_id, $input_label_id = '' ) {
+		if ( $this->is_first_input( $input ) ) {
+			return $this->get_aria_labelledby( $input_label_id );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Returns aria-describedby and aria-labelledby for the first input in a fieldset.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array  $input    The current input.
+	 * @param string $field_id The HTML field id prefix (e.g. input_1_6).
+	 *
+	 * @return string
+	 */
+	public function get_first_input_aria_labels( $input, $field_id = '' ) {
+		$input_label_id = '';
+		$input_id       = (string) rgar( $input, 'id' );
+
+		if ( $field_id && $input_id && false !== strpos( $input_id, '.' ) ) {
+			$sub_input_id   = substr( $input_id, strpos( $input_id, '.' ) + 1 );
+			$input_label_id = "{$field_id}_{$sub_input_id}_label";
+		}
+
+		$form_id = $this->formId;
+
+		return trim(
+			$this->maybe_add_aria_describedby( $input, $field_id, $form_id ) . ' ' .
+			$this->maybe_add_aria_labelledby( $input, $field_id, $form_id, $input_label_id )
+		);
+	}
+
+	/**
+	 * Determines whether the given input is the first visible input for this field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $input The input currently being processed.
+	 *
+	 * @return bool
+	 */
+	public function is_first_input( $input ) {
+		if ( empty( $input['id'] ) ) {
+			return false;
+		}
+
+		if ( ! is_array( $this->inputs ) ) {
+			return true;
+		}
+
+		foreach ( $this->inputs as $field_input ) {
+			if ( ! empty( $field_input['isHidden'] ) ) {
+				continue;
+			}
+
+			return (string) $input['id'] === (string) rgar( $field_input, 'id' );
+		}
+
+		return false;
 	}
 
 	/**
@@ -2475,7 +2789,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		$describedby_ids = is_array( $extra_ids ) ? $extra_ids : explode(' ', $extra_ids );
 
-		if ( $this->failed_validation ) {
+		if ( $this->should_show_validation_error() ) {
 			$describedby_ids[] = "validation_message_{$this->formId}_{$this->id}";
 		}
 
@@ -2483,12 +2797,55 @@ class GF_Field extends stdClass implements ArrayAccess {
 			$describedby_ids[] = "gfield_description_{$this->formId}_{$this->id}";
 		}
 
-		if ( empty( $describedby_ids ) ) {
-			return '';
+		return $this->get_aria_attributes_from_describedby_ids( $describedby_ids );
+
+	}
+
+	/**
+	 * Generates aria-describedby and context-specific aria-labelledby attributes which are used in the repeater field.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param string|string[] $describedby_ids IDs to include in aria-describedby.
+	 *
+	 * @return string
+	 */
+	protected function get_aria_attributes_from_describedby_ids( $describedby_ids ) {
+		$attributes = array();
+
+		if ( is_string( $describedby_ids ) ) {
+			$describedby_ids = preg_split( '/\s+/', trim( $describedby_ids ) );
 		}
 
-		return 'aria-describedby="' . implode( ' ', $describedby_ids ) . '"';
+		$describedby_ids = is_array( $describedby_ids ) ? $describedby_ids : array();
 
+		$context_describedby_ids = $this->get_context_property( 'repeater_aria_describedby_ids' );
+		if ( is_array( $context_describedby_ids ) ) {
+			$describedby_ids = array_merge( $describedby_ids, $context_describedby_ids );
+		}
+
+		$describedby_ids = array_values( array_unique( array_filter( $describedby_ids ) ) );
+		if ( ! empty( $describedby_ids ) ) {
+			$attributes[] = 'aria-describedby="' . implode( ' ', $describedby_ids ) . '"';
+		}
+
+		$labelledby_ids = $this->get_context_property( 'repeater_aria_labelledby_ids' );
+		if ( is_array( $labelledby_ids ) && ! empty( $labelledby_ids ) ) {
+			$label_id   = $this->get_field_label_id();
+			$item_index = $this->get_context_property( 'itemIndex' );
+			if ( ! is_null( $item_index ) ) {
+				$label_id .= '-' . $item_index;
+			}
+			array_unshift( $labelledby_ids, $label_id );
+
+			$attributes[] = 'aria-labelledby="' . implode( ' ', array_values( array_unique( array_filter( $labelledby_ids ) ) ) ) . '"';
+		}
+
+		if ( ! empty( $context_describedby_ids ) || ! empty( $labelledby_ids ) ) {
+			$this->set_context_property( 'repeater_aria_attributes_added', true );
+		}
+
+		return implode( ' ', $attributes );
 	}
 
 
@@ -2517,6 +2874,14 @@ class GF_Field extends stdClass implements ArrayAccess {
 		$required    = empty( $required[ $input_id ] ) ? '' : $required[ $input_id ];
 		$invalid     = empty( $invalid[ $input_id ] ) ? '' : $invalid[ $input_id ];
 		$describedby = empty( $describedby[ $input_id ] ) ? '' : $describedby[ $input_id ];
+
+		if ( $this->get_context_property( 'repeater_aria_labelledby_ids' ) && ! $this->get_context_property( 'repeater_aria_attributes_added' ) ) {
+			$describedby_ids = array();
+			if ( preg_match( '/aria-describedby=[\'"]([^\'"]*)[\'"]/', $describedby, $matches ) ) {
+				$describedby_ids = preg_split( '/\s+/', trim( $matches[1] ) );
+			}
+			$describedby = $this->get_aria_attributes_from_describedby_ids( $describedby_ids );
+		}
 
 		return "{$required} {$invalid} {$describedby}";
 	}
@@ -3069,6 +3434,8 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 *
 	 */
 	public function sanitize_settings() {
+		$this->remove_nesting_path();
+
 		$this->id     = absint( $this->id );
 		$this->type   = wp_strip_all_tags( $this->type );
 		$this->formId = absint( $this->formId );
@@ -3177,7 +3544,27 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		$this->sanitize_settings_choices();
 		$this->sanitize_settings_conditional_logic();
+	}
 
+	/**
+	 * Removes nestingPath from this field and from fields inside it. nestingPath is dynamically assigned when the form is loaded and shouldn't be saved.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return void
+	 */
+	private function remove_nesting_path() {
+		unset( $this->nestingPath );
+
+		if ( ! is_array( $this->fields ) ) {
+			return;
+		}
+
+		foreach ( $this->fields as $field ) {
+			if ( $field instanceof GF_Field ) {
+				$field->remove_nesting_path();
+			}
+		}
 	}
 
 	/**

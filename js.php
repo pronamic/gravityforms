@@ -1103,6 +1103,13 @@ console.log( form['fields'] );
 					field.choices = new Array(new Choice(<?php echo json_encode( esc_html__( 'Checked', 'gravityforms' ) ); ?>, '1'));
 				break;
 
+			case "repeater" :
+				field.label = <?php echo json_encode( esc_html__( 'Repeater', 'gravityforms' ) ); ?>;
+				field.repeaterRowLabel = <?php echo json_encode( esc_html__( 'Row', 'gravityforms' ) ); ?>;
+				field.showRepeaterRowLabel = true;
+				field.fields = [];
+				break;
+
 			<?php do_action( 'gform_editor_js_set_default_values' ); ?>
 
 			default :

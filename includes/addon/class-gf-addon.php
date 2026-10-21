@@ -187,6 +187,10 @@ abstract class GFAddOn {
 		$this->update_path();
 		$this->bootstrap();
 
+		if ( ! $this->_enable_rg_autoupgrade && $this->get_slug() === 'gravityformsabuseipdb' ) {
+			$this->_enable_rg_autoupgrade = true;
+		}
+
 		if ( $this->_enable_rg_autoupgrade ) {
 			require_once( 'class-gf-auto-upgrade.php' );
 			$is_gravityforms_supported = $this->is_gravityforms_supported( $this->_min_gravityforms_version );
@@ -6096,27 +6100,27 @@ abstract class GFAddOn {
 	/**
 	 * Returns the combined value of the specified Address field.
 	 *
-	 * @param array $entry
-	 * @param string $field_id
+	 * @param array  $entry    The Entry Object.
+	 * @param string $field_id The ID of the Address field.
 	 *
 	 * @return string
 	 */
 	public function get_full_address( $entry, $field_id ) {
-
-		return GF_Fields::get( 'address' )->get_value_export( $entry, $field_id );
+		$field = GFAPI::get_field( rgar( $entry, 'form_id' ), $field_id );
+		return $field ? $field->get_value_export( $entry, $field_id ) : '';
 	}
 
 	/**
 	 * Returns the combined value of the specified Name field.
 	 *
-	 * @param array $entry
-	 * @param string $field_id
+	 * @param array  $entry    The Entry Object.
+	 * @param string $field_id The ID of the Name field.
 	 *
 	 * @return string
 	 */
 	public function get_full_name( $entry, $field_id ) {
-
-		return GF_Fields::get( 'name' )->get_value_export( $entry, $field_id );
+		$field = GFAPI::get_field( rgar( $entry, 'form_id' ), $field_id );
+		return $field ? $field->get_value_export( $entry, $field_id ) : '';
 	}
 
 	/**

@@ -9,6 +9,15 @@ class GF_Field_Website extends GF_Field {
 
 	public $type = 'website';
 
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Website', 'gravityforms' );
 	}

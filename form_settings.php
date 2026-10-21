@@ -338,6 +338,26 @@ class GFFormSettings {
 							),
 						),
 					),
+					array(
+						'name'    => 'columnLayout',
+						'type'    => 'select',
+						'label'   => esc_html__( 'Column Layout', 'gravityforms' ),
+						'tooltip' => gform_tooltip( 'form_column_layout', '', true ),
+						'choices' => array(
+							array(
+								'label' => __( 'Fixed - Fields will not move into empty space.', 'gravityforms' ),
+								'value' => 'fixed',
+							),
+							array(
+								'label' => __( 'Slide - Fields will slide left to fill empty space in the same row, but will not move between rows.', 'gravityforms' ),
+								'value' => 'slide',
+							),
+							array(
+								'label' => __( 'Fill - Fields will slide left or move up a row to fill empty space.', 'gravityforms' ),
+								'value' => 'fill',
+							),
+						),
+					),
 				array(
 					'name'                    => 'validationSummary',
 					'type'                    => 'toggle',
@@ -963,6 +983,7 @@ class GFFormSettings {
 					$form['descriptionPlacement']    = GFCommon::whitelist( rgar( $values, 'descriptionPlacement' ), array( 'below', 'above' ) );
 					$form['validationPlacement']     = GFCommon::whitelist( rgar( $values, 'validationPlacement' ), array( 'below', 'above' ) );
 					$form['subLabelPlacement']       = GFCommon::whitelist( rgar( $values, 'subLabelPlacement' ), array( 'below', 'above' ) );
+					$form['columnLayout']            = GFCommon::whitelist( rgar( $values, 'columnLayout' ), array( 'fill', 'fixed', 'slide' ) );
 					$form['validationSummary']       = rgar( $values, 'validationSummary', false );
 					$form['requiredIndicator']       = GFCommon::whitelist( rgar( $values, 'requiredIndicator' ), array( 'text', 'asterisk', 'custom' ) );
 					$form['customRequiredIndicator'] = rgar( $values, 'customRequiredIndicator' );
@@ -1157,6 +1178,7 @@ class GFFormSettings {
 		$initial_values['descriptionPlacement'] = empty( rgar( $form, 'descriptionPlacement' ) ) ? 'below' : $form['descriptionPlacement'];
 		$initial_values['validationPlacement']  = empty( rgar( $form, 'validationPlacement' ) ) ? 'below' : $form['validationPlacement'];
 		$initial_values['subLabelPlacement']    = empty( rgar( $form, 'subLabelPlacement' ) ) ? 'below' : $form['subLabelPlacement'];
+		$initial_values['columnLayout']         = empty( rgar( $form, 'columnLayout' ) ) ? 'fill' : $form['columnLayout'];
 		$initial_values['validationSummary']    = empty( rgar( $form, 'validationSummary' ) ) ? false : $form['validationSummary'];
 		$initial_values['requiredIndicator']    = empty( rgar( $form, 'requiredIndicator' ) ) ? 'text' : $form['requiredIndicator'];
 
