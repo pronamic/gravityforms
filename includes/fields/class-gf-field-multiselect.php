@@ -19,15 +19,6 @@ class GF_Field_MultiSelect extends GF_Field {
 	public $type = 'multiselect';
 
 	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = true;
-
-	/**
 	 * Indicates if this field supports state validation.
 	 *
 	 * @since 3.0
@@ -345,19 +336,28 @@ class GF_Field_MultiSelect extends GF_Field {
 	}
 
 	/**
-	 * Format a single Multi Select field value for export.
+	 * Format the entry value before it is used in entry exports and by framework add-ons using GFAddOn::get_field_value().
 	 *
-	 * @since 3.2.0
+	 * @since  Unknown
+	 * @access public
 	 *
-	 * @param mixed      $value    The raw value for $input_id (string, or array of selected values).
+	 * @uses GFCommon::selection_display()
+	 * @uses GFCommon::implode_non_blank()
+	 *
 	 * @param array      $entry    The entry currently being processed.
-	 * @param string|int $input_id The field or input ID.
-	 * @param bool       $use_text When processing choice based fields should the choice text be returned instead of the value.
-	 * @param bool       $is_csv   Is the value going to be used in the .csv entries export?
+	 * @param string     $input_id The field or input ID.
+	 * @param bool|false $use_text When processing choice based fields should the choice text be returned instead of the value.
+	 * @param bool|false $is_csv   Is the value going to be used in the .csv entries export?
 	 *
-	 * @return string
+	 * @return string $value The value of a field from an export file.
 	 */
-	protected function format_value_export( $value, $entry, $input_id = '', $use_text = false, $is_csv = false ) {
+	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
+		if ( empty( $input_id ) ) {
+			$input_id = $this->id;
+		}
+
+		$value = rgar( $entry, $input_id );
+
 		if ( ! empty( $value ) && ! $is_csv ) {
 			$items = $this->to_array( $value );
 
@@ -368,7 +368,7 @@ class GF_Field_MultiSelect extends GF_Field {
 
 		} elseif ( $this->storageType === 'json' ) {
 
-			$items = is_array( $value ) ? $value : json_decode( $value );
+			$items = json_decode( $value );
 			$value = GFCommon::implode_non_blank( ', ', $items );
 		}
 

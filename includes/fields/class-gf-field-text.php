@@ -9,15 +9,6 @@ class GF_Field_Text extends GF_Field {
 
 	public $type = 'text';
 
-	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = true;
-
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Single Line Text', 'gravityforms' );
 	}
@@ -249,7 +240,8 @@ class GF_Field_Text extends GF_Field {
 				// The value is unsafe so encode the value.
 				$return = esc_html( $value );
 			} else {
-				$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+				// The value contains HTML but the value was sanitized before saving.
+				$return = $value;
 			}
 		} else {
 			$return = $value;
@@ -287,7 +279,8 @@ class GF_Field_Text extends GF_Field {
 			// The value is unsafe so encode the value.
 			$return = esc_html( $value );
 		} else {
-			$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+			// The value contains HTML but the value was sanitized before saving.
+			$return = $value;
 		}
 
 		return $return;
@@ -322,7 +315,8 @@ class GF_Field_Text extends GF_Field {
 				// The value is unsafe so encode the value.
 				$return = esc_html( $value );
 			} else {
-				$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+				// The value contains HTML but the value was sanitized before saving.
+				$return = $value;
 			}
 		} else {
 			$return = $value;
@@ -369,7 +363,7 @@ class GF_Field_Text extends GF_Field {
 			$describedby .= implode( ' ', $extra_ids );
 		}
 
-		return $this->get_aria_attributes_from_describedby_ids( $describedby );
+		return empty( $describedby ) ? '' : 'aria-describedby="' . $describedby . '"';
 	}
 
 	// # FIELD FILTER UI HELPERS ---------------------------------------------------------------------------------------

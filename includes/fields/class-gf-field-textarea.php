@@ -9,15 +9,6 @@ class GF_Field_Textarea extends GF_Field {
 
 	public $type = 'textarea';
 
-	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = true;
-
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Paragraph Text', 'gravityforms' );
 	}
@@ -388,7 +379,8 @@ class GF_Field_Textarea extends GF_Field {
 				$return = nl2br( $value );
 
 			} else {
-				$return = wpautop( wp_kses( $value, $this->get_entry_allowed_html() ) );
+				// The value contains HTML but the value was sanitized before saving.
+				$return = wpautop( $value );
 			}
 		} else {
 			$return = $value;
@@ -430,7 +422,8 @@ class GF_Field_Textarea extends GF_Field {
 				// Run nl2br() to preserve line breaks when auto-formatting is disabled on notifications/confirmations.
 				$return = nl2br( $return );
 			} else {
-				$return = wpautop( wp_kses( $raw_value, $this->get_entry_allowed_html( $allowable_tags ) ) );
+				// The value contains HTML but the value was sanitized before saving.
+				$return = wpautop( $raw_value );
 			}
 		} else {
 			$return = $value;

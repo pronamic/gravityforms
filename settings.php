@@ -367,27 +367,6 @@ class GFSettings {
 			return;
 		}
 
-		if ( rgget( 'recaptcha_keys_deleted' ) === '1' ) {
-			GFCommon::add_dismissible_message(
-				__( 'The reCAPTCHA v2 keys have been removed. To use reCAPTCHA again in the future, install the reCAPTCHA Add-On.', 'gravityforms' ),
-				'recaptcha_keys_deleted',
-				'success'
-			);
-
-			$script = <<<'JS'
-document.addEventListener( 'DOMContentLoaded', () => {
-	const form = document.getElementById( 'gform-settings' );
-	if ( form ) {
-		const url = new URL( window.location.href );
-		url.searchParams.delete( 'recaptcha_keys_deleted' );
-		form.setAttribute( 'action', url.pathname + url.search );
-	}
-} );
-JS;
-
-			echo GFCommon::get_inline_script_tag( $script ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
-
 		self::page_header();
 
 		wp_enqueue_style( 'gform_admin' );
@@ -453,9 +432,6 @@ JS;
 			$license_section_description = esc_html__( 'License key is managed by the administrator of this network', 'gravityforms' );
 		}
 
-		// GoDaddy hasn't removed their old starter license code, so the GD_GF_LICENSE_KEY check allows impacted customers to edit the key on the settings page.
-		$license_disabled_by_constant = defined( 'GF_LICENSE_KEY' ) && ! ( defined( 'GD_GF_LICENSE_KEY' ) && GF_LICENSE_KEY === GD_GF_LICENSE_KEY );
-
 		$fields = array(
 			'license_key'         => array(
 				'title'       => esc_html__( 'Support License Key', 'gravityforms' ),
@@ -471,11 +447,7 @@ JS;
 						'class'               => 'gform-admin-input',
 						'validation_callback' => array( 'GFSettings', 'license_key_validation_callback' ),
 						'hidden'              => $is_hidden,
-						'disabled'            => $license_disabled_by_constant ? 'disabled' : '',
-						'after_input'         => function () use ( $license_disabled_by_constant ) {
-							if ( $license_disabled_by_constant ) {
-								return '<div class="alert gforms_note_warning">' . esc_html__( 'The license key is set via a constant. To edit the license key here, first remove the constant.', 'gravityforms' ) . '</div>';
-							}
+						'after_input'         => function () {
 							/**
 							 * @var License\GF_License_API_Connector $license_connector
 							 */
@@ -517,12 +489,7 @@ JS;
 
 							return $license_info->get_usability();
 						},
-						'save_callback'       => function ( $field, $value ) use ( $license_disabled_by_constant ) {
-							// Do not allow saving when the key is defined via constant.
-							if ( $license_disabled_by_constant ) {
-								return md5( GF_LICENSE_KEY );
-							}
-
+						'save_callback'       => function( $field, $value ) {
 							// Remove non-alphanumeric characters.
 							$value = preg_replace( '/[^a-zA-Z0-9]/', '', $value );
 							if ( isset( $_POST['_gform_setting_license_key'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -1067,7 +1034,6 @@ JS;
 		}
 
 		self::maybe_install_recaptcha();
-		self::maybe_delete_recaptcha_keys();
 
 		self::page_header();
 
@@ -1130,36 +1096,6 @@ JS;
 	}
 
 	/**
-	 * Deletes the reCAPTCHA keys from the database when the remove keys button on the reCAPTCHA settings page is clicked.
-	 *
-	 * @since 3.1.2
-	 */
-	private static function maybe_delete_recaptcha_keys() {
-		if ( rgget( 'delete_recaptcha_keys' ) !== '1' ) {
-			return;
-		}
-
-		check_admin_referer( 'gform_delete_recaptcha_keys_action', 'gform_delete_recaptcha_keys_nonce' );
-
-		delete_option( 'rg_gforms_captcha_public_key' );
-		delete_option( 'rg_gforms_captcha_private_key' );
-		delete_option( 'rg_gforms_captcha_type' );
-		delete_option( 'gform_recaptcha_keys_status' );
-
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'subview'                           => false,
-					'delete_recaptcha_keys'             => false,
-					'gform_delete_recaptcha_keys_nonce' => false,
-					'recaptcha_keys_deleted'            => '1',
-				)
-			)
-		);
-		exit;
-	}
-
-	/**
 	 * Move core reCAPTCHA settings to the Add-On to prevent removal of the reCAPTCHA field on form display.
 	 *
 	 * @since 3.0.0
@@ -1206,14 +1142,13 @@ JS;
 			return false;
 		}
 
-		$plugin_data  = GFCommon::maybe_unserialize( rgar( $raw_response, 'body' ) );
+		$plugin_data  = maybe_unserialize( rgar( $raw_response, 'body' ) );
 		$download_url = is_array( $plugin_data ) ? rgar( $plugin_data, 'download_url' ) : '';
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/misc.php';
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
-		// nosemgrep: audit.php.wp.security.arbitrary-plugin-install
 		$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
 		$result   = $upgrader->install( $download_url );
 
@@ -1281,29 +1216,19 @@ JS;
 	}
 
 	/**
-	 * Returns the HTML for the reCAPTCHA Add-On installation/activation button, and/or the remove keys button.
+	 * Get the HTML for the reCAPTCHA Add-On installation/activation button, or empty string if the user does not have the required capabilities.
 	 *
 	 * @since 3.0.0
-	 * @since 3.1.2 Added the remove keys button.
 	 *
 	 * @return string The button HTML, or empty string.
 	 */
 	private static function get_recaptcha_activate_button() {
-		$base_url   = admin_url( 'admin.php?page=gf_settings&subview=recaptcha' );
-		$delete_url = wp_nonce_url(
-			add_query_arg( 'delete_recaptcha_keys', '1', $base_url ),
-			'gform_delete_recaptcha_keys_action',
-			'gform_delete_recaptcha_keys_nonce'
-		);
-
-		$delete_button = sprintf( '<a href="%s" class="button primary">%s</a>', esc_url( $delete_url ), esc_html__( 'Remove reCAPTCHA v2 keys', 'gravityforms' ) );
-
 		if ( ! self::can_activate_recaptcha() ) {
-			return '<div style="margin-top:4px;">' . $delete_button . '</div>';
+			return '';
 		}
 
 		$recaptcha_addon_url = wp_nonce_url(
-			add_query_arg( 'gform_recaptcha_addon_action', '1', $base_url ),
+			add_query_arg( 'gform_recaptcha_addon_action', '1', admin_url( 'admin.php?page=gf_settings&subview=recaptcha' ) ),
 			'gform_recaptcha_addon_action',
 			'gform_recaptcha_addon_nonce'
 		);
@@ -1311,10 +1236,9 @@ JS;
 		$label = empty( self::find_recaptcha_plugin_file() ) ? esc_html__( 'Install and activate the Gravity Forms reCAPTCHA Add-On', 'gravityforms' ) : esc_html__( 'Activate the Gravity Forms reCAPTCHA Add-On', 'gravityforms' );
 
 		return sprintf(
-			'<div style="margin-top:4px;"><a href="%s" class="button primary">%s</a> %s</div>',
+			'<div style="margin-top:4px;"><a href="%s" class="button primary">%s</a></div>',
 			esc_url( $recaptcha_addon_url ),
 			$label,
-			str_replace( 'primary', 'secondary', $delete_button )
 		);
 	}
 
@@ -1570,8 +1494,6 @@ JS;
 	 */
 	public static function page_header( $title = '', $message = '' ) {
 
-		GFCommon::gf_root_wrapper_open();
-
 		// Print admin styles.
 		wp_print_styles( array( 'jquery-ui-styles', 'gform_admin', 'gform_settings' ) );
 
@@ -1722,14 +1644,14 @@ JS;
 	 */
 	public static function page_footer() {
 		?>
-					</div>
-					<!-- / gform-settings__content -->
 				</div>
-				<!-- / gform-settings__wrapper -->
+				<!-- / gform-settings__content -->
 			</div>
-			<!-- / wrap -->
+			<!-- / gform-settings__wrapper -->
+
+		</div> <!-- / wrap -->
+
 		<?php
-		GFCommon::gf_root_wrapper_close();
 	}
 
     /**

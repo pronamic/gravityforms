@@ -25,15 +25,6 @@ class GF_Field_List extends GF_Field {
 	public $type = 'list';
 
 	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = true;
-
-	/**
 	 * Sets the field title to be displayed in the form editor.
 	 *
 	 * @since  Unknown
@@ -180,11 +171,8 @@ class GF_Field_List extends GF_Field {
 		if ( $has_columns ) {
 
 			$list .= '<div class="gfield_list_header gform-grid-row">';
-			$header_index = 1;
 			foreach ( $columns as $column ) {
-				$header_id = "gfield_list_{$this->formId}_{$this->id}_header_{$header_index}";
-				$list .= '<div class="gform-field-label gfield_header_item gform-grid-col" id="' . esc_attr( $header_id ) . '">' . esc_html( $column['text'] ) . '</div>';
-				$header_index++;
+				$list .= '<div class="gform-field-label gfield_header_item gform-grid-col">' . esc_html( $column['text'] ) . '</div>';
 			}
 
 			if ( $this->maxRows != 1 ) {
@@ -367,12 +355,9 @@ class GF_Field_List extends GF_Field {
 			$list .= '</colgroup>';
 
 			$list .= '<thead><tr>';
-			$header_index = 1;
 			foreach ( $columns as $column ) {
 				// a11y: scope="col"
-				$header_id = "gfield_list_{$this->formId}_{$this->id}_header_{$header_index}";
-				$list .= '<th scope="col" id="' . esc_attr( $header_id ) . '">' . esc_html( $column['text'] ) . '</th>';
-				$header_index++;
+				$list .= '<th scope="col">' . esc_html( $column['text'] ) . '</th>';
 			}
 
 			if ( $this->maxRows != 1 ) {
@@ -474,6 +459,7 @@ class GF_Field_List extends GF_Field {
 		$disabled = $this->is_form_editor() ? 'disabled' : '';
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute     = $this->failed_validation ? "aria-invalid='true'" : "aria-invalid='false'";
+		$aria_describedby      = $this->get_aria_describedby();
 
 		$column_index = 1;
 		if ( $has_columns && is_array( $this->choices ) ) {
@@ -490,15 +476,6 @@ class GF_Field_List extends GF_Field {
 
 		$aria_label_template = isset( $column['text'] ) ? $column_text : $this->label;
 		$aria_label_template .= __( ', Row {0}', 'gravityforms' );
-
-		$is_first_input   = (int) $row === 1 && (int) $column_index === 1;
-		$aria_describedby = ( ! $has_columns || $is_first_input ) ? $this->get_aria_describedby() : '';
-		$aria_name_attrs = "aria-label='" . esc_attr( str_replace( '{0}', $row, $aria_label_template ) ) . "'";
-		if ( $is_first_input ) {
-			$header_label_id = $has_columns ? "gfield_list_{$this->formId}_{$this->id}_header_{$column_index}" : '';
-			// aria-labelledby takes precedence; drop aria-label on the first input to avoid conflicting names.
-			$aria_name_attrs = $this->get_aria_labelledby( $header_label_id );
-		}
 
 		/**
 		 * Filters the column input.
@@ -520,7 +497,7 @@ class GF_Field_List extends GF_Field {
 		switch ( $input_info['type'] ) {
 
 			case 'select' :
-				$input = "<select name='input_{$this->id}[]' {$tabindex} {$disabled} {$invalid_attribute} {$required_attribute} {$aria_describedby} {$aria_name_attrs} data-aria-label-template='" . esc_attr( $aria_label_template ) . "'>";
+				$input = "<select name='input_{$this->id}[]' {$tabindex} {$disabled} {$invalid_attribute} {$required_attribute} {$aria_describedby} aria-label='" . esc_attr( str_replace( '{0}', $row, $aria_label_template ) ) . "' data-aria-label-template='" . esc_attr( $aria_label_template ) . "'>";
 				if ( ! is_array( $input_info['choices'] ) ) {
 					$input_info['choices'] = array_map( 'trim', explode( ',', $input_info['choices'] ) );
 				}
@@ -544,8 +521,8 @@ class GF_Field_List extends GF_Field {
 				break;
 
 			default :
-				// a11y: inputs without a label must have the aria-label attribute set (except the first fieldset input, which uses aria-labelledby).
-				$input = "<input {$invalid_attribute} {$required_attribute} {$aria_describedby} {$aria_name_attrs} data-aria-label-template='" . esc_attr( $aria_label_template ) . "' type='text' name='input_{$this->id}[]' value='" . esc_attr( $value ) . "' {$tabindex} {$disabled} />";
+				// a11y: inputs without a label must have the aria-label attribute set.
+				$input = "<input {$invalid_attribute} {$required_attribute} {$aria_describedby} aria-label='" . esc_attr( str_replace( '{0}', $row, $aria_label_template ) ) . "' data-aria-label-template='" . esc_attr( $aria_label_template ) . "' type='text' name='input_{$this->id}[]' value='" . esc_attr( $value ) . "' {$tabindex} {$disabled} />";
 				break;
 		}
 
@@ -684,7 +661,7 @@ class GF_Field_List extends GF_Field {
 			return '';
 		}
 
-		$value = GFCommon::maybe_unserialize( $value );
+		$value = maybe_unserialize( $value );
 
 		if( ! is_array( $value ) || ! isset( $value[0] ) ) {
 			return '';
@@ -696,7 +673,7 @@ class GF_Field_List extends GF_Field {
 			$items = '';
 			foreach ( $value as $key => $item ) {
 				if ( ! empty( $item ) ) {
-					$item = wp_kses( $item, $this->get_entry_allowed_html() );
+					$item = wp_kses_post( $item );
 					switch ( $format ) {
 						case 'text' :
 							$items .= $item . ', ';
@@ -739,9 +716,7 @@ class GF_Field_List extends GF_Field {
 							$list .= "\n\n" . $this->label . ': ';
 						}
 
-						$item = array_map( function ( $value ) {
-							return wp_kses( $value, $this->get_entry_allowed_html() );
-						}, $item );
+						$item = array_map( 'wp_kses_post', $item );
 
 						$list .= implode( ',', array_values( $item ) );
 
@@ -751,9 +726,7 @@ class GF_Field_List extends GF_Field {
 
 				case 'url' :
 					foreach ( $value as $item ) {
-						$item = array_map( function ( $value ) {
-							return wp_kses( $value, $this->get_entry_allowed_html() );
-						}, $item );
+						$item = array_map( 'wp_kses_post', $item );
 						$list .= implode( "|", array_values( $item ) ) . ',';
 					}
 					if ( ! empty( $list ) ) {
@@ -777,7 +750,7 @@ class GF_Field_List extends GF_Field {
 							$list .= '<tr>';
 							foreach ( $columns as $column ) {
 								$val = rgar( $item, $column );
-								$val = wp_kses( $val, $this->get_entry_allowed_html() );
+								$val = wp_kses_post( $val );
 								$list .= "<td style='padding: 6px 10px; border-right: 1px solid #DFDFDF; border-bottom: 1px solid #DFDFDF; border-top: 1px solid #FFF; font-family: sans-serif; font-size:12px;'>{$val}</td>\n";
 							}
 
@@ -799,7 +772,7 @@ class GF_Field_List extends GF_Field {
 							$list .= '<tr>';
 							foreach ( $columns as $column ) {
 								$val = rgar( $item, $column );
-								$val = wp_kses( $val, $this->get_entry_allowed_html() );
+								$val = wp_kses_post( $val );
 								$list .= "<td>{$val}</td>\n";
 							}
 
@@ -844,38 +817,12 @@ class GF_Field_List extends GF_Field {
 			$first_row     = is_array( $value ) ? reset( $value ) : null;
 			$is_structured = $this->is_administrative() && $this->allowsPrepopulate && is_array( $first_row );
 			$value         = $is_structured ? array_values( $value ) : $this->create_list_array( $value );
-			$value         = $this->sanitize_list_value( $value, $form['id'] );
 			$value         = serialize( $value );
 		}
 
 		$value_safe = $this->sanitize_entry_value( $value, $form['id'] );
 
 		return $value_safe;
-	}
-
-	/**
-	 * Sanitize each scalar List value before the rows are serialized.
-	 *
-	 * @since 3.1.3
-	 *
-	 * @param array $value   The List rows to sanitize.
-	 * @param int   $form_id The current form ID.
-	 *
-	 * @return array
-	 */
-	public function sanitize_list_value( $value, $form_id ) {
-		$allowed_html = $this->get_entry_allowed_html( $this->get_allowable_tags( $form_id ) );
-
-		array_walk_recursive(
-			$value,
-			function ( &$item ) use ( $allowed_html ) {
-				if ( is_string( $item ) ) {
-					$item = wp_kses( $item, $allowed_html );
-				}
-			}
-		);
-
-		return $value;
 	}
 
 	/**
@@ -991,7 +938,10 @@ class GF_Field_List extends GF_Field {
 
 			return $value;
 		} elseif ( is_serialized( $value ) ) {
-			$value = GFCommon::maybe_unserialize( $value );
+			$value = @unserialize(
+				trim( $value ),
+				array( 'allowed_classes' => false )
+			);
 			return is_array( $value ) ? $value : $default;
 		}
 
@@ -1011,63 +961,36 @@ class GF_Field_List extends GF_Field {
 	}
 
 	/**
-	 * Gets the field value, formatted for exports and feed mapping.
+	 * Gets the field value, formatted for exports. For CSV export return an array.
 	 *
 	 * @since  Unknown
-	 * @since 3.2.0  Delegates formatting to format_value_export(); looks up nested values by field id.
+	 * @access public
 	 *
-	 * @param array      $entry    The Entry Object.
-	 * @param string|int $input_id Input ID to export. Column exports use "{field_id}.{column}".
-	 * @param bool       $use_text Not used. Defaults to false.
-	 * @param bool       $is_csv   Is the value going to be used in the CSV export? Defaults to false.
+	 * @used-by GFExport::start_export()
+	 * @used-by GFAddOn::get_field_value()
+	 * @uses    GF_Field_List::$id
+	 * @uses    GF_Field_List::$enableColumns
+	 * @uses    GF_Field_List::$choices
+	 * @uses    GFCommon::implode_non_blank()
+	 *
+	 * @param array  $entry    The Entry Object.
+	 * @param string $input_id Input ID to export. If not defined, uses the current input ID. Defaults to empty string.
+	 * @param bool   $use_text Not used. Defaults to false.
+	 * @param bool   $is_csv   Is the value going to be used in the CSV export? Defaults to false.
 	 *
 	 * @return string|array
 	 */
 	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
 		if ( empty( $input_id ) ) {
 			$input_id = $this->id;
+		} elseif ( ! ctype_digit( $input_id ) ) {
+			$field_id_array = explode( '.', $input_id );
+			$input_id       = rgar( $field_id_array, 0 );
+			$column_num     = rgar( $field_id_array, 1 );
 		}
 
-		// List field data is stored under a field_id key, so we need to use the field_id to retrieve the data.
-		$field_id = explode( '.', $input_id )[0];
-
-		if ( $this->has_nested_value( $entry, $field_id ) ) {
-			$values = array();
-			foreach ( $this->get_nested_values( $entry, $this->nestingPath, $field_id ) as $value ) {
-				$formatted = $this->format_value_export( $value, $entry, $input_id, $use_text, $is_csv );
-				if ( is_array( $formatted ) || rgblank( $formatted ) ) {
-					continue;
-				}
-				$values[] = (string) $formatted;
-			}
-
-			return implode( ', ', $values );
-		}
-
-		return $this->format_value_export( $this->get_input_values( $entry, $field_id ), $entry, $input_id, $use_text, $is_csv );
-	}
-
-	/**
-	 * Format a single List field value for export.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @param mixed      $value    The raw value for the list field (serialized string or unserialized rows).
-	 * @param array      $entry    The entry currently being processed.
-	 * @param string|int $input_id The field or input ID. Column exports use "{field_id}.{column}".
-	 * @param bool       $use_text Not used.
-	 * @param bool       $is_csv   Is the value going to be used in the .csv entries export?
-	 *
-	 * @return string|array
-	 */
-	protected function format_value_export( $value, $entry, $input_id = '', $use_text = false, $is_csv = false ) {
-		if ( empty( $input_id ) ) {
-			$input_id = $this->id;
-		}
-
-		$column_num = explode( '.', $input_id )[1] ?? null;
-
-		$value = GFCommon::maybe_unserialize( $value );
+		$value = rgar( $entry, $input_id );
+		$value = maybe_unserialize( $value );
 
 		if ( empty( $value ) || $is_csv ) {
 			return $value;
@@ -1075,7 +998,7 @@ class GF_Field_List extends GF_Field {
 
 		$list_values = $column_values = $value;
 
-		if ( is_numeric( $column_num ) && $this->enableColumns ) {
+		if ( isset( $column_num ) && is_numeric( $column_num ) && $this->enableColumns ) {
 			$column        = rgars( $this->choices, "{$column_num}/text" );
 			$column_values = array();
 			foreach ( $list_values as $value ) {

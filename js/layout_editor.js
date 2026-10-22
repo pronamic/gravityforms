@@ -557,7 +557,7 @@ function initLayoutEditor( $ ) {
 			if ( previousOffset === this.offsetTop ) {
 				row.push( {
 					el     : this,
-					groupId: this.dataset.groupId,
+					groupId: this.dataset.groupid,
 				} );
 			} else {
 				// we are on a new row, push previously stored row and start a new store
@@ -568,7 +568,7 @@ function initLayoutEditor( $ ) {
 				// push the current item into the new store
 				row.push( {
 					el     : this,
-					groupId: this.dataset.groupId,
+					groupId: this.dataset.groupid,
 				} );
 			}
 			previousOffset = this.offsetTop;
@@ -642,7 +642,7 @@ function initLayoutEditor( $ ) {
 	function setSubmitButtonGroup() {
 		if ( $( '#field_submit' ).attr( 'data-field-position') === 'inline' ) {
 			// Find the last group id.
-			var lastGroup = jQuery( '#field_submit' ).prev().attr( 'data-group-id' );
+			var lastGroup = jQuery( '#field_submit' ).prev().attr( 'data-groupid' );
 			// Move the submit button to the group.
 			jQuery( '#field_submit' ).setGroupId( lastGroup );
 		}

@@ -288,7 +288,6 @@ class GFEntryDetail {
 		if ( empty( $form_id ) ) {
 			GFCommon::add_error_message( esc_html__( "Oops! We couldn't find your form. Please try again.", 'gravityforms' ) );
 			GFForms::admin_header();
-			GFForms::admin_footer();
 
 			return;
 		}
@@ -297,7 +296,6 @@ class GFEntryDetail {
 		if ( is_wp_error( $lead ) || ! $lead ) {
 			GFCommon::add_error_message( esc_html__( "Oops! We couldn't find your entry. Please try again.", 'gravityforms' ) );
 			GFForms::admin_header();
-			GFForms::admin_footer();
 
 			return;
 		}
@@ -553,7 +551,6 @@ class GFEntryDetail {
 
 		?>
 		<script type="text/javascript">
-			<?php GFCommon::gf_global(); ?>
 			var formId = <?php echo absint( $form_id ); ?>;
 
 			jQuery(document).ready(function () {
@@ -825,7 +822,6 @@ class GFEntryDetail {
 			</div>
 		</form>
 		<?php
-		GFForms::admin_footer();
 	}
 
 	public static function lead_detail_edit( $form, $lead ) {
@@ -834,7 +830,6 @@ class GFEntryDetail {
 		if ( empty( $form_id ) ) {
 			return;
 		}
-
 		?>
 		<div class="postbox">
 			<h3>
@@ -847,10 +842,11 @@ class GFEntryDetail {
 					<?php
 					foreach ( $form['fields'] as $field ) {
 						$field_id = $field->id;
-						$content  = $value = '';
+						$content = $value = '';
 
 						switch ( $field->get_input_type() ) {
-							case 'section':
+							case 'section' :
+
 								$content = '
 								<tr valign="top">
 									<td class="detail-view">
@@ -868,24 +864,7 @@ class GFEntryDetail {
 								//ignore certain fields
 								break;
 
-							case 'repeater':
-								$value = RGFormsModel::get_lead_field_value( $lead, $field );
-								$td_id = 'field_' . $form_id . '_' . $field_id;
-								$td_id = esc_attr( $td_id );
-
-								// Reset nesting so the repeater renders as a top-level field with its own label/header.
-								$field->nestingLevel = 0;
-
-								$field_class = 'detail-view gfield gfield--type-repeater gform_repeater_edit_wrapper';
-
-								$content = "<tr valign='top'><td class='{$field_class}' id='{$td_id}'>"
-											. "<div class='ginput_container ginput_container_repeater gform-theme-field-wrapper'>"
-											. GFCommon::get_field_input( $field, $value, $lead['id'], $form_id, $form )
-											. '</div></td></tr>';
-
-								break;
-
-							default:
+							default :
 								$value = RGFormsModel::get_lead_field_value( $lead, $field );
 								$td_id = 'field_' . $form_id . '_' . $field_id;
 								$td_id = esc_attr( $td_id );
@@ -1151,9 +1130,14 @@ class GFEntryDetail {
 							break;
 						}
 
-						// Look for product fields inside the repeater.
-						if ( $field instanceof GF_Field_Repeater && $field->has_product_fields() ) {
-							$has_product_fields = true;
+						// Check if a repeater field contains product sub-fields.
+						if ( ! $has_product_fields && is_array( $field->fields ) ) {
+							foreach ( $field->fields as $sub_field ) {
+								if ( GFCommon::is_product_field( $sub_field->type ) ) {
+									$has_product_fields = true;
+									break 2;
+								}
+							}
 						}
 
 						// If the repeater only contains product/pricing fields (or child repeaters that only contain product fields), skip it entirely.

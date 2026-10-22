@@ -19,8 +19,6 @@ class GFFormDetail {
 			return;
 		}
 
-		GFCommon::gf_root_wrapper_open();
-
 		self::update_recent_forms( $form_id );
 		/**
 		* @var Gravity_Forms\Gravity_Forms\Save_Form\GF_Save_Form_Helper $save_form_helper
@@ -51,6 +49,7 @@ class GFFormDetail {
 			</script>
 			<?php
 		}
+
 
 		wp_print_styles( array( 'thickbox' ) );
 
@@ -83,7 +82,7 @@ class GFFormDetail {
 				return false;
 			}
 
-			function load_submitted_fields() {
+			document.addEventListener('DOMContentLoaded', function() {
 				var formData = new FormData();
 				formData.append('action', 'gf_get_submitted_fields');
 				formData.append('form_id', <?php echo intval( $form_id ); ?>);
@@ -102,10 +101,7 @@ class GFFormDetail {
 						submitted_fields_loaded = true;
 					}
 				});
-			}
-
-			document.addEventListener('DOMContentLoaded', load_submitted_fields);
-			document.addEventListener('gform/form_editor_saver/post_save_success', load_submitted_fields);
+			});
 
 			function InsertPostImageVariable(element_id, callback) {
 				var variable = jQuery('#' + element_id + '_image_size_select').attr("variable");
@@ -604,17 +600,6 @@ class GFFormDetail {
 									<?php gform_tooltip( 'form_field_label_html' ); ?>
 								</label>
 								<input type="text" id="field_label" autocomplete="off"/>
-							</li>
-							<li class="repeater_row_label_setting field_setting">
-								<label for="repeater_row_label" class="section_label">
-									<?php esc_html_e( 'Row Label', 'gravityforms' ); ?>
-									<?php gform_tooltip( 'repeater_row_label' ); ?>
-								</label>
-								<input type="text" id="repeater_row_label" autocomplete="off" style="margin-bottom: 10px;"/>
-
-								<input type="checkbox" id="show_repeater_row_label" onclick="ToggleRepeaterRowLabel();" onkeypress="ToggleRepeaterRowLabel();"/>
-								<label for="show_repeater_row_label" class="inline"><?php esc_html_e( 'Show Row Label', 'gravityforms' ); ?></label>
-
 							</li>
 							<li class="submit_type_setting field_setting">
 								<fieldset>
@@ -2069,7 +2054,7 @@ class GFFormDetail {
 										</div>
 									</div>
 
-									<select id="field_mask_select" onchange="SetFieldProperty('inputMaskValue', jQuery(this).val()); CheckFieldMaskAccessibility();">
+									<select id="field_mask_select" onchange="SetFieldProperty('inputMaskValue', jQuery(this).val());">
 										<option value=""><?php esc_html_e( 'Select a Mask', 'gravityforms' ); ?></option>
 										<?php
 										$masks = RGFormsModel::get_input_masks();
@@ -2212,7 +2197,7 @@ class GFFormDetail {
 
 							<li class="max_items_setting field_setting">
 								<label for="max_items_setting" class="section_label">
-									<?php esc_html_e( 'Maximum Number of Rows', 'gravityforms' ); ?>
+									<?php esc_html_e( 'Maximum Number of Repeats', 'gravityforms' ); ?>
 									<?php gform_tooltip( 'form_field_max_items' ); ?>
 								</label>
 								<input type="number" id="max_items_setting" min="1" onchange="SetFieldProperty('maxItems', jQuery(this).val());  RefreshSelectedFieldPreview();"/>
@@ -2925,7 +2910,6 @@ class GFFormDetail {
 
 		require_once( GFCommon::get_base_path() . '/js.php' );
 
-		GFCommon::gf_root_wrapper_close();
 	}
 
 	/**
@@ -3018,12 +3002,13 @@ class GFFormDetail {
 			);
 		}
 
-		
-		$field_groups['advanced_fields']['fields'][] = array(
-			'data-type' => 'repeater',
-			'value'     => GFCommon::get_field_type_title( 'repeater' )
-		);
-		
+		// Add repeater field, if enabled.
+		if ( apply_filters( 'gform_enable_repeater_field_button', false ) ) {
+			$field_groups['advanced_fields']['fields'][] = array(
+				'data-type' => 'repeater',
+				'value'     => GFCommon::get_field_type_title( 'repeater' )
+			);
+		}
 
 		/**
 		 * Modify the field groups before fields are added.
@@ -3089,11 +3074,11 @@ class GFFormDetail {
 	 */
 	private static function display_buttons( $buttons ) {
 		foreach ( $buttons as $button ) {
-			$button['data-icon']         = empty( $button['data-icon'] ) ? 'gform-icon--cog' : $button['data-icon'];
-			$button['data-description']  = empty( $button['data-description'] ) ? sprintf( esc_attr__( 'Add a %s field to your form.', 'gravityforms' ), $button['value'] ) : $button['data-description'];
-			$button['data-repeatable']   = rgar( $button, 'data-repeatable', 0 ) ? 1 : 0;
+			$button['data-icon']        = empty( $button['data-icon'] ) ? 'gform-icon--cog' : $button['data-icon'];
+			$button['data-description'] = empty( $button['data-description'] ) ? sprintf( esc_attr__( 'Add a %s field to your form.', 'gravityforms' ), $button['value'] ) : $button['data-description'];
+			$button['data-repeatable']   = isset( $button['data-repeatable'] ) ? ( $button['data-repeatable'] ? 1 : 0 ) : 1;
 			$button['data-duplicatable'] = isset( $button['data-duplicatable'] ) ? ( $button['data-duplicatable'] ? 1 : 0 ) : 1;
-			$button['class']             = empty( $button['class'] ) ? 'gfield-add' : $button['class'] . ' gfield-add';
+			$button['class']            = empty( $button['class'] ) ? 'gfield-add' : $button['class'] . ' gfield-add';
             ?>
 			<li>
 				<button title="<?php echo esc_attr( $button['data-description'] ); ?>"

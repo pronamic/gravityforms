@@ -26,15 +26,6 @@ class GF_Field_Time extends GF_Field {
 	public $type = 'time';
 
 	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = true;
-
-	/**
 	 * Sets the title of the field to be used in the form editor.
 	 *
 	 * @since  Unknown
@@ -358,7 +349,6 @@ class GF_Field_Time extends GF_Field {
 		$hour_aria_attributes   = $this->get_aria_attributes( $input_values, '1' );
 		$minute_aria_attributes = $this->get_aria_attributes( $input_values, '2' );
 		$aria_describedby       = $this->get_aria_describedby();
-		$aria_labelledby        = $this->get_aria_labelledby( "{$field_id}_1_label" );
 
 		$legacy_markup_colon = GFCommon::is_legacy_markup_enabled( $form ) ? '<i>:</i>' : '';
 		$new_markup_colon    = GFCommon::is_legacy_markup_enabled( $form ) ? '' : '<div class="' . $colon_pmam_placement . ' hour_minute_colon gform-grid-col">:</div>';
@@ -366,12 +356,12 @@ class GF_Field_Time extends GF_Field {
 		if ( $is_sub_label_above ) {
 			$markup = "{$clear_multi_div_open}
                         <div class='gfield_time_hour ginput_container ginput_container_time gform-grid-col' id='{$field_id}'>
-                            <label class='gform-field-label gform-field-label--type-sub hour_label{$hour_label_class}' for='{$field_id}_1' id='{$field_id}_1_label'>{$hour_label}</label>
-                            <input type='{$input_type}' name='input_{$id}[]' id='{$field_id}_1' value='{$hour}' {$hour_tabindex} {$hour_html5_attributes} {$disabled_text} {$hour_placeholder_attribute} {$hour_aria_attributes} {$aria_describedby} {$aria_labelledby}/> {$legacy_markup_colon}
+                            <label class='gform-field-label gform-field-label--type-sub hour_label{$hour_label_class}' for='{$field_id}_1'>{$hour_label}</label>
+                            <input type='{$input_type}' name='input_{$id}[]' id='{$field_id}_1' value='{$hour}' {$hour_tabindex} {$hour_html5_attributes} {$disabled_text} {$hour_placeholder_attribute} {$hour_aria_attributes} {$aria_describedby}/> {$legacy_markup_colon}
                         </div>
                         {$new_markup_colon}
                         <div class='gfield_time_minute ginput_container ginput_container_time gform-grid-col'>
-                            <label class='gform-field-label gform-field-label--type-sub minute_label{$minute_label_class}' for='{$field_id}_2' id='{$field_id}_2_label'>{$minute_label}</label>
+                            <label class='gform-field-label gform-field-label--type-sub minute_label{$minute_label_class}' for='{$field_id}_2'>{$minute_label}</label>
                             <input type='{$input_type}' name='input_{$id}[]' id='{$field_id}_2' value='{$minute}' {$minute_tabindex} {$minute_html5_attributes} {$disabled_text} {$minute_placeholder_attribute} {$minute_aria_attributes}/>
                         </div>
                         {$ampm_field}
@@ -379,13 +369,13 @@ class GF_Field_Time extends GF_Field {
 		} else {
 			$markup = "{$clear_multi_div_open}
                         <div class='gfield_time_hour ginput_container ginput_container_time gform-grid-col' id='{$field_id}'>
-                            <input type='{$input_type}' name='input_{$id}[]' id='{$field_id}_1' value='{$hour}' {$hour_tabindex} {$hour_html5_attributes} {$disabled_text} {$hour_placeholder_attribute} {$hour_aria_attributes} {$aria_describedby} {$aria_labelledby}/> {$legacy_markup_colon}
-                            <label class='gform-field-label gform-field-label--type-sub hour_label{$hour_label_class}' for='{$field_id}_1' id='{$field_id}_1_label'>{$hour_label}</label>
+                            <input type='{$input_type}' name='input_{$id}[]' id='{$field_id}_1' value='{$hour}' {$hour_tabindex} {$hour_html5_attributes} {$disabled_text} {$hour_placeholder_attribute} {$hour_aria_attributes} {$aria_describedby}/> {$legacy_markup_colon}
+                            <label class='gform-field-label gform-field-label--type-sub hour_label{$hour_label_class}' for='{$field_id}_1'>{$hour_label}</label>
                         </div>
                         {$new_markup_colon}
                         <div class='gfield_time_minute ginput_container ginput_container_time gform-grid-col'>
                             <input type='{$input_type}' name='input_{$id}[]' id='{$field_id}_2' value='{$minute}' {$minute_tabindex} {$minute_html5_attributes} {$disabled_text} {$minute_placeholder_attribute} {$minute_aria_attributes}/>
-                            <label class='gform-field-label gform-field-label--type-sub minute_label{$minute_label_class}' for='{$field_id}_2' id='{$field_id}_2_label'>{$minute_label}</label>
+                            <label class='gform-field-label gform-field-label--type-sub minute_label{$minute_label_class}' for='{$field_id}_2'>{$minute_label}</label>
                         </div>
                         {$ampm_field}
                     {$clear_multi_div_close}";
@@ -585,45 +575,6 @@ class GF_Field_Time extends GF_Field {
 		if ( ! $this->timeFormat || ! in_array( $this->timeFormat, array( 12, 24 ) ) ) {
 			$this->timeFormat = '12';
 		}
-	}
-
-	/**
-	 * Gets the merge tag value.
-	 *
-	 * @since 3.1.2
-	 *
-	 * @param string       $value      The merge tag value to be filtered.
-	 * @param string       $input_id   The field or input ID from the merge tag.
-	 * @param array        $entry      The Entry Object.
-	 * @param array        $form       The Form Object.
-	 * @param string       $modifier   The merge tag modifier.
-	 * @param string|array $raw_value  The raw field value from before formatting.
-	 * @param bool         $url_encode Whether to encode the value for URLs.
-	 * @param bool         $esc_html   Whether to encode HTML entities.
-	 * @param string       $format     The format requested for the location the merge is being used.
-	 * @param bool         $nl2br      Whether to convert newlines to HTML line breaks.
-	 *
-	 * @return string
-	 */
-	public function get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br ) {
-
-		if ( rgblank( $raw_value ) ) {
-			return GFCommon::format_variable_value( $raw_value, $url_encode, $esc_html, $format, $nl2br );
-		}
-
-		preg_match( '/^(\d*):(\d*) ?(.*)$/', $raw_value, $matches );
-
-		if ( in_array( 'hour', $this->get_modifiers() ) ) {
-			$value = (string) intval( rgar( $matches, 1 ) );
-		} else if ( in_array( 'minute', $this->get_modifiers() ) ) {
-			$value = sprintf( '%02d', intval( rgar( $matches, 2 ) ) );
-		} else if ( in_array( 'ampm', $this->get_modifiers() ) ) {
-			$value = strtolower( trim( rgar( $matches, 3 ) ) );
-		} else{
-			$value = $raw_value;
-		}
-
-		return GFCommon::format_variable_value( $value, $url_encode, $esc_html, $format, $nl2br );
 	}
 
 }

@@ -9,6 +9,7 @@ class GF_Field_Total extends GF_Field {
 
 	public $type         = 'total';
 	public $numberFormat = 'currency'; // This is used to property format the total during conditional logic evaluation.
+	public $repeatable   = false;
 
 	function get_form_editor_field_settings() {
 		return array(
@@ -62,23 +63,22 @@ class GF_Field_Total extends GF_Field {
 		$is_entry_detail = $this->is_entry_detail();
 		$is_form_editor  = $this->is_form_editor();
 
-		$id               = (int) $this->id;
-		$field_id         = $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
-		$aria_describedby = $this->get_aria_describedby();
+		$id       = (int) $this->id;
+		$field_id = $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
 
 		if ( $is_entry_detail ) {
 			return "<div class='ginput_container ginput_container_total'>
-						<input type='text' name='input_{$id}' value='{$value}' {$aria_describedby}/>
+						<input type='text' name='input_{$id}' value='{$value}' />
 					</div>";
 		} else {
 			if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
 				return "<div class='ginput_container ginput_container_total'>
 							<span class='ginput_total ginput_total_{$form_id}'>" . GFCommon::to_money( '0' ) . "</span>
-							<input type='hidden' name='input_{$id}' id='{$field_id}' class='gform_hidden' {$aria_describedby}/>
+							<input type='hidden' name='input_{$id}' id='{$field_id}' class='gform_hidden'/>
 						</div>";
 			} else {
 				return "<div class='ginput_container ginput_container_total'>
-							<input type='text' readonly name='input_{$id}' id='{$field_id}' value='" . GFCommon::to_money( '0' ) . "' class='gform-text-input-reset ginput_total ginput_total_{$form_id}' {$aria_describedby} />
+							<input type='text' readonly name='input_{$id}' id='{$field_id}' value='" . GFCommon::to_money( '0' ) . "' class='gform-text-input-reset ginput_total ginput_total_{$form_id}' />
 						</div>";
 			}
 		}

@@ -131,7 +131,7 @@ class GF_Field_Post_Tags extends GF_Field {
 			$describedby .= implode( ' ', $extra_ids );
 		}
 
-		return $this->get_aria_attributes_from_describedby_ids( $describedby );
+		return empty( $describedby ) ? '' : 'aria-describedby="' . $describedby . '"';
 	}
 }
 

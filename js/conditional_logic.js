@@ -414,11 +414,6 @@ function gf_do_field_action(formId, action, fieldId, isInit, callback){
 		}
 
 		gform.doAction('gform_post_conditional_logic_field_action', formId, action, targetId, defaultValues, isInit);
-		gform.utils.trigger( {
-			event: 'gform/conditional_logic/field_action/end',
-			native: false,
-			data: { formId: formId, action: action, targetId: targetId, defaultValues: defaultValues, isInit: isInit },
-		} );
 	}
 }
 
@@ -463,11 +458,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 		return;
 	}
 
-	// Fields that shouldn't be displayed by logic rules.
-	const isHiddenType = ! $target.hasClass( 'gfield_error' ) && $target.is( '.gfield--input-type-hidden, .gfield--input-type-hiddenproduct, .gfield_visibility_hidden' );
-
 	if(action == "show"){
-
 		// reset tabindex for selects
 		$target.find( 'select' ).each( function() {
 			var $select = jQuery( this );
@@ -476,17 +467,12 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 
 		if(useAnimation && !isInit){
 			if($target.length > 0){
-				$target.find( isHiddenType ? ':input' : ':input:hidden' ).not( '.gf-default-disabled' ).prop( 'disabled', false );
+				$target.find(':input:hidden:not(.gf-default-disabled)').prop( 'disabled', false );
 				if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 					gf_show_button( $target );
 				}
-
-				if ( ! isHiddenType ) {
-					$target.slideDown(callback);
-				}
-
+				$target.slideDown(callback);
 				$target.attr( 'data-conditional-logic', 'visible' );
-
 			} else if(callback){
 				callback();
 			}
@@ -498,16 +484,13 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if ( display == '' || display == 'none' ){
 				display = '1' === gf_legacy.is_legacy ? 'list-item' : 'block';
 			}
-			$target.find( isHiddenType ? ':input' : ':input:hidden' ).not( '.gf-default-disabled' ).prop( 'disabled', false );
+			$target.find(':input:hidden:not(.gf-default-disabled)').prop( 'disabled', false ).attr( 'data-conditional-logic', 'visible' );
 
 			// Handle conditional submit and next buttons.
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 				gf_show_button( $target );
 			} else {
-				if ( ! isHiddenType ) {
-					$target.css( 'display', display );
-				}
-
+				$target.css( 'display', display );
 				if( display == 'none' ) {
 					$target.attr( 'data-conditional-logic', 'hidden' );
 				} else {
@@ -547,9 +530,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 				gf_hide_button( $target );
 			} else if ( $target.length > 0 && $target.is( ":visible" ) ) {
-				if ( ! isHiddenType ) {
-					$target.slideUp( callback );
-				}
+				$target.slideUp( callback );
 				$target.attr( 'data-conditional-logic', 'hidden' );
 			} else if ( callback ) {
 				callback();
@@ -560,9 +541,7 @@ function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, cal
 			if ( $target.is( 'input[type="submit"]' ) || $target.hasClass( 'gform_next_button' ) ) {
 				gf_hide_button( $target );
 			} else {
-				if ( ! isHiddenType ) {
-					$target.css( 'display', 'none' );
-				}
+				$target.css( 'display', 'none' );
 				$target.attr( 'data-conditional-logic', 'hidden' );
 			}
 			$target.find(':input:hidden:not(.gf-default-disabled)').attr( 'disabled', 'disabled' );
@@ -609,12 +588,6 @@ function gf_hide_button( $target ) {
 function gf_reset_to_default(targetId, defaultValue){
 
 	var $target = jQuery( targetId );
-
-	// Hiding a repeater should leave the fields inside it as they are.
-	if ( $target.hasClass( 'gfield--type-repeater' ) ) {
-		return;
-	}
-
     if( $target.hasClass('gfield_shipping') || $target.hasClass('gfield_total') ||
         $target.hasClass('gfield--type-shipping') || $target.hasClass('gfield--type-total') ) {
         return;

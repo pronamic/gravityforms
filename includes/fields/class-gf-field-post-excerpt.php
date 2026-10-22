@@ -17,6 +17,15 @@ class GF_Field_Post_Excerpt extends GF_Field {
 	 */
 	public $duplicatable = false;
 
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = false;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Excerpt', 'gravityforms' );
 	}
@@ -139,7 +148,8 @@ class GF_Field_Post_Excerpt extends GF_Field {
 				// The value is unsafe so encode the value.
 				$return = esc_html( $value );
 			} else {
-				$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+				// The value contains HTML but the value was sanitized before saving.
+				$return = $value;
 			}
 
 			// If $nl2br is true nl2br() may have already been run in GFCommon::format_variable_value().
