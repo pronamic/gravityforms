@@ -94,6 +94,13 @@ class GF_Results_Cache {
 	 */
 	public function update_entry_status( $entry_id ) {
 		$entry    = GFAPI::get_entry( $entry_id );
+
+		// Prevent fatal error if entry can't be retrieved.
+		if ( is_wp_error( $entry ) ) {
+			GFCommon::log_error( __METHOD__ . sprintf( '(): Entry retrieval failed; %s: %s', $entry->get_error_code(), $entry->get_error_message() ) );
+			return;
+		}
+
 		$form_id = $entry['form_id'];
 		$form    = GFFormsModel::get_form_meta( $form_id );
 		$this->maybe_update_results_cache_meta( $form );

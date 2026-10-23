@@ -9,6 +9,15 @@ class GF_Field_Email extends GF_Field {
 
 	public $type = 'email';
 
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Email', 'gravityforms' );
 	}
@@ -249,6 +258,7 @@ class GF_Field_Email extends GF_Field {
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
 		$aria_describedby      = $this->get_aria_describedby();
+		$aria_labelledby       = $this->emailConfirmEnabled ? $this->get_aria_labelledby( "{$field_id}_label" ) : '';
 
 		$enter_email_field_input = GFFormsModel::get_input( $this, $this->id . '' );
 		$confirm_field_input     = GFFormsModel::get_input( $this, $this->id . '.2' );
@@ -277,11 +287,11 @@ class GF_Field_Email extends GF_Field {
                         </div>
                         <div class='ginput_complex ginput_container ginput_container_email ginput_confirm_email gform-grid-row' {$confirm_style} id='{$field_id}_container'>
                             <span id='{$field_id}_1_container' class='ginput_left gform-grid-col gform-grid-col--size-auto'>
-                                <label for='{$field_id}' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_email_label}</label>
+                                <label for='{$field_id}' id='{$field_id}_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_email_label}</label>
                                 <input class='{$class}' type='text' name='input_{$id}' id='{$field_id}' disabled='disabled' {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$enter_email_autocomplete_attribute} />
                             </span>
                             <span id='{$field_id}_2_container' class='ginput_right gform-grid-col gform-grid-col--size-auto'>
-                                <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_email_label}</label>
+                                <label for='{$field_id}_2' id='{$field_id}_2_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_email_label}</label>
                                 <input class='{$class}' type='text' name='input_{$id}_2' id='{$field_id}_2' disabled='disabled' {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$confirm_email_autocomplete_attribute} />
                             </span>
                             <div class='gf_clear gf_clear_complex'></div>
@@ -294,11 +304,11 @@ class GF_Field_Email extends GF_Field {
                         <div class='ginput_complex ginput_container ginput_container_email ginput_confirm_email gform-grid-row' {$confirm_style} id='{$field_id}_container'>
                             <span id='{$field_id}_1_container' class='ginput_left gform-grid-col gform-grid-col--size-auto'>
                                 <input class='{$class}' type='text' name='input_{$id}' id='{$field_id}' disabled='disabled' {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$enter_email_autocomplete_attribute} />
-                                <label for='{$field_id}' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_email_label}</label>
+                                <label for='{$field_id}' id='{$field_id}_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_email_label}</label>
                             </span>
                             <span id='{$field_id}_2_container' class='ginput_right gform-grid-col gform-grid-col--size-auto'>
                                 <input class='{$class}' type='text' name='input_{$id}_2' id='{$field_id}_2' disabled='disabled' {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$confirm_email_autocomplete_attribute} />
-                                <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_email_label}</label>
+                                <label for='{$field_id}_2' id='{$field_id}_2_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_email_label}</label>
                             </span>
                             <div class='gf_clear gf_clear_complex'></div>
                         </div>";
@@ -331,11 +341,11 @@ class GF_Field_Email extends GF_Field {
 				if ( $is_sub_label_above ) {
 					return "<div class='ginput_complex ginput_container ginput_container_email gform-grid-row' id='{$field_id}_container'>
                                 <span id='{$field_id}_1_container' class='ginput_left gform-grid-col gform-grid-col--size-auto'>
-                                    <label for='{$field_id}' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>" . $enter_email_label . "</label>
-                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}' id='{$field_id}' value='{$email_value}' {$first_tabindex} {$disabled_text} {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$enter_email_autocomplete_attribute}/>
+                                    <label for='{$field_id}' id='{$field_id}_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>" . $enter_email_label . "</label>
+                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}' id='{$field_id}' value='{$email_value}' {$first_tabindex} {$disabled_text} {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$aria_labelledby} {$enter_email_autocomplete_attribute}/>
                                 </span>
                                 <span id='{$field_id}_2_container' class='ginput_right gform-grid-col gform-grid-col--size-auto'>
-                                    <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_email_label}</label>
+                                    <label for='{$field_id}_2' id='{$field_id}_2_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_email_label}</label>
                                     <input class='{$class}' type='{$html_input_type}' name='input_{$id}_2' id='{$field_id}_2' value='{$confirmation_value}' {$last_tabindex} {$confirmation_disabled} {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$confirm_email_autocomplete_attribute}/>
                                 </span>
                                 <div class='gf_clear gf_clear_complex'></div>
@@ -343,12 +353,12 @@ class GF_Field_Email extends GF_Field {
 				} else {
 					return "<div class='ginput_complex ginput_container ginput_container_email gform-grid-row' id='{$field_id}_container'>
                                 <span id='{$field_id}_1_container' class='ginput_left gform-grid-col gform-grid-col--size-auto'>
-                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}' id='{$field_id}' value='{$email_value}' {$first_tabindex} {$disabled_text} {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$enter_email_autocomplete_attribute}/>
-                                    <label for='{$field_id}' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_email_label}</label>
+                                    <input class='{$class}' type='{$html_input_type}' name='input_{$id}' id='{$field_id}' value='{$email_value}' {$first_tabindex} {$disabled_text} {$enter_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$aria_labelledby} {$enter_email_autocomplete_attribute}/>
+                                    <label for='{$field_id}' id='{$field_id}_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$enter_email_label}</label>
                                 </span>
                                 <span id='{$field_id}_2_container' class='ginput_right gform-grid-col gform-grid-col--size-auto'>
                                     <input class='{$class}' type='{$html_input_type}' name='input_{$id}_2' id='{$field_id}_2' value='{$confirmation_value}' {$last_tabindex} {$confirmation_disabled} {$confirm_email_placeholder_attribute} {$required_attribute} {$invalid_attribute} {$aria_describedby} {$confirm_email_autocomplete_attribute}/>
-                                    <label for='{$field_id}_2' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_email_label}</label>
+                                    <label for='{$field_id}_2' id='{$field_id}_2_label' class='gform-field-label gform-field-label--type-sub {$sub_label_class}'>{$confirm_email_label}</label>
                                 </span>
                                 <div class='gf_clear gf_clear_complex'></div>
                             </div>";

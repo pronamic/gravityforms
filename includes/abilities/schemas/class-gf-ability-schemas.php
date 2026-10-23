@@ -233,12 +233,13 @@ class GF_Ability_Schemas {
 	 * field id property so existing fields can be matched.
 	 *
 	 * @since 3.1.0
+	 * @since 3.2.0  added $depth parameter to limit recursion depth for nested repeater fields.
 	 *
 	 * @param bool $include_field_id Whether to include the 'id' property (update variant).
 	 *
 	 * @return array
 	 */
-	public static function form_field_item_schema( $include_field_id = false ) {
+	public static function form_field_item_schema( $include_field_id = false, $depth = 0 ) {
 		$properties = array(
 			'type'                 => array( 'type' => 'string', 'description' => __( 'Field type slug. Call gravityforms/system-field-types to get the full list of available types and their capabilities.', 'gravityforms' ) ),
 			'label'                => array( 'type' => 'string', 'description' => __( 'Field label displayed to users.', 'gravityforms' ) ),
@@ -283,6 +284,22 @@ class GF_Ability_Schemas {
 				),
 			),
 		);
+
+		// WordPress does not support recursive $ref schema definitions. Limit schema
+		// expansion here to prevent infinite recursion with the $depth variable.
+		$properties['fields']               = array(
+			'type'        => 'array',
+			'description' => __( 'Repeater fields only — nested child field definitions. Child fields use the same shape recursively and must be field types whose repeatable property is true.', 'gravityforms' ),
+			'items'       => $depth < 5 ? self::form_field_item_schema( $include_field_id, $depth + 1 ) : array(
+				'type'        => 'object',
+				'description' => __( 'Nested child field definition using the same field shape recursively.', 'gravityforms' ),
+			),
+		);
+		$properties['maxItems']             = array( 'type' => 'integer', 'description' => __( 'Repeater fields only — maximum number of rows a user can add. Omit or use 0 for no explicit limit.', 'gravityforms' ) );
+		$properties['addButtonText']        = array( 'type' => 'string', 'description' => __( 'Repeater fields only — custom text for the Add button.', 'gravityforms' ) );
+		$properties['removeButtonText']     = array( 'type' => 'string', 'description' => __( 'Repeater fields only — custom text for the Remove button.', 'gravityforms' ) );
+		$properties['repeaterRowLabel']     = array( 'type' => 'string', 'description' => __( 'Repeater fields only — label used for each row, e.g. "Participant".', 'gravityforms' ) );
+		$properties['showRepeaterRowLabel'] = array( 'type' => 'boolean', 'description' => __( 'Repeater fields only — whether row labels should be visible.', 'gravityforms' ) );
 
 		if ( $include_field_id ) {
 			$properties = array( 'id' => array( 'type' => 'integer', 'description' => __( 'Field ID. Required when updating existing fields; omit for new fields being added.', 'gravityforms' ) ) ) + $properties;
@@ -351,7 +368,7 @@ class GF_Ability_Schemas {
 	public static function input_values_schema() {
 		return array(
 			'type'                 => 'object',
-			'description'          => __( 'Field values keyed by input name (e.g., \'input_1\': \'John\', \'input_2\': \'john@example.com\'). Most fields use string values. Multiselect fields accept an array of selected values (e.g., \'input_3\': [\'Red\', \'Blue\']).', 'gravityforms' ),
+			'description'          => __( 'Field values keyed by input name (e.g., \'input_1\': \'John\', \'input_2\': \'john@example.com\'). Most fields use string values. Multiselect fields accept an array of selected values (e.g., \'input_3\': [\'Red\', \'Blue\']). Repeater child fields submit as arrays keyed by the child input name (e.g., \'input_4\': [\'Alice\', \'Bob\']).', 'gravityforms' ),
 			'additionalProperties' => array(
 				'type'  => array( 'string', 'array' ),
 				'items' => array( 'type' => 'string' ),

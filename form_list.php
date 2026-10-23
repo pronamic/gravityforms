@@ -16,21 +16,12 @@ class GFFormList {
 		wp_print_styles( array( 'thickbox' ) );
 
 		add_action( 'admin_print_footer_scripts', array( __class__, 'output_form_list_script_block' ), 20 );
-
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 		?>
 
 		<script type="text/javascript">
 			// checked by the ToggleActive method to prevent errors when form status icon is clicked before page has fully loaded
 			var gfPageLoaded = false;
 		</script>
-
-		<style type="text/css">
-
-
-
-		</style>
 
 		<?php if ( GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) { ?>
 		<div id="gf_new_form_modal" style="display:none;">
@@ -317,6 +308,7 @@ class GFFormList {
 					labelPlacement:'top_label',
 					descriptionPlacement:'below',
 					validationPlacement:'below',
+					columnLayout:'fixed',
 					button: {
 						type: 'text',
 						text: <?php echo json_encode( esc_html__( 'Submit', 'gravityforms' ) ); ?>,

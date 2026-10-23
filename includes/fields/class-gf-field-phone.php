@@ -25,6 +25,15 @@ class GF_Field_Phone extends GF_Field {
 	public $type = 'phone';
 
 	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
+	/**
 	 * Whether this field allows links/URLs in the value.
 	 *
 	 * @since 3.1.0
@@ -309,7 +318,7 @@ class GF_Field_Phone extends GF_Field {
 		$placeholder_attribute  = $this->phoneFormat !== 'formatted' ? $this->get_field_placeholder_attribute() : '';
 		$required_attribute     = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute      = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
-		$aria_describedby       = $this->get_aria_describedby();
+		$aria_describedby       = $this->phoneFormat === 'formatted' ? '' : $this->get_aria_describedby();
 		$autocomplete_attribute = $this->enableAutocomplete ? $this->get_field_autocomplete_attribute() : '';
 
 		$tabindex = $this->get_tabindex();
@@ -491,7 +500,7 @@ class GF_Field_Phone extends GF_Field {
 		$phone_sublabel_text   = esc_html( $this->phoneSublabel ?: __( 'Phone Number', 'gravityforms' ) );
 		$country_sublabel      = "<label for='" . esc_attr( $button_id ) . "' id='" . esc_attr( $button_id . '_label' ) . "' class='gform-field-label gform-field-label--type-sub {$hidden_sublabel_class}'>{$country_sublabel_text}</label>";
 		$phone_sublabel        = "<label for='" . esc_attr( $visible_input_id ) . "' id='" . esc_attr( $visible_input_id . '_label' ) . "' class='gform-field-label gform-field-label--type-sub {$hidden_sublabel_class}'>{$phone_sublabel_text}</label>";
-
+	
 		$is_sublabel_above = $this->is_sub_label_above( $form );
 
 		$country_sublabel_above = $is_sublabel_above ? $country_sublabel : '';
@@ -521,7 +530,7 @@ class GF_Field_Phone extends GF_Field {
 		$dial_code_display = $dial_code ? '+' . esc_attr( $dial_code ) : '';
 
 		$html = sprintf( '
-			<div class="%1$s" role="application">
+			<div class="%1$s">
 				<div class="gform-phone__input-wrapper">
 					<span class="ginput_country-selector_container">
 						%2$s
@@ -572,7 +581,7 @@ class GF_Field_Phone extends GF_Field {
 			esc_attr( $i18n['searchCountriesAriaLabel'] ),      // 22
 			esc_attr( $dropdown_id ),                           // 23: list id prefix
 			esc_attr( $dropdown_id ),                           // 24: list id
-			esc_attr( $i18n['countryListAriaLabel'] )           // 25
+			esc_attr( $i18n['countryListAriaLabel'] ),          // 25
 		);
 
 		return $html;
@@ -592,6 +601,25 @@ class GF_Field_Phone extends GF_Field {
 
 		$decoded = json_decode( $value, true );
 		return is_array( $decoded ) ? $decoded : false;
+	}
+
+	/**
+	 * Returns the formatted phone number prefixed with the country dial code when available.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @param array $decoded Decoded phone value.
+	 *
+	 * @return string|false
+	 */
+	private function get_formatted_with_country_code( $decoded ) {
+		if ( ! is_array( $decoded ) || ! isset( $decoded['formatted'], $decoded['country'] ) ) {
+			return false;
+		}
+
+		$dial_code = self::get_dial_code( $decoded['country'] );
+
+		return $dial_code ? '+' . $dial_code . ' ' . $decoded['formatted'] : $decoded['formatted'];
 	}
 
 	/**
@@ -629,13 +657,20 @@ class GF_Field_Phone extends GF_Field {
 	 * @param string $value   The value to be sanitized.
 	 * @param int    $form_id The form ID of the submitted item.
 	 *
-	 * @return array|array[]|string[] The sanitized value.
+	 * @return string|string[] The sanitized value.
 	 */
 	public function sanitize_entry_value( $value, $form_id ) {
+		if ( rgblank( $value ) ) {
+			return '';
+		}
+
 		if ( is_array( $value ) ) {
-			return array_map( function( $v ) use ( $form_id ) {
-				return $this->sanitize_entry_value( $v, $form_id );
-			}, $value );
+			return array_map(
+				function ( $v ) use ( $form_id ) {
+					return $this->sanitize_entry_value( $v, $form_id );
+				},
+				$value
+			);
 		}
 
 		$sanitized = sanitize_text_field( $value );
@@ -729,14 +764,63 @@ class GF_Field_Phone extends GF_Field {
 		if ( ! empty( $value ) && GFCommon::is_json( $value ) ) {
 			$decoded = $this->to_array( $value );
 			if ( $decoded && isset( $decoded['formatted'] ) && isset( $decoded['e164'] ) && isset( $decoded['country'] ) ) {
+				$formatted = $this->format_entry_output_value( $decoded['formatted'], $format );
+				$e164      = $this->format_entry_output_value( $decoded['e164'], $format );
+				$country   = $this->format_entry_output_value( strtoupper( $decoded['country'] ), $format );
 
 				// Format: formatted value on first line, E.164 (country) on second line
-				$line_break = $format == 'html' ? '<br />' : "\n";
-				return $decoded['formatted'] . $line_break . __( 'Raw E.164 value:', 'gravityforms' ) . ' ' . $decoded['e164'] . ' (' . strtoupper( $decoded['country'] ) . ')';
+				$line_break = $format === 'html' ? '<br />' : "\n";
+				return $formatted . $line_break . esc_html__( 'Raw E.164 value:', 'gravityforms' ) . ' ' . $e164 . ' (' . $country . ')';
 			}
 		}
 
-		return $value;
+		return $this->format_entry_output_value( $value, $format );
+	}
+
+	/**
+	 * Gets the value for the {all_fields} merge tag.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @param $value
+	 * @param $entry
+	 * @param $use_text
+	 * @param $format
+	 *
+	 * @return array|false|mixed|string
+	 */
+	public function get_value_all_fields_merge_tag( $value, $entry, $use_text, $format ) {
+		// For non-formatted phone fields, return the entry detail display
+		if ( $this->phoneFormat !== 'formatted' ) {
+			return $this->get_value_entry_detail( $value, $entry, $use_text, $format, 'email' );
+		}
+
+		// For formatted phone fields, return the formatted number with country code prefix
+		if ( ! empty( $value ) && GFCommon::is_json( $value ) ) {
+			$decoded = $this->to_array( $value );
+			if ( $decoded ) {
+				$formatted_with_country_code = $this->get_formatted_with_country_code( $decoded );
+				if ( $formatted_with_country_code !== false ) {
+					/*
+					 * Allow users to filter the value of the phone field when used in the {all_fields} merge tag.
+					 *
+					 * @since 3.1.2
+					 *
+					 * @param string $formatted_with_country_code The default output of the phone field with country code.
+					 * @param string $value The original field value.
+					 * @param array  $entry The Entry Object.
+					 * @param bool   $use_text Whether to use the text format.
+					 * @param string $format The format requested for the location the merge is being used.
+					 * @param GF_Field_Phone $field The phone field object.
+					 */
+					$formatted_with_country_code = gf_apply_filters( array( 'gform_phone_formatted_all_fields', $entry['form_id'] ), $formatted_with_country_code, $value, $entry, $use_text, $format, $this );
+
+					return $this->format_entry_output_value( $formatted_with_country_code, $format );
+				}
+			}
+		}
+
+		return $this->format_entry_output_value( $value, $format );
 	}
 
 	/**
@@ -757,11 +841,11 @@ class GF_Field_Phone extends GF_Field {
 		if ( ! empty( $value ) && GFCommon::is_json( $value ) ) {
 			$decoded = $this->to_array( $value );
 			if ( $decoded && isset( $decoded['formatted'] ) ) {
-				return $decoded['formatted'];
+				return esc_html( $decoded['formatted'] );
 			}
 		}
 
-		return $value;
+		return esc_html( $value );
 	}
 
 	/**
@@ -787,39 +871,58 @@ class GF_Field_Phone extends GF_Field {
 		if ( $this->phoneFormat == 'formatted' && ! empty( $raw_value ) && GFCommon::is_json( $raw_value ) ) {
 			$decoded = $this->to_array( $raw_value );
 			if ( $decoded ) {
-				// Support modifiers for object keys, like {Phone:1:country} or {Phone:1:e164}
-				if ( $modifier && isset( $decoded[ $modifier ] ) ) {
-					return $decoded[ $modifier ];
+				if ( in_array( 'clean', $this->get_modifiers() ) && ! empty( $decoded['e164'] ) ) {
+					return $this->format_entry_output_value( str_replace( '+', '', $decoded['e164'] ), $format );
 				}
-				// Default to formatted value
-				if ( isset( $decoded['formatted'] ) ) {
-					return $decoded['formatted'];
+				// Support modifiers for object keys, like {Phone:1:country} or {Phone:1:national}
+				if ( $modifier && isset( $decoded[ $modifier ] ) ) {
+					return $this->format_entry_output_value( $decoded[ $modifier ], $format );
+				}
+				// Default to formatted value with country code prefix
+				$formatted_with_country_code = $this->get_formatted_with_country_code( $decoded );
+				if ( $formatted_with_country_code !== false ) {
+					return $this->format_entry_output_value( $formatted_with_country_code, $format );
 				}
 			}
 		}
+		if ( in_array( 'clean', $this->get_modifiers() ) ) {
+			return $this->format_entry_output_value( preg_replace( '/[^\d]/', '', $value ), $format );
+		}
 
-		return $value;
+		return $this->format_entry_output_value( $value, $format );
 	}
 
 	/**
-	 * Gets the value to be used when exporting the entry.
+	 * Escape Phone values when they are formatted for an HTML output context.
 	 *
-	 * @since: next
-	 * @access public
+	 * @since 3.1.3
 	 *
-	 * @param array  $entry    The Entry Object.
-	 * @param string $input_id The field or input ID.
-	 * @param bool   $use_text Whether to use the text value.
-	 * @param bool   $is_csv   Whether the export is for CSV.
+	 * @param mixed  $value  The Phone value.
+	 * @param string $format The requested output format.
+	 *
+	 * @return mixed
+	 */
+	private function format_entry_output_value( $value, $format ) {
+		return $format === 'html' ? esc_html( (string) $value ) : $value;
+	}
+
+	/**
+	 * Format a single Phone field value for export.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param mixed      $value    The raw value for $input_id.
+	 * @param array      $entry    The entry currently being processed.
+	 * @param string|int $input_id The field or input ID.
+	 * @param bool       $use_text Not used.
+	 * @param bool       $is_csv   Not used.
 	 *
 	 * @return string
 	 */
-	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
-		if ( empty( $input_id ) ) {
-			$input_id = $this->id;
+	protected function format_value_export( $value, $entry, $input_id = '', $use_text = false, $is_csv = false ) {
+		if ( is_array( $value ) ) {
+			return '';
 		}
-
-		$value = rgar( $entry, $input_id );
 
 		if ( $this->phoneFormat == 'formatted' && ! empty( $value ) && GFCommon::is_json( $value ) ) {
 			$decoded = $this->to_array( $value );
@@ -828,7 +931,7 @@ class GF_Field_Phone extends GF_Field {
 			}
 		}
 
-		return $value;
+		return (string) $value;
 	}
 
 	/**

@@ -9,6 +9,15 @@ class GF_Field_Option extends GF_Field {
 
 	public $type = 'option';
 
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
 	function get_form_editor_field_settings() {
 		return array(
 			'product_field_setting',

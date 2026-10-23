@@ -102,7 +102,14 @@ class GF_Abilities_Handler_System {
 				'description'                => method_exists( $field, 'get_form_editor_field_description' ) ? (string) $field->get_form_editor_field_description() : '',
 				'supports_choices'           => ! empty( $field->choices ) || in_array( $type, array( 'checkbox', 'radio', 'select', 'multiselect', 'multi_choice', 'image_choice' ), true ),
 				'supports_conditional_logic' => (bool) $field->is_conditional_logic_supported(),
+				'repeatable'                 => ! empty( $field->repeatable ),
 			);
+
+			if ( 'repeater' === $type ) {
+				$field_data['supports_nested_fields'] = true;
+				$field_data['nested_fields_property'] = 'fields';
+				$field_data['nested_fields_shape']    = __( 'Set fields to an array of child field definitions using the same shape as top-level form fields. Child field types must have repeatable=true.', 'gravityforms' );
+			}
 
 			// Expose sub-field inputs for compound fields (name, address, etc.).
 			// Agents need this to know how to structure input_values for submission.

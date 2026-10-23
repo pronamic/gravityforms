@@ -1170,6 +1170,10 @@ class GFFormsModel {
 			}
 
 			$field = GF_Fields::create( $field );
+
+			// Resetting any saved nestingPath. nestingPath is dynamically calculated below.
+			unset( $field->nestingPath );
+
 			if ( isset( $form['id'] ) ) {
 				$field->formId = $form['id'];
 			}
@@ -1200,22 +1204,30 @@ class GFFormsModel {
 	 * Converts the sub fields to field objects.
 	 *
 	 * @since 2.4
+	 * @since 3.2.0 Added $nesting_path parameter and sets nestingPath on nested fields.
 	 *
 	 * @param GF_Field $field         The repeater field to be converted to objects.
 	 * @param int      $form_id       The current form ID.
 	 * @param int      $page_number   The page number the parent field is located on.
 	 * @param int      $nesting_level The level at which a repeater field is nested.
+	 * @param array    $nesting_path  Parent repeater IDs for this field, closest parent first.
 	 */
-	private static function convert_sub_field_objects( &$field, $form_id, $page_number, $nesting_level = 0 ) {
+	private static function convert_sub_field_objects( &$field, $form_id, $page_number, $nesting_level = 0, $nesting_path = array() ) {
 		$field->nestingLevel = $nesting_level;
-		foreach ( $field->fields as &$field ) {
-			$field             = GF_Fields::create( $field );
-			$field->formId     = $form_id;
-			$field->pageNumber = $page_number;
-			$field->post_convert_field();
-			if ( is_array( $field['fields'] ) ) {
+		$field->nestingPath  = empty( $nesting_path ) ? null : $nesting_path;
+
+		// Closest parent first: this repeater, then its ancestors.
+		$child_path = array_merge( array( $field->id ), $nesting_path );
+
+		foreach ( $field->fields as &$sub_field ) {
+			$sub_field              = GF_Fields::create( $sub_field );
+			$sub_field->formId      = $form_id;
+			$sub_field->pageNumber  = $page_number;
+			$sub_field->nestingPath = $child_path;
+			$sub_field->post_convert_field();
+			if ( is_array( $sub_field['fields'] ) ) {
 				$new_nesting_level = $nesting_level + 1;
-				self::convert_sub_field_objects( $field, $form_id, $page_number, $new_nesting_level );
+				self::convert_sub_field_objects( $sub_field, $form_id, $page_number, $new_nesting_level, $child_path );
 			}
 		}
 	}
@@ -2197,40 +2209,77 @@ class GFFormsModel {
 		// Make sure the form isn't in the cache before calling get_form_meta().
 		self::flush_current_form( self::get_form_cache_key( $form_id ) );
 		$form = self::get_form_meta( $form_id );
-		// check if form has consent field.
-		if ( GFCommon::has_consent_field( $new_display_meta ) ) {
-			$revisions_table_name = self::get_form_revisions_table_name();
 
-			// create the first revision.
-			if ( intval( $wpdb->get_var( $wpdb->prepare( 'SELECT count(0) FROM %i WHERE form_id=%d', $revisions_table_name, $form_id ) ) ) === 0 ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->query( $wpdb->prepare( 'INSERT INTO %i(form_id, display_meta, date_created) VALUES (%d, %s, utc_timestamp())', $revisions_table_name, $form_id, json_encode( $new_display_meta ) ) );
+		// Getting all consent fields (top level or inside a repeater)
+		$consent_fields = self::get_consent_fields( rgar( $new_display_meta, 'fields' ) );
 
-				return;
-			}
+		// If there are no consent fields on the form, abort and don't create a revision.
+		if ( empty( $consent_fields ) ) {
+			return;
+		}
 
-			$old_consent_fields = array();
-			foreach ( $form['fields'] as $field ) {
-				if ( $field->get_input_type() === 'consent' ) {
-					$old_consent_fields[ $field->id ] = $field->description;
-				}
-			}
+		$revisions_table_name = self::get_form_revisions_table_name();
 
-			// check if consent field description changed.
-			$create_revision = false;
-			foreach ( $new_display_meta['fields'] as $field ) {
-				if ( self::get_input_type( $field ) === 'consent' ) {
-					if ( $field['description'] !== rgar( $old_consent_fields, $field['id'] ) ) {
-						$create_revision = true;
+		// Create the first revision if one doesn't exist.
+		if ( intval( $wpdb->get_var( $wpdb->prepare( 'SELECT count(0) FROM %i WHERE form_id=%d', $revisions_table_name, $form_id ) ) ) === 0 ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $wpdb->prepare( 'INSERT INTO %i(form_id, display_meta, date_created) VALUES (%d, %s, utc_timestamp())', $revisions_table_name, $form_id, json_encode( $new_display_meta ) ) );
+			return;
+		}
 
-						break;
-					}
-				}
-			}
+		$old_consent_fields = self::get_consent_fields( rgar( $form, 'fields' ) );
 
-			if ( $create_revision ) {
-				$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (form_id, display_meta, date_created) VALUES(%d, %s, utc_timestamp())', $revisions_table_name, $form_id, json_encode( $new_display_meta ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// check if consent field description changed.
+		$create_revision = false;
+		foreach ( $consent_fields as $field_id => $field ) {
+			$old_field       = rgar( $old_consent_fields, $field_id );
+			$old_description = $old_field ? $old_field->description : '';
+
+			$description = rgobj( $field, 'description' );
+			if ( $description !== $old_description ) {
+				$create_revision = true;
+
+				break;
 			}
 		}
+
+		if ( $create_revision ) {
+			$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (form_id, display_meta, date_created) VALUES(%d, %s, utc_timestamp())', $revisions_table_name, $form_id, json_encode( $new_display_meta ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		}
+	}
+
+	/**
+	 * Returns each consent field, including consent fields inside repeaters.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $fields The form fields.
+	 *
+	 * @return array Consent fields keyed by field ID.
+	 */
+	private static function get_consent_fields( $fields ) {
+		$consent_fields = array();
+
+		if ( ! is_array( $fields ) ) {
+			return $consent_fields;
+		}
+
+		foreach ( $fields as $field ) {
+			// Creating a field object if needed.
+			if ( is_array( $field ) ) {
+				$field = GF_Fields::create( $field );
+			}
+
+			if ( self::get_input_type( $field ) === 'consent' ) {
+				$consent_fields[ $field->id ] = $field;
+			}
+
+			$sub_fields = rgobj( $field, 'fields' );
+			if ( is_array( $sub_fields ) ) {
+				$consent_fields = $consent_fields + self::get_consent_fields( $sub_fields );
+			}
+		}
+
+		return $consent_fields;
 	}
 
 	/**
@@ -3995,6 +4044,10 @@ class GFFormsModel {
 	 * @return bool Returns true if the two values match the specified operation. Otherwise, it will return false.
 	 */
 	public static function matches_conditional_operation( $val1, $val2, $operation ) {
+		// Choice text can be KSES-encoded while conditional logic values are sanitized without encoding.
+		// Decode entities before comparing so equivalent values (e.g. "Red & Blue" and "Red &amp; Blue") match.
+		$val1 = is_string( $val1 ) ? wp_specialchars_decode( $val1, ENT_QUOTES ) : $val1;
+		$val2 = is_string( $val2 ) ? wp_specialchars_decode( $val2, ENT_QUOTES ) : $val2;
 		$val1 = ! rgblank( $val1 ) ? strtolower( $val1 ) : '';
 		$val2 = ! rgblank( $val2 ) ? strtolower( $val2 ) : '';
 
@@ -5001,11 +5054,19 @@ class GFFormsModel {
 
 
 	public static function choice_value_match( $field, $choice, $value ) {
+		// If value is not a scalar, it is malformed and not a match.
+		if ( ! is_scalar( $value ) ) {
+			return false;
+		}
+
 		$choice_value = GFFormsModel::maybe_trim_input( $choice['value'], $field->formId, $field );
 		$value        = GFFormsModel::maybe_trim_input( $value, $field->formId, $field );
 
 		$allowed_html    = wp_kses_allowed_html( 'post' );
-		$sanitized_value = wp_kses( $value, $allowed_html );
+		$sanitized_value = wp_kses( (string) $value, $allowed_html );
+		$choice_value    = wp_specialchars_decode( (string) $choice_value, ENT_QUOTES );
+		$value           = wp_specialchars_decode( (string) $value, ENT_QUOTES );
+		$sanitized_value = wp_specialchars_decode( $sanitized_value, ENT_QUOTES );
 
 		if ( $choice_value == $value || $choice_value == $sanitized_value ) {
 			return true;
@@ -5013,8 +5074,11 @@ class GFFormsModel {
 			list( $val, $price ) = rgexplode( '|', $value, 2, true );
 
 			$sanitized_val = wp_kses( $val, $allowed_html );
+			$choice_value  = wp_specialchars_decode( (string) $choice['value'], ENT_QUOTES );
+			$val           = wp_specialchars_decode( $val, ENT_QUOTES );
+			$sanitized_val = wp_specialchars_decode( $sanitized_val, ENT_QUOTES );
 
-			if ( $choice['value'] == $val || $choice['value'] == $sanitized_val ) {
+			if ( $choice_value == $val || $choice_value == $sanitized_val ) {
 				return true;
 			}
 		} // add support for prepopulating multiselects @alex
@@ -5159,7 +5223,7 @@ class GFFormsModel {
 				}
 				switch ( RGFormsModel::get_input_type( $custom_field ) ) {
 					case 'list':
-						$value = maybe_unserialize( $value );
+						$value = GFCommon::maybe_unserialize( $value );
 						if ( is_array( $value ) ) {
 							foreach ( $value as $item ) {
 								if ( is_array( $item ) ) {
@@ -5333,7 +5397,7 @@ class GFFormsModel {
 		$index = 0;
 		foreach ( $custom_fields as $field ) {
 			if ( $field->postCustomFieldName == $meta_name ) {
-				if ( $meta_index == $index ) {
+				if ( $meta_index == $index || $field instanceof GF_Field_FileUpload && $field->multipleFiles ) {
 					return $field;
 				}
 				++$index;
@@ -5529,7 +5593,13 @@ class GFFormsModel {
 		}
 
 		if ( empty( $value ) && $field->is_administrative() && ! $is_admin ) {
-			$value = self::get_default_value( $field, $input_id );
+			$default_value = self::get_default_value( $field, $input_id );
+			if ( ! empty( $field->nestingPath ) ) {
+				// Applying the default value to every submitted repeater row.
+				$top_repeater  = self::get_field( $form, end( $field->nestingPath ) );
+				$default_value = $top_repeater->get_sub_field_default_value( $field, $default_value );
+			}
+			$value = $default_value;
 		}
 
 		self::queue_save_input_value( $value, $form, $field, $lead, $current_fields, $input_id );
@@ -5558,6 +5628,7 @@ class GFFormsModel {
 		if ( is_array( $value ) && ! $isValueSubmissionArray ) {
 			foreach ( $value as $i => $v ) {
 				$repeater_index = $item_index . '_' . $i;
+
 				// use reset to check if the first item is an array
 				if ( is_array( $v ) && ! ( $field->is_value_submission_array() && ! is_array( reset( $v ) ) ) ) {
 					self::queue_save_input_value( $v, $form, $field, $lead, $current_fields, $input_id, $repeater_index );
@@ -5870,9 +5941,46 @@ class GFFormsModel {
 	private static function move_temp_file( $form_id, $tempfile_info ) {
 		_deprecated_function( 'move_temp_file', '1.9', 'GF_Field_Fileupload::move_temp_file' );
 
-		$target       = self::get_file_upload_path( $form_id, $tempfile_info['uploaded_filename'] );
+		$temp_filename     = (string) rgar( $tempfile_info, 'temp_filename' );
+		$uploaded_filename = (string) rgar( $tempfile_info, 'uploaded_filename' );
+
+		if (
+			GFCommon::file_name_has_disallowed_extension( $temp_filename ) ||
+			GFCommon::file_name_has_disallowed_extension( $uploaded_filename )
+		) {
+			GFCommon::log_debug( 'GFFormsModel::move_temp_file(): Aborting; the file has a disallowed extension.' );
+
+			return '';
+		}
+
+		$temp_file_extension     = strtolower( pathinfo( $temp_filename, PATHINFO_EXTENSION ) );
+		$uploaded_file_extension = strtolower( pathinfo( $uploaded_filename, PATHINFO_EXTENSION ) );
+
+		if ( empty( $temp_file_extension ) || empty( $uploaded_file_extension ) || $temp_file_extension !== $uploaded_file_extension ) {
+			GFCommon::log_debug( 'GFFormsModel::move_temp_file(): Aborting; temporary file extension does not match uploaded file extension.' );
+
+			return '';
+		}
+
+		$target       = self::get_file_upload_path( $form_id, $uploaded_filename );
 		$tmp_location = GFFormsModel::get_tmp_upload_location( $form_id );
-		$source       = $tmp_location['path'] . $tempfile_info['temp_filename'];
+		$source       = $tmp_location['path'] . wp_basename( $temp_filename );
+
+		if ( ! (bool) apply_filters( 'gform_file_upload_whitelisting_disabled', false ) ) {
+			$check_result = GFCommon::check_type_and_ext(
+				array(
+					'tmp_name' => $source,
+					'name'     => $uploaded_filename,
+				),
+				$uploaded_filename
+			);
+
+			if ( is_wp_error( $check_result ) ) {
+				GFCommon::log_debug( sprintf( 'GFFormsModel::move_temp_file(): Aborting; %s; %s', $check_result->get_error_code(), $check_result->get_error_message() ) );
+
+				return '';
+			}
+		}
 
 		if ( rename( $source, $target['path'] ) ) {
 			self::set_permissions( $target['path'] );
@@ -5896,6 +6004,24 @@ class GFFormsModel {
 	 */
 	public static function upload_file( $form_id, $file ) {
 		_deprecated_function( 'upload_file', '1.9', 'GF_Field_Fileupload::upload_file' );
+
+		$file_name = (string) rgar( $file, 'name' );
+		if ( GFCommon::file_name_has_disallowed_extension( $file_name ) ) {
+			GFCommon::log_debug( 'GFFormsModel::upload_file(): Aborting; the file has a disallowed extension.' );
+
+			return '';
+		}
+
+		if ( ! (bool) apply_filters( 'gform_file_upload_whitelisting_disabled', false ) ) {
+			$check_result = GFCommon::check_type_and_ext( $file, $file_name );
+
+			if ( is_wp_error( $check_result ) ) {
+				GFCommon::log_debug( sprintf( 'GFFormsModel::upload_file(): Aborting; %s; %s', $check_result->get_error_code(), $check_result->get_error_message() ) );
+
+				return '';
+			}
+		}
+
 		$target = self::get_file_upload_path( $form_id, $file['name'] );
 		if ( ! $target ) {
 			GFCommon::log_debug( 'GFFormsModel::upload_file(): FAILED (Upload folder could not be created.)' );
@@ -6838,6 +6964,7 @@ class GFFormsModel {
 	 *
 	 * @since Unknown
 	 * @since 2.9.1 Updated to return the referring URL for requests made via admin-ajax.php.
+	 * @since 3.1.1 Updated to use the new Ajax `current_page_url` input as a fallback.
 	 *
 	 * @param bool $force_ssl Indicates if the URL should start with https.
 	 *
@@ -6850,11 +6977,23 @@ class GFFormsModel {
 		}
 		$pageURL .= '://' . rgar( $_SERVER, 'HTTP_HOST' ) . rgar( $_SERVER, 'REQUEST_URI' );
 
-		if ( str_starts_with( $pageURL, admin_url( 'admin-ajax.php' ) ) ) {
-			return wp_get_referer();
+		if ( ! str_starts_with( $pageURL, admin_url( 'admin-ajax.php' ) ) ) {
+			return $pageURL;
 		}
 
-		return $pageURL;
+		$referer = wp_get_referer();
+		if ( ! empty( $referer ) ) {
+			return $referer;
+		}
+
+		// Reaching here can indicate the "Referrer-Policy: no-referrer" header is in use.
+		// The `current_page_url` input is set when the new Ajax submission handler is in use.
+		$url = rgpost( 'current_page_url' );
+		if ( ! empty( $url ) ) {
+			$url = sanitize_url( rawurldecode( $url ) );
+		}
+
+		return $url ?: $pageURL;
 	}
 
 	public static function get_submitted_fields( $form_id ) {
@@ -7799,6 +7938,10 @@ class GFFormsModel {
 
 		if ( isset( $form['cssClass'] ) ) {
 			$form['cssClass'] = sanitize_text_field( $form['cssClass'] );
+		}
+
+		if ( isset( $form['columnLayout'] ) ) {
+			$form['columnLayout'] = GFCommon::whitelist( $form['columnLayout'], array( 'fill', 'fixed', 'slide' ) );
 		}
 
 		if ( isset( $form['enableHoneypot'] ) ) {

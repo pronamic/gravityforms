@@ -107,6 +107,15 @@ class GF_Form_CRUD_Handler {
 	private $deleted_fields;
 
 	/**
+	 * Confirmed fields whose nestingPath differs from the stored form.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var array
+	 */
+	private $moved_fields;
+
+	/**
 	 * The form object.
 	 *
 	 * @since 2.6
@@ -146,6 +155,7 @@ class GF_Form_CRUD_Handler {
 		$this->form_id        = $form_id;
 		$this->form_json      = $form_json;
 		$this->deleted_fields = array();
+		$this->moved_fields   = array();
 		$this->form_meta      = array();
 
 		if ( ! $this->cleanup() ) {
@@ -268,6 +278,12 @@ class GF_Form_CRUD_Handler {
 
 		$this->form_meta = $gf_forms_model::convert_field_objects( $this->form_meta );
 
+		// Initializing $this->moved_fields based on the moveFields form meta and ensuring all fields in the list have actually changed parents.
+		$this->initialize_moved_fields();
+
+		// Removing movedFields from form meta.
+		unset( $this->form_meta['movedFields'] );
+
 		// Set version of Gravity Forms form was created with.
 		if ( $this->form_id === 0 ) {
 			$this->form_meta['version'] = $gf_forms::$version;
@@ -277,8 +293,10 @@ class GF_Form_CRUD_Handler {
 		$this->form_meta = $gf_forms_model::maybe_sanitize_form_settings( $this->form_meta );
 
 		$deleted_fields = $this->get_deleted_fields();
-		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Deleted fields ' . print_r( $deleted_fields, true ) );
 		unset( $this->form_meta['deletedFields'] );
+
+		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Deleted fields ' . print_r( $deleted_fields, true ) );
+		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Moved fields ' . print_r( $this->moved_fields, true ) );
 		$gf_common::log_debug( 'GF_Form_CRUD_Handler::cleanup(): Form meta => ' . print_r( $this->form_meta, true ) );
 
 		return true;
@@ -293,30 +311,35 @@ class GF_Form_CRUD_Handler {
 	 */
 	private function update() {
 
-			$gf_forms_model = $this->gf_forms_model;
-			$gf_common      = $this->gf_common;
-			$gf_forms       = $this->gf_forms;
-			$gf_api         = $this->gf_api;
-			$rg_forms_model = $this->rg_forms_model;
+		$gf_forms_model = $this->gf_forms_model;
+		$gf_api         = $this->gf_api;
+		$rg_forms_model = $this->rg_forms_model;
 
-			// Trim form meta values.
-			$this->form_meta = $gf_forms_model::trim_form_meta_values( $this->form_meta );
-			$deleted_fields  = $this->get_deleted_fields();
-			// Delete fields.
+		// Trim form meta values.
+		$this->form_meta = $gf_forms_model::trim_form_meta_values( $this->form_meta );
+		$deleted_fields  = $this->get_deleted_fields();
+
+		// Delete fields.
 		if ( ! empty( $deleted_fields ) ) {
 			foreach ( $deleted_fields as $deleted_field_id ) {
 				$this->form_meta = $gf_forms_model::delete_field( $this->form_meta, $deleted_field_id, false );
 			}
 		}
 
-			// Save form meta.
-			$gf_forms_model::update_form_meta( $this->form_id, $this->form_meta );
+		// Delete entry data for fields that have moved to a new parent container.
+		foreach ( $this->moved_fields as $moved_field_id ) {
+			$field = $this->find_field( rgar( $this->form_meta, 'fields' ), $moved_field_id );
+			$this->delete_field_values_recursive( $field );
+		}
 
-			// Update form title.
-			$gf_api::update_form_property( $this->form_id, 'title', $this->form_meta['title'] );
+		// Save form meta.
+		$gf_forms_model::update_form_meta( $this->form_id, $this->form_meta );
 
-			// Get form meta.
-			$this->form_meta = $rg_forms_model::get_form_meta( $this->form_id );
+		// Update form title.
+		$gf_api::update_form_property( $this->form_id, 'title', $this->form_meta['title'] );
+
+		// Get form meta.
+		$this->form_meta = $rg_forms_model::get_form_meta( $this->form_id );
 
 		if ( ! empty( $deleted_fields ) ) {
 			// Remove logic/routing rules based on deleted fields from confirmations and notifications.
@@ -326,11 +349,11 @@ class GF_Form_CRUD_Handler {
 			}
 		}
 
-			return array(
-				'status' => self::STATUS_SUCCESS,
-				'meta'   => $this->form_meta,
-				'is_new' => false,
-			);
+		return array(
+			'status' => self::STATUS_SUCCESS,
+			'meta'   => $this->form_meta,
+			'is_new' => false,
+		);
 	}
 
 	/**
@@ -358,6 +381,10 @@ class GF_Form_CRUD_Handler {
 		}
 
 		$this->form_meta = array_merge( $this->form_meta, $gf_forms_model::get_accessible_properties( $this->form_meta ) );
+
+		if ( rgempty( 'columnLayout', $this->form_meta ) ) {
+			$this->form_meta['columnLayout'] = 'fixed';
+		}
 
 		// Use default confirmation if not set in form_meta.
 		$confirmations = rgempty( 'confirmations', $this->form_meta ) ? $this->get_default_confirmation() : rgar( $this->form_meta, 'confirmations' );
@@ -438,4 +465,84 @@ class GF_Form_CRUD_Handler {
 
 		return $this->deleted_fields;
 	}
+
+	/**
+	 * Updates the moved_fields list so that it only has fields whose nesting paths have changed. Meaning one of the field's parents have changed.
+	 *
+	 * @since 3.2.0
+	 */
+	private function initialize_moved_fields() {
+		$this->moved_fields = array();
+
+		$moved_fields = rgar( $this->form_meta, 'movedFields', array() );
+		$stored_form  = $this->gf_forms_model::get_form_meta( $this->form_id );
+
+		foreach ( $moved_fields as $field_id ) {
+			$stored_field = $this->find_field( rgar( $stored_form, 'fields' ), $field_id );
+			$posted_field = $this->find_field( rgar( $this->form_meta, 'fields' ), $field_id );
+
+			// Adds the field to the list if its nesting path has changed.
+			if ( rgobj( $stored_field, 'nestingPath' ) !== rgobj( $posted_field, 'nestingPath' ) ) {
+				$this->moved_fields[] = $field_id;
+			}
+		}
+	}
+
+	/**
+	 * Recursivelly loops through a list of fields to find a field by it's id.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $fields   The fields to search.
+	 * @param int   $field_id The field id.
+	 *
+	 * @return GF_Field|null
+	 */
+	private function find_field( $fields, $field_id ) {
+		if ( ! is_array( $fields ) ) {
+			return null;
+		}
+
+		foreach ( $fields as $field ) {
+			if ( (int) $field->id === (int) $field_id ) {
+				return $field;
+			}
+
+			if ( is_array( $field->fields ) ) {
+				$found = $this->find_field( $field->fields, $field_id );
+				if ( $found ) {
+					return $found;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Deletes entry values for a field and every field nested inside it.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param GF_Field|null $field The field from the posted form.
+	 */
+	private function delete_field_values_recursive( $field ) {
+		if ( ! is_object( $field ) ) {
+			return;
+		}
+
+		$gf_forms_model = $this->gf_forms_model;
+		if ( in_array( $field->type, $gf_forms_model::get_delete_file_field_types( $this->form_meta ), true ) ) {
+			$gf_forms_model::delete_field_files( $this->form_id, $field->id );
+		}
+
+		$gf_forms_model::delete_field_values( $this->form_id, $field->id );
+
+		if ( is_array( $field->fields ) ) {
+			foreach ( $field->fields as $child ) {
+				$this->delete_field_values_recursive( $child );
+			}
+		}
+	}
+
 }

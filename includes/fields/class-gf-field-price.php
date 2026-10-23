@@ -10,6 +10,15 @@ class GF_Field_Price extends GF_Field {
 	public $type = 'price';
 
 	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
+	/**
 	 * Returns the field's form editor icon.
 	 *
 	 * This could be an icon url or a gform-icon class.

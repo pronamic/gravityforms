@@ -251,9 +251,7 @@ class GF_Abilities_Handler_Forms {
 			$existing_field_ids = array();
 
 			if ( ! empty( $existing_form['fields'] ) && is_array( $existing_form['fields'] ) ) {
-				foreach ( $existing_form['fields'] as $existing_field ) {
-					$existing_field_ids[] = (int) ( is_object( $existing_field ) ? $existing_field->id : rgar( $existing_field, 'id' ) );
-				}
+				$existing_field_ids = self::collect_field_ids( $existing_form['fields'] );
 			}
 
 			$merged_form = self::prepare_compound_fields( $merged_form, $existing_field_ids );
@@ -418,66 +416,14 @@ class GF_Abilities_Handler_Forms {
 
 		// Build field label map for cross-referencing rules to readable labels.
 		$field_map = array();
-		foreach ( $fields as $field ) {
-			$id    = is_object( $field ) ? $field->id : rgar( $field, 'id' );
-			$label = is_object( $field ) ? $field->label : rgar( $field, 'label', '' );
-			$type  = is_object( $field ) ? $field->type : rgar( $field, 'type', '' );
-
-			$field_map[ (string) $id ] = array(
-				'label' => (string) $label,
-				'type'  => (string) $type,
-			);
-		}
+		self::build_field_map( $fields, $field_map );
 
 		$field_logic        = array();
 		$page_logic         = array();
 		$dependency_entries = array();
 
 		// 1. Field-level conditional logic.
-		foreach ( $fields as $field ) {
-			$cl = is_object( $field ) ? $field->conditionalLogic : rgar( $field, 'conditionalLogic' );
-
-			if ( empty( $cl ) || ! is_array( $cl ) ) {
-				// Check page field buttons for conditional logic.
-				$field_type = is_object( $field ) ? $field->type : rgar( $field, 'type' );
-				if ( 'page' === $field_type ) {
-					$next_button = is_object( $field ) ? $field->nextButton : rgar( $field, 'nextButton' );
-					$next_cl     = is_array( $next_button ) ? rgar( $next_button, 'conditionalLogic' ) : null;
-
-					if ( ! empty( $next_cl ) && is_array( $next_cl ) ) {
-						$page_number = is_object( $field ) ? $field->pageNumber : rgar( $field, 'pageNumber' );
-						$enriched    = self::enrich_logic( $next_cl, $field_map );
-
-						$page_logic[] = array(
-							'page_number' => (int) $page_number,
-							'button'      => 'next',
-							'action'      => $enriched['action'],
-							'logic_type'  => $enriched['logic_type'],
-							'rules'       => $enriched['rules'],
-						);
-
-						self::collect_dependencies( $enriched['rules'], 'page', $page_number, 'Page ' . $page_number . ' Next', $enriched['action'], $enriched['logic_type'], $dependency_entries );
-					}
-				}
-				continue;
-			}
-
-			$field_id    = (int) ( is_object( $field ) ? $field->id : rgar( $field, 'id' ) );
-			$field_label = (string) ( is_object( $field ) ? $field->label : rgar( $field, 'label', '' ) );
-			$field_type  = (string) ( is_object( $field ) ? $field->type : rgar( $field, 'type', '' ) );
-			$enriched    = self::enrich_logic( $cl, $field_map );
-
-			$field_logic[] = array(
-				'field_id'    => $field_id,
-				'field_label' => $field_label,
-				'field_type'  => $field_type,
-				'action'      => $enriched['action'],
-				'logic_type'  => $enriched['logic_type'],
-				'rules'       => $enriched['rules'],
-			);
-
-			self::collect_dependencies( $enriched['rules'], 'field', $field_id, $field_label, $enriched['action'], $enriched['logic_type'], $dependency_entries );
-		}
+		self::collect_field_logic( $fields, $field_map, $field_logic, $page_logic, $dependency_entries );
 
 		// 2. Notification conditional logic.
 		$notification_logic = array();
@@ -629,10 +575,9 @@ class GF_Abilities_Handler_Forms {
 		// array alone would reuse stored IDs and misclassify new fields as
 		// existing, skipping their editor defaults.
 		$max_id = 0;
-		foreach ( $form['fields'] as $field ) {
-			$fid = isset( $field['id'] ) ? (int) $field['id'] : 0;
-			if ( $fid > $max_id ) {
-				$max_id = $fid;
+		foreach ( self::collect_field_ids( $form['fields'] ) as $field_id ) {
+			if ( $field_id > $max_id ) {
+				$max_id = $field_id;
 			}
 		}
 
@@ -644,9 +589,75 @@ class GF_Abilities_Handler_Forms {
 
 		$next_id = $max_id + 1;
 
-		foreach ( $form['fields'] as &$field ) {
+		$result = self::prepare_fields_recursive(
+			$form['fields'],
+			$existing_field_ids,
+			$next_id,
+			$compound_inputs,
+			isset( $form['id'] ) ? (int) $form['id'] : 0
+		);
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		// Multi-page forms need a form-level pagination object (one label per
+		// page) or the editor and progress bar misbehave. The editor maintains
+		// this; GFAPI does not. Backfill it, and keep the labels array sized to
+		// the real page count when fields change on update.
+		$page_count = count(
+			array_filter(
+				$form['fields'],
+				function ( $field ) {
+					return 'page' === ( $field['type'] ?? '' );
+				}
+			)
+		);
+
+		if ( $page_count > 0 ) {
+			$total_pages = $page_count + 1;
+			$pagination  = isset( $form['pagination'] ) && is_array( $form['pagination'] ) ? $form['pagination'] : array();
+			$pages       = isset( $pagination['pages'] ) && is_array( $pagination['pages'] ) ? $pagination['pages'] : array();
+
+			$pagination['type']  = isset( $pagination['type'] ) ? $pagination['type'] : 'percentage';
+			$pagination['style'] = isset( $pagination['style'] ) ? $pagination['style'] : 'blue';
+			$pagination['pages'] = array_pad( array_slice( $pages, 0, $total_pages ), $total_pages, '' );
+
+			$form['pagination'] = $pagination;
+		} elseif ( isset( $form['pagination'] ) ) {
+			// The submitted field list removed the last page break; the editor
+			// stores null pagination for single-page forms.
+			$form['pagination'] = null;
+		}
+
+		return $form;
+	}
+
+	/**
+	 * Prepare a field list, recursing into repeater children.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $fields             Field arrays, modified by reference.
+	 * @param int[] $existing_field_ids Existing field IDs from the stored form.
+	 * @param int   $next_id            Next globally unique field ID.
+	 * @param array $compound_inputs    Default compound input definitions.
+	 * @param int   $form_id            Form ID used by filterable defaults.
+	 * @param bool  $is_nested          Whether this field list is inside a repeater.
+	 *
+	 * @return true|\WP_Error
+	 */
+	private static function prepare_fields_recursive( &$fields, $existing_field_ids, &$next_id, $compound_inputs, $form_id = 0, $is_nested = false ) {
+		foreach ( $fields as &$field ) {
 			if ( empty( $field['id'] ) ) {
 				$field['id'] = $next_id++;
+			}
+
+			if ( $is_nested ) {
+				$repeatable_error = self::validate_repeatable_child_field( $field );
+				if ( is_wp_error( $repeatable_error ) ) {
+					return $repeatable_error;
+				}
 			}
 
 			// Sanitize defaultValue — must be a scalar string, not an array.
@@ -681,51 +692,57 @@ class GF_Abilities_Handler_Forms {
 			// break live forms.
 			$is_new = ! in_array( (int) $field['id'], $existing_field_ids, true );
 
-			if ( ! $is_new ) {
-				continue;
-			}
-
-			// The editor gives every new field size "large"; GFAPI leaves it empty.
-			if ( empty( $field['size'] ) ) {
-				$field['size'] = 'large';
-			}
-
-			$type = isset( $field['type'] ) ? $field['type'] : '';
-
-			// The editor enables state validation (anti-tamper: submitted values
-			// must match the configured choices/values) on these types; without
-			// it, agent-created fields accept arbitrary submitted values.
-			$validate_state_types = array( 'select', 'checkbox', 'radio', 'multiselect', 'multi_choice', 'image_choice', 'hidden', 'name', 'address', 'option' );
-
-			if ( in_array( $type, $validate_state_types, true ) && ! isset( $field['validateState'] ) ) {
-				$field['validateState'] = true;
-			}
-
-			// Auto-populate inputs for compound fields that don't already have them.
-			if ( isset( $compound_inputs[ $type ] ) && empty( $field['inputs'] ) ) {
-				$field_id = $field['id'];
-				$inputs   = array();
-
-				foreach ( $compound_inputs[ $type ] as $input_def ) {
-					$input = array(
-						'id'    => $field_id . $input_def['id'],
-						'label' => $input_def['label'],
-					);
-
-					if ( ! empty( $input_def['hidden_by_default'] ) ) {
-						$input['isHidden'] = true;
-					}
-
-					$inputs[] = $input;
+			if ( $is_new ) {
+				// The editor gives every new field size "large"; GFAPI leaves it empty.
+				if ( empty( $field['size'] ) ) {
+					$field['size'] = 'large';
 				}
 
-				$field['inputs'] = $inputs;
+				$type = isset( $field['type'] ) ? $field['type'] : '';
+
+				// The editor enables state validation (anti-tamper: submitted values
+				// must match the configured choices/values) on these types; without
+				// it, agent-created fields accept arbitrary submitted values.
+				$validate_state_types = array( 'select', 'checkbox', 'radio', 'multiselect', 'multi_choice', 'image_choice', 'hidden', 'name', 'address', 'option' );
+
+				if ( in_array( $type, $validate_state_types, true ) && ! isset( $field['validateState'] ) ) {
+					$field['validateState'] = true;
+				}
+
+				// Auto-populate inputs for compound fields that don't already have them.
+				if ( isset( $compound_inputs[ $type ] ) && empty( $field['inputs'] ) ) {
+					$field_id = $field['id'];
+					$inputs   = array();
+
+					foreach ( $compound_inputs[ $type ] as $input_def ) {
+						$input = array(
+							'id'    => $field_id . $input_def['id'],
+							'label' => $input_def['label'],
+						);
+
+						if ( ! empty( $input_def['hidden_by_default'] ) ) {
+							$input['isHidden'] = true;
+						}
+
+						$inputs[] = $input;
+					}
+
+					$field['inputs'] = $inputs;
+				}
+
+				// Apply sensible defaults for field types that need them.
+				// These run regardless of whether inputs were auto-populated above,
+				// so cloned fields (which already have inputs) still get correct defaults.
+				self::apply_field_defaults( $field, $form_id );
 			}
 
-			// Apply sensible defaults for field types that need them.
-			// These run regardless of whether inputs were auto-populated above,
-			// so cloned fields (which already have inputs) still get correct defaults.
-			self::apply_field_defaults( $field, isset( $form['id'] ) ? (int) $form['id'] : 0 );
+			if ( ! empty( $field['fields'] ) && is_array( $field['fields'] ) ) {
+				$result = self::prepare_fields_recursive( $field['fields'], $existing_field_ids, $next_id, $compound_inputs, $form_id, true );
+
+				if ( is_wp_error( $result ) ) {
+					return $result;
+				}
+			}
 		}
 
 		unset( $field );
@@ -733,16 +750,16 @@ class GF_Abilities_Handler_Forms {
 		// Link quantity/option fields to a product and validate explicit links.
 		// Runtime pricing selects dependents strictly by productField equality,
 		// so an orphaned or wrong link silently corrupts totals.
-		$form['fields'] = array_values( $form['fields'] );
-		$product_ids    = array();
+		$fields      = array_values( $fields );
+		$product_ids = array();
 
-		foreach ( $form['fields'] as $index => $pricing_field ) {
+		foreach ( $fields as $index => $pricing_field ) {
 			if ( 'product' === ( $pricing_field['type'] ?? '' ) ) {
 				$product_ids[ $index ] = (int) $pricing_field['id'];
 			}
 		}
 
-		foreach ( $form['fields'] as $index => &$field ) {
+		foreach ( $fields as $index => &$field ) {
 			if ( ! in_array( $field['type'] ?? '', array( 'quantity', 'option' ), true ) ) {
 				continue;
 			}
@@ -800,36 +817,66 @@ class GF_Abilities_Handler_Forms {
 
 		unset( $field );
 
-		// Multi-page forms need a form-level pagination object (one label per
-		// page) or the editor and progress bar misbehave. The editor maintains
-		// this; GFAPI does not. Backfill it, and keep the labels array sized to
-		// the real page count when fields change on update.
-		$page_count = count(
-			array_filter(
-				$form['fields'],
-				function ( $field ) {
-					return 'page' === ( $field['type'] ?? '' );
-				}
-			)
-		);
+		return true;
+	}
 
-		if ( $page_count > 0 ) {
-			$total_pages = $page_count + 1;
-			$pagination  = isset( $form['pagination'] ) && is_array( $form['pagination'] ) ? $form['pagination'] : array();
-			$pages       = isset( $pagination['pages'] ) && is_array( $pagination['pages'] ) ? $pagination['pages'] : array();
+	/**
+	 * Collect field IDs recursively from a field list.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $fields Field objects or arrays.
+	 *
+	 * @return int[]
+	 */
+	private static function collect_field_ids( $fields ) {
+		$ids = array();
 
-			$pagination['type']  = isset( $pagination['type'] ) ? $pagination['type'] : 'percentage';
-			$pagination['style'] = isset( $pagination['style'] ) ? $pagination['style'] : 'blue';
-			$pagination['pages'] = array_pad( array_slice( $pages, 0, $total_pages ), $total_pages, '' );
-
-			$form['pagination'] = $pagination;
-		} elseif ( isset( $form['pagination'] ) ) {
-			// The submitted field list removed the last page break; the editor
-			// stores null pagination for single-page forms.
-			$form['pagination'] = null;
+		if ( empty( $fields ) || ! is_array( $fields ) ) {
+			return $ids;
 		}
 
-		return $form;
+		foreach ( $fields as $field ) {
+			$field_id = is_object( $field ) ? $field->id : rgar( $field, 'id' );
+			if ( $field_id ) {
+				$ids[] = (int) $field_id;
+			}
+
+			$children = is_object( $field ) ? rgar( get_object_vars( $field ), 'fields' ) : rgar( $field, 'fields' );
+			if ( is_array( $children ) ) {
+				$ids = array_merge( $ids, self::collect_field_ids( $children ) );
+			}
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Validate that a nested field is allowed inside a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $field Field array.
+	 *
+	 * @return true|\WP_Error
+	 */
+	private static function validate_repeatable_child_field( $field ) {
+		$type         = rgar( $field, 'type', '' );
+		$field_object = $type ? \GF_Fields::get( $type ) : null;
+
+		if ( ! $field_object || empty( $field_object->repeatable ) ) {
+			return new \WP_Error(
+				'gf_ability_field_not_repeatable',
+				sprintf(
+					/* translators: 1: field ID, 2: field type */
+					__( 'Field %1$d (%2$s) cannot be used inside a repeater.', 'gravityforms' ),
+					(int) rgar( $field, 'id' ),
+					$type ? $type : __( 'unknown', 'gravityforms' )
+				)
+			);
+		}
+
+		return true;
 	}
 
 	/**
@@ -927,10 +974,20 @@ class GF_Abilities_Handler_Forms {
 	 * @return array
 	 */
 	private static function sanitize_supplied_field( $field ) {
-		$object = \GF_Fields::create( $field );
+		$child_fields = isset( $field['fields'] ) && is_array( $field['fields'] ) ? $field['fields'] : null;
+		$object       = \GF_Fields::create( $field );
 		$object->sanitize_settings();
+		$sanitized = array_intersect_key( (array) $object, $field );
 
-		return array_intersect_key( (array) $object, $field );
+		if ( null !== $child_fields ) {
+			$sanitized['fields'] = array();
+
+			foreach ( $child_fields as $child_field ) {
+				$sanitized['fields'][] = is_array( $child_field ) ? self::sanitize_supplied_field( $child_field ) : $child_field;
+			}
+		}
+
+		return $sanitized;
 	}
 
 	/**
@@ -1419,6 +1476,80 @@ class GF_Abilities_Handler_Forms {
 	}
 
 	/**
+	 * Build a field lookup for conditional logic analysis.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $fields Field objects or arrays.
+	 * @param array $map    Field lookup, modified by reference.
+	 */
+	private static function build_field_map( $fields, &$map ) {
+		foreach ( $fields as $field ) {
+			$id    = is_object( $field ) ? $field->id : rgar( $field, 'id' );
+			$label = is_object( $field ) ? $field->label : rgar( $field, 'label', '' );
+			$type  = is_object( $field ) ? $field->type : rgar( $field, 'type', '' );
+
+			$map[ (string) $id ] = array(
+				'label' => (string) $label,
+				'type'  => (string) $type,
+			);
+		}
+	}
+
+	/**
+	 * Collect field-level conditional logic.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array      $fields             Field objects or arrays.
+	 * @param array      $field_map          Field lookup.
+	 * @param array      $field_logic        Field logic results, modified by reference.
+	 * @param array      $page_logic         Page logic results, modified by reference.
+	 * @param array      $dependency_entries Dependency map, modified by reference.
+	 */
+	private static function collect_field_logic( $fields, $field_map, &$field_logic, &$page_logic, &$dependency_entries ) {
+		foreach ( $fields as $field ) {
+			$field_id    = (int) ( is_object( $field ) ? $field->id : rgar( $field, 'id' ) );
+			$field_label = (string) ( is_object( $field ) ? $field->label : rgar( $field, 'label', '' ) );
+			$field_type  = (string) ( is_object( $field ) ? $field->type : rgar( $field, 'type', '' ) );
+			$cl          = is_object( $field ) ? rgar( get_object_vars( $field ), 'conditionalLogic' ) : rgar( $field, 'conditionalLogic' );
+
+			if ( ! empty( $cl ) && is_array( $cl ) ) {
+				$enriched      = self::enrich_logic( $cl, $field_map );
+				$entry         = array(
+					'field_id'    => $field_id,
+					'field_label' => $field_label,
+					'field_type'  => $field_type,
+					'action'      => $enriched['action'],
+					'logic_type'  => $enriched['logic_type'],
+					'rules'       => $enriched['rules'],
+				);
+				$field_logic[] = $entry;
+
+				self::collect_dependencies( $enriched['rules'], 'field', $field_id, $field_label, $enriched['action'], $enriched['logic_type'], $dependency_entries );
+			} elseif ( 'page' === $field_type ) {
+				$next_button = is_object( $field ) ? rgar( get_object_vars( $field ), 'nextButton' ) : rgar( $field, 'nextButton' );
+				$next_cl     = is_array( $next_button ) ? rgar( $next_button, 'conditionalLogic' ) : null;
+
+				if ( ! empty( $next_cl ) && is_array( $next_cl ) ) {
+					$page_number = is_object( $field ) ? $field->pageNumber : rgar( $field, 'pageNumber' );
+					$enriched    = self::enrich_logic( $next_cl, $field_map );
+
+					$page_logic[] = array(
+						'page_number' => (int) $page_number,
+						'button'      => 'next',
+						'action'      => $enriched['action'],
+						'logic_type'  => $enriched['logic_type'],
+						'rules'       => $enriched['rules'],
+					);
+
+					self::collect_dependencies( $enriched['rules'], 'page', $page_number, 'Page ' . $page_number . ' Next', $enriched['action'], $enriched['logic_type'], $dependency_entries );
+				}
+			}
+		}
+	}
+
+	/**
 	 * Enrich a conditional logic block by resolving field IDs to labels.
 	 *
 	 * @since 3.1.0
@@ -1516,7 +1647,20 @@ class GF_Abilities_Handler_Forms {
 			return true;
 		}
 
-		foreach ( $form['fields'] as $index => $field ) {
+		return self::validate_layout_properties_recursive( $form['fields'] );
+	}
+
+	/**
+	 * Validate layout grid properties on a field list recursively.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $fields Field list.
+	 *
+	 * @return true|\WP_Error
+	 */
+	private static function validate_layout_properties_recursive( $fields ) {
+		foreach ( $fields as $index => $field ) {
 			if ( isset( $field['layoutGridColumnSpan'] ) ) {
 				$span = $field['layoutGridColumnSpan'];
 				if ( ! is_int( $span ) || $span < 1 || $span > 12 ) {
@@ -1529,6 +1673,14 @@ class GF_Abilities_Handler_Forms {
 							$label
 						)
 					);
+				}
+			}
+
+			if ( ! empty( $field['fields'] ) && is_array( $field['fields'] ) ) {
+				$result = self::validate_layout_properties_recursive( $field['fields'] );
+
+				if ( is_wp_error( $result ) ) {
+					return $result;
 				}
 			}
 		}
@@ -1610,8 +1762,29 @@ class GF_Abilities_Handler_Forms {
 			);
 		}
 
-		foreach ( $form['fields'] as &$field ) {
+		self::strip_ready_classes_recursive( $form['fields'], $stripped );
+
+		return array(
+			'form'     => $form,
+			'stripped' => array_values( array_unique( $stripped ) ),
+		);
+	}
+
+	/**
+	 * Strip deprecated Ready Classes from a field list recursively.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $fields   Field list, modified by reference.
+	 * @param array $stripped Removed class names.
+	 */
+	private static function strip_ready_classes_recursive( &$fields, &$stripped ) {
+		foreach ( $fields as &$field ) {
 			if ( empty( $field['cssClass'] ) || ! is_string( $field['cssClass'] ) ) {
+				if ( ! empty( $field['fields'] ) && is_array( $field['fields'] ) ) {
+					self::strip_ready_classes_recursive( $field['fields'], $stripped );
+				}
+
 				continue;
 			}
 
@@ -1626,14 +1799,13 @@ class GF_Abilities_Handler_Forms {
 			}
 
 			$field['cssClass'] = implode( ' ', $kept );
+
+			if ( ! empty( $field['fields'] ) && is_array( $field['fields'] ) ) {
+				self::strip_ready_classes_recursive( $field['fields'], $stripped );
+			}
 		}
 
 		unset( $field );
-
-		return array(
-			'form'     => $form,
-			'stripped' => array_values( array_unique( $stripped ) ),
-		);
 	}
 
 	/**
@@ -1681,10 +1853,25 @@ class GF_Abilities_Handler_Forms {
 			return $form;
 		}
 
+		$form['fields'] = self::normalize_layout_group_ids_recursive( $form['fields'] );
+
+		return $form;
+	}
+
+	/**
+	 * Normalize layout group IDs on a field list recursively.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $fields Field list.
+	 *
+	 * @return array
+	 */
+	private static function normalize_layout_group_ids_recursive( $fields ) {
 		// Collect all unique layoutGroupId values that need normalization.
 		$group_map = array();
 
-		foreach ( $form['fields'] as $field ) {
+		foreach ( $fields as $field ) {
 			if ( empty( $field['layoutGroupId'] ) ) {
 				continue;
 			}
@@ -1703,20 +1890,20 @@ class GF_Abilities_Handler_Forms {
 		}
 
 		// No normalization needed.
-		if ( empty( $group_map ) ) {
-			return $form;
-		}
-
 		// Apply the mapping.
-		foreach ( $form['fields'] as &$field ) {
+		foreach ( $fields as &$field ) {
 			if ( ! empty( $field['layoutGroupId'] ) && isset( $group_map[ $field['layoutGroupId'] ] ) ) {
 				$field['layoutGroupId'] = $group_map[ $field['layoutGroupId'] ];
+			}
+
+			if ( ! empty( $field['fields'] ) && is_array( $field['fields'] ) ) {
+				$field['fields'] = self::normalize_layout_group_ids_recursive( $field['fields'] );
 			}
 		}
 
 		unset( $field );
 
-		return $form;
+		return $fields;
 	}
 
 	/**
@@ -1734,6 +1921,10 @@ class GF_Abilities_Handler_Forms {
 	 */
 	private static function slim_field( $field ) {
 		$data = $field instanceof \GF_Field ? get_object_vars( $field ) : (array) $field;
+
+		if ( ! empty( $data['fields'] ) && is_array( $data['fields'] ) ) {
+			$data['fields'] = array_values( array_map( array( __CLASS__, 'slim_field' ), $data['fields'] ) );
+		}
 
 		// Properties that must always be kept even if "empty".
 		$always_keep = array( 'id', 'type', 'label', 'formId', 'pageNumber', 'isRequired', 'visibility' );

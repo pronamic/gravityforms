@@ -97,17 +97,21 @@ class GF_REST_Authentication {
 	 * @return bool Returns true if this is a request to the Gravity Forms REST API. False otherwise
 	 */
 	protected function is_request_to_rest_api() {
-		if ( empty( $_SERVER['REQUEST_URI'] ) || ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		if ( ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
 			return false;
 		}
 
-		$rest_prefix = trailingslashit( rest_get_url_prefix() );
+		// Getting the rest_route from the parsed $GLOBALS['wp']->query_vars['rest_route'] ) variable. This does not include query strings.
+		$rest_route = isset( $GLOBALS['wp']->query_vars['rest_route'] ) ? $GLOBALS['wp']->query_vars['rest_route'] : '';
+		if ( ! is_string( $rest_route ) || '' === $rest_route ) {
+			return false;
+		}
 
-		// Check if our endpoint.
-		$is_gf_endpoint = ( strpos( $_SERVER['REQUEST_URI'], $rest_prefix . 'gf/' ) !== false ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// Check for a Gravity Forms endpoint.
+		$is_gf_endpoint = ( '/gf' === $rest_route || 0 === strpos( $rest_route, '/gf/' ) );
 
 		// Allow third party plugins use our authentication methods.
-		$third_party = ( false !== strpos( $_SERVER['REQUEST_URI'], $rest_prefix . 'gf-' ) );  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$third_party = ( 0 === strpos( $rest_route, '/gf-' ) );
 
 		if ( has_filter( 'gform_is_request_to_rest_api' ) ) {
 			$this->log_debug( __METHOD__ . '(): Executing functions hooked to gform_is_request_to_rest_api.' );
@@ -203,8 +207,14 @@ class GF_REST_Authentication {
 			return $error;
 		}
 
-		$error = $this->get_error();
-		if ( empty( $error ) ) {
+		// If there is an error, return it.
+		$gf_error = $this->get_error();
+		if ( ! empty( $gf_error ) ) {
+			return $gf_error;
+		}
+
+		// If $this->user is set, that means a successful authentication. Return true.
+		if ( ! empty( $this->user ) ) {
 			// rest_handle_options_request() will be called by $this->check_user_permissions().
 			remove_filter( 'rest_pre_dispatch', 'rest_handle_options_request' );
 
@@ -212,6 +222,7 @@ class GF_REST_Authentication {
 			return true;
 		}
 
+		// Pass $error as is means Gravity Forms is not claiming successful authentication. WP Core will continue authentication.
 		return $error;
 	}
 

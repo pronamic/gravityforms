@@ -99,9 +99,23 @@ abstract class GF_Service_Provider {
 	 * @param string $root
 	 */
 	protected function add_root_element( $root ) {
-		add_action( 'admin_footer', function() use ( $root ) {
+		add_action( $this->get_root_element_action(), function() use ( $root ) {
 			echo '<div data-js="' . esc_attr( $root ) . '"></div>';
 		}, 10, 0 );
+	}
+
+	/**
+	 * The action hook on which the root element is injected.
+	 *
+	 * Defaults to `gform_admin_root_close`, which fires inside the `.gform-admin` wrapper just before its closing tag.
+	 * Override in a subclass to inject the root element at a different point in the page lifecycle.
+	 *
+	 * @since 3.1.1
+	 *
+	 * @return string
+	 */
+	protected function get_root_element_action() {
+		return 'gform_admin_root_close';
 	}
 
 }

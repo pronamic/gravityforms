@@ -85,6 +85,10 @@ class GF_Abilities_Definitions_System {
 								'description'            => array( 'type' => 'string', 'description' => __( 'Brief description of the field type purpose.', 'gravityforms' ) ),
 								'supports_choices'       => array( 'type' => 'boolean', 'description' => __( 'Whether the field uses a choices array (select, radio, checkbox, etc.).', 'gravityforms' ) ),
 								'supports_conditional_logic' => array( 'type' => 'boolean' ),
+								'repeatable'             => array( 'type' => 'boolean', 'description' => __( 'Whether this field type can be used as a child field inside a repeater.', 'gravityforms' ) ),
+								'supports_nested_fields' => array( 'type' => 'boolean', 'description' => __( 'Repeater fields only — true when this field type accepts a nested fields array.', 'gravityforms' ) ),
+								'nested_fields_property' => array( 'type' => 'string', 'description' => __( 'Repeater fields only — the property name that contains child field definitions.', 'gravityforms' ) ),
+								'nested_fields_shape'    => array( 'type' => 'string', 'description' => __( 'Repeater fields only — human-readable summary of the expected child field shape.', 'gravityforms' ) ),
 								'has_inputs'             => array( 'type' => 'boolean', 'description' => __( 'Whether this is a compound field with sub-inputs (e.g., name, address). When true, submission values use input IDs like input_1.3, input_1.6.', 'gravityforms' ) ),
 								'default_inputs'         => array(
 									'type'        => 'array',

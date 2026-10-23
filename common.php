@@ -451,6 +451,24 @@ class GFCommon {
 	}
 
 	/**
+	 * Unserialize data when it is serialized, without instantiating PHP objects by default.
+	 *
+	 * @since 3.1.1
+	 *
+	 * @param mixed      $data            Data that may be serialized.
+	 * @param bool|array $allowed_classes Class names allowed during unserialization. False prevents object instantiation.
+	 *
+	 * @return mixed
+	 */
+	public static function maybe_unserialize( $data, $allowed_classes = false ) {
+		if ( is_serialized( $data ) ) {
+			return @unserialize( trim( $data ), array( 'allowed_classes' => $allowed_classes ) ); // @phpcs:ignore
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Determines if provided string is a JSON object.
 	 *
 	 * @since 2.5
@@ -1584,6 +1602,25 @@ class GFCommon {
 		}
 	}
 
+	/**
+	 * Returns the column layout mode for a form when fields are hidden by conditional logic.
+	 *
+	 * - fill: Fields slide left or move up a row to fill vacated slots (default).
+	 * - fixed: Spacers reserve vacated slots so fields stay in their own columns.
+	 * - slide: Fields in the same row slide left to fill vacated slots; spacers collect at the end of the row.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $form The form object.
+	 *
+	 * @return string Either 'fill', 'fixed', or 'slide'.
+	 */
+	public static function get_form_column_layout( $form ) {
+		$layout = rgar( $form, 'columnLayout', 'fill' );
+
+		return in_array( $layout, array( 'fill', 'fixed', 'slide' ), true ) ? $layout : 'fill';
+	}
+
 	public static function get_ul_classes( $form ) {
 
 		$label_class       = rgempty( 'labelPlacement', $form ) ? 'top_label' : rgar( $form, 'labelPlacement' );
@@ -1910,6 +1947,11 @@ class GFCommon {
 					} else if ( GFFormsModel::is_field_hidden( $form, $field, array(), $lead ) ) {
 						// ignore fields hidden by conditional logic
 						break;
+					}
+
+					// Look for product fields inside the repeater, including nested repeaters.
+					if ( ! $display_product_summary && $field instanceof GF_Field_Repeater && $field->has_product_fields() ) {
+						$display_product_summary = apply_filters( 'gform_display_product_summary', true, $field, $form, $lead );
 					}
 
 					$field->set_modifiers( $options_array );
@@ -2974,10 +3016,16 @@ Content-Type: text/html;
 	 *
 	 * @since unknown
 	 * @since 2.8.17 Added the network option fallback.
+	 * @since 3.1.1  Check the `GF_LICENSE_KEY` constant before checking the database for the license key.
 	 *
 	 * @return string|false
 	 */
 	public static function get_key() {
+		// GoDaddy hasn't removed their old starter license code, so the GD_GF_LICENSE_KEY check allows impacted customers to edit the key on the settings page.
+		if ( defined( 'GF_LICENSE_KEY' ) && ! ( defined( 'GD_GF_LICENSE_KEY' ) && GF_LICENSE_KEY === GD_GF_LICENSE_KEY ) ) {
+			return md5( GF_LICENSE_KEY );
+		}
+
 		$key = get_option( GFForms::LICENSE_KEY_OPT );
 
 		if ( ! $key && ! is_main_site() ) {
@@ -4323,7 +4371,7 @@ Content-Type: text/html;
 		}
 
 		if ( ! is_array( $entry ) ) {
-			trigger_error( 'Since version 2.9.29 GFCommon::get_lead_field_display() expects the entry array as the third parameter. Trace: ' . esc_html( wp_debug_backtrace_summary( null, 1 ) ), E_USER_WARNING );
+			trigger_error( 'Since version 2.9.29 GFCommon::get_lead_field_display() expects the entry array as the third parameter. Trace: ' . esc_html( wp_debug_backtrace_summary( null, 1 ) ), E_USER_WARNING ); // phpcs:ignore QITStandard.PHP.DebugCode.DebugFunctionFound
 			$entry = array( 'currency' => $entry );
 		}
 
@@ -5954,6 +6002,7 @@ Content-Type: text/html;
 		$gf_vars['confirmationInvalidRedirect']      = __( 'Please enter a URL.', 'gravityforms' );
 		$gf_vars['confirmationInvalidName']          = __( 'Please enter a confirmation name.', 'gravityforms' );
 		$gf_vars['confirmationDeleteField']          = __( "Deleting this field will also delete all entry data associated with it. 'Cancel' to abort. 'OK' to delete.", 'gravityforms' );
+		$gf_vars['confirmationMoveRepeaterField']    = __( "Moving this field into or out of a repeater will delete all entry data associated with it. 'Cancel' to abort. 'OK' to move.", 'gravityforms' );
 		$gf_vars['confirmationDeleteDisplayField']   = __( "You're about to delete this field. 'Cancel' to stop. 'OK' to delete", 'gravityforms' );
 
 		$gf_vars['confirmationDeleteDisplayFieldTitle'] = __( 'Warning', 'gravityforms' );
@@ -6085,7 +6134,8 @@ Content-Type: text/html;
 					'select'           => file_get_contents( GFCommon::get_base_path() . '/js/components/form_editor/conditional_flyout/views/select.html' ),
 					'a11yWarning'      => file_get_contents( GFCommon::get_base_path() . '/js/components/form_editor/conditional_flyout/views/a11y_warning.html' ),
 				),
-				'conditionalLogicHelperText' => __( 'To use conditional logic, please create a field that supports conditional logic.', 'gravityforms' ),
+				'conditionalLogicHelperText'          => __( 'To use conditional logic, please create a field that supports conditional logic.', 'gravityforms' ),
+				'conditionalLogicRepeaterHelperText'  => __( 'Conditional logic is not yet available for fields inside a Repeater.', 'gravityforms' ),
 				'categories'                 => GFForms::get_post_category_options(),
 				'addressOptions'             => GFForms::get_address_rule_value_options( rgget( 'id' ) ),
 				'addRuleText'                => __( 'add another rule', 'gravityforms' ),
@@ -6482,6 +6532,52 @@ Content-Type: text/html;
 	}
 
 	/**
+	 * Display the Gravity Forms admin root opening wrapper.
+	 *
+	 * @since 3.1.1
+	 *
+	 * @return void
+	 */
+	public static function gf_root_wrapper_open() {
+		?>
+		<div class="gform-admin" data-js="gform-admin-root">
+		<?php
+
+		/**
+		 * Fires inside the Gravity Forms admin root wrapper, immediately after the opening tag.
+		 *
+		 * Allows extensions and React app providers to inject markup inside the `.gform-admin`
+		 * wrapper, ensuring scoped styles and JS targeting `[data-js="gform-admin-root"]` work as expected.
+		 *
+		 * @since 3.1.1
+		 */
+		do_action( 'gform_admin_root_open' );
+	}
+
+	/**
+	 * Display the Gravity Forms admin root closing wrapper.
+	 *
+	 * @since 3.1.1
+	 *
+	 * @return void
+	 */
+	public static function gf_root_wrapper_close() {
+		/**
+		 * Fires inside the Gravity Forms admin root wrapper, immediately before the closing tag.
+		 *
+		 * Allows extensions and React app providers to inject markup inside the `.gform-admin`
+		 * wrapper, ensuring scoped styles and JS targeting `[data-js="gform-admin-root"]` work as expected.
+		 *
+		 * @since 3.1.1
+		 */
+		do_action( 'gform_admin_root_close' );
+		?>
+		</div>
+		<!-- / .gform-admin -->
+		<?php
+	}
+
+	/**
 	 * Adds a leading zero if the first character is a comma or period.
 	 *
 	 * @param string $value The field value.
@@ -6831,7 +6927,8 @@ Content-Type: text/html;
 		}
 
 		foreach ( $fields_to_check as $field ) {
-			if ( $field->type === 'fileupload' && $field->multipleFiles ) {
+
+			if ( $field instanceof GF_Field_FileUpload && $field->multipleFiles ) {
 				return true;
 			}
 
@@ -7579,6 +7676,7 @@ Content-Type: text/html;
 			$template =
 				"<html>
 	<head>
+		<meta http-equiv='Content-type' content='text/html; charset={charset}' />
 		<title>{subject}</title>
 	</head>
 	<body>
@@ -7597,6 +7695,7 @@ Content-Type: text/html;
 
 			$message = str_replace( '{message}', $message, $template );
 			$message = str_replace( '{subject}', $subject, $message );
+			$message = str_replace( '{charset}', esc_attr( get_option( 'blog_charset' ) ), $message );
 		}
 
 		return $message;

@@ -91,6 +91,7 @@ class GF_Blocks_Config extends GF_Config {
 						'preview'        => GFCommon::get_base_url() . '/images/gf_block_preview.svg',
 						'orbitalDefault' => $orbital_default,
 						'block_docs_url' => 'https://docs.gravityforms.com/gravity-forms-gutenberg-block/',
+						'is_registered'  => \WP_Block_Type_Registry::get_instance()->is_registered( 'gravityforms/form' ),
 						'styles'     	 => array(
 							'defaults' => \GFForms::get_service_container()->get( \Gravity_Forms\Gravity_Forms\Form_Display\GF_Form_Display_Service_Provider::BLOCK_STYLES_DEFAULTS ),
 						),

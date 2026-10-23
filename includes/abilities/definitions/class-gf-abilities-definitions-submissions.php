@@ -22,7 +22,7 @@ class GF_Abilities_Definitions_Submissions {
 				'name' => 'gravityforms/submissions-submit',
 				'args' => array(
 					'label'            => __( 'Submit Form', 'gravityforms' ),
-					'description'      => __( 'Submits a form through the full Gravity Forms processing pipeline — validation, entry creation, notifications, confirmations, and feed processing. This is the equivalent of a user filling out and submitting a form.', 'gravityforms' ),
+					'description'      => __( 'Submits a form through the full Gravity Forms processing pipeline — validation, entry creation, notifications, confirmations, and feed processing. This is the equivalent of a user filling out and submitting a form. Repeater child fields submit as arrays keyed by child input name, e.g. input_2: ["Alice", "Bob"].', 'gravityforms' ),
 					'summary'          => __( 'Submit a form as if a visitor did — saves an entry and sends emails.', 'gravityforms' ),
 					'category'         => 'gravityforms-submissions',
 					'execute_callback' => array( GF_Abilities_Handler_Submissions::class, 'submit_form' ),
@@ -58,7 +58,7 @@ class GF_Abilities_Definitions_Submissions {
 				'name' => 'gravityforms/submissions-validate',
 				'args' => array(
 					'label'            => __( 'Validate Submission', 'gravityforms' ),
-					'description'      => __( 'Validates form input values without creating an entry or triggering any processing. Useful for pre-flight validation before actual submission. Returns validation status and any field errors.', 'gravityforms' ),
+					'description'      => __( 'Validates form input values without creating an entry or triggering any processing. Useful for pre-flight validation before actual submission. Returns validation status and any field errors. Repeater child fields use the same array format as submissions-submit.', 'gravityforms' ),
 					'summary'          => __( 'Check whether form input is valid, without saving anything.', 'gravityforms' ),
 					'category'         => 'gravityforms-submissions',
 					'execute_callback' => array( GF_Abilities_Handler_Submissions::class, 'validate_submission' ),
