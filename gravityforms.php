@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 3.2.0
+Version: 3.2.1
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -81,6 +81,8 @@ if ( ! defined( 'IS_ADMIN' ) ) {
 	 * Checks if an admin page is being viewed.
 	 *
 	 * @since   Unknown
+	 * @depecated 3.2.1
+	 * @remove-in 4.0
 	 *
 	 * @var boolean IS_ADMIN True if admin page. False otherwise.
 	 */
@@ -255,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '3.2.0';
+	public static $version = '3.2.1';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -510,7 +512,7 @@ class GFForms {
 		add_filter( 'site_transient_update_plugins', array( 'GFForms', 'check_update' ) );
 		add_filter( 'auto_update_plugin', array( 'GFForms', 'maybe_auto_update' ), 10, 2 );
 
-		if ( IS_ADMIN ) {
+		if ( is_admin() ) {
 
 			global $current_user;
 

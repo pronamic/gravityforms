@@ -99,9 +99,11 @@ class GFFormDisplay {
 				return;
 			}
 
-			// Bypass nonce check for requests coming from the REST API
+			// REST API v2 requests bypass the front-end form nonce check.
 			$is_rest_request = defined( 'REST_REQUEST' ) && REST_REQUEST;
-			if ( ! $is_rest_request ) {
+			// Verified REST API v1 requests use a rewrite route and bypass only this nonce check.
+			$skip_form_nonce = apply_filters( 'gform_skip_form_login_nonce_' . $form_id, false );
+			if ( ! $is_rest_request && ! $skip_form_nonce ) {
 				check_admin_referer( 'gform_submit_' . $form_id, '_gform_submit_nonce_' . $form_id );
 			}
 		}
@@ -749,6 +751,31 @@ class GFFormDisplay {
 	}
 
 	/**
+	 * Whether the gf_page_{formId} query argument is disabled for a form.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param array $form The current form.
+	 *
+	 * @return bool
+	 */
+	public static function is_page_query_arg_disabled( $form ) {
+		$form_id = absint( rgar( $form, 'id' ) );
+
+		/**
+		 * Disable the gf_page_{formId} query argument for a multi-page form.
+		 *
+		 * Return true to keep the page out of the URL and ignore the argument when a link includes it.
+		 *
+		 * @since 3.2.1
+		 *
+		 * @param bool  $disabled Whether the page query argument is disabled. Default false.
+		 * @param array $form     The current form.
+		 */
+		return (bool) gf_apply_filters( array( 'gform_disable_page_query_arg', $form_id ), false, $form );
+	}
+
+	/**
 	 * Returns the query argument used to link to a page within a form.
 	 *
 	 * @since 3.2.0
@@ -833,6 +860,10 @@ class GFFormDisplay {
 	 * @return void
 	 */
 	public static function maybe_set_current_page_from_query_arg( $form, $field_values = array(), $lead = null ) {
+		if ( self::is_page_query_arg_disabled( $form ) ) {
+			return;
+		}
+
 		$form_id        = absint( rgar( $form, 'id' ) );
 		$requested_page = self::get_linked_page_number_from_query( $form_id );
 		if ( ! $requested_page ) {
@@ -1454,7 +1485,11 @@ class GFFormDisplay {
 
 			$action              = esc_url( $action );
 			$requested_page_attr = '';
-			if ( $has_pages && ! $is_postback && ! $is_admin ) {
+			$page_query_attr     = '';
+			$page_query_disabled = $has_pages && self::is_page_query_arg_disabled( $form );
+			if ( $page_query_disabled ) {
+				$page_query_attr = " data-gf-page-query='false'";
+			} elseif ( $has_pages && ! $is_postback && ! $is_admin ) {
 				$linked_page = self::get_linked_page_number_from_query( $form_id );
 				if ( $linked_page ) {
 					$requested_page_attr = " data-gf-requested-page='" . (int) $linked_page . "'";
@@ -1470,7 +1505,7 @@ class GFFormDisplay {
 			 *
 			 * @return string The modified form tag markup.
 			 */
-			$form_string .= gf_apply_filters( array( 'gform_form_tag', $form_id ), "<form method='post' enctype='multipart/form-data' {$target} id='gform_{$form_id}' {$form_css_class} action='{$action}' data-formid='{$form_id}'{$requested_page_attr} novalidate>", $form );
+			$form_string .= gf_apply_filters( array( 'gform_form_tag', $form_id ), "<form method='post' enctype='multipart/form-data' {$target} id='gform_{$form_id}' {$form_css_class} action='{$action}' data-formid='{$form_id}'{$requested_page_attr}{$page_query_attr} novalidate>", $form );
 
 			// If Save and Continue token was provided but expired/invalid, display error message.
 			if ( isset( $_GET['gf_token'] ) && ! is_array( $incomplete_submission_info ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -4938,6 +4973,7 @@ class GFFormDisplay {
 		 * Filter the multi-page progress steps markup.
 		 *
 		 * @since 2.0-beta-3
+		 * @since 3.2.1 Deprecated.  No replacement.
 		 *
 		 * @param string $progress_steps HTML string containing the progress steps markup.
 		 * @param array $form The current form object.
@@ -4945,8 +4981,8 @@ class GFFormDisplay {
 		 *
 		 * @see   https://docs.gravityforms.com/gform_progress_steps/
 		 */
-		$progress_steps = apply_filters( 'gform_progress_steps', $progress_steps, $form, $page );
-		$progress_steps = apply_filters( "gform_progress_steps_{$form['id']}", $progress_steps, $form, $page );
+		$progress_steps = apply_filters_deprecated( 'gform_progress_steps', array( $progress_steps, $form, $page ), '3.2.1' );
+		$progress_steps = apply_filters_deprecated( "gform_progress_steps_{$form['id']}", array( $progress_steps, $form, $page ), '3.2.1' );
 
 		return $progress_steps;
 	}

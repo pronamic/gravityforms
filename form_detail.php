@@ -28,8 +28,7 @@ class GFFormDetail {
 		$save_form_helper = GFForms::get_service_container()->get( GF_Save_Form_Service_Provider::GF_SAVE_FROM_HELPER );
 		$update_result = '';
 		if ( rgpost( 'operation' ) == 'trash' ) {
-			check_admin_referer( 'gforms_trash_form', 'gforms_trash_form' );
-			GFFormsModel::trash_form( $form_id );
+			self::trash_form( $form_id );
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(
@@ -308,23 +307,25 @@ class GFFormDetail {
 				<span id="please_wait_container" style="display:none;"><i class='gficon-gravityforms-spinner-icon gficon-spin'></i></span>
 			</div>
 		</div>
+		<?php if ( GFCommon::current_user_can_any( 'gravityforms_delete_forms' ) ) { ?>
 		<form method="post" id="form_trash">
 			<?php wp_nonce_field( 'gforms_trash_form', 'gforms_trash_form' ); ?>
 			<input type="hidden" value="trash" name="operation" />
 		</form>
+		<?php } ?>
 
 		<?php
-			$no_conflict_mode  = get_option( 'gform_enable_noconflict' );
-			$no_conflict_class = $no_conflict_mode ? ' form_editor_no_conflict' : '';
-			$no_fields_class   = empty( $form['fields'] ) ? ' form_editor_fields_no_fields' : '';
-			$compact_view_class = GF_Editor_Service_Provider::is_compact_view_enabled( get_current_user_id(), $form_id ) ? ' gform-compact-view' : '';
+			$no_conflict_mode    = get_option( 'gform_enable_noconflict' );
+			$no_conflict_class   = $no_conflict_mode ? ' form_editor_no_conflict' : '';
+			$no_fields_class     = empty( $form['fields'] ) ? ' form_editor_fields_no_fields' : '';
+			$compact_view_class  = GF_Editor_Service_Provider::is_compact_view_enabled( get_current_user_id(), $form_id ) ? ' gform-compact-view' : '';
 			$compact_view_class .= GF_Editor_Service_Provider::is_field_id_enabled( get_current_user_id(), $form_id ) ? ' gform-compact-view--show-id' : '';
-			$form_editor_class = sprintf( 'form_editor_fields_container%s%s%s', $no_fields_class, $no_conflict_class, $compact_view_class );
+			$form_editor_class   = sprintf( 'form_editor_fields_container%s%s%s', $no_fields_class, $no_conflict_class, $compact_view_class );
 		?>
 
 		<div
 			id="form_editor_fields_container"
-			class="<?php esc_attr_e( $form_editor_class ); ?>"
+			class="<?php echo esc_attr( $form_editor_class ); ?>"
 			data-js="form-editor"
 			<?php echo ! empty( $form['fields'] ) ? 'data-simplebar' : ''; ?>
 			<?php echo ! empty( $form['fields'] ) && is_rtl() ? 'data-simplebar-direction="rtl"' : ''; ?>
@@ -3697,5 +3698,22 @@ class GFFormDetail {
 		array_push( $form['fields'], GF_Fields::create( $submit_button_props ) );
 
 		return $form;
+	}
+
+	/**
+	 * Moves the form to the trash when the current user has permission.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param int $form_id The ID of the form to trash.
+	 */
+	private static function trash_form( $form_id ) {
+		check_admin_referer( 'gforms_trash_form', 'gforms_trash_form' );
+
+		if ( ! GFCommon::current_user_can_any( 'gravityforms_delete_forms' ) ) {
+			wp_die( esc_html__( "You don't have permission to trash forms.", 'gravityforms' ), '', array( 'response' => 403 ) );
+		}
+
+		GFFormsModel::trash_form( $form_id );
 	}
 }

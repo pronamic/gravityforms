@@ -562,7 +562,7 @@ class GF_Field_Phone extends GF_Field {
 			esc_attr( $button_id ),                             // 3: button id
 			esc_attr( $dropdown_id ),                           // 4: aria-controls
 			esc_attr( $i18n['selectCountryAriaLabel'] ),        // 5: aria-label
-			$disabled_text,                                     // 6: disabled
+			$disabled_text . ' ' . $tabindex,                   // 6: disabled
 			esc_attr( $country_iso ),                           // 7: flag icon class
 			$dial_code_display,                                 // 8: dial code with + prefix or empty
 			$country_sublabel_below,                            // 9: country sublabel below

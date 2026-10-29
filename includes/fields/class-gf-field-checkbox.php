@@ -811,7 +811,9 @@ class GF_Field_Checkbox extends GF_Field {
 			$ary[] = GFCommon::format_variable_value( $val, $url_encode, $esc_html, $format );
 		}
 
-		return GFCommon::implode_non_blank( ', ', $ary );
+		$separator = $url_encode ? urlencode( ', ' ) : ', ';
+
+		return GFCommon::implode_non_blank( $separator, $ary );
 
 	}
 

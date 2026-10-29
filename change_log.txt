@@ -1,3 +1,21 @@
+### 3.2.1 | 2026-10-28
+- Added security enhancements.
+- Added an Export button to the entry list that opens the Export Entries page with the current form and entry status selected.
+- Added support for repeater fields when saving a partial entry (via the Partial Entries Add-On).
+- Added the [`gform_disable_page_query_arg`](https://docs.gravityforms.com/gform_disable_page_query_arg/) filter to turn off the `gf_page_{formId}` query parameter.
+- Updated merge tag output to encode commas when the :urlencode modifier is used.
+- Updated multi-page form links so the `gf_page_{formId}` query parameter is only added after the user leaves the first page.
+- Fixed a bug that caused some alert messages to have different colors than others.
+- Fixed an issue that prevented comma separators from being encoded for choice-based fields.
+- Fixed an issue that prevented scripts added to confirmations from being executed when the form is submitted via AJAX.
+- Fixed an issue where clicking the embed button in the form editor causes glitching behavior on the flyout.
+- Fixed an issue where the country selector in the International (Formatted) Phone field is not accessible via keyboard or screen readers when the field is not on the first page of a form.
+- Fixed an issue where the international (formatted) phone field input is misaligned in Gravity Theme.
+- Fixed inconsistent enforcement of form access settings and form management permissions. Credit: Ahmed Nasreddin
+- Deprecated the [`gform_progress_steps`](https://docs.gravityforms.com/gform_progress_steps) filter.
+- Deprecated the `IS_ADMIN` constant defined in gravityforms.php. Use WordPress `is_admin()` instead.
+- API: added helper methods to the repeater field class to facilitate handling of repeater fields and data.
+
 ### 3.2.0 | 2026-10-20
 - Added new Repeater field allowing users to add multiple sets of fields to a form and submit them all at once.
 - Added security enhancements.

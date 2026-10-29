@@ -3588,30 +3588,29 @@ class GFFormsModel {
 				continue;
 			}
 
-			// Process repeater fields using get_field_value to get hydrated structure for order total calculations.
-			if ( $field instanceof GF_Field_Repeater ) {
-				if ( ! RGFormsModel::is_field_hidden( $form, $field, array() ) ) {
-					$lead[ $field->id ] = self::get_field_value( $field );
-				}
+			// If a field is hidden by conditional logic, don't save it.
+			if ( RGFormsModel::is_field_hidden( $form, $field, array() ) ) {
 				continue;
 			}
 
-			// only save fields that are not hidden
-			if ( ! RGFormsModel::is_field_hidden( $form, $field, array() ) ) {
+			// Process repeater fields using get_field_value to get hydrated structure for order total calculations.
+			if ( $field->type === 'repeater' ) {
+				$lead[ $field->id ] = $field->get_value_create_entry( $form, $lead );
+				continue;
+			}
 
-				if ( $field->type == 'post_category' ) {
-					$field = GFCommon::add_categories_as_choices( $field, '' );
+			if ( $field->type === 'post_category' ) {
+				$field = GFCommon::add_categories_as_choices( $field, '' );
+			}
+
+			$inputs = $field->get_entry_inputs();
+
+			if ( is_array( $inputs ) ) {
+				foreach ( $inputs as $input ) {
+					$lead[ (string) $input['id'] ] = self::get_prepared_input_value( $form, $field, $lead, $input['id'] );
 				}
-
-				$inputs = $field->get_entry_inputs();
-
-				if ( is_array( $inputs ) ) {
-					foreach ( $inputs as $input ) {
-						$lead[ (string) $input['id'] ] = self::get_prepared_input_value( $form, $field, $lead, $input['id'] );
-					}
-				} else {
-					$lead[ $field->id ] = self::get_prepared_input_value( $form, $field, $lead, $field->id );
-				}
+			} else {
+				$lead[ $field->id ] = self::get_prepared_input_value( $form, $field, $lead, $field->id );
 			}
 		}
 
@@ -4654,7 +4653,7 @@ class GFFormsModel {
 				return rgar( $input, 'defaultValue' );
 			} else {
 				$value = $field->get_value_default();
-				if ( ! IS_ADMIN ) {
+				if ( ! is_admin() ) {
 					if ( is_array( $value ) ) {
 						foreach ( $value as &$_value ) {
 							$_value = GFCommon::replace_variables_prepopulate( $_value );

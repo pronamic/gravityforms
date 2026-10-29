@@ -202,6 +202,10 @@ class GFFormList {
 			die( json_encode( array( 'error' => __( 'There was an issue creating your form.', 'gravityforms' ) ) ) );
 		}
 
+		if ( ! GFCommon::current_user_can_any( 'gravityforms_create_form' ) ) {
+			wp_send_json( array( 'error' => __( 'You do not have permission to create forms.', 'gravityforms' ) ), 403 );
+		}
+
 		GFFormsModel::ensure_tables_exist();
 
 		require_once( GFCommon::get_base_path() . '/form_detail.php' );
@@ -228,7 +232,8 @@ class GFFormList {
 
 			default:
 				$form_id = absint( $result['status'] );
-				die( json_encode( array( 'redirect' => admin_url( "admin.php?page=gf_edit_forms&id={$form_id}&isnew=1" ) ) ) );
+				header( 'Content-Type: text/plain; charset=' . get_option( 'blog_charset' ) );
+				wp_die( wp_json_encode( array( 'redirect' => admin_url( "admin.php?page=gf_edit_forms&id={$form_id}&isnew=1" ) ) ) );
 		}
 	}
 
@@ -320,7 +325,7 @@ class GFFormList {
 				jQuery.post(ajaxurl, {
 					form: jQuery.toJSON(form),
 					action: 'gf_save_new_form',
-					gf_save_new_form: <?php echo json_encode( wp_create_nonce( 'gf_save_new_form' ) ); ?>
+					gf_save_new_form: <?php echo json_encode( GFCommon::current_user_can_any( 'gravityforms_create_form' ) ? wp_create_nonce( 'gf_save_new_form' ) : '' ); ?>
 				}, function(response){
 
 					spinner.destroy();

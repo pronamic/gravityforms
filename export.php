@@ -766,7 +766,7 @@ class GFExport {
 		 *
 		 * @since 3.1.1
 		 *
-		 * @param array $statuses The array of status choices. Defaults to Active, Spam and Trash.
+		 * @param array $statuses The array of status choices. Defaults to Active, Unread, Starred, Spam and Trash.
 		 */
 		return apply_filters(
 			'gform_export_entries_status_choices',
@@ -774,6 +774,14 @@ class GFExport {
 				array(
 					'label' => esc_html__( 'Active', 'gravityforms' ),
 					'value' => 'active',
+				),
+				array(
+					'label' => esc_html__( 'Unread', 'gravityforms' ),
+					'value' => 'unread',
+				),
+				array(
+					'label' => esc_html__( 'Starred', 'gravityforms' ),
+					'value' => 'starred',
 				),
 				array(
 					'label' => esc_html__( 'Spam', 'gravityforms' ),
@@ -785,6 +793,34 @@ class GFExport {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Returns the export status that should be selected on page load.
+	 *
+	 * The entry list uses "star" for starred entries. All maps to Active. Any other requested value is used when it is one of the available status choices.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @return string
+	 */
+	private static function get_selected_export_status() {
+		$status = strtolower( sanitize_text_field( rgget( 'status' ) ) );
+
+		if ( 'star' === $status ) {
+			$status = 'starred';
+		}
+
+		if ( in_array( $status, array( '', 'all' ), true ) ) {
+			$status = 'active';
+		}
+
+		$allowed_statuses = wp_list_pluck( self::get_export_status_choices(), 'value' );
+		if ( ! in_array( $status, $allowed_statuses, true ) ) {
+			$status = 'active';
+		}
+
+		return $status;
 	}
 
 	public static function export_lead_page() {
@@ -958,9 +994,10 @@ class GFExport {
 							<div class="gform-settings-column--right">
 								<select id="export_status" name="export_status">
 									<?php
+									$selected_export_status = self::get_selected_export_status();
 									foreach ( self::get_export_status_choices() as $export_status ) {
 										?>
-										<option value="<?php echo esc_attr( $export_status['value'] ); ?>" <?php selected( 'active', $export_status['value'] ); ?>><?php echo esc_html( $export_status['label'] ); ?></option>
+										<option value="<?php echo esc_attr( $export_status['value'] ); ?>" <?php selected( $selected_export_status, $export_status['value'] ); ?>><?php echo esc_html( $export_status['label'] ); ?></option>
 										<?php
 									}
 									?>
@@ -1105,9 +1142,26 @@ class GFExport {
 
 		$allowed_statuses = wp_list_pluck( self::get_export_status_choices(), 'value' );
 		$status           = strtolower( rgpost( 'export_status' ) );
+		$status           = GFCommon::whitelist( $status, $allowed_statuses );
 
-		$search_criteria['status']        = GFCommon::whitelist( $status, $allowed_statuses );
 		$search_criteria['field_filters'] = GFCommon::get_field_filters_from_post( $form );
+
+		// Unread and starred entries are stored as active entries with an is_read or is_starred flag.
+		if ( 'starred' === $status ) {
+			$search_criteria['status']          = 'active';
+			$search_criteria['field_filters'][] = array(
+				'key'   => 'is_starred',
+				'value' => true,
+			);
+		} elseif ( 'unread' === $status ) {
+			$search_criteria['status']          = 'active';
+			$search_criteria['field_filters'][] = array(
+				'key'   => 'is_read',
+				'value' => false,
+			);
+		} else {
+			$search_criteria['status'] = $status;
+		}
 		if ( ! empty( $start_date ) ) {
 			$search_criteria['start_date'] = $start_date;
 		}

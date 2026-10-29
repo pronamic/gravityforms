@@ -335,7 +335,9 @@ class GF_Field_MultiSelect extends GF_Field {
 			}
 		}
 
-		$return = GFCommon::implode_non_blank( ', ', $items );
+		$separator = $url_encode ? urlencode( ', ' ) : ', ';
+
+		$return = GFCommon::implode_non_blank( $separator, $items );
 
 		if ( $format == 'html' || $esc_html ) {
 			$return = esc_html( $return );

@@ -512,6 +512,101 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	/**
+	 * Returns the repeater value in the format expected by create_lead(). Sanitize each child value for saving and fire gform_save_field_value filter.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param array      $form       The form currently being processed.
+	 * @param array      $entry      The draft lead.
+	 * @param string     $item_index The parent repeater index. Empty for a top-level repeater.
+	 * @param array|null $values     Rows for this repeater. A nested repeater receives the rows already stored on its parent row.
+	 *
+	 * @return array
+	 */
+	public function get_value_create_entry( $form, $entry, $item_index = '', $values = null ) {
+
+		// A top-level repeater reads every submitted row. A nested repeater uses the rows already placed on the current parent row.
+		if ( null === $values ) {
+			$values = $this->get_value_submission( array() );
+		}
+
+		// Looping through the repeater rows and filling them out with field falues
+		foreach ( $values as $i => $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+
+			$repeater_index = $item_index . '_' . $i;
+
+			foreach ( $this->fields as $sub_field ) {
+
+				// Remove fields that are display only or hidden by conditional logic.
+				if ( $sub_field->displayOnly || GFFormsModel::is_field_hidden( $form, $sub_field, array() ) ) {
+					unset( $row[ $sub_field->id ] );
+					$inputs = $sub_field->get_entry_inputs();
+					if ( is_array( $inputs ) ) {
+						foreach ( $inputs as $input ) {
+							unset( $row[ (string) $input['id'] ] );
+						}
+					}
+					continue;
+				}
+
+				// Recursive into nested repeaters. Use this parent row's nested rows so they are not copied onto every parent row.
+				if ( $sub_field->type === 'repeater' ) {
+					$row[ $sub_field->id ] = $sub_field->get_value_create_entry( $form, $entry, $repeater_index, rgar( $row, $sub_field->id, array() ) );
+					continue;
+				}
+
+				// Skip fields that are not yet supported in a repeater.
+				$input_type = GFFormsModel::get_input_type( $sub_field );
+				if ( in_array( $input_type, array( 'fileupload', 'post_image' ), true ) || $sub_field->type === 'total' || $sub_field->has_calculation() ) {
+					continue;
+				}
+
+				// Getting each individual field input.
+				$inputs = $sub_field->get_entry_inputs();
+				if ( is_array( $inputs ) ) {
+					foreach ( $inputs as $input ) {
+						$row[ (string) $input['id'] ] = $this->get_input_value_create_entry( $form, $sub_field, $entry, (string) $input['id'], rgar( $row, (string) $input['id'] ), $repeater_index );
+					}
+				} else {
+					$row[ (string) $sub_field->id ] = $this->get_input_value_create_entry( $form, $sub_field, $entry, (string) $sub_field->id, rgar( $row, (string) $sub_field->id ), $repeater_index );
+				}
+			}
+
+			$values[ $i ] = $row;
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Sanitizes one repeater input and run value through gform_save_field_value filter. This follows the same steps GFFormsModel::get_prepared_input_value() takes for top-level field.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param array    $form           The form currently being processed.
+	 * @param GF_Field $field          The child field being prepared.
+	 * @param array    $entry           The draft lead.
+	 * @param string   $input_id       The field or input id.
+	 * @param mixed    $value          The submitted row value.
+	 * @param string   $repeater_index The repeater item index, such as _0 or _0_1.
+	 *
+	 * @return mixed
+	 */
+	private function get_input_value_create_entry( $form, $field, $entry, $input_id, $value, $repeater_index ) {
+		if ( empty( $value ) && $field->is_administrative() ) {
+			$value = GFFormsModel::get_default_value( $field, $input_id );
+		}
+
+		$input_name = 'input_' . str_replace( '.', '_', $input_id );
+		$value      = $field->get_value_save_input( $value, $form, $input_name, rgar( $entry, 'id' ), $entry, $repeater_index );
+
+		return gf_apply_filters( array( 'gform_save_field_value', absint( $form['id'] ), $field->id ), $value, $entry, $field, $form, $input_id );
+	}
+
+	/**
 	 * Utility to flatten array values recursively so they can be saved with the appropriate index.
 	 *
 	 * We save the data in this format to make it possible to search entries by sub-field.
@@ -975,6 +1070,30 @@ class GF_Field_Repeater extends GF_Field {
 		$field->set_context_property( 'is_value_spam', rgar( $result, 'is_value_spam' ) );
 	}
 
+	/**
+	 * Determines whether a sub-field failed validation in any repeater row.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param GF_Field $field The sub-field to check.
+	 *
+	 * @return bool
+	 */
+	public function has_field_failed_validation( $field ) {
+		$results = $field->get_context_property( 'repeater_validation_results' );
+		if ( ! is_array( $results ) ) {
+			return (bool) $field->failed_validation;
+		}
+
+		foreach ( $results as $result ) {
+			if ( isset( $result['is_valid'] ) && ! $result['is_valid'] ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/*
 	 * Return the repeater template, which is cloned to create new repeater items.
 	 *
@@ -1352,12 +1471,15 @@ class GF_Field_Repeater extends GF_Field {
 										<td class='entry-view-field-value'>{$value}</td>
 									</tr>";
 					} else {
-						$item_html .= "<tr style='border-bottom: 1px solid #EAEAEA;'>
+						$label_background = esc_attr( apply_filters( 'gform_email_background_color_label', '#EAF2FA', $sub_field, $entry ) );
+						$data_background  = esc_attr( apply_filters( 'gform_email_background_color_data', '#FFFFFF', $sub_field, $entry ) );
+
+						$item_html .= "<tr style='background-color:{$label_background}; border-bottom: 1px solid #EAEAEA;'>
 										<td style='font-family: sans-serif; font-size:12px; padding: 8px 16px; '>
 											<strong>{$label}</strong>
 										</td>
 									</tr>
-									<tr style='background-color:#FFFFFF; border-bottom: 1px solid #EAEAEA;'>
+									<tr style='background-color:{$data_background}; border-bottom: 1px solid #EAEAEA;'>
 										<td style='font-family: sans-serif; font-size:12px; padding: 16px;'>
 											{$value}
 										</td>
@@ -1427,6 +1549,30 @@ class GF_Field_Repeater extends GF_Field {
 		return true;
 	}
 
+	/**
+	 * Filters sub-fields to those for which the callback returns true, including fields nested in child repeaters.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param callable $callback Receives a field and returns true when that field should be included.
+	 *
+	 * @return GF_Field[] Returns an array of fields that satisfy the callback
+	 */
+	public function filter_fields( $callback ) {
+		$fields = array();
+
+		foreach ( $this->fields as $field ) {
+			if ( call_user_func( $callback, $field ) ) {
+				$fields[] = $field;
+			}
+
+			if ( $field->type === 'repeater' ) {
+				$fields = array_merge( $fields, $field->filter_fields( $callback ) );
+			}
+		}
+
+		return $fields;
+	}
 
 	/**
 	 * Recursively filter fields and their sub_fields by the field IDs specified in a merge tag.
@@ -1502,6 +1648,87 @@ class GF_Field_Repeater extends GF_Field {
 		}
 
 		return $field_value;
+	}
+
+	/**
+	 * Searches $repeater_value for data associated with the specified $field. $field can be a top level field or nested.
+	 * The data is returned as an associative array, with the key being the repeater_index string (i.e. "_0" or "_0_1" ) and the value being the field data for that row.
+	 *
+	 * For example, text field 6 in two nested rows returns array( '_0_0' => array( '6' => 'Ada' ), '_0_1' => array( '6' => 'Grace' ) ).
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param GF_Field $field           A direct or nested sub-field.
+	 * @param array    $repeater_value  The repeater value, such as $entry[ repeater id ].
+	 * @param string   $item_index      The parent item index. Empty for the top-level repeater.
+	 *
+	 * @return array Returns all rows associated with $field within $repeater_value
+	 */
+	public function get_field_rows( $field, $repeater_value, $item_index = '' ) {
+		if ( ! is_array( $repeater_value ) ) {
+			return array();
+		}
+
+		$rows = array();
+		foreach ( $repeater_value as $i => $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+
+			$repeater_index = $item_index . '_' . $i;
+			foreach ( $this->fields as $sub_field ) {
+				if ( absint( $sub_field->id ) === absint( $field->id ) ) {
+					$value  = $this->get_field_value( $field, $row );
+					$inputs = $field->get_repeater_inputs();
+					
+					$rows[ $repeater_index ] = is_array( $inputs ) && is_array( $value ) ? $value : array( (string) $field->id => $value );
+					break;
+				}
+
+				if ( $sub_field->type === 'repeater' && is_array( rgar( $row, $sub_field->id ) ) ) {
+					$rows = array_merge( $rows, $sub_field->get_field_rows( $field, $row[ $sub_field->id ], $repeater_index ) );
+				}
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Updates an input anywhere it is stored in a repeater value, including inside nested repeaters.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param array      $repeater_value The repeater value, such as $entry[ repeater id ].
+	 * @param int|string $input_id       The field or input id to update.
+	 * @param mixed      $input_value    The value to store for that input.
+	 *
+	 * @return array Returns $repeater_value with the udpated input value.
+	 */
+	public function update_input_value( $repeater_value, $input_id, $input_value ) {
+		if ( ! is_array( $repeater_value ) ) {
+			return $repeater_value;
+		}
+
+		$field_id = absint( $input_id );
+		foreach ( $repeater_value as $i => $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+
+			foreach ( $this->fields as $sub_field ) {
+				if ( absint( $sub_field->id ) === $field_id ) {
+					$repeater_value[ $i ][ (string) $input_id ] = $input_value;
+					break;
+				}
+
+				if ( $sub_field->type === 'repeater' && is_array( rgar( $row, $sub_field->id ) ) ) {
+					$repeater_value[ $i ][ $sub_field->id ] = $sub_field->update_input_value( $row[ $sub_field->id ], $input_id, $input_value );
+				}
+			}
+		}
+
+		return $repeater_value;
 	}
 
 	/**

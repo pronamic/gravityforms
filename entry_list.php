@@ -1685,6 +1685,68 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Displays the pagination, including a link to export the current form's entries.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param string $which The location of the pagination: 'top' or 'bottom'.
+	 */
+	protected function pagination( $which ) {
+		ob_start();
+		parent::pagination( $which );
+		$pagination = ob_get_clean();
+
+		$export_link = $this->get_export_entries_link();
+		if ( $export_link && false !== strpos( $pagination, 'tablenav-pages' ) ) {
+			// Keep the pagination visible when there are no entries so the export link can render.
+			$pagination = str_replace( 'tablenav-pages no-pages', 'tablenav-pages', $pagination );
+
+			$close = strrpos( $pagination, '</div>' );
+			if ( false !== $close ) {
+				$pagination = substr( $pagination, 0, $close ) . $export_link . substr( $pagination, $close );
+			}
+		}
+
+		echo $pagination; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Returns the Export link shown in the entry list pagination.
+	 *
+	 * The export page reads the form id and entry status from the URL, selects that form and status, and loads the form's fields via Ajax.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @return string
+	 */
+	protected function get_export_entries_link() {
+		$form_id = $this->get_form_id();
+		if ( empty( $form_id ) || ! GFCommon::current_user_can_any( 'gravityforms_export_entries' ) ) {
+			return '';
+		}
+
+		$filter = $this->get_filter();
+		if ( '' === $filter ) {
+			$filter = 'all';
+		}
+
+		$url = add_query_arg(
+			array(
+				'page'   => 'gf_export',
+				'id'     => $form_id,
+				'status' => $filter,
+			),
+			admin_url( 'admin.php' )
+		);
+
+		return sprintf(
+			'<a href="%1$s" class="button gform-entry-export">%2$s</a>',
+			esc_url( $url ),
+			esc_html__( 'Export', 'gravityforms' )
+		);
+	}
+
+	/**
 	 * Displays additional fields required by FORM and displays the modals.
 	 *
 	 * @param string $which
