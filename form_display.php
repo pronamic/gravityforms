@@ -1486,6 +1486,7 @@ class GFFormDisplay {
 			$action              = esc_url( $action );
 			$requested_page_attr = '';
 			$page_query_attr     = '';
+			$require_login_attr  = self::get_require_login_form_attributes( $form );
 			$page_query_disabled = $has_pages && self::is_page_query_arg_disabled( $form );
 			if ( $page_query_disabled ) {
 				$page_query_attr = " data-gf-page-query='false'";
@@ -1505,7 +1506,7 @@ class GFFormDisplay {
 			 *
 			 * @return string The modified form tag markup.
 			 */
-			$form_string .= gf_apply_filters( array( 'gform_form_tag', $form_id ), "<form method='post' enctype='multipart/form-data' {$target} id='gform_{$form_id}' {$form_css_class} action='{$action}' data-formid='{$form_id}'{$requested_page_attr}{$page_query_attr} novalidate>", $form );
+			$form_string .= gf_apply_filters( array( 'gform_form_tag', $form_id ), "<form method='post' enctype='multipart/form-data' {$target} id='gform_{$form_id}' {$form_css_class} action='{$action}' data-formid='{$form_id}'{$require_login_attr}{$requested_page_attr}{$page_query_attr} novalidate>", $form );
 
 			// If Save and Continue token was provided but expired/invalid, display error message.
 			if ( isset( $_GET['gf_token'] ) && ! is_array( $incomplete_submission_info ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -3547,6 +3548,27 @@ class GFFormDisplay {
 	}
 
 	/**
+	 * Data attributes used to keep a require-login form on the page when the session expires.
+	 *
+	 * The user id is the person the form was rendered for. After a login in another tab, the
+	 * script compares it with the current user and will not submit the form as someone else.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param array $form The form being rendered.
+	 *
+	 * @return string
+	 */
+	private static function get_require_login_form_attributes( $form ) {
+		$user_id = (int) get_current_user_id();
+		if ( $user_id <= 0 || ! GFCommon::form_requires_login( $form ) ) {
+			return '';
+		}
+
+		return sprintf( " data-gf-require-login='1' data-gf-user-id='%d'", $user_id );
+	}
+
+	/**
 	 * Add defer attribute to Gravity Forms scripts and any script dependent on a Gravity Forms script.
 	 *
 	 * @since 2.5
@@ -5306,11 +5328,12 @@ class GFFormDisplay {
 						   <input type='hidden' class='gform_hidden' name='is_submit_{$form_id}' value='1' />
 						   <input type='hidden' class='gform_hidden' name='gform_submit' value='{$form_id}' />";
 
-		$ajax_submit = $is_iframe_ajax ? "onclick='jQuery(\"#gform_{$form_id}\").trigger(\"submit\",[true]);'" : '';
+		$ajax_submit        = $is_iframe_ajax ? "onclick='jQuery(\"#gform_{$form_id}\").trigger(\"submit\",[true]);'" : '';
+		$require_login_attr = self::get_require_login_form_attributes( $form );
 
 		if ( GFCommon::is_legacy_markup_enabled( $form ) ) {
 			$resume_form = "<div class='form_saved_message_emailform'>
-							<form action='{$action}' method='POST' id='gform_{$form_id}' data-formid='{$form_id}' {$target}>
+							<form action='{$action}' method='POST' id='gform_{$form_id}' data-formid='{$form_id}'{$require_login_attr} {$target}>
 								{$iframe_ajax_fields}
 								<label for='gform_resume_email' class='gform_resume_email_label gfield_label' aria-describedby='email-validation-error'>{$email_input_label}</label>
 								<input type='email' name='gform_resume_email' value='{$email_esc}' id='gform_resume_email' placeholder='{$email_input_label}' aria-describedby='email-validation-error'/>
@@ -5324,7 +5347,7 @@ class GFFormDisplay {
 	                    </div>";
 		} else {
 			$resume_form = "<div class='form_saved_message_emailform'>
-						<form action='{$action}' method='POST' id='gform_{$form_id}' data-formid='{$form_id}' {$target}>
+						<form action='{$action}' method='POST' id='gform_{$form_id}' data-formid='{$form_id}'{$require_login_attr} {$target}>
 							<div class='gform-body gform_body'>
 								<div id='gform_fields_{$form_id}' class='gform_fields top_label form_sublabel_below description_below'>
 									{$iframe_ajax_fields}

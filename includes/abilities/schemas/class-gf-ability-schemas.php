@@ -222,6 +222,11 @@ class GF_Ability_Schemas {
 				'success'  => array( 'type' => 'boolean', 'description' => __( 'Whether the operation succeeded.', 'gravityforms' ) ),
 				'form_id'  => array( 'type' => 'integer', 'description' => __( 'The ID of the new form.', 'gravityforms' ) ),
 				'edit_url' => array( 'type' => 'string', 'description' => __( 'Admin URL to open and edit the new form.', 'gravityforms' ) ),
+				'warnings' => array(
+					'type'        => 'array',
+					'items'       => array( 'type' => 'string' ),
+					'description' => __( 'Present when the form was saved with a change the caller did not ask for, such as a de-duplicated title, or with a layout row over 12 columns. Act on each warning.', 'gravityforms' ),
+				),
 			),
 		);
 	}
@@ -368,10 +373,11 @@ class GF_Ability_Schemas {
 	public static function input_values_schema() {
 		return array(
 			'type'                 => 'object',
-			'description'          => __( 'Field values keyed by input name (e.g., \'input_1\': \'John\', \'input_2\': \'john@example.com\'). Most fields use string values. Multiselect fields accept an array of selected values (e.g., \'input_3\': [\'Red\', \'Blue\']). Repeater child fields submit as arrays keyed by the child input name (e.g., \'input_4\': [\'Alice\', \'Bob\']).', 'gravityforms' ),
+			'description'          => __( 'Field values keyed by input name (e.g., \'input_1\': \'John\', \'input_2\': \'john@example.com\'). Most fields use string values. Multiselect fields accept an array of selected values (e.g., \'input_3\': [\'Red\', \'Blue\']). Repeater child fields submit as arrays keyed by the child input name (e.g., \'input_4\': [\'Alice\', \'Bob\']). A child of a nested repeater submits one array for each parent row (e.g., \'input_6\': [[\'Guest A\', \'Guest B\'], [\'Guest C\']]).', 'gravityforms' ),
 			'additionalProperties' => array(
 				'type'  => array( 'string', 'array' ),
-				'items' => array( 'type' => 'string' ),
+				// Arrays nest one level for each parent repeater.
+				'items' => array( 'type' => array( 'string', 'array' ) ),
 			),
 		);
 	}

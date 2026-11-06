@@ -4144,7 +4144,7 @@ Content-Type: text/html;
 	}
 
 	/**
-	 * Returns an array of file extensions with periods and spaces removed.
+	 * Returns a reindexed array of lowercase, nonempty file extensions with periods and spaces removed.
 	 *
 	 * @since unknown
 	 * @since 2.9.18 Updated to support being passed a string of comma separated extensions.
@@ -4154,19 +4154,23 @@ Content-Type: text/html;
 	 * @return array
 	 */
 	public static function clean_extensions( $extensions ) {
-		if ( empty( $extensions ) ) {
+		if ( empty( $extensions ) && $extensions !== '0' ) {
 			return array();
 		}
 
 		if ( ! is_array( $extensions ) ) {
-			$extensions = explode( ',', strtolower( $extensions ) );
+			$extensions = explode( ',', $extensions );
 		}
 
-		foreach ( $extensions as &$ext ) {
-			$ext = str_replace( array( '.', ' ' ), '', $ext );
+		$clean_extensions = array();
+		foreach ( $extensions as $ext ) {
+			$ext = strtolower( trim( str_replace( array( '.', ' ' ), '', $ext ) ) );
+			if ( $ext !== '' ) {
+				$clean_extensions[] = $ext;
+			}
 		}
 
-		return $extensions;
+		return $clean_extensions;
 	}
 
 	public static function get_disallowed_file_extensions() {
@@ -4180,6 +4184,10 @@ Content-Type: text/html;
 			'bat',
 			'html',
 			'htm',
+			'shtml',
+			'shtm',
+			'stm',
+			'stml',
 			'hta',
 			'jar',
 			'exe',
@@ -4197,7 +4205,7 @@ Content-Type: text/html;
 			'php6',
 			'py',
 			'rb',
-			'tmp'
+			'tmp',
 		);
 
 		// Intended for internal use - not to be included in the documentation.
@@ -4212,7 +4220,7 @@ Content-Type: text/html;
 		}
 
 		$ext = strtolower( pathinfo( $file_name, PATHINFO_EXTENSION ) );
-		if ( in_array( $ext, $extensions ) ) {
+		if ( $ext !== '' && in_array( $ext, $extensions, true ) ) {
 			return true;
 		}
 

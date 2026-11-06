@@ -75,14 +75,18 @@ class GF_Abilities_Definitions_Notifications {
 					'output_schema'    => array(
 						'type'       => 'object',
 						'properties' => array(
-							'sent' => array(
+							'sent'    => array(
 								'type'        => 'array',
 								'items'       => array( 'type' => 'string' ),
-								'description' => __( 'IDs of notifications that were sent.', 'gravityforms' ),
+								'description' => __( 'IDs of the active, matching notifications handed to the sending pipeline. Sending may be queued (asynchronous), so this is not proof of delivery; check the entry notes.', 'gravityforms' ),
+							),
+							'skipped' => array(
+								'type'        => 'object',
+								'description' => __( 'Notification IDs that were not sent, each with a reason: inactive, event (not a form_submission notification), conditional_logic (rules did not match this entry), or not_found (requested ID is not on the form).', 'gravityforms' ),
 							),
 						),
 					),
-					'destructive'      => true,
+					'destructive'      => false,
 				),
 			),
 			array(
@@ -104,7 +108,7 @@ class GF_Abilities_Definitions_Notifications {
 						'additionalProperties' => false,
 					),
 					'output_schema'    => self::mutation_output_schema(),
-					'destructive'      => true,
+					'destructive'      => false,
 				),
 			),
 			array(
@@ -135,17 +139,18 @@ class GF_Abilities_Definitions_Notifications {
 				'name' => 'gravityforms/notifications-delete',
 				'args' => array(
 					'label'            => __( 'Delete Notification', 'gravityforms' ),
-					'description'      => __( 'Permanently removes one notification by ID. Call gravityforms/notifications-list first to get the notification_id.', 'gravityforms' ),
+					'description'      => __( 'Permanently removes one notification by ID. Call gravityforms/notifications-list first to get the notification_id, and echo it back as confirmation.', 'gravityforms' ),
 					'summary'          => __( 'Delete a notification from a form.', 'gravityforms' ),
 					'category'         => 'gravityforms-notifications',
 					'execute_callback' => array( GF_Abilities_Handler_Notifications::class, 'delete_notification' ),
 					'capability'       => 'gravityforms_edit_forms',
 					'input_schema'     => array(
 						'type'                 => 'object',
-						'required'             => array( 'form_id', 'notification_id' ),
+						'required'             => array( 'form_id', 'notification_id', 'confirmation' ),
 						'properties'           => array(
 							'form_id'         => array( 'type' => 'integer', 'description' => __( 'The ID of the form.', 'gravityforms' ) ),
 							'notification_id' => array( 'type' => 'string', 'description' => __( 'The ID of the notification to delete.', 'gravityforms' ) ),
+							'confirmation'    => array( 'type' => 'string', 'description' => __( 'Echo back the notification ID to confirm permanent deletion.', 'gravityforms' ) ),
 						),
 						'additionalProperties' => false,
 					),
@@ -177,8 +182,21 @@ class GF_Abilities_Definitions_Notifications {
 			'properties'  => array(
 				'name'             => array( 'type' => 'string', 'description' => __( 'Admin-facing name.', 'gravityforms' ) ),
 				'event'            => array( 'type' => 'string', 'description' => __( 'Trigger event, e.g. form_submission.', 'gravityforms' ) ),
-				'to'               => array( 'type' => 'string', 'description' => __( 'Recipient: an email address, or a field ID / routing per toType.', 'gravityforms' ) ),
-				'toType'           => array( 'type' => 'string', 'enum' => array( 'email', 'field', 'routing', 'hidden' ), 'description' => __( 'How "to" is interpreted. Default email.', 'gravityforms' ) ),
+				'to'               => array( 'type' => 'string', 'description' => __( 'Recipient: an email address (toType email), or a field ID (toType field). Not used when toType is routing.', 'gravityforms' ) ),
+				'toType'           => array( 'type' => 'string', 'enum' => array( 'email', 'field', 'routing', 'hidden' ), 'description' => __( 'How the recipient is chosen. Default email. routing picks the recipient per rule from the routing array.', 'gravityforms' ) ),
+				'routing'          => array(
+					'type'        => array( 'array', 'null' ),
+					'description' => __( 'For toType routing: rules evaluated against the entry; every matching rule\'s email receives the notification. Required and non-empty when toType is routing; null otherwise (as notifications-list returns it).', 'gravityforms' ),
+					'items'       => array(
+						'type'       => 'object',
+						'properties' => array(
+							'fieldId'  => array( 'type' => 'string', 'description' => __( 'Source field ID, as a string.', 'gravityforms' ) ),
+							'operator' => array( 'type' => 'string', 'description' => __( 'is, isnot, >, <, contains, starts_with, ends_with.', 'gravityforms' ) ),
+							'value'    => array( 'type' => 'string' ),
+							'email'    => array( 'type' => 'string', 'description' => __( 'Recipient when the rule matches.', 'gravityforms' ) ),
+						),
+					),
+				),
 				'from'             => array( 'type' => 'string' ),
 				'fromName'         => array( 'type' => 'string' ),
 				'replyTo'          => array( 'type' => 'string' ),

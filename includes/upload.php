@@ -91,11 +91,21 @@ class GFAsyncUpload {
 			self::die_error();
 		}
 
+		// The effective Gravity Forms deny-list vetoes types even if WordPress or the field allows them.
+		// This is an defense-in-depth measure to prevent unsafe file types from being uploaded, even if they have a .part suffix or are allowed via a filter by WordPress or the field settings.
 		self::die_if_extension_disallowed( $uploaded_filename, 'original_filename' );
 		self::die_if_extension_disallowed( $file_name, 'name' );
 
+		// Require both submitted names to have the same extension so the original filename agrees with the staging filename.
 		self::die_if_extensions_different( $uploaded_filename, $file_name );
 
+		// Absence from the deny-list is not permission: require WordPress's filtered extension allow-list too.
+		// Check before every chunk write; complete-file content validation remains separate.
+		self::die_if_not_allowed_wordpress_extension( $uploaded_filename, 'original_filename' );
+		self::die_if_not_allowed_wordpress_extension( $file_name, 'name' );
+
+		// The field's Allowed Extensions setting further narrows the types permitted by the checks above.
+		// A blank setting adds no field restriction; it does not bypass either application-level check.
 		$allowed_extensions = $field->get_clean_allowed_extensions();
 		if ( ! empty( $allowed_extensions ) ) {
 			self::die_if_not_allowed_field_extension( $uploaded_filename, 'original_filename', $allowed_extensions );
@@ -470,7 +480,7 @@ class GFAsyncUpload {
 	}
 
 	/**
-	 * Ends the request with an error response if the file extension is disallowed.
+	 * Rejects extensions on the effective Gravity Forms deny-list, independently of any allow-list.
 	 *
 	 * @since 2.9.24
 	 *
@@ -482,6 +492,25 @@ class GFAsyncUpload {
 	private static function die_if_extension_disallowed( $file_name, $input_name ) {
 		if ( GFCommon::file_name_has_disallowed_extension( $file_name ) ) {
 			GFCommon::log_debug( __METHOD__ . sprintf( '(): Illegal file extension (input: %s): %s', $input_name, $file_name ) );
+			self::die_error( 104, __( 'The uploaded file type is not allowed.', 'gravityforms' ) );
+		}
+	}
+
+	/**
+	 * Rejects extensions outside WordPress's filtered MIME mappings before writing any chunk.
+	 * Complete-file content validation is performed separately when the upload is complete.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param string $file_name  The sanitized file name.
+	 * @param string $input_name The input name the file name is from.
+	 *
+	 * @return void
+	 */
+	private static function die_if_not_allowed_wordpress_extension( $file_name, $input_name ) {
+		$file_type = wp_check_filetype( $file_name );
+		if ( empty( $file_type['ext'] ) || empty( $file_type['type'] ) ) {
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): The uploaded file type is not allowed (input: %s): %s', $input_name, $file_name ) );
 			self::die_error( 104, __( 'The uploaded file type is not allowed.', 'gravityforms' ) );
 		}
 	}

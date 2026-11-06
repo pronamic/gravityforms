@@ -7,15 +7,15 @@ $baseDir   = dirname($vendorDir);
 
 return array(
 	'WP\\McpSchema\\' => array(
-		'version' => '0.1.3.0',
+		'version' => '0.2.0.0',
 		'path'    => array( $vendorDir . '/wordpress/php-mcp-schema/src' )
 	),
 	'WP\\MCP\\' => array(
-		'version' => '0.6.1.0',
+		'version' => '0.7.1.0',
 		'path'    => array( $vendorDir . '/wordpress/mcp-adapter/includes' )
 	),
 	'Automattic\\Jetpack\\Autoloader\\' => array(
-		'version' => '5.0.23',
+		'version' => '6.0.2',
 		'path'    => array( $vendorDir . '/automattic/jetpack-autoloader/src' )
 	),
 );

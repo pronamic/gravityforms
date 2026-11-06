@@ -1,3 +1,20 @@
+### 3.2.2 | 2026-11-05
+- Added security enhancements.
+- Added an accessibility improvement to disable animations for users who prefer reduced motion.
+- Added functionality to forms that require login to check if the user has been logged out before submission and let them re-authenticate without losing any of their unsubmitted form data.
+- Added icons to the gform-icons-admin class.
+- Added MCP usage and error reporting to telemetry when Data Collection is enabled.
+- Added the [`gform_state_is_valid_url`](https://docs.gravityforms.com/gform_state_is_valid_url/) filter to allow the result of the state URL validation to be overridden.
+- Updated the Gravity Forms logo and dropdown on the block editor form selector.
+- Updated the MCP integration to improve form management, submission handling, repeater field support, and error reporting.
+- Updated the WordPress MCP Adapter to version 0.7.1 and its required dependencies.
+- Fixed an issue that allowed multi-page buttons to be clicked in the Gutenberg editor.
+- Fixed an issue where multi-file uploads could write chunks for unsupported file types before validating allowed extensions. Credit: endangcamon
+- Fixed an issue where the Datepicker's `data.option.openOnFocus` script required two clicks to open the calendar.
+- Removed the Datepicker "Press F1 for help" message on mobile devices.
+- AF: Fixed an issue that prevented transaction data from being deleted when the entry was deleted using the quick toolbar.
+- AF: Fixed an issue where a database error occurred on permanent entry deletion when a payment add-on was active and the `gf_addon_payment_callback` table did not exist.
+
 ### 3.2.1 | 2026-10-28
 - Added security enhancements.
 - Added an Export button to the entry list that opens the Export Entries page with the current form and entry status selected.

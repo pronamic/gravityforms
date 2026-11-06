@@ -71,7 +71,7 @@ class GF_Abilities_Definitions_Notes {
 							'note_id' => array( 'type' => 'integer' ),
 						),
 					),
-					'destructive'      => true,
+					'destructive'      => false,
 				),
 			),
 		);

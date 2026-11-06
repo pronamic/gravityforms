@@ -208,6 +208,7 @@ class GFSettings {
 			delete_option( 'gf_rest_api_db_version' );
 
 			delete_option( 'gform_api_count' );
+			delete_option( 'gf_abilities_telemetry' );
 			delete_option( 'gform_email_count' );
 			delete_option( 'gform_enable_toolbar_menu' );
 			delete_option( 'gform_enable_dashboard_widget' );

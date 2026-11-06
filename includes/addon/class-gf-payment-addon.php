@@ -253,6 +253,8 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
                 $this->payment_status_changed( $entry['id'], rgar( $original_entry, 'payment_status' ) );
             }
 		} , 10, 2 );
+
+		add_action( 'gform_delete_entry', array( $this, 'entry_deleted' ) );
 	}
 
 	/**
@@ -280,7 +282,6 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		add_filter( 'gform_currencies', array( $this, 'supported_currencies' ) );
 
-		add_filter( 'gform_delete_entry', array( $this, 'entry_deleted' ) );
 		add_action( 'gform_before_delete_field', array( $this, 'before_delete_field' ), 10, 2 );
 
 		if ( GFForms::get_page_query_arg() == 'gf_entries' ) {
@@ -4029,8 +4030,11 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		//deleting from transaction table
 		$wpdb->delete( "{$wpdb->prefix}gf_addon_payment_transaction", array( 'lead_id' => $entry_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-		//deleting from callback table
-		$wpdb->delete( "{$wpdb->prefix}gf_addon_payment_callback", array( 'lead_id' => $entry_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$table = "{$wpdb->prefix}gf_addon_payment_callback";
+		if ( $this->_supports_callbacks && $this->table_exists( $table ) ) {
+			// Deleting from callback table.
+			$wpdb->delete( $table, array( 'lead_id' => $entry_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		}
 	}
 
 	public function ajax_cancel_subscription() {

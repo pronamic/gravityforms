@@ -447,6 +447,11 @@ function gf_do_next_button_action(formId, action, fieldId, isInit){
 }
 
 function gf_do_action(action, targetId, useAnimation, defaultValues, isInit, callback, formId){
+	// Honor the visitor's reduced motion setting even when the form has animated transitions enabled.
+	if ( useAnimation && window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
+		useAnimation = false;
+	}
+
 	var $target = jQuery( targetId );
 
 	/**

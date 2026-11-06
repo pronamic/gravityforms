@@ -23,6 +23,13 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 	 */
 	const ABILITIES_LOGGER = 'abilities_logger';
 
+	/**
+	 * Container key for the abilities telemetry counters.
+	 *
+	 * @since 3.2.2
+	 */
+	const ABILITIES_TELEMETRY = 'abilities_telemetry';
+
 	protected static function get_categories() {
 		$categories = array(
 			'gravityforms-forms'         => array(
@@ -156,11 +163,20 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 	 */
 	public function register( GF_Service_Container $container ) {
 		require_once plugin_dir_path( __FILE__ ) . 'class-gf-abilities-logger.php';
+		require_once plugin_dir_path( __FILE__ ) . 'class-gf-abilities-telemetry.php';
 
 		$container->add(
 			self::ABILITIES_LOGGER,
 			static function () {
 				return new GF_Abilities_Logger();
+			},
+			true
+		);
+
+		$container->add(
+			self::ABILITIES_TELEMETRY,
+			static function () {
+				return new GF_Abilities_Telemetry();
 			},
 			true
 		);
@@ -181,11 +197,16 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 		// Registered unconditionally so the subsystem stays visible on the Logging settings page when MCP is off.
 		$logger->register_logging_hooks();
 
+		// Registered unconditionally so the snapshot reports MCP as off, not missing.
+		$telemetry = $container->get( self::ABILITIES_TELEMETRY );
+		$telemetry->register_snapshot_hook();
+
 		if ( ! \GF_MCP_Settings::is_enabled() ) {
 			return;
 		}
 
 		$logger->register_execution_hooks();
+		$telemetry->register_execution_hooks();
 
 		add_filter( 'mcp_adapter_tools_list', array( $this, 'filter_tools_by_permission' ) );
 

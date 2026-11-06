@@ -89,7 +89,9 @@ class GF_Abilities_Definitions_System {
 								'supports_nested_fields' => array( 'type' => 'boolean', 'description' => __( 'Repeater fields only — true when this field type accepts a nested fields array.', 'gravityforms' ) ),
 								'nested_fields_property' => array( 'type' => 'string', 'description' => __( 'Repeater fields only — the property name that contains child field definitions.', 'gravityforms' ) ),
 								'nested_fields_shape'    => array( 'type' => 'string', 'description' => __( 'Repeater fields only — human-readable summary of the expected child field shape.', 'gravityforms' ) ),
-								'has_inputs'             => array( 'type' => 'boolean', 'description' => __( 'Whether this is a compound field with sub-inputs (e.g., name, address). When true, submission values use input IDs like input_1.3, input_1.6.', 'gravityforms' ) ),
+								'has_inputs'             => array( 'type' => 'boolean', 'description' => __( 'Whether the field stores its value in sub-inputs in its default configuration (name, address, time, consent, product, checkbox). When true, submission values use input IDs like input_1.3, input_1.6. See default_inputs, inputs_per_choice and inputs_note.', 'gravityforms' ) ),
+								'inputs_per_choice'      => array( 'type' => 'boolean', 'description' => __( 'True when the field has one sub-input per choice (checkbox): {field_id}.{n}, n counting from 1 and skipping multiples of 10.', 'gravityforms' ) ),
+								'inputs_note'            => array( 'type' => 'string', 'description' => __( 'How this type uses sub-inputs when that depends on its configuration (inputType, dateType) or on its choices.', 'gravityforms' ) ),
 								'default_inputs'         => array(
 									'type'        => 'array',
 									'description' => __( 'Sub-input definitions for compound fields. Each input has an ID suffix (e.g., "1.3" for First Name on a Name field with ID 1).', 'gravityforms' ),

@@ -158,7 +158,7 @@ class State_Handler {
 		if ( str_contains( $url, '?' ) ) {
 			$values = array(
 				wp_hash( $url ),
-				wp_hash( strtok( $url, '?' ) ),
+				wp_hash( strstr( $url, '?', true ) ),
 			);
 			$this->add_hashes( $form_id, 'url', $values );
 		} else {
@@ -553,21 +553,33 @@ class State_Handler {
 	 * @param int $form_id The ID of the form being validated.
 	 *
 	 * @return bool
+	 * @throws \Throwable
 	 */
 	public function is_valid_url( $form_id ) {
 		if ( ! $this->is_valid_state_input( $form_id ) ) {
 			return false;
 		}
 
-		$url = $this->get_url();
+		$url      = $this->get_url();
+		$is_valid = $this->is_valid_additional_value( $form_id, 'url', $url ) || ( str_contains( $url, '?' ) && $this->is_valid_additional_value( $form_id, 'url', strstr( $url, '?', true ) ) );
+		GFCommon::log_debug( __METHOD__ . sprintf( '(): Result (%s): ', $url ) . json_encode( $is_valid ) );
 
-		if ( $this->is_valid_additional_value( $form_id, 'url', $url ) ) {
-			return true;
-		} elseif ( str_contains( $url, '?' ) && $this->is_valid_additional_value( $form_id, 'url', strtok( $url, '?' ) ) ) {
-			return true;
+		/**
+		 * Allows the URL validation result to be overridden.
+		 *
+		 * @since 3.2.2
+		 *
+		 * @param bool   $is_valid Whether the hash of the request URL matches the hash parsed from the state input value.
+		 * @param string $url      The URL that was validated.
+		 * @param int    $form_id  The ID of the form being validated.
+		 */
+		$result = gf_apply_filters( array( 'gform_state_is_valid_url', $form_id ), $is_valid, $url, $form_id );
+
+		if ( $result !== $is_valid ) {
+			GFCommon::log_debug( __METHOD__ . '(): Result from gform_state_is_valid_url filter: ' . json_encode( $result ) );
 		}
 
-		return false;
+		return $result;
 	}
 
 	/**

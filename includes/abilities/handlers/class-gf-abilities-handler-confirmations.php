@@ -84,6 +84,7 @@ class GF_Abilities_Handler_Confirmations {
 		unset( $settings['isDefault'] );
 
 		$error = self::validate( $settings );
+		$error = is_wp_error( $error ) ? $error : GF_Abilities_Handler_Forms::check_repeater_rule_sources( rgar( $form, 'fields', array() ), $settings );
 		if ( is_wp_error( $error ) ) {
 			return $error;
 		}
@@ -138,6 +139,7 @@ class GF_Abilities_Handler_Confirmations {
 		}
 
 		$error = self::validate( $merged );
+		$error = is_wp_error( $error ) ? $error : GF_Abilities_Handler_Forms::check_repeater_rule_sources( rgar( $form, 'fields', array() ), $merged );
 		if ( is_wp_error( $error ) ) {
 			return $error;
 		}
@@ -174,6 +176,11 @@ class GF_Abilities_Handler_Confirmations {
 		list( $form, $confirmations ) = $loaded;
 
 		$id = (string) rgar( $input, 'confirmation_id' );
+
+		// Permanent, like the other deletes: the caller echoes the id back.
+		if ( ( $input['confirmation'] ?? '' ) !== $id ) {
+			return new \WP_Error( 'gf_ability_confirmation_mismatch', __( 'Confirmation does not match the confirmation ID. Please provide the exact confirmation ID to confirm deletion.', 'gravityforms' ) );
+		}
 
 		if ( ! isset( $confirmations[ $id ] ) ) {
 			return new \WP_Error( 'gf_ability_not_found', __( 'Confirmation not found on this form.', 'gravityforms' ) );
@@ -259,8 +266,22 @@ class GF_Abilities_Handler_Confirmations {
 			return new \WP_Error( 'gf_ability_invalid_confirmation', __( 'A message confirmation requires a message.', 'gravityforms' ) );
 		}
 
-		if ( 'page' === $type && '' === (string) rgar( $confirmation, 'pageId' ) ) {
-			return new \WP_Error( 'gf_ability_invalid_confirmation', __( 'A page confirmation requires a pageId.', 'gravityforms' ) );
+		if ( 'page' === $type ) {
+			$page_id = absint( rgar( $confirmation, 'pageId' ) );
+
+			if ( ! $page_id ) {
+				return new \WP_Error( 'gf_ability_invalid_confirmation', __( 'A page confirmation requires a pageId.', 'gravityforms' ) );
+			}
+
+			// The editor offers published pages only; anything else silently
+			// falls back to the default message at submit time.
+			if ( 'page' !== get_post_type( $page_id ) || 'publish' !== get_post_status( $page_id ) ) {
+				return new \WP_Error(
+					'gf_ability_invalid_confirmation',
+					/* translators: %d: page ID */
+					sprintf( __( 'pageId %d is not a published page.', 'gravityforms' ), $page_id )
+				);
+			}
 		}
 
 		if ( 'redirect' === $type ) {

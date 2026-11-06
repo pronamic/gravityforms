@@ -301,4 +301,71 @@ class GF_Ajax_Handler {
 		$_GET = array_merge( $_GET, $query ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
+	/**
+	 * Returns the current visitor's login state and, when appropriate, fresh submit nonces.
+	 *
+	 * No nonce is required to call this. Logged-out visitors need a response, and a WordPress
+	 * nonce from the expired session would not verify. The payload does not authorize a
+	 * submission on its own: nonces are only issued to the browser that still holds the auth
+	 * cookie, and they remain bound to that session.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param int $form_id The form the nonces would be used to submit.
+	 *
+	 * @return array {
+	 *     @type bool   $logged_in              Whether the current visitor is logged in.
+	 *     @type int    $user_id                The current user ID, or 0 when logged out.
+	 *     @type array  $nonces                 Fresh submit nonces, keyed by input name. Empty unless this form requires login.
+	 *     @type string $ajax_submission_nonce  Fresh nonce for gform_ajax_submission. Empty unless this form requires login.
+	 * }
+	 */
+	public function get_require_login_auth_data( $form_id ) {
+		$user_id = (int) get_current_user_id();
+		$status  = array(
+			'logged_in'             => is_user_logged_in() && $user_id > 0,
+			'user_id'               => 0,
+			'nonces'                => array(),
+			'ajax_submission_nonce' => '',
+		);
+
+		if ( ! $status['logged_in'] ) {
+			return $status;
+		}
+
+		$status['user_id'] = $user_id;
+
+		$form_id = absint( $form_id );
+		if ( empty( $form_id ) ) {
+			return $status;
+		}
+
+		$form = \GFAPI::get_form( $form_id );
+		if ( ! \GFCommon::form_requires_login( $form ) ) {
+			return $status;
+		}
+
+		$status['nonces'] = array(
+			'_gform_submit_nonce_' . $form_id => wp_create_nonce( 'gform_submit_' . $form_id ),
+		);
+
+		if ( rgars( $form, 'save/enabled' ) ) {
+			$status['nonces']['_gform_send_resume_link_nonce'] = wp_create_nonce( 'gform_send_resume_link' );
+		}
+		$status['ajax_submission_nonce'] = wp_create_nonce( 'gform_ajax_submission' );
+
+		return $status;
+	}
+
+	/**
+	 * AJAX callback for {@see GF_Ajax_Handler::get_require_login_auth_data()}.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @return void
+	 */
+	public function require_login_auth_check() {
+		wp_send_json_success( $this->get_require_login_auth_data( absint( rgpost( 'form_id' ) ) ) );
+	}
+
 }

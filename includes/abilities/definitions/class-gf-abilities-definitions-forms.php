@@ -138,7 +138,7 @@ class GF_Abilities_Definitions_Forms {
 						'additionalProperties' => false,
 					),
 					'output_schema'    => GF_Ability_Schemas::form_mutation_output_schema(),
-					'destructive'      => true,
+					'destructive'      => false,
 				),
 			),
 			array(
@@ -185,6 +185,11 @@ class GF_Abilities_Definitions_Forms {
 							'success'  => array( 'type' => 'boolean', 'description' => __( 'Whether the operation succeeded.', 'gravityforms' ) ),
 							'trashed'  => array( 'type' => 'boolean', 'description' => __( 'Present and true when the update moved the form to the trash.', 'gravityforms' ) ),
 							'restored' => array( 'type' => 'boolean', 'description' => __( 'Present and true when the update restored the form from the trash.', 'gravityforms' ) ),
+							'warnings' => array(
+								'type'        => 'array',
+								'items'       => array( 'type' => 'string' ),
+								'description' => __( 'Present when the saved form has a problem that did not block the update, such as conditional logic rules that reference a field no longer on the form. Act on each warning.', 'gravityforms' ),
+							),
 						),
 					),
 					'destructive'      => true,
@@ -244,6 +249,7 @@ class GF_Abilities_Definitions_Forms {
 								'description' => __( 'Quick overview of logic counts across all locations.', 'gravityforms' ),
 								'properties'  => array(
 									'total_rules'       => array( 'type' => 'integer', 'description' => __( 'Total conditional logic rules across all locations.', 'gravityforms' ) ),
+									'orphaned_rules'    => array( 'type' => 'integer', 'description' => __( 'Rules whose source field is not on the form (deleted or never existed). Each such rule carries orphaned: true, as does its dependency_map entry. Repair these before adding fields, or a new field that reuses the id takes the rules over.', 'gravityforms' ) ),
 									'fields_with_logic' => array( 'type' => 'integer', 'description' => __( 'Number of fields that have conditional logic.', 'gravityforms' ) ),
 									'notifications_with_logic' => array( 'type' => 'integer', 'description' => __( 'Number of notifications with conditional logic.', 'gravityforms' ) ),
 									'confirmations_with_logic' => array( 'type' => 'integer', 'description' => __( 'Number of confirmations with conditional logic.', 'gravityforms' ) ),
@@ -296,7 +302,7 @@ class GF_Abilities_Definitions_Forms {
 					'capability'       => 'gravityforms_create_form',
 					'input_schema'     => GF_Ability_Schemas::single_id_input_schema( 'form_id', __( 'The ID of the form to duplicate.', 'gravityforms' ) ),
 					'output_schema'    => GF_Ability_Schemas::form_mutation_output_schema(),
-					'destructive'      => true,
+					'destructive'      => false,
 				),
 			),
 		);

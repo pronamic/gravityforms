@@ -37,7 +37,7 @@ class GF_Abilities_Handler_Entries {
 		$entry = \GFAPI::get_entry( absint( $input['entry_id'] ) );
 
 		if ( is_wp_error( $entry ) ) {
-			return $entry;
+			return new \WP_Error( 'gf_ability_not_found', __( 'Entry not found.', 'gravityforms' ) );
 		}
 
 		return self::redact_entry( self::slim_entry( $entry ) );
@@ -68,6 +68,19 @@ class GF_Abilities_Handler_Entries {
 		$hidden_error = self::reject_hidden_field_criteria( $search_criteria, $sorting, (array) $input['form_ids'] );
 		if ( $hidden_error ) {
 			return $hidden_error;
+		}
+
+		// An empty result for a missing form looks like a valid answer; say not
+		// found instead. 0 is GFAPI's "all forms" sentinel and is left alone.
+		foreach ( (array) $input['form_ids'] as $form_id ) {
+			if ( empty( $form_id ) ) {
+				continue;
+			}
+
+			if ( ! \GFAPI::get_form( absint( $form_id ) ) ) {
+				/* translators: %d: form ID */
+				return new \WP_Error( 'gf_ability_not_found', sprintf( __( 'Form %d not found.', 'gravityforms' ), absint( $form_id ) ) );
+			}
 		}
 
 		$entries = \GFAPI::get_entries(
@@ -149,6 +162,9 @@ class GF_Abilities_Handler_Entries {
 	public static function create_entry( $input ) {
 		$entry = self::whitelist_entry_input( $input['entry'], array( 'form_id', 'is_read', 'is_starred' ) );
 
+		// GFAPI would record the REST request URL; an API entry has no embedding page.
+		$entry['source_url'] = '';
+
 		if ( isset( $input['entry']['status'] ) ) {
 			$status = (string) $input['entry']['status'];
 			if ( ! in_array( $status, array( 'active', 'spam', 'trash' ), true ) ) {
@@ -165,6 +181,17 @@ class GF_Abilities_Handler_Entries {
 			$entry['status'] = $status;
 		}
 
+		// Imports need their original timestamp; GFAPI honors date_created on insert.
+		if ( isset( $input['entry']['date_created'] ) && '' !== (string) $input['entry']['date_created'] ) {
+			$date_created = self::normalize_entry_timestamp( $input['entry']['date_created'] );
+
+			if ( is_wp_error( $date_created ) ) {
+				return $date_created;
+			}
+
+			$entry['date_created'] = $date_created;
+		}
+
 		$entry = self::normalize_entry_values( $entry, $entry );
 
 		if ( is_wp_error( $entry ) ) {
@@ -177,7 +204,111 @@ class GF_Abilities_Handler_Entries {
 			return $entry_id;
 		}
 
-		return array( 'entry_id' => (int) $entry_id );
+		$response = array( 'entry_id' => (int) $entry_id );
+		$warnings = self::unknown_field_warnings( absint( $entry['form_id'] ), $input['entry'] );
+
+		if ( ! empty( $warnings ) ) {
+			$response['warnings'] = $warnings;
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Validate a caller-supplied entry timestamp.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param mixed $value The supplied value.
+	 *
+	 * @return string|\WP_Error UTC "Y-m-d H:i:s".
+	 */
+	private static function normalize_entry_timestamp( $value ) {
+		$value = is_scalar( $value ) ? trim( (string) $value ) : '';
+
+		// Shape check first: DateTime::createFromFormat() throws on stray bytes.
+		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?$/', $value ) ) {
+			return new \WP_Error( 'gf_ability_invalid_date', __( 'date_created must be a UTC timestamp in the format YYYY-MM-DD HH:MM:SS (or YYYY-MM-DD).', 'gravityforms' ) );
+		}
+
+		foreach ( array( 'Y-m-d H:i:s', 'Y-m-d' ) as $format ) {
+			$date = \DateTime::createFromFormat( '!' . $format, $value, new \DateTimeZone( 'UTC' ) );
+
+			if ( $date && $date->format( $format ) === $value ) {
+				return $date->format( 'Y-m-d H:i:s' );
+			}
+		}
+
+		return new \WP_Error( 'gf_ability_invalid_date', __( 'date_created must be a UTC timestamp in the format YYYY-MM-DD HH:MM:SS (or YYYY-MM-DD).', 'gravityforms' ) );
+	}
+
+	/**
+	 * Describe field-keyed values that GFAPI will drop because the form has no such field or input.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param int   $form_id  The form ID.
+	 * @param array $provided The caller-supplied entry array.
+	 *
+	 * @return string[]
+	 */
+	private static function unknown_field_warnings( $form_id, $provided ) {
+		$form = \GFAPI::get_form( $form_id );
+
+		if ( ! $form ) {
+			return array();
+		}
+
+		$known   = self::collect_entry_keys( rgar( $form, 'fields', array() ) );
+		$unknown = array();
+
+		foreach ( array_keys( (array) $provided ) as $key ) {
+			$key = (string) $key;
+
+			if ( preg_match( '/^\d+(\.\d+)?$/', $key ) && ! in_array( $key, $known, true ) ) {
+				$unknown[] = $key;
+			}
+		}
+
+		if ( empty( $unknown ) ) {
+			return array();
+		}
+
+		return array(
+			sprintf(
+				/* translators: 1: form ID, 2: comma-separated list of field or input IDs */
+				__( 'Form %1$d has no field or input with id %2$s; those values were not saved.', 'gravityforms' ),
+				$form_id,
+				implode( ', ', $unknown )
+			),
+		);
+	}
+
+	/**
+	 * Collect the field and input IDs an entry may store, repeater children included.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param array $fields Field objects.
+	 *
+	 * @return string[]
+	 */
+	private static function collect_entry_keys( $fields ) {
+		$keys = array();
+
+		foreach ( (array) $fields as $field ) {
+			$keys[] = (string) $field->id;
+
+			foreach ( is_array( $field->inputs ) ? $field->inputs : array() as $sub_input ) {
+				$keys[] = (string) rgar( $sub_input, 'id' );
+			}
+
+			if ( ! empty( $field->fields ) && is_array( $field->fields ) ) {
+				$keys = array_merge( $keys, self::collect_entry_keys( $field->fields ) );
+			}
+		}
+
+		return $keys;
 	}
 
 	/**
@@ -236,7 +367,7 @@ class GF_Abilities_Handler_Entries {
 		$stored   = \GFAPI::get_entry( $entry_id );
 
 		if ( is_wp_error( $stored ) ) {
-			return $stored;
+			return new \WP_Error( 'gf_ability_not_found', __( 'Entry not found.', 'gravityforms' ) );
 		}
 
 		$changes = $input['entry'];
@@ -273,6 +404,10 @@ class GF_Abilities_Handler_Entries {
 			return $entry;
 		}
 
+		// GFAPI keeps a supplied date_updated; drop the stored one so this
+		// write is stamped with the current time, like the entry editor.
+		unset( $entry['date_updated'] );
+
 		$result = \GFAPI::update_entry( $entry );
 
 		if ( is_wp_error( $result ) ) {
@@ -283,7 +418,14 @@ class GF_Abilities_Handler_Entries {
 			\GFFormsModel::change_entry_status( $entry_id, $status_change );
 		}
 
-		return array( 'success' => (bool) $result );
+		$response = array( 'success' => (bool) $result );
+		$warnings = self::unknown_field_warnings( absint( rgar( $stored, 'form_id' ) ), $input['entry'] );
+
+		if ( ! empty( $warnings ) ) {
+			$response['warnings'] = $warnings;
+		}
+
+		return $response;
 	}
 
 	/**
@@ -308,6 +450,17 @@ class GF_Abilities_Handler_Entries {
 		if ( ! empty( $input['entry_id'] ) ) {
 			$entry_id = absint( $input['entry_id'] );
 
+			// Verify the entry exists, and that it belongs to form_id when both
+			// are given. A mixed-up pair must never delete an entry on another form.
+			$entry = \GFAPI::get_entry( $entry_id );
+			if ( is_wp_error( $entry ) ) {
+				return new \WP_Error( 'gf_ability_not_found', __( 'Entry not found.', 'gravityforms' ) );
+			}
+
+			if ( ! empty( $input['form_id'] ) && (int) rgar( $entry, 'form_id' ) !== absint( $input['form_id'] ) ) {
+				return new \WP_Error( 'gf_ability_form_entry_mismatch', __( 'Entry does not belong to the specified form.', 'gravityforms' ) );
+			}
+
 			if ( $force ) {
 				if ( ( $input['confirmation'] ?? '' ) !== (string) $entry_id ) {
 					return new \WP_Error( 'gf_ability_confirmation_mismatch', __( 'Confirmation does not match the entry ID. Please provide the exact entry ID to confirm permanent deletion.', 'gravityforms' ) );
@@ -320,12 +473,6 @@ class GF_Abilities_Handler_Entries {
 				}
 
 				return array( 'success' => true, 'deleted_count' => 1, 'trashed' => false );
-			}
-
-			// Verify entry exists before trashing.
-			$entry = \GFAPI::get_entry( $entry_id );
-			if ( is_wp_error( $entry ) ) {
-				return $entry;
 			}
 
 			$result = \GFAPI::update_entry_property( $entry_id, 'status', 'trash' );
@@ -713,6 +860,28 @@ class GF_Abilities_Handler_Entries {
 		}
 
 		foreach ( rgar( $form, 'fields', array() ) as $field ) {
+			if ( isset( $field->fields ) && is_array( $field->fields ) ) {
+				$field_key = self::get_entry_field_key( $provided_entry, $field->id );
+				$rows      = null === $field_key ? array() : rgar( $entry, $field_key );
+
+				// GFAPI drops any other shape and still reports success.
+				if ( ! is_array( $rows ) || count( array_filter( $rows, 'is_array' ) ) !== count( $rows ) ) {
+					$child = reset( $field->fields );
+
+					return new \WP_Error(
+						'gf_ability_invalid_repeater_input',
+						sprintf(
+							/* translators: 1: repeater field ID, 2: child field ID */
+							__( 'Field %1$d is a repeater. Send its value as an array of rows keyed by child field id, for example "%1$d": [{"%2$d": "Alice"}].', 'gravityforms' ),
+							$field->id,
+							$child ? $child->id : $field->id + 1
+						)
+					);
+				}
+
+				continue;
+			}
+
 			if ( 'date' !== rgar( $field, 'type' ) ) {
 				continue;
 			}
