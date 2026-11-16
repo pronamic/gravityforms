@@ -14,6 +14,15 @@ class GF_Field_Donation extends GF_Field {
 	public $type = 'donation';
 
 	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
+	/**
 	 * Indicates if this field supports state validation.
 	 *
 	 * @since 2.5.11

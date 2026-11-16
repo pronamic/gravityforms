@@ -80,6 +80,11 @@ class GF_Abilities_Handler_Feeds {
 	 * @return array|\WP_Error
 	 */
 	public static function list_feeds( $input ) {
+		// An empty list for a missing form looks like a valid answer; say not found instead.
+		if ( ! empty( $input['form_id'] ) && ! \GFAPI::get_form( absint( $input['form_id'] ) ) ) {
+			return new \WP_Error( 'gf_ability_not_found', __( 'Form not found.', 'gravityforms' ) );
+		}
+
 		$feeds = \GFAPI::get_feeds(
 			null,
 			isset( $input['form_id'] ) ? absint( $input['form_id'] ) : null,
@@ -133,11 +138,15 @@ class GF_Abilities_Handler_Feeds {
 	 * @return array|\WP_Error
 	 */
 	public static function create_feed( $input ) {
-		if ( ! \GFAddOn::get_addon_by_slug( $input['addon_slug'] ) ) {
+		$addon = \GFAddOn::get_addon_by_slug( $input['addon_slug'] );
+
+		// An active add-on without feed support (theme layers, Signature, ...)
+		// has no feed table handling; GFAPI::add_feed() would fatal on it.
+		if ( ! $addon instanceof \GFFeedAddOn ) {
 			return new \WP_Error(
 				'gf_ability_unknown_addon',
 				/* translators: %s: add-on slug */
-				sprintf( __( 'No active add-on is registered for the slug "%s".', 'gravityforms' ), (string) $input['addon_slug'] )
+				sprintf( __( 'No active feed add-on is registered for the slug "%s". Call gravityforms/system-info for the active add-ons; only add-ons with feeds accept this call.', 'gravityforms' ), (string) $input['addon_slug'] )
 			);
 		}
 
@@ -146,14 +155,42 @@ class GF_Abilities_Handler_Feeds {
 			return $denied;
 		}
 
+		$form_id   = absint( $input['form_id'] );
 		$feed_meta = self::sanitize_feed_meta( $input['feed_meta'] );
-		$feed_id   = \GFAPI::add_feed( absint( $input['form_id'] ), $feed_meta, $input['addon_slug'] );
+		$is_active = ! empty( $input['is_active'] );
 
-		if ( is_wp_error( $feed_id ) ) {
-			return $feed_id;
+		if ( $is_active ) {
+			$feed_id = \GFAPI::add_feed( $form_id, $feed_meta, $input['addon_slug'] );
+
+			if ( is_wp_error( $feed_id ) ) {
+				return $feed_id;
+			}
+
+			return array( 'feed_id' => (int) $feed_id, 'is_active' => true );
 		}
 
-		return array( 'feed_id' => (int) $feed_id );
+		// A feed built through the API starts paused unless the caller asks
+		// otherwise, so an incomplete setup never processes real submissions.
+		// GFAPI::add_feed() can only insert live feeds, so mirror its checks and
+		// insert through the add-on, which writes the paused state atomically.
+		if ( gf_upgrade()->get_submissions_block() ) {
+			return new \WP_Error( 'submissions_blocked', __( 'Submissions are currently blocked due to an upgrade in progress', 'gravityforms' ) );
+		}
+
+		if ( ! \GFAPI::get_form( $form_id ) ) {
+			return new \WP_Error( 'gf_ability_not_found', __( 'Form not found.', 'gravityforms' ) );
+		}
+
+		$feed_id = $addon->insert_feed( $form_id, 0, $feed_meta );
+
+		if ( ! $feed_id ) {
+			return new \WP_Error( 'gf_ability_feed_insert_failed', __( 'There was an error while inserting a feed', 'gravityforms' ) );
+		}
+
+		/** This action is documented in includes/api.php */
+		do_action( 'gform_post_add_feed', $feed_id, $form_id, $feed_meta, $input['addon_slug'] );
+
+		return array( 'feed_id' => (int) $feed_id, 'is_active' => false );
 	}
 
 	/**
@@ -168,7 +205,8 @@ class GF_Abilities_Handler_Feeds {
 	public static function update_feed( $input ) {
 		$existing = \GFAPI::get_feed( absint( $input['feed_id'] ) );
 		if ( is_wp_error( $existing ) ) {
-			return $existing;
+			// GFAPI answers a missing feed with its own not_found code; other errors (a missing table) pass through.
+			return 'not_found' === $existing->get_error_code() ? new \WP_Error( 'gf_ability_not_found', __( 'Feed not found.', 'gravityforms' ) ) : $existing;
 		}
 
 		$denied = self::require_addon_capability( rgar( $existing, 'addon_slug' ) );
@@ -176,17 +214,51 @@ class GF_Abilities_Handler_Feeds {
 			return $denied;
 		}
 
-		$result = \GFAPI::update_feed(
-			absint( $input['feed_id'] ),
-			self::sanitize_feed_meta( $input['feed_meta'] ),
-			isset( $input['form_id'] ) ? absint( $input['form_id'] ) : null
-		);
+		$has_meta   = isset( $input['feed_meta'] ) && is_array( $input['feed_meta'] );
+		$has_form   = isset( $input['form_id'] );
+		$has_active = isset( $input['is_active'] );
 
-		if ( is_wp_error( $result ) ) {
-			return $result;
+		if ( ! $has_meta && ! $has_form && ! $has_active ) {
+			return new \WP_Error(
+				'gf_ability_missing_parameter',
+				__( 'Provide feed_meta, is_active, or form_id to change.', 'gravityforms' )
+			);
 		}
 
-		return array( 'success' => (bool) $result );
+		// GFAPI::update_feed() only finds active feeds, and feeds created here
+		// start paused. update_feed_property() finds any feed and still encrypts
+		// meta, so every change goes through it.
+		$changes = array();
+
+		if ( $has_meta ) {
+			$meta = self::sanitize_feed_meta( $input['feed_meta'] );
+
+			// The property updater rejects an empty array; its JSON form is accepted.
+			$changes['meta'] = empty( $meta ) ? '{}' : $meta;
+		}
+
+		if ( $has_form ) {
+			if ( ! \GFAPI::get_form( absint( $input['form_id'] ) ) ) {
+				return new \WP_Error( 'gf_ability_not_found', __( 'Form not found.', 'gravityforms' ) );
+			}
+
+			$changes['form_id'] = absint( $input['form_id'] );
+		}
+
+		if ( $has_active ) {
+			$changes['is_active'] = ! empty( $input['is_active'] ) ? 1 : 0;
+		}
+
+		foreach ( $changes as $property => $value ) {
+			// Returns false when the stored value already matched; only a WP_Error is a failure.
+			$result = \GFAPI::update_feed_property( absint( $input['feed_id'] ), $property, $value );
+
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
+		}
+
+		return array( 'success' => true );
 	}
 
 	/**
@@ -207,7 +279,8 @@ class GF_Abilities_Handler_Feeds {
 
 		$existing = \GFAPI::get_feed( $feed_id );
 		if ( is_wp_error( $existing ) ) {
-			return $existing;
+			// GFAPI answers a missing feed with its own not_found code; other errors (a missing table) pass through.
+			return 'not_found' === $existing->get_error_code() ? new \WP_Error( 'gf_ability_not_found', __( 'Feed not found.', 'gravityforms' ) ) : $existing;
 		}
 
 		$denied = self::require_addon_capability( rgar( $existing, 'addon_slug' ) );

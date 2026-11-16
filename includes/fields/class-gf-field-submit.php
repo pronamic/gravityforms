@@ -20,15 +20,6 @@ class GF_Field_Submit extends GF_Field {
 	 */
 	public $duplicatable = false;
 
-	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = false;
-
 	public function __construct( $data = array() ) {
 		add_filter( 'gform_pre_render', array( $this, 'inject_inline_button' ), 100 );
 

@@ -21,16 +21,6 @@ class GF_Field_CAPTCHA extends GF_Field {
 	public $duplicatable = false;
 
 	/**
-	 * Whether the field can be used in a repeater.
-	 *
-	 * @since 3.0
-	 *
-	 * @var bool
-	 */
-	public $repeatable = false;
-
-
-	/**
 	 * The reCAPTCHA API response.
 	 *
 	 * @var \stdClass

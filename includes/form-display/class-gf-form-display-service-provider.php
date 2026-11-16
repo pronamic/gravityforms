@@ -5,7 +5,10 @@ namespace Gravity_Forms\Gravity_Forms\Form_Display;
 use Gravity_Forms\Gravity_Forms\Config\GF_Config_Service_Provider;
 use Gravity_Forms\Gravity_Forms\Form_Display\Config\GF_Product_Meta_Config;
 use Gravity_Forms\Gravity_Forms\Form_Display\Config\GF_Pagination_Config;
+use Gravity_Forms\Gravity_Forms\Form_Display\Config\GF_Require_Login_Auth_Config;
+use Gravity_Forms\Gravity_Forms\Fields\Config\GF_Field_Address_Frontend_Config;
 use Gravity_Forms\Gravity_Forms\Fields\Config\GF_Field_Phone_Frontend_Config;
+use Gravity_Forms\Gravity_Forms\Fields\Config\GF_Field_Repeater_Frontend_Config;
 use Gravity_Forms\Gravity_Forms\Form_Display\Full_Screen\Full_Screen_Handler;
 use Gravity_Forms\Gravity_Forms\Form_Display\Block_Styles\Block_Styles_Handler;
 use Gravity_Forms\Gravity_Forms\Form_Display\State\State_Handler;
@@ -25,13 +28,16 @@ use \GFFormDisplay;
  */
 class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 
-	const FULL_SCREEN_HANDLER   = 'full_screen_handler';
-	const BLOCK_STYLES_HANDLER  = 'block_styles_handler';
-	const STATE_HANDLER         = 'state_handler';
-	const BLOCK_STYLES_DEFAULTS = 'block_styles_defaults';
-	const PRODUCT_META_CONFIG   = 'products_meta_config';
-	const PAGINATION_CONFIG     = 'pagination_config';
-	const PHONE_FIELD_FRONTEND_CONFIG = 'phone_field_frontend_config';
+	const FULL_SCREEN_HANDLER            = 'full_screen_handler';
+	const BLOCK_STYLES_HANDLER           = 'block_styles_handler';
+	const STATE_HANDLER                  = 'state_handler';
+	const BLOCK_STYLES_DEFAULTS          = 'block_styles_defaults';
+	const PRODUCT_META_CONFIG            = 'products_meta_config';
+	const PAGINATION_CONFIG              = 'pagination_config';
+	const REQUIRE_LOGIN_AUTH_CONFIG      = 'require_login_auth_config';
+	const PHONE_FIELD_FRONTEND_CONFIG    = 'phone_field_frontend_config';
+	const REPEATER_FIELD_FRONTEND_CONFIG = 'repeater_field_frontend_config';
+	const ADDRESS_FIELD_FRONTEND_CONFIG  = 'address_field_frontend_config';
 
 	/**
 	 * Register services to the container.
@@ -48,8 +54,11 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 		require_once $base_path . '/block-styles/block-styles-handler.php';
 		require_once $base_path . '/config/class-gf-product-meta-config.php';
 		require_once $base_path . '/config/class-gf-pagination-config.php';
+		require_once $base_path . '/config/class-gf-require-login-auth-config.php';
 		require_once $base_path . '/state/class-state-handler.php';
+		require_once $base_path . '/../fields/config/class-gf-field-address-frontend-config.php';
 		require_once $base_path . '/../fields/config/class-gf-field-phone-frontend-config.php';
+		require_once $base_path . '/../fields/config/class-gf-field-repeater-frontend-config.php';
 
 		$container->add( self::FULL_SCREEN_HANDLER, function() use ( $container ) {
 			// Use string handler for now to avoid JSON query issues on old platforms.
@@ -108,11 +117,32 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 		});
 		$container->get( GF_Config_Service_Provider::CONFIG_COLLECTION )->add_config( $container->get( self::PAGINATION_CONFIG ) );
 
+		// Require-login session check config.
+		$container->add( self::REQUIRE_LOGIN_AUTH_CONFIG, function () use ( $container ) {
+			return new GF_Require_Login_Auth_Config( $container->get( GF_Config_Service_Provider::DATA_PARSER ) );
+		} );
+		$container->get( GF_Config_Service_Provider::CONFIG_COLLECTION )->add_config( $container->get( self::REQUIRE_LOGIN_AUTH_CONFIG ) );
+
+		// Address Field Frontend config.
+		$container->add(
+			self::ADDRESS_FIELD_FRONTEND_CONFIG,
+			function () use ( $container ) {
+				return new GF_Field_Address_Frontend_Config( $container->get( GF_Config_Service_Provider::DATA_PARSER ) );
+			}
+		);
+		$container->get( GF_Config_Service_Provider::CONFIG_COLLECTION )->add_config( $container->get( self::ADDRESS_FIELD_FRONTEND_CONFIG ) );
+
 		// Phone Field Frontend config.
 		$container->add( self::PHONE_FIELD_FRONTEND_CONFIG, function () use ( $container ) {
 			return new GF_Field_Phone_Frontend_Config( $container->get( GF_Config_Service_Provider::DATA_PARSER ) );
 		} );
 		$container->get( GF_Config_Service_Provider::CONFIG_COLLECTION )->add_config( $container->get( self::PHONE_FIELD_FRONTEND_CONFIG ) );
+
+		// Repeater Field Frontend config.
+		$container->add( self::REPEATER_FIELD_FRONTEND_CONFIG, function () use ( $container ) {
+			return new GF_Field_Repeater_Frontend_Config( $container->get( GF_Config_Service_Provider::DATA_PARSER ) );
+		} );
+		$container->get( GF_Config_Service_Provider::CONFIG_COLLECTION )->add_config( $container->get( self::REPEATER_FIELD_FRONTEND_CONFIG ) );
 
 	}
 
@@ -134,6 +164,7 @@ class GF_Form_Display_Service_Provider extends GF_Service_Provider {
 			$container->get( self::BLOCK_STYLES_HANDLER )->handle();
 		}, 0, 0 );
 
+		add_action( 'gform_enqueue_scripts', array( GF_Require_Login_Auth_Config::class, 'register_enqueued_form' ) );
 		add_action( 'gform_enqueue_scripts', array( $this, 'register_theme_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_theme_styles' ) );
 		add_action( 'enqueue_block_assets', array( $this, 'register_theme_styles' ) );

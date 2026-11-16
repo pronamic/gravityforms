@@ -22,7 +22,7 @@ class GF_Abilities_Definitions_Submissions {
 				'name' => 'gravityforms/submissions-submit',
 				'args' => array(
 					'label'            => __( 'Submit Form', 'gravityforms' ),
-					'description'      => __( 'Submits a form through the full Gravity Forms processing pipeline — validation, entry creation, notifications, confirmations, and feed processing. This is the equivalent of a user filling out and submitting a form.', 'gravityforms' ),
+					'description'      => __( 'Submits a form through the full Gravity Forms processing pipeline — validation, entry creation, notifications, confirmations, and feed processing. This is the equivalent of a user filling out and submitting a form. Repeater child fields submit as arrays keyed by child input name, e.g. input_2: ["Alice", "Bob"].', 'gravityforms' ),
 					'summary'          => __( 'Submit a form as if a visitor did — saves an entry and sends emails.', 'gravityforms' ),
 					'category'         => 'gravityforms-submissions',
 					'execute_callback' => array( GF_Abilities_Handler_Submissions::class, 'submit_form' ),
@@ -35,7 +35,7 @@ class GF_Abilities_Definitions_Submissions {
 							'input_values' => GF_Ability_Schemas::input_values_schema(),
 							'field_values' => array(
 								'type'                 => 'object',
-								'description'          => __( 'Optional. Parameter pre-population values.', 'gravityforms' ),
+								'description'          => __( 'Optional. Dynamic population values keyed by parameter name (a field\'s inputName, or a sub-input\'s name). Fills fields that have allowsPrepopulate when input_values has no value for them; an explicit input value always wins.', 'gravityforms' ),
 								'additionalProperties' => array( 'type' => 'string' ),
 							),
 						),
@@ -51,14 +51,14 @@ class GF_Abilities_Definitions_Submissions {
 							'validation_messages'  => GF_Ability_Schemas::validation_messages_schema(),
 						),
 					),
-					'destructive'      => true,
+					'destructive'      => false,
 				),
 			),
 			array(
 				'name' => 'gravityforms/submissions-validate',
 				'args' => array(
 					'label'            => __( 'Validate Submission', 'gravityforms' ),
-					'description'      => __( 'Validates form input values without creating an entry or triggering any processing. Useful for pre-flight validation before actual submission. Returns validation status and any field errors.', 'gravityforms' ),
+					'description'      => __( 'Validates form input values without creating an entry or triggering any processing. Useful for pre-flight validation before actual submission. Returns validation status and any field errors. Repeater child fields use the same array format as submissions-submit. Nothing is written; the one external effect is that a reCAPTCHA token in input_values is verified with the provider, which consumes it.', 'gravityforms' ),
 					'summary'          => __( 'Check whether form input is valid, without saving anything.', 'gravityforms' ),
 					'category'         => 'gravityforms-submissions',
 					'execute_callback' => array( GF_Abilities_Handler_Submissions::class, 'validate_submission' ),
@@ -72,6 +72,11 @@ class GF_Abilities_Definitions_Submissions {
 								GF_Ability_Schemas::input_values_schema(),
 								array( 'description' => __( 'Field values to validate, same format as submissions/submit.', 'gravityforms' ) )
 							),
+							'field_values' => array(
+								'type'                 => 'object',
+								'description'          => __( 'Optional. Dynamic population values keyed by parameter name, same as submissions/submit.', 'gravityforms' ),
+								'additionalProperties' => array( 'type' => 'string' ),
+							),
 						),
 						'additionalProperties' => false,
 					),
@@ -82,6 +87,7 @@ class GF_Abilities_Definitions_Submissions {
 							'validation_messages' => GF_Ability_Schemas::validation_messages_schema(),
 						),
 					),
+					'readonly'       => true,
 					'idempotent'       => true,
 				),
 			),

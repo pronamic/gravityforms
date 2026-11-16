@@ -10,6 +10,15 @@ class GF_Field_Select extends GF_Field {
 	public $type = 'select';
 
 	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
+	/**
 	 * Indicates if this field supports state validation.
 	 *
 	 * @since 2.5.11
@@ -199,7 +208,9 @@ class GF_Field_Select extends GF_Field {
 			$ary[] = GFCommon::format_variable_value( $val, $url_encode, $esc_html, $format );
 		}
 
-		return GFCommon::implode_non_blank( ', ', $ary );
+		$separator = $url_encode ? urlencode( ', ' ) : ', ';
+
+		return GFCommon::implode_non_blank( $separator, $ary );
 	}
 
 	/**
@@ -224,14 +235,25 @@ class GF_Field_Select extends GF_Field {
 		return esc_html( $this->get_selected_choice_output( $value, rgar( $entry, 'currency' ), $use_text ) );
 	}
 
-	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
-		if ( empty( $input_id ) ) {
-			$input_id = $this->id;
+	/**
+	 * Format a single Select field value for export.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param mixed      $value    The raw value for $input_id.
+	 * @param array      $entry    The entry currently being processed.
+	 * @param string|int $input_id The field or input ID.
+	 * @param bool       $use_text When processing choice based fields should the choice text be returned instead of the value.
+	 * @param bool       $is_csv   Is the value going to be used in the .csv entries export?
+	 *
+	 * @return string
+	 */
+	protected function format_value_export( $value, $entry, $input_id = '', $use_text = false, $is_csv = false ) {
+		if ( is_array( $value ) ) {
+			return '';
 		}
 
-		$value = rgar( $entry, $input_id );
-
-		return $is_csv ? $value : GFCommon::selection_display( $value, $this, rgar( $entry, 'currency' ), $use_text );
+		return $is_csv ? (string) $value : GFCommon::selection_display( $value, $this, rgar( $entry, 'currency' ), $use_text );
 	}
 
 	/**
@@ -248,6 +270,10 @@ class GF_Field_Select extends GF_Field {
 	public function sanitize_entry_value( $value, $form_id ) {
 		if ( $this->is_state_validation_supported() ) {
 			return parent::sanitize_entry_value( $value, $form_id );
+		}
+
+		if ( rgblank( $value ) ) {
+			return '';
 		}
 
 		$sanitized = wp_strip_all_tags( $value );

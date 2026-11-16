@@ -400,6 +400,36 @@ class GF_Query {
 
 				$literal = $field && $field->storageType == 'json' ? new GF_Query_JSON_Literal( (string) $value ) : new GF_Query_Literal( (string) $value );
 
+				// KSES-processed choice values may be stored with encoded ampersands. Match both
+				// forms so searches find entries saved before and after that encoding.
+				if (
+					$field && in_array( $field->get_input_type(), array( 'radio', 'checkbox' ), true ) && is_string( $value ) && strpos( $value, '&' ) !== false &&
+					in_array( $operator, array( GF_Query_Condition::EQ, GF_Query_Condition::NEQ, GF_Query_Condition::LIKE ), true )
+				) {
+					$search_values = $this->get_entity_compatible_search_values( $value );
+					if ( count( $search_values ) > 1 ) {
+						$column = new GF_Query_Column( $key, $form_id );
+						if ( $operator == GF_Query_Condition::LIKE ) {
+							$search_conditions = array();
+							foreach ( $search_values as $search_value ) {
+								$search_conditions[] = new GF_Query_Condition(
+									$column,
+									$operator,
+									new GF_Query_Literal( $search_value )
+								);
+							}
+							$filters[] = call_user_func_array( array( 'GF_Query_Condition', '_or' ), $search_conditions );
+						} else {
+							$operator = $operator == GF_Query_Condition::EQ ? GF_Query_Condition::IN : GF_Query_Condition::NIN;
+							$value    = new GF_Query_Series( array_map( function ( $search_value ) {
+								return new GF_Query_Literal( $search_value );
+							}, $search_values ) );
+							$filters[] = new GF_Query_Condition( $column, $operator, $value );
+						}
+						continue;
+					}
+				}
+
 				$column = count( $from ) > 1 ? new GF_Query_Column( $key ) : new GF_Query_Column( $key, $form_id );
 				$filters[] = new GF_Query_Condition(
 					$column,
@@ -478,7 +508,8 @@ class GF_Query {
 				$operator = empty( $original_operator ) ? GF_Query_Condition::EQ : $original_operator;
 		}
 
-		$val = $filter['value'];
+		$val           = $filter['value'];
+		$search_values = is_string( $val ) ? $this->get_entity_compatible_search_values( $val ) : array( $val );
 
 		$choice_filters = array();
 
@@ -488,7 +519,9 @@ class GF_Query {
 					/* @var GF_Field $field */
 					if ( is_array( $field->choices ) ) {
 						foreach ( $field->choices as $choice ) {
-							if ( ( $operator == '=' && strtolower( $choice['text'] ) == strtolower( $val ) ) || ( $operator == 'LIKE' && ! empty( $val ) && strpos( strtolower( $choice['text'] ), strtolower( $val ) ) !== false ) ) {
+							$choice_text  = wp_specialchars_decode( $choice['text'], ENT_QUOTES );
+							$search_value = is_string( $val ) ? wp_specialchars_decode( $val, ENT_QUOTES ) : $val;
+							if ( ( $operator == '=' && strtolower( $choice_text ) == strtolower( $search_value ) ) || ( $operator == 'LIKE' && ! empty( $search_value ) && strpos( strtolower( $choice_text ), strtolower( $search_value ) ) !== false ) ) {
 								if ( $field->gsurveyLikertEnableMultipleRows ) {
 									$choice_value           = $choice['value'];
 									$choice_search_operator = 'like';
@@ -497,11 +530,28 @@ class GF_Query {
 									$choice_value           = $choice['value'];
 									$choice_search_operator = '=';
 								}
-								$choice_filters[] = new GF_Query_Condition(
-									new GF_Query_Column( $field->id, $form['id'] ),
-									$choice_search_operator,
-									new GF_Query_Literal( $choice_value )
-								);
+								$choice_value_variants = $choice_search_operator == '=' && is_string( $choice_value ) ? $this->get_entity_compatible_search_values( $choice_value ) : array( $choice_value );
+								if ( $choice_search_operator == '=' && $field->get_input_type() == 'checkbox' ) {
+									$choice_filters[] = new GF_Query_Condition(
+										new GF_Query_Column( $field->id, $form['id'] ),
+										GF_Query_Condition::IN,
+										new GF_Query_Series( array_map( function ( $choice_value_variant ) {
+											return new GF_Query_Literal( $choice_value_variant );
+										}, $choice_value_variants ) )
+									);
+									continue;
+								}
+								$choice_value_conditions = array();
+								foreach ( $choice_value_variants as $choice_value_variant ) {
+									$choice_value_conditions[] = new GF_Query_Condition(
+										new GF_Query_Column( $field->id, $form['id'] ),
+										$choice_search_operator,
+										new GF_Query_Literal( $choice_value_variant )
+									);
+								}
+								$choice_filters[] = count( $choice_value_conditions ) > 1
+									? call_user_func_array( array( 'GF_Query_Condition', '_or' ), $choice_value_conditions )
+									: $choice_value_conditions[0];
 							}
 						}
 					}
@@ -521,14 +571,29 @@ class GF_Query {
 				$val
 			);
 		} else {
-			if ( $original_operator == 'CONTAINS' ) {
-				$val = '%' . $val . '%';
+			if ( in_array( $operator, array( GF_Query_Condition::EQ, GF_Query_Condition::LIKE ), true ) && is_string( $val ) ) {
+				if ( $original_operator == 'CONTAINS' ) {
+					$search_values = array_map( function ( $search_value ) {
+						return '%' . $search_value . '%';
+					}, $search_values );
+				}
+				foreach ( $search_values as $search_value ) {
+					$choice_filters[] = new GF_Query_Condition(
+						new GF_Query_Column( GF_Query_Column::META, $form_ids ),
+						$operator,
+						new GF_Query_Literal( $search_value )
+					);
+				}
+			} else {
+				if ( $original_operator == 'CONTAINS' ) {
+					$val = '%' . $val . '%';
+				}
+				$choice_filters[] = new GF_Query_Condition(
+					new GF_Query_Column( GF_Query_Column::META, $form_ids ),
+					$operator,
+					new GF_Query_Literal( $val )
+				);
 			}
-			$choice_filters[] = new GF_Query_Condition(
-				new GF_Query_Column( GF_Query_Column::META, $form_ids ),
-				$operator,
-				new GF_Query_Literal( $val )
-			);
 		}
 
 		if ( count( $choice_filters ) > 1 ) {
@@ -541,6 +606,25 @@ class GF_Query {
 		}
 
 		return $condition;
+	}
+
+	/**
+	 * Return the submitted value and its plain-text and KSES-encoded ampersand forms.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param mixed $value The search value.
+	 *
+	 * @return array
+	 */
+	private function get_entity_compatible_search_values( $value ) {
+		if ( ! is_string( $value ) || strpos( $value, '&' ) === false ) {
+			return array( $value );
+		}
+
+		$decoded_value = wp_specialchars_decode( $value, ENT_QUOTES );
+
+		return array_values( array_unique( array( $value, $decoded_value, str_replace( '&', '&amp;', $decoded_value ) ) ) );
 	}
 
 	/**
@@ -1566,23 +1650,32 @@ AND ( meta_key REGEXP '^[0-9|.]+$'
 				$inputs = $field->get_entry_inputs();
 				if ( is_array( $inputs ) ) {
 					foreach ( $inputs as $input ) {
-						$entries[ $entry['id'] ][ (string) $input['id'] ] = gf_apply_filters( array(
+						$value = rgar( $entries[ $entry['id'] ], (string) $input['id'] );
+						if ( $field->get_input_type() == 'checkbox' && is_string( $value ) ) {
+							$value = wp_specialchars_decode( $value, ENT_QUOTES );
+						}
+						$value = gf_apply_filters( array(
 							'gform_get_input_value',
 							$form['id'],
 							$field->id,
 							$input['id']
-						), rgar( $entries[ $entry['id'] ], (string) $input['id'] ), $entry, $field, $input['id'] );
+						), $value, $entry, $field, $input['id'] );
+						$entries[ $entry['id'] ][ (string) $input['id'] ] = $value;
 					}
 				} else {
 					$value = rgar( $entries[ $entry['id'] ], (string) $field->id );
 					if ( in_array( (string) $field->id, $openssl_encrypted_fields ) ) {
 						$value = GFCommon::openssl_decrypt( $value );
 					}
-					$entries[ $entry['id'] ][ $field->id ] = gf_apply_filters( array(
+					if ( $field->get_input_type() == 'radio' && is_string( $value ) ) {
+						$value = wp_specialchars_decode( $value, ENT_QUOTES );
+					}
+					$value = gf_apply_filters( array(
 						'gform_get_input_value',
 						$form['id'],
 						$field->id
 					), $value, $entry, $field, '' );
+					$entries[ $entry['id'] ][ $field->id ] = $value;
 				}
 			}
 

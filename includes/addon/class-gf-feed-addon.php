@@ -334,8 +334,9 @@ abstract class GFFeedAddOn extends GFAddOn {
 	/**
 	 * Determines what feeds need to be processed for the provided entry.
 	 *
-	 * @since  1.7.7
-	 * @since  2.9.4 Updated to save the processing status for each feed of compatible add-ons.
+	 * @since 1.7.7
+	 * @since 2.9.4 Updated to save the processing status for each feed of compatible add-ons.
+	 * @since 3.2.0 Updated to run `delay_feed()` when the feed has a condition based on the payment status and the form submission is being processed.
 	 *
 	 * @access public
 	 *
@@ -358,9 +359,11 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$form_id = (int) rgar( $form, 'id' );
 		$feeds   = false;
 
+		$check_for_payment_status_rule = current_filter() === 'gform_entry_post_save';
+
 		// If this is a single submission feed, get the first feed. Otherwise, get all feeds.
 		if ( $this->_single_feed_submission ) {
-			$feed = $this->get_single_submission_feed( $entry, $form );
+			$feed = $this->get_single_submission_feed( $entry, $form, $check_for_payment_status_rule );
 			if ( $feed ) {
 				$feeds = array( $feed );
 			}
@@ -404,60 +407,59 @@ abstract class GFFeedAddOn extends GFAddOn {
 				continue;
 			}
 
+			$has_payment_status_rule = $check_for_payment_status_rule && $this->has_payment_status_condition( $feed );
+
 			// If this feed's condition is not met, log that it's not being processed and skip it.
-			if ( ! $this->is_feed_condition_met( $feed, $form, $entry ) ) {
+			// Logic for _single_feed_submission was evaluated when get_single_submission_feed() got the feed.
+			if ( ! $this->_single_feed_submission && ! $this->is_feed_condition_met( $feed, $form, $entry, $has_payment_status_rule ) ) {
 				$this->log_debug( __METHOD__ . "(): Feed condition not met, not processing feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
 				continue;
 			}
 
-			// process feed if not delayed
-			if ( ! $is_delayed ) {
-
-				// If asynchronous feed processing is enabled, add it to the processing queue.
-				if ( $this->is_asynchronous( $feed, $entry, $form ) ) {
-
-					// Log that feed processing is being delayed.
-					$this->log_debug( __METHOD__ . "(): Adding feed (#{$feed_id} - {$feed_name}) to the processing queue for entry #{$entry_id}." );
-
-					// Add feed to processing queue.
-					$background_processor->push_to_queue(
-						array(
-							'addon'    => get_class( $this ),
-							'feed'     => $feed,
-							'entry_id' => $entry_id,
-							'form_id'  => $form_id,
-						)
-					);
-					$this->delay_feed( $feed, $entry, $form );
-
-				} else {
-
-					// All requirements are met; process feed.
-					$this->log_debug( __METHOD__ . "(): Starting to process feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
-					$result = $this->process_feed( $feed, $entry, $form );
-					$this->save_entry_feed_status( $result, $entry_id, $feed_id, $form_id );
-
-					// If returned value from the process feed call is an array containing an id, set the entry to its value.
-					if ( (int) rgar( $result, 'id' ) === $entry_id ) {
-						$entry = $result;
-					}
-
-					$this->post_process_feed( $feed, $entry, $form );
-					$this->fulfill_entry( $entry_id, $form_id );
-
-					// Adding this feed to the list of processed feeds
-					$processed_feeds[] = $feed_id;
-				}
-
-			} else {
-
-				// Log that feed processing is being delayed.
-				$this->log_debug( __METHOD__ . "(): Feed processing is delayed, not processing feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
-
-				// Delay feed.
+			if ( $has_payment_status_rule ) {
+				$this->log_debug( __METHOD__ . "(): Feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id} has condition based on payment status, delaying processing." );
 				$this->delay_feed( $feed, $entry, $form );
-
+				continue;
 			}
+
+			if ( $is_delayed ) {
+				$this->log_debug( __METHOD__ . "(): Feed processing is delayed, not processing feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
+				$this->delay_feed( $feed, $entry, $form );
+				continue;
+			}
+
+			// If asynchronous feed processing is enabled, add it to the processing queue.
+			if ( $this->is_asynchronous( $feed, $entry, $form ) ) {
+				$this->log_debug( __METHOD__ . "(): Adding feed (#{$feed_id} - {$feed_name}) to the processing queue for entry #{$entry_id}." );
+
+				// Add feed to processing queue.
+				$background_processor->push_to_queue(
+					array(
+						'addon'    => get_class( $this ),
+						'feed'     => $feed,
+						'entry_id' => $entry_id,
+						'form_id'  => $form_id,
+					)
+				);
+				$this->delay_feed( $feed, $entry, $form );
+				continue;
+			}
+
+			// All requirements are met; process feed.
+			$this->log_debug( __METHOD__ . "(): Starting to process feed (#{$feed_id} - {$feed_name}) for entry #{$entry_id}." );
+			$result = $this->process_feed( $feed, $entry, $form );
+			$this->save_entry_feed_status( $result, $entry_id, $feed_id, $form_id );
+
+			// If returned value from the process feed call is an array containing an id, set the entry to its value.
+			if ( (int) rgar( $result, 'id' ) === $entry_id ) {
+				$entry = $result;
+			}
+
+			$this->post_process_feed( $feed, $entry, $form );
+			$this->fulfill_entry( $entry_id, $form_id );
+
+			// Adding this feed to the list of processed feeds
+			$processed_feeds[] = $feed_id;
 		}
 
 		// If any feeds were processed, save the processed feed IDs.
@@ -469,7 +471,6 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		// Return the entry object.
 		return $entry;
-
 	}
 
 	/**
@@ -724,7 +725,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		/**
 		 * Allows reprocessing of the feed to be enabled. This applies to both synchronous and asynchronous feed processing.
-		 * By default, feeds are prevented from being sent multipe times for the same entry. Using this filter, reprocessing can be enabled.
+		 * By default, feeds are prevented from being sent multiple times for the same entry. Using this filter, reprocessing can be enabled.
 		 *
 		 * @since 2.9.20
 		 *
@@ -735,7 +736,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		 * @param GFFeedAddOn $addon              The current instance of the add-on the feed belongs to.
 		 * @param array       $processed_feeds    An array of feed IDs that have already been processed for the given entry.
 		 */
-		$allow_reprocessing = apply_filters( 'gform_allow_feed_reprocessing', false, $feed, $entry, $form, $this, $processed_feeds );
+		$allow_reprocessing = apply_filters( 'gform_allow_feed_reprocessing', $allow_reprocessing, $feed, $entry, $form, $this, $processed_feeds );
 
 		if ( ! $allow_reprocessing ) {
 			$this->log_debug( __METHOD__ . sprintf( '(): Feed (#%d - %s) has already been processed for entry #%d. Reprocessing is NOT allowed.', rgar( $feed, 'id' ), $feed_name, $entry_id ) );
@@ -806,17 +807,69 @@ abstract class GFFeedAddOn extends GFAddOn {
 		return;
 	}
 
-	public function is_feed_condition_met( $feed, $form, $entry ) {
-
-		$feed_meta            = $feed['meta'];
-		$is_condition_enabled = rgar( $feed_meta, 'feed_condition_conditional_logic' ) == true;
-		$logic                = rgars( $feed_meta, 'feed_condition_conditional_logic_object/conditionalLogic' );
-
-		if ( ! $is_condition_enabled || empty( $logic ) ) {
+	/**
+	 * Determines if the feed should be processed based on the conditional logic rules.
+	 *
+	 * @since unknown
+	 * @since 3.2.0 Added the $without_payment_status_rule param.
+	 *
+	 * @param array $feed                        The feed to be evaluated.
+	 * @param array $form                        The form the feed belongs to.
+	 * @param array $entry                       The current entry.
+	 * @param bool  $without_payment_status_rule If true, the payment status rule will be removed before the rules are evaluated.
+	 *
+	 * @return bool
+	 */
+	public function is_feed_condition_met( $feed, $form, $entry, $without_payment_status_rule = false ) {
+		$feed_meta = rgar( $feed, 'meta' );
+		if ( ! rgar( $feed_meta, 'feed_condition_conditional_logic' ) ) {
 			return true;
 		}
 
+		$logic = rgars( $feed_meta, 'feed_condition_conditional_logic_object/conditionalLogic', array() );
+		if ( empty( $logic['rules'] ) || ! is_array( $logic['rules'] ) ) {
+			return true;
+		}
+
+		if ( $without_payment_status_rule ) {
+			foreach ( $logic['rules'] as $key => $rule ) {
+				if ( rgar( $rule, 'fieldId' ) === 'payment_status' ) {
+					unset( $logic['rules'][ $key ] );
+				}
+			}
+
+			if ( empty( $logic['rules'] ) ) {
+				return true;
+			}
+
+			$logic['rules'] = array_values( $logic['rules'] );
+		}
+
 		return GFCommon::evaluate_conditional_logic( $logic, $form, $entry );
+	}
+
+	/**
+	 * Determines if the given feed has a conditional logic rule based on the entry payment status.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @param array $feed The feed to check.
+	 *
+	 * @return bool
+	 */
+	public function has_payment_status_condition( $feed ) {
+		$rules = rgars( $feed, 'meta/feed_condition_conditional_logic_object/conditionalLogic/rules' );
+		if ( empty( $rules ) || ! is_array( $rules ) ) {
+			return false;
+		}
+
+		foreach ( $rules as $rule ) {
+			if ( rgar( $rule, 'fieldId' ) === 'payment_status' ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1093,7 +1146,19 @@ abstract class GFFeedAddOn extends GFAddOn {
 		return $this->get_encryptor()->decrypt_feed_meta( $row );
 	}
 
-	public function get_single_submission_feed( $entry = false, $form = false ) {
+	/**
+	 * Return the active feed to be used when processing the given form and entry, evaluating conditional logic if configured.
+	 *
+	 * @since unknown
+	 * @since 3.2.0 Added the $check_for_payment_status_rule param.
+	 *
+	 * @param false|array $entry                         The current entry.
+	 * @param false|array $form                          The current form.
+	 * @param bool        $check_for_payment_status_rule Whether to check if a feed has a conditional logic rule based on the entry payment status.
+	 *
+	 * @return bool|array
+	 */
+	public function get_single_submission_feed( $entry = false, $form = false, $check_for_payment_status_rule = false ) {
 
 		if ( ! $entry && ! $form ) {
 			return false;
@@ -1105,12 +1170,12 @@ abstract class GFFeedAddOn extends GFAddOn {
 		} elseif ( ! empty( $entry['id'] ) ) {
 			$feeds = $this->get_feeds_by_entry( $entry['id'] );
 			if ( empty( $feeds ) ) {
-				$feed = $this->get_single_submission_feed_by_form( $form, $entry );
+				$feed = $this->get_single_submission_feed_by_form( $form, $entry, $check_for_payment_status_rule );
 			} else {
 				$feed = $this->get_feed( $feeds[0] );
 			}
 		} elseif ( $form ) {
-			$feed                          = $this->get_single_submission_feed_by_form( $form, $entry );
+			$feed                          = $this->get_single_submission_feed_by_form( $form, $entry, $check_for_payment_status_rule );
 			$this->_single_submission_feed = $feed;
 		}
 
@@ -1120,20 +1185,31 @@ abstract class GFFeedAddOn extends GFAddOn {
 	/**
 	 * Return the active feed to be used when processing the current entry, evaluating conditional logic if configured.
 	 *
-	 * @param array $form The current form.
-	 * @param array|false $entry The current entry.
+	 * @since 1.9.16
+	 * @since 3.2.0 Added the $check_for_payment_status_rule param.
+	 *
+	 * @param array       $form                          The current form.
+	 * @param array|false $entry                         The current entry.
+	 * @param bool        $check_for_payment_status_rule Whether to check if a feed has a conditional logic rule based on the entry payment status.
 	 *
 	 * @return bool|array
 	 */
-	public function get_single_submission_feed_by_form( $form, $entry ) {
-		if ( $form ) {
-			$feeds = $this->get_feeds( $form['id'] );
+	public function get_single_submission_feed_by_form( $form, $entry, $check_for_payment_status_rule = false ) {
+		if ( empty( $form['id'] ) ) {
+			return false;
+		}
 
-			foreach ( $feeds as $_feed ) {
-				if ( $_feed['is_active'] && $this->is_feed_condition_met( $_feed, $form, $entry ) ) {
+		$feeds = $this->get_feeds( $form['id'] );
 
-					return $_feed;
-				}
+		foreach ( $feeds as $_feed ) {
+			if ( ! rgar( $_feed, 'is_active' ) ) {
+				continue;
+			}
+
+			$has_payment_status_rule = $check_for_payment_status_rule && $this->has_payment_status_condition( $_feed );
+
+			if ( $this->is_feed_condition_met( $_feed, $form, $entry, $has_payment_status_rule ) ) {
+				return $_feed;
 			}
 		}
 

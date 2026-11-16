@@ -253,6 +253,20 @@ class GF_Field_FileUpload extends GF_Field {
 	}
 
 	/**
+	 * Returns a hash created from the temp filename and uploaded filename for a tmp folder file.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @param string $temp_filename     The temporary file name.
+	 * @param string $uploaded_filename The uploaded file name.
+	 *
+	 * @return string
+	 */
+	private static function get_tmp_file_hash( $temp_filename, $uploaded_filename ) {
+		return hash_hmac( 'sha256', $temp_filename . '|' . $uploaded_filename, wp_salt( 'auth' ) );
+	}
+
+	/**
 	 * Returns a hash for the given populated file URL details.
 	 *
 	 * @since 2.9.23
@@ -364,6 +378,13 @@ class GF_Field_FileUpload extends GF_Field {
 
 			return $this->get_invalid_file_result( $file, $message, 'url' );
 		} elseif ( ! empty( $file['temp_filename'] ) ) {
+			if ( empty( $file['hash'] ) || ! hash_equals( self::get_tmp_file_hash( $file['temp_filename'], rgar( $file, 'uploaded_filename' ) ), $file['hash'] ) ) {
+				GFCommon::log_debug( __METHOD__ . '(): Hash is missing or invalid for temp file.' );
+				$message = $this->errorMessage ? $this->errorMessage : esc_html__( 'The file is not valid.', 'gravityforms' );
+
+				return $this->get_invalid_file_result( $file, $message, $name_key );
+			}
+
 			$temp_file_extension     = strtolower( pathinfo( $file['temp_filename'], PATHINFO_EXTENSION ) );
 			$uploaded_file_extension = strtolower( pathinfo( $file_name, PATHINFO_EXTENSION ) );
 
@@ -934,6 +955,10 @@ class GF_Field_FileUpload extends GF_Field {
 		$tmp_location   = GFFormsModel::get_tmp_upload_location( $form_id );
 
 		foreach ( $files['existing'] as $file ) {
+			if ( $this->is_invalid_file( $file, false ) ) {
+				continue;
+			}
+
 			if ( ! isset( $file['temp_filename'] ) ) {
 				// File was previously uploaded to form; do not process temp.
 				$existing_file = $this->check_existing_entry( $entry_id, $input_name, $file );
@@ -974,6 +999,10 @@ class GF_Field_FileUpload extends GF_Field {
 
 		foreach ( $files['new'] as $file ) {
 			if ( $file['error'] !== UPLOAD_ERR_OK || ! is_uploaded_file( $file['tmp_name'] ) ) {
+				continue;
+			}
+
+			if ( $this->is_invalid_file( $file ) ) {
 				continue;
 			}
 
@@ -1141,7 +1170,7 @@ class GF_Field_FileUpload extends GF_Field {
 		$value = '';
 
 		if ( ! empty( $files['new'][0] ) ) {
-			if ( rgar( $files['new'][0], 'error' ) === UPLOAD_ERR_OK ) {
+			if ( rgar( $files['new'][0], 'error' ) === UPLOAD_ERR_OK && ! $this->is_invalid_file( $files['new'][0] ) ) {
 				GFCommon::log_debug( __METHOD__ . '(): Calling upload_file.' );
 				$value = $this->upload_file( $form_id, $files['new'][0] );
 			}
@@ -1153,6 +1182,12 @@ class GF_Field_FileUpload extends GF_Field {
 				$value = $existing_file;
 			}
 		} elseif ( ! empty( $files['existing'][0]['temp_filename'] ) ) {
+			if ( $this->is_invalid_file( $files['existing'][0], false ) ) {
+				GFCommon::log_debug( __METHOD__ . '(): Aborting; temporary file is invalid.' );
+
+				return '';
+			}
+
 			$tmp_path = rgar( GFFormsModel::get_tmp_upload_location( $form_id ), 'path' );
 			if ( empty( $tmp_path ) ) {
 				GFCommon::log_debug( __METHOD__ . '(): Aborting; GFFormsModel::get_tmp_upload_location() returned an empty path.' );
@@ -1183,8 +1218,21 @@ class GF_Field_FileUpload extends GF_Field {
 	}
 
 	public function upload_file( $form_id, $file ) {
-		GFCommon::log_debug( __METHOD__ . '(): Uploading file: ' . $file['name'] );
-		$target = GFFormsModel::get_file_upload_path( $form_id, $file['name'] );
+		$file_name = (string) rgar( $file, 'name' );
+		if ( GFCommon::file_name_has_disallowed_extension( $file_name ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Aborting; the file has a disallowed extension.' );
+
+			return '';
+		}
+
+		if ( $this->is_invalid_file( $file ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Aborting; file is invalid.' );
+
+			return '';
+		}
+
+		GFCommon::log_debug( __METHOD__ . '(): Uploading file: ' . $file_name );
+		$target = GFFormsModel::get_file_upload_path( $form_id, $file_name );
 		if ( ! $target ) {
 			GFCommon::log_debug( __METHOD__ . '(): FAILED (Upload folder could not be created.)' );
 
@@ -1357,15 +1405,30 @@ class GF_Field_FileUpload extends GF_Field {
 
 	public function move_temp_file( $form_id, $tempfile_info ) {
 
-		$target       = GFFormsModel::get_file_upload_path( $form_id, $tempfile_info['uploaded_filename'] );
+		$temp_filename     = (string) rgar( $tempfile_info, 'temp_filename' );
+		$uploaded_filename = (string) rgar( $tempfile_info, 'uploaded_filename' );
 		$tmp_location = GFFormsModel::get_tmp_upload_location( $form_id );
-		$source       = $tmp_location['path'] . wp_basename( $tempfile_info['temp_filename'] );
-
+		$source       = $tmp_location['path'] . wp_basename( $temp_filename );
 
 		GFCommon::log_debug( __METHOD__ . '(): Moving temp file from: ' . $source );
 
-		$temp_file_extension     = strtolower( pathinfo( $tempfile_info['temp_filename'], PATHINFO_EXTENSION ) );
-		$uploaded_file_extension = strtolower( pathinfo( $tempfile_info['uploaded_filename'], PATHINFO_EXTENSION ) );
+		if ( GFCommon::file_name_has_disallowed_extension( $temp_filename ) || GFCommon::file_name_has_disallowed_extension( $uploaded_filename ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Aborting; the file has a disallowed extension.' );
+			@unlink( $source ); // nosemgrep audit.php.lang.security.file.read-write-delete
+
+			return '';
+		}
+
+		if ( $this->is_invalid_file( $tempfile_info, false ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Aborting; temporary file is invalid.' );
+			@unlink( $source ); // nosemgrep audit.php.lang.security.file.read-write-delete
+
+			return '';
+		}
+
+		$target                  = GFFormsModel::get_file_upload_path( $form_id, $uploaded_filename );
+		$temp_file_extension     = strtolower( pathinfo( $temp_filename, PATHINFO_EXTENSION ) );
+		$uploaded_file_extension = strtolower( pathinfo( $uploaded_filename, PATHINFO_EXTENSION ) );
 
 		if ( empty( $temp_file_extension ) || empty( $uploaded_file_extension ) || $temp_file_extension !== $uploaded_file_extension ) {
 			GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting; temporary file extension (%s) does not match uploaded file extension (%s).', $temp_file_extension, $uploaded_file_extension ) );
@@ -1378,9 +1441,9 @@ class GF_Field_FileUpload extends GF_Field {
 			$check_result = GFCommon::check_type_and_ext(
 				array(
 					'tmp_name' => $source,
-					'name'     => $tempfile_info['uploaded_filename'],
+					'name'     => $uploaded_filename,
 				),
-				$tempfile_info['uploaded_filename']
+				$uploaded_filename
 			);
 
 			if ( is_wp_error( $check_result ) ) {
@@ -1887,6 +1950,7 @@ class GF_Field_FileUpload extends GF_Field {
 			'uploaded_filename' => $uploaded_filename,
 			'temp_filename'     => sanitize_file_name( $tmp_file_name ),
 			'id'                => $uuid,
+			'hash'              => self::get_tmp_file_hash( sanitize_file_name( $tmp_file_name ), $uploaded_filename ),
 		);
 
 		GFCommon::log_debug( __METHOD__ . '(): Details to use for new temporary file are: ' . json_encode( $tmp_file ) );
@@ -1902,15 +1966,21 @@ class GF_Field_FileUpload extends GF_Field {
 	 * @return array[]
 	 */
 	public function upload_submission_tmp_files() {
-		$id = absint( $this->id );
+		$id    = absint( $this->id );
+		$files = $this->get_submission_files();
 
 		if ( $this->failed_validation ) {
+			// These files will not be persisted, so they must not receive successful upload previews.
+			if ( ! empty( $files['new'] ) ) {
+				$files['new'] = array();
+				$this->set_submission_files( $files );
+			}
+
 			GFCommon::log_debug( __METHOD__ . "(): Skipping field because it failed validation: {$this->label}({$id} - {$this->type})." );
 
 			return array();
 		}
 
-		$files = $this->get_submission_files();
 		if ( empty( $files['new'] ) ) {
 			GFCommon::log_debug( __METHOD__ . "(): Skipping field because there are no files to process: {$this->label}({$id} - {$this->type})." );
 
@@ -1919,55 +1989,28 @@ class GF_Field_FileUpload extends GF_Field {
 
 		GFCommon::log_debug( __METHOD__ . "(): Processing files for field: {$this->label}({$id} - {$this->type})." );
 
-		$allowed_extensions = $this->get_clean_allowed_extensions();
-		$uploaded_files     = array();
+		$uploaded_files = array();
+		$files_changed  = false;
 
 		foreach ( $files['new'] as $key => $file ) {
-			if ( $file['error'] !== UPLOAD_ERR_OK ) {
-				GFCommon::log_debug( __METHOD__ . '(): Skipping file because there was an error: ' . json_encode( $file ) );
-				continue;
-			}
-
-			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-				GFCommon::log_debug( __METHOD__ . '(): Skipping file because it was not uploaded via HTTP POST: ' . json_encode( $file ) );
-				continue;
-			}
-
-			$file_name = $file['name'];
-			if ( GFCommon::file_name_has_disallowed_extension( $file_name ) ) {
-				GFCommon::log_debug( __METHOD__ . '(): Skipping file because the file extension is disallowed: ' . $file_name );
-				continue;
-			}
-
-			if ( ! empty( $allowed_extensions ) && ! GFCommon::match_file_extension( $file_name, $allowed_extensions ) ) {
-				GFCommon::log_debug( __METHOD__ . '(): Skipping file because the file extension is not allowed: ' . $file_name );
-				continue;
-			}
-
-			if ( empty( $allowed_extensions ) && ! $this->is_check_type_and_ext_disabled() ) {
-				$valid_file_name = GFCommon::check_type_and_ext( $file, $file_name );
-
-				if ( is_wp_error( $valid_file_name ) ) {
-					GFCommon::log_debug( __METHOD__ . '(): Skipping file because the uploaded file type is not allowed: ' . $file_name );
-					continue;
-				}
-			}
-
 			$tmp_file = $this->upload_tmp_file( $file );
 			if ( empty( $tmp_file ) ) {
+				unset( $files['new'][ $key ] );
+				$files_changed = true;
 				continue;
 			}
 
 			$uploaded_files[]    = $tmp_file;
 			$files['existing'][] = $tmp_file;
 			unset( $files['new'][ $key ] );
+			$files_changed = true;
 
 			if ( ! $this->multipleFiles ) {
 				break;
 			}
 		}
 
-		if ( ! empty( $uploaded_files ) ) {
+		if ( $files_changed ) {
 			if ( ! empty( $files['new'] ) ) {
 				$files['new'] = array_values( $files['new'] );
 				GFCommon::log_debug( __METHOD__ . '(): The following files were not uploaded: ' . json_encode( $files['new'] ) );
@@ -1990,8 +2033,53 @@ class GF_Field_FileUpload extends GF_Field {
 	 * @return array The temporary file details.
 	 */
 	public function upload_tmp_file( $file ) {
+		// Field validation can be skipped during submission. Enforce file safety at the write boundary.
+		if ( rgar( $file, 'error' ) !== UPLOAD_ERR_OK
+			|| ! is_string( rgar( $file, 'name' ) )
+			|| ! is_string( rgar( $file, 'tmp_name' ) )
+			|| ! is_uploaded_file( $file['tmp_name'] )
+		) {
+			GFCommon::log_debug( __METHOD__ . '(): Aborting; file is not a successful HTTP upload.' );
+
+			return array();
+		}
+
+		$file_name = sanitize_file_name( $file['name'] );
+		$extension = strtolower( pathinfo( $file_name, PATHINFO_EXTENSION ) );
+		if ( $file_name === '' || $extension === '' || GFCommon::file_name_has_disallowed_extension( $file['name'] ) || GFCommon::file_name_has_disallowed_extension( $file_name ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): Aborting; filename or extension is not allowed.' );
+
+			return array();
+		}
+
+		// Validate bytes and field restrictions against the name whose extension will be stored.
+		$canonical_file         = $file;
+		$canonical_file['name'] = $file_name;
+		if ( $this->is_invalid_file( $canonical_file ) ) {
+			return array();
+		}
+
 		$details = $this->get_tmp_file_details( $file );
-		if ( empty( $details ) ) {
+		if ( ! is_array( $details )
+			|| ! is_string( rgar( $details, 'temp_filename' ) )
+			|| rgar( $details, 'uploaded_filename' ) !== $file_name
+			|| ! is_string( rgar( $details, 'hash' ) )
+		) {
+			return array();
+		}
+
+		// Cached or supplied details must not change the validated filename, destination, or extension.
+		$temp_filename = $details['temp_filename'];
+		if ( $temp_filename === ''
+			|| $temp_filename !== wp_basename( $temp_filename )
+			|| strpos( $temp_filename, '\\' ) !== false
+			|| $temp_filename !== sanitize_file_name( $temp_filename )
+			|| GFCommon::file_name_has_disallowed_extension( $temp_filename )
+			|| strtolower( pathinfo( $temp_filename, PATHINFO_EXTENSION ) ) !== $extension
+			|| ! hash_equals( self::get_tmp_file_hash( $temp_filename, $file_name ), $details['hash'] )
+		) {
+			GFCommon::log_debug( __METHOD__ . '(): Aborting; temporary file details are invalid.' );
+
 			return array();
 		}
 
@@ -2005,9 +2093,9 @@ class GF_Field_FileUpload extends GF_Field {
 
 		$tmp_file_path = $location['path'] . $details['temp_filename'];
 		if ( file_exists( $tmp_file_path ) ) {
-			GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting; File (tmp_name: %s) already moved to %s.', $file['tmp_name'], $location['path'] ) );
+			GFCommon::log_debug( __METHOD__ . sprintf( '(): Aborting; temporary destination already exists: %s.', $tmp_file_path ) );
 
-			return $details;
+			return array();
 		}
 
 		if ( ! move_uploaded_file( $file['tmp_name'], $tmp_file_path ) ) {

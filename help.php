@@ -21,6 +21,8 @@ class GFHelp {
 			return;
 		}
 
+		GFCommon::gf_root_wrapper_open();
+
 		$dev_min = defined( 'GF_SCRIPT_DEBUG' ) && GF_SCRIPT_DEBUG ? '' : '.min';
 
 		?>
@@ -194,5 +196,6 @@ class GFHelp {
 		<img id="hexagons-bg-dark-blue" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/hexagons-bg-dark-blue.svg" alt=""/>
 		<img id="hexagons-bg-light-blue" src="<?php echo esc_url( GFCommon::get_base_url() ); ?>/images/hexagons-bg-light-blue.svg" alt=""/>
 	<?php
+		GFCommon::gf_root_wrapper_close();
 	}
 }

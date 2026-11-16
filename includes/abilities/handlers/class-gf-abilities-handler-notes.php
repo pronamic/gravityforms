@@ -45,6 +45,13 @@ class GF_Abilities_Handler_Notes {
 			return $denied;
 		}
 
+		// An empty list for a missing entry looks like a valid answer; say not found instead.
+		$entry = \GFAPI::get_entry( absint( $input['entry_id'] ) );
+
+		if ( is_wp_error( $entry ) ) {
+			return new \WP_Error( 'gf_ability_not_found', __( 'Entry not found.', 'gravityforms' ) );
+		}
+
 		$notes = \GFAPI::get_notes( array( 'entry_id' => absint( $input['entry_id'] ) ) );
 
 		if ( false === $notes ) {

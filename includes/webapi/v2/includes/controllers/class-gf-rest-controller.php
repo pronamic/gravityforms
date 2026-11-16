@@ -122,7 +122,7 @@ abstract class GF_REST_Controller extends WP_REST_Controller {
 			foreach ( $form['fields'] as $field ) {
 				/* @var GF_Field $field */
 				if ( $field->get_input_type() == 'list' ) {
-					$new_value = maybe_unserialize( $entry[ $field->id ] );
+					$new_value = GFCommon::maybe_unserialize( $entry[ $field->id ] );
 
 					if ( ! $this->is_json( $new_value ) ) {
 						$new_value = json_encode( $new_value );
@@ -211,7 +211,7 @@ abstract class GF_REST_Controller extends WP_REST_Controller {
 
 			} elseif ( $field instanceof GF_Field_List ) {
 
-				$entry[ $field->id ] = maybe_unserialize( $entry[ $field->id ] );
+				$entry[ $field->id ] = GFCommon::maybe_unserialize( $entry[ $field->id ] );
 
 			}
 

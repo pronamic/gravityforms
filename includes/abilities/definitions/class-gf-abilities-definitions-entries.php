@@ -128,7 +128,7 @@ class GF_Abilities_Definitions_Entries {
 				'name' => 'gravityforms/entries-create',
 				'args' => array(
 					'label'            => __( 'Create Entry', 'gravityforms' ),
-					'description'      => __( 'Creates a raw entry record for a form. Unlike form submission, this bypasses validation, notifications, and feed processing. Useful for programmatic entry creation. The entry is stamped with the current date and acting user.', 'gravityforms' ),
+					'description'      => __( 'Creates a raw entry record for a form. Unlike form submission, this bypasses validation, notifications, and feed processing. Useful for programmatic entry creation and imports. The entry is stamped with the acting user, and with the current time unless date_created is supplied. Values for ids that are not on the form are not saved and are reported in warnings.', 'gravityforms' ),
 					'summary'          => __( 'Add submission records directly, skipping validation and emails.', 'gravityforms' ),
 					'category'         => 'gravityforms-entries',
 					'execute_callback' => array( GF_Abilities_Handler_Entries::class, 'create_entry' ),
@@ -142,8 +142,9 @@ class GF_Abilities_Definitions_Entries {
 								'required'             => array( 'form_id' ),
 								'description'          => __( 'The entry object. Must include form_id. Field values are keyed by field ID (e.g., \'1\': \'John\', \'2\': \'john@example.com\').', 'gravityforms' ),
 								'properties'           => array(
-									'form_id' => array( 'type' => 'integer', 'description' => __( 'The ID of the form this entry belongs to.', 'gravityforms' ) ),
-									'status'  => array( 'type' => 'string', 'enum' => array( 'active', 'spam', 'trash' ), 'default' => 'active' ),
+									'form_id'      => array( 'type' => 'integer', 'description' => __( 'The ID of the form this entry belongs to.', 'gravityforms' ) ),
+									'status'       => array( 'type' => 'string', 'enum' => array( 'active', 'spam', 'trash' ), 'default' => 'active' ),
+									'date_created' => array( 'type' => 'string', 'description' => __( 'Optional. Original submission time for imports, in UTC: YYYY-MM-DD HH:MM:SS (or YYYY-MM-DD). Defaults to now.', 'gravityforms' ) ),
 								),
 								'additionalProperties' => true,
 							),
@@ -154,9 +155,10 @@ class GF_Abilities_Definitions_Entries {
 						'type'       => 'object',
 						'properties' => array(
 							'entry_id' => array( 'type' => 'integer', 'description' => __( 'The ID of the newly created entry.', 'gravityforms' ) ),
+							'warnings' => array( 'type' => 'array', 'items' => array( 'type' => 'string' ), 'description' => __( 'Present when some supplied values were not saved, such as values for ids that are not on the form.', 'gravityforms' ) ),
 						),
 					),
-					'destructive'      => true,
+					'destructive'      => false,
 					'idempotent'       => false,
 				),
 			),
@@ -164,7 +166,7 @@ class GF_Abilities_Definitions_Entries {
 				'name' => 'gravityforms/entries-update',
 				'args' => array(
 					'label'            => __( 'Update Entry', 'gravityforms' ),
-					'description'      => __( 'Updates an existing entry\'s field values and/or metadata.', 'gravityforms' ),
+					'description'      => __( 'Updates an existing entry\'s field values and/or metadata. Omitted fields keep their stored values; date_updated is set to now. Values for ids that are not on the form are not saved and are reported in warnings.', 'gravityforms' ),
 					'summary'          => __( 'Change the data saved in a submission.', 'gravityforms' ),
 					'category'         => 'gravityforms-entries',
 					'execute_callback' => array( GF_Abilities_Handler_Entries::class, 'update_entry' ),
@@ -185,7 +187,13 @@ class GF_Abilities_Definitions_Entries {
 						),
 						'additionalProperties' => false,
 					),
-					'output_schema'    => GF_Ability_Schemas::success_output_schema(),
+					'output_schema'    => array(
+						'type'       => 'object',
+						'properties' => array(
+							'success'  => array( 'type' => 'boolean', 'description' => __( 'Whether the operation succeeded.', 'gravityforms' ) ),
+							'warnings' => array( 'type' => 'array', 'items' => array( 'type' => 'string' ), 'description' => __( 'Present when some supplied values were not saved, such as values for ids that are not on the form.', 'gravityforms' ) ),
+						),
+					),
 					'destructive'      => true,
 					'idempotent'       => false,
 				),
@@ -203,8 +211,8 @@ class GF_Abilities_Definitions_Entries {
 						'type'                 => 'object',
 						'default'              => (object) array(),
 						'properties'           => array(
-							'entry_id'        => array( 'type' => 'integer', 'description' => __( 'Delete a single entry by ID.', 'gravityforms' ) ),
-							'form_id'         => array( 'type' => 'integer', 'description' => __( 'Delete all entries for this form. Combine with search_criteria to filter which entries are deleted.', 'gravityforms' ) ),
+							'entry_id'        => array( 'type' => 'integer', 'description' => __( 'Delete a single entry by ID. If form_id is also given, the entry must belong to that form or the call is rejected.', 'gravityforms' ) ),
+							'form_id'         => array( 'type' => 'integer', 'description' => __( 'Without entry_id: delete all entries for this form, optionally filtered by search_criteria. With entry_id: a safety check that the entry belongs to this form.', 'gravityforms' ) ),
 							'search_criteria' => array_merge(
 								GF_Ability_Schemas::entry_search_criteria_schema(),
 								array( 'description' => __( 'Optional filter for bulk delete. Same format as entries-search. Only used with form_id.', 'gravityforms' ) )

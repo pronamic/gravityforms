@@ -434,14 +434,17 @@ function GFConditionalLogic( fieldId, objectType ) {
  * Render the sidebar view.
  */
 GFConditionalLogic.prototype.renderSidebar = function() {
+	var isInsideRepeater = isFieldInsideRepeater( this.fieldId, form.fields );
+	var canConfigure     = GetFirstRuleField() > 0 && ! isInsideRepeater;
+
 	var config = {
 		title: this.getAccordionTitle(),
 		toggleText: gf_vars.configure + ' ' + gf_vars.conditional_logic_text,
 		active_class: this.isEnabled() ? 'gform-status--active' : '',
 		active_text: this.isEnabled() ? 'Active' : 'Inactive',
-		desc_class: GetFirstRuleField() <= 0 ? 'active' : '',
-		toggle_class: GetFirstRuleField() <= 0 ? '' : 'active',
-		desc: gf_vars.conditionalLogic.conditionalLogicHelperText,
+		desc_class: canConfigure ? '' : 'active',
+		toggle_class: canConfigure ? 'active' : '',
+		desc: isInsideRepeater ? gf_vars.conditionalLogic.conditionalLogicRepeaterHelperText : gf_vars.conditionalLogic.conditionalLogicHelperText,
 	}
 
 	var html = gf_vars.conditionalLogic.views.sidebar;
@@ -930,7 +933,32 @@ GFConditionalLogic.prototype.getStateForField = function( fieldId ) {
  * @return {boolean}
  */
 GFConditionalLogic.prototype.isEnabled = function() {
-	return this.state.enabled && GetFirstRuleField() > 0;
+	return this.state.enabled && GetFirstRuleField() > 0 && ! isFieldInsideRepeater( this.fieldId, form.fields );
+}
+
+/**
+ * Whether a field ID exists inside a Repeater.
+ *
+ * @since 3.2.0
+ *
+ * @param {int|string} fieldId The field ID to search for.
+ * @param {Array}      fields  The fields to search.
+ *
+ * @return {boolean}
+ */
+function isFieldInsideRepeater( fieldId, fields ) {
+	if ( ! fields ) {
+		return false;
+	}
+
+	for ( var i = 0; i < fields.length; i++ ) {
+		var field = fields[ i ];
+		if ( field.type === 'repeater' && field.fields && recursivelyGetFieldsById( fieldId, field.fields ) ) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 GFConditionalLogic.prototype.getAccordionTitle = function() {
@@ -1401,6 +1429,11 @@ GFConditionalLogic.prototype.render = function() {
  */
 GFConditionalLogic.prototype.init = function() {
 	this.addEventListeners();
+
+	if ( isFieldInsideRepeater( this.fieldId, form.fields ) && this.state.enabled ) {
+		this.state.enabled = false;
+		this.updateForm();
+	}
 
 	this.renderSidebar();
 };

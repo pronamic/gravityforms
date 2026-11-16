@@ -19,6 +19,8 @@ class GFFormDetail {
 			return;
 		}
 
+		GFCommon::gf_root_wrapper_open();
+
 		self::update_recent_forms( $form_id );
 		/**
 		* @var Gravity_Forms\Gravity_Forms\Save_Form\GF_Save_Form_Helper $save_form_helper
@@ -26,8 +28,7 @@ class GFFormDetail {
 		$save_form_helper = GFForms::get_service_container()->get( GF_Save_Form_Service_Provider::GF_SAVE_FROM_HELPER );
 		$update_result = '';
 		if ( rgpost( 'operation' ) == 'trash' ) {
-			check_admin_referer( 'gforms_trash_form', 'gforms_trash_form' );
-			GFFormsModel::trash_form( $form_id );
+			self::trash_form( $form_id );
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(
@@ -49,7 +50,6 @@ class GFFormDetail {
 			</script>
 			<?php
 		}
-
 
 		wp_print_styles( array( 'thickbox' ) );
 
@@ -82,7 +82,7 @@ class GFFormDetail {
 				return false;
 			}
 
-			document.addEventListener('DOMContentLoaded', function() {
+			function load_submitted_fields() {
 				var formData = new FormData();
 				formData.append('action', 'gf_get_submitted_fields');
 				formData.append('form_id', <?php echo intval( $form_id ); ?>);
@@ -101,7 +101,10 @@ class GFFormDetail {
 						submitted_fields_loaded = true;
 					}
 				});
-			});
+			}
+
+			document.addEventListener('DOMContentLoaded', load_submitted_fields);
+			document.addEventListener('gform/form_editor_saver/post_save_success', load_submitted_fields);
 
 			function InsertPostImageVariable(element_id, callback) {
 				var variable = jQuery('#' + element_id + '_image_size_select').attr("variable");
@@ -304,23 +307,25 @@ class GFFormDetail {
 				<span id="please_wait_container" style="display:none;"><i class='gficon-gravityforms-spinner-icon gficon-spin'></i></span>
 			</div>
 		</div>
+		<?php if ( GFCommon::current_user_can_any( 'gravityforms_delete_forms' ) ) { ?>
 		<form method="post" id="form_trash">
 			<?php wp_nonce_field( 'gforms_trash_form', 'gforms_trash_form' ); ?>
 			<input type="hidden" value="trash" name="operation" />
 		</form>
+		<?php } ?>
 
 		<?php
-			$no_conflict_mode  = get_option( 'gform_enable_noconflict' );
-			$no_conflict_class = $no_conflict_mode ? ' form_editor_no_conflict' : '';
-			$no_fields_class   = empty( $form['fields'] ) ? ' form_editor_fields_no_fields' : '';
-			$compact_view_class = GF_Editor_Service_Provider::is_compact_view_enabled( get_current_user_id(), $form_id ) ? ' gform-compact-view' : '';
+			$no_conflict_mode    = get_option( 'gform_enable_noconflict' );
+			$no_conflict_class   = $no_conflict_mode ? ' form_editor_no_conflict' : '';
+			$no_fields_class     = empty( $form['fields'] ) ? ' form_editor_fields_no_fields' : '';
+			$compact_view_class  = GF_Editor_Service_Provider::is_compact_view_enabled( get_current_user_id(), $form_id ) ? ' gform-compact-view' : '';
 			$compact_view_class .= GF_Editor_Service_Provider::is_field_id_enabled( get_current_user_id(), $form_id ) ? ' gform-compact-view--show-id' : '';
-			$form_editor_class = sprintf( 'form_editor_fields_container%s%s%s', $no_fields_class, $no_conflict_class, $compact_view_class );
+			$form_editor_class   = sprintf( 'form_editor_fields_container%s%s%s', $no_fields_class, $no_conflict_class, $compact_view_class );
 		?>
 
 		<div
 			id="form_editor_fields_container"
-			class="<?php esc_attr_e( $form_editor_class ); ?>"
+			class="<?php echo esc_attr( $form_editor_class ); ?>"
 			data-js="form-editor"
 			<?php echo ! empty( $form['fields'] ) ? 'data-simplebar' : ''; ?>
 			<?php echo ! empty( $form['fields'] ) && is_rtl() ? 'data-simplebar-direction="rtl"' : ''; ?>
@@ -600,6 +605,17 @@ class GFFormDetail {
 									<?php gform_tooltip( 'form_field_label_html' ); ?>
 								</label>
 								<input type="text" id="field_label" autocomplete="off"/>
+							</li>
+							<li class="repeater_row_label_setting field_setting">
+								<label for="repeater_row_label" class="section_label">
+									<?php esc_html_e( 'Row Label', 'gravityforms' ); ?>
+									<?php gform_tooltip( 'repeater_row_label' ); ?>
+								</label>
+								<input type="text" id="repeater_row_label" autocomplete="off" style="margin-bottom: 10px;"/>
+
+								<input type="checkbox" id="show_repeater_row_label" onclick="ToggleRepeaterRowLabel();" onkeypress="ToggleRepeaterRowLabel();"/>
+								<label for="show_repeater_row_label" class="inline"><?php esc_html_e( 'Show Row Label', 'gravityforms' ); ?></label>
+
 							</li>
 							<li class="submit_type_setting field_setting">
 								<fieldset>
@@ -2054,7 +2070,7 @@ class GFFormDetail {
 										</div>
 									</div>
 
-									<select id="field_mask_select" onchange="SetFieldProperty('inputMaskValue', jQuery(this).val());">
+									<select id="field_mask_select" onchange="SetFieldProperty('inputMaskValue', jQuery(this).val()); CheckFieldMaskAccessibility();">
 										<option value=""><?php esc_html_e( 'Select a Mask', 'gravityforms' ); ?></option>
 										<?php
 										$masks = RGFormsModel::get_input_masks();
@@ -2197,7 +2213,7 @@ class GFFormDetail {
 
 							<li class="max_items_setting field_setting">
 								<label for="max_items_setting" class="section_label">
-									<?php esc_html_e( 'Maximum Number of Repeats', 'gravityforms' ); ?>
+									<?php esc_html_e( 'Maximum Number of Rows', 'gravityforms' ); ?>
 									<?php gform_tooltip( 'form_field_max_items' ); ?>
 								</label>
 								<input type="number" id="max_items_setting" min="1" onchange="SetFieldProperty('maxItems', jQuery(this).val());  RefreshSelectedFieldPreview();"/>
@@ -2910,6 +2926,7 @@ class GFFormDetail {
 
 		require_once( GFCommon::get_base_path() . '/js.php' );
 
+		GFCommon::gf_root_wrapper_close();
 	}
 
 	/**
@@ -3002,13 +3019,12 @@ class GFFormDetail {
 			);
 		}
 
-		// Add repeater field, if enabled.
-		if ( apply_filters( 'gform_enable_repeater_field_button', false ) ) {
-			$field_groups['advanced_fields']['fields'][] = array(
-				'data-type' => 'repeater',
-				'value'     => GFCommon::get_field_type_title( 'repeater' )
-			);
-		}
+		
+		$field_groups['advanced_fields']['fields'][] = array(
+			'data-type' => 'repeater',
+			'value'     => GFCommon::get_field_type_title( 'repeater' )
+		);
+		
 
 		/**
 		 * Modify the field groups before fields are added.
@@ -3074,11 +3090,11 @@ class GFFormDetail {
 	 */
 	private static function display_buttons( $buttons ) {
 		foreach ( $buttons as $button ) {
-			$button['data-icon']        = empty( $button['data-icon'] ) ? 'gform-icon--cog' : $button['data-icon'];
-			$button['data-description'] = empty( $button['data-description'] ) ? sprintf( esc_attr__( 'Add a %s field to your form.', 'gravityforms' ), $button['value'] ) : $button['data-description'];
-			$button['data-repeatable']   = isset( $button['data-repeatable'] ) ? ( $button['data-repeatable'] ? 1 : 0 ) : 1;
+			$button['data-icon']         = empty( $button['data-icon'] ) ? 'gform-icon--cog' : $button['data-icon'];
+			$button['data-description']  = empty( $button['data-description'] ) ? sprintf( esc_attr__( 'Add a %s field to your form.', 'gravityforms' ), $button['value'] ) : $button['data-description'];
+			$button['data-repeatable']   = rgar( $button, 'data-repeatable', 0 ) ? 1 : 0;
 			$button['data-duplicatable'] = isset( $button['data-duplicatable'] ) ? ( $button['data-duplicatable'] ? 1 : 0 ) : 1;
-			$button['class']            = empty( $button['class'] ) ? 'gfield-add' : $button['class'] . ' gfield-add';
+			$button['class']             = empty( $button['class'] ) ? 'gfield-add' : $button['class'] . ' gfield-add';
             ?>
 			<li>
 				<button title="<?php echo esc_attr( $button['data-description'] ); ?>"
@@ -3682,5 +3698,22 @@ class GFFormDetail {
 		array_push( $form['fields'], GF_Fields::create( $submit_button_props ) );
 
 		return $form;
+	}
+
+	/**
+	 * Moves the form to the trash when the current user has permission.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param int $form_id The ID of the form to trash.
+	 */
+	private static function trash_form( $form_id ) {
+		check_admin_referer( 'gforms_trash_form', 'gforms_trash_form' );
+
+		if ( ! GFCommon::current_user_can_any( 'gravityforms_delete_forms' ) ) {
+			wp_die( esc_html__( "You don't have permission to trash forms.", 'gravityforms' ), '', array( 'response' => 403 ) );
+		}
+
+		GFFormsModel::trash_form( $form_id );
 	}
 }

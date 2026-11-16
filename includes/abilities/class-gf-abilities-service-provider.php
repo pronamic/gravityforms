@@ -4,7 +4,10 @@ namespace Gravity_Forms\Gravity_Forms\Abilities;
 
 use Gravity_Forms\Gravity_Forms\GF_Service_Container;
 use Gravity_Forms\Gravity_Forms\GF_Service_Provider;
-use Gravity_Forms\Gravity_Forms\WP\MCP\Domain\Utils\McpNameSanitizer;
+use WP\MCP\Domain\Utils\McpNameSanitizer;
+use WP\MCP\Infrastructure\ErrorHandling\ErrorLogMcpErrorHandler;
+use WP\MCP\Infrastructure\Observability\NullMcpObservabilityHandler;
+use WP\MCP\Transport\HttpTransport;
 
 /**
  * Registers Gravity Forms abilities and categories with the Abilities API.
@@ -19,6 +22,13 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 	 * @since 3.1.0
 	 */
 	const ABILITIES_LOGGER = 'abilities_logger';
+
+	/**
+	 * Container key for the abilities telemetry counters.
+	 *
+	 * @since 3.2.2
+	 */
+	const ABILITIES_TELEMETRY = 'abilities_telemetry';
 
 	protected static function get_categories() {
 		$categories = array(
@@ -153,11 +163,20 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 	 */
 	public function register( GF_Service_Container $container ) {
 		require_once plugin_dir_path( __FILE__ ) . 'class-gf-abilities-logger.php';
+		require_once plugin_dir_path( __FILE__ ) . 'class-gf-abilities-telemetry.php';
 
 		$container->add(
 			self::ABILITIES_LOGGER,
 			static function () {
 				return new GF_Abilities_Logger();
+			},
+			true
+		);
+
+		$container->add(
+			self::ABILITIES_TELEMETRY,
+			static function () {
+				return new GF_Abilities_Telemetry();
 			},
 			true
 		);
@@ -178,32 +197,24 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 		// Registered unconditionally so the subsystem stays visible on the Logging settings page when MCP is off.
 		$logger->register_logging_hooks();
 
-		// Gate the bundled MCP adapter's default server on the MCP setting. The
-		// adapter is a Gravity Forms-private (Strauss-prefixed) copy, so this only
-		// affects Gravity Forms. Without this it would spin up an MCP server and
-		// register its meta-abilities on every REST request even when the admin
-		// has not enabled the integration. Added before the is_enabled() guard so
-		// the gate applies whether or not MCP is currently on.
-		add_filter(
-			'gform_mcp_adapter_create_default_server',
-			static function ( $create ) {
-				return $create && \GF_MCP_Settings::is_enabled();
-			}
-		);
+		// Registered unconditionally so the snapshot reports MCP as off, not missing.
+		$telemetry = $container->get( self::ABILITIES_TELEMETRY );
+		$telemetry->register_snapshot_hook();
 
 		if ( ! \GF_MCP_Settings::is_enabled() ) {
 			return;
 		}
 
 		$logger->register_execution_hooks();
+		$telemetry->register_execution_hooks();
 
-		add_filter( 'gform_mcp_adapter_tools_list', array( $this, 'filter_tools_by_permission' ) );
+		add_filter( 'mcp_adapter_tools_list', array( $this, 'filter_tools_by_permission' ) );
 
 		add_action( 'wp_abilities_api_categories_init', array( $this, 'register_categories' ) );
 		add_action( 'wp_abilities_api_init', array( $this, 'register_abilities' ) );
 
 		if ( \GF_MCP_Settings::is_dedicated_endpoint() ) {
-			add_action( 'gform_mcp_adapter_init', array( $this, 'register_dedicated_server' ), 20 );
+			add_action( 'mcp_adapter_init', array( $this, 'register_dedicated_server' ), 20 );
 		}
 	}
 
@@ -303,13 +314,14 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 	 * @example
 	 * add_action( 'gform_abilities_init', function() {
 	 *     wp_register_ability( 'gravityforms/myaddon/my-action', [
-	 *         'title'              => __( 'My Action', 'gravityforms-myaddon' ),
-	 *         'description'        => __( 'Does something useful.', 'gravityforms-myaddon' ),
-	 *         'permission_callback'=> function() { return GFCommon::current_user_can_any( 'gravityforms_edit_forms' ); },
-	 *         'callback'           => [ $this, 'handle_my_action' ],
-	 *         'input_schema'       => [],
-	 *         'output_schema'      => [],
-	 *         'meta'               => [ 'mcp' => [ 'public' => true ], 'annotations' => [ 'readonly' => false, 'destructive' => false, 'idempotent' => false ] ],
+	 *         'label'               => __( 'My Action', 'gravityforms-myaddon' ),
+	 *         'description'         => __( 'Does something useful.', 'gravityforms-myaddon' ),
+	 *         'permission_callback' => function() { return GFCommon::current_user_can_any( 'gravityforms_edit_forms' ); },
+	 *         'ability_class'       => GF_Ability::class,
+	 *         'execute_callback'    => [ $this, 'handle_my_action' ],
+	 *         'input_schema'        => [],
+	 *         'output_schema'       => [],
+	 *         'meta'                => [ 'mcp' => [ 'public' => true ], 'annotations' => [ 'readonly' => false, 'destructive' => false, 'idempotent' => false ] ],
 	 *     ] );
 	 * } );
 	 *
@@ -414,12 +426,12 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 	/**
 	 * Register a dedicated Gravity Forms MCP server.
 	 *
-	 * Called on 'gform_mcp_adapter_init' at priority 20 (after default server at 10)
+	 * Called on 'mcp_adapter_init' at priority 20 (after default server at 10)
 	 * to ensure abilities are already registered and resolvable.
 	 *
 	 * @since 3.1.0
 	 *
-	 * @param Gravity_Forms\Gravity_Forms\WP\MCP\Core\McpAdapter $adapter The MCP adapter instance.
+	 * @param \WP\MCP\Core\McpAdapter $adapter The MCP adapter instance.
 	 *
 	 * @return void
 	 */
@@ -441,9 +453,9 @@ class GF_Abilities_Service_Provider extends GF_Service_Provider {
 			__( 'Gravity Forms MCP Server', 'gravityforms' ),
 			__( 'Dedicated MCP server for Gravity Forms abilities.', 'gravityforms' ),
 			\GFForms::$version,
-			array( 'Gravity_Forms\Gravity_Forms\WP\MCP\Transport\HttpTransport' ),
-			'Gravity_Forms\Gravity_Forms\WP\MCP\Infrastructure\ErrorHandling\ErrorLogMcpErrorHandler',
-			'Gravity_Forms\Gravity_Forms\WP\MCP\Infrastructure\Observability\NullMcpObservabilityHandler',
+			array( HttpTransport::class ),
+			ErrorLogMcpErrorHandler::class,
+			NullMcpObservabilityHandler::class,
 			$tool_names,
 			array(),
 			array()

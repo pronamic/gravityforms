@@ -2739,22 +2739,26 @@ class Settings {
 	 *
 	 * @since 2.9.5
 	 *
-	 * @param $prepared_args
-	 * @param $request
+	 * @param array $prepared_args The prepared arguments for the REST user query.
+	 * @param \WP_REST_Request $request The current REST request.
 	 *
-	 * @return mixed
+	 * @return array The modified prepared arguments for the REST user query.
 	 */
 	public function remove_has_published_posts_from_api_user_query( $prepared_args, $request ) {
+		if ( ! current_user_can( 'list_users' ) ) {
+			return $prepared_args;
+		}
+
 		// check the referer and make an array of the query params
 		$referer = wp_parse_url( wp_get_referer() );
 
-		if( ! rgar( $referer, 'query' ) ) {
+		if ( ! rgar( $referer, 'query' ) ) {
 			return $prepared_args;
 		}
 
 		$query_params = array();
 		parse_str( $referer['query'], $query_params );
-		if( 'gf_edit_forms' !== rgar( $query_params, 'page' ) && 'settings' !== rgar( $query_params, 'view' ) ) {
+		if ( 'gf_edit_forms' !== rgar( $query_params, 'page' ) && 'settings' !== rgar( $query_params, 'view' ) ) {
 			return $prepared_args;
 		}
 

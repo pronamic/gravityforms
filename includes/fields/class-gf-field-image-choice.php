@@ -10,6 +10,15 @@ class GF_Field_Image_Choice extends GF_Field_Multiple_Choice {
 
 	public $type = 'image_choice';
 
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
 	public $checkbox_choice;
 
 	public function __construct( $data = array() ) {

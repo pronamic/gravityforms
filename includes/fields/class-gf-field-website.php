@@ -9,6 +9,15 @@ class GF_Field_Website extends GF_Field {
 
 	public $type = 'website';
 
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
 	public function get_form_editor_field_title() {
 		return esc_attr__( 'Website', 'gravityforms' );
 	}
@@ -148,6 +157,26 @@ class GF_Field_Website extends GF_Field {
 		$value = filter_var( $value, FILTER_VALIDATE_URL );
 
 		return $value ? $value : '';
+	}
+
+
+	/**
+	 * Format the entry value safe for displaying on the entry list page.
+	 *
+	 * @since 3.1.2
+	 *
+	 * @uses GF_Field::get_allowable_tags()
+	 *
+	 * @param string $value    The field value.
+	 * @param array  $entry    The Entry Object currently being processed.
+	 * @param string $field_id The field or input ID currently being processed.
+	 * @param array  $columns  The properties for the columns being displayed on the entry list page.
+	 * @param array  $form     The Form Object currently being processed.
+	 *
+	 * @return string
+	 */
+	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
+		return esc_url( wp_strip_all_tags( $value ) );
 	}
 
 	// # FIELD FILTER UI HELPERS ---------------------------------------------------------------------------------------

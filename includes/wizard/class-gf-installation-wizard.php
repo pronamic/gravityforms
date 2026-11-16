@@ -85,6 +85,8 @@ class GF_Installation_Wizard {
 
 		}
 
+		GFCommon::gf_root_wrapper_open();
+
 		// Print admin styles
 		wp_print_styles( array( 'jquery-ui-styles', 'gform_admin', 'gform_settings' ) );
 
@@ -148,6 +150,7 @@ class GF_Installation_Wizard {
 		</div>
 
 	<?php
+		GFCommon::gf_root_wrapper_close();
 
 		return true;
 	}

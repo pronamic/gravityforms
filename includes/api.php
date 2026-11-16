@@ -528,6 +528,10 @@ class GFAPI {
 			$form_meta = GFFormsModel::get_accessible_properties( $form_meta ) ;
 		}
 
+		if ( rgempty( 'columnLayout', $form_meta ) ) {
+			$form_meta['columnLayout'] = 'fixed';
+		}
+
 		// Updating form meta.
 		$result = GFFormsModel::update_form_meta( $form_id, $form_meta );
 

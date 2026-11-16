@@ -10,6 +10,15 @@ class GF_Field_Calculation extends GF_Field {
 	public $type = 'calculation';
 
 	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @var bool
+	 */
+	public $repeatable = true;
+
+	/**
 	 * Indicates if this field supports state validation.
 	 *
 	 * @since 3.0

@@ -148,6 +148,7 @@ class GF_Abilities_Registry {
 			'execute_callback'    => $args['execute_callback'],
 			'permission_callback' => static function () use ( $args ) {
 				$result = \GFCommon::current_user_can_any( $args['capability'] );
+				// nosemgrep: scanner.php.wp.security.rest-route.permission-callback.incorrect-return
 				return is_wp_error( $result ) ? $result : (bool) $result;
 			},
 			'input_schema'        => $args['input_schema'],
