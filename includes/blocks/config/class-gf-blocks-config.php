@@ -137,6 +137,7 @@ class GF_Blocks_Config extends GF_Config {
 						'learn_more_orbital'                        => esc_html__( 'Learn more about configuring your form to use Orbital.', 'gravityforms' ),
 						'label_styles'                              => esc_html__( 'Label Styles', 'gravityforms' ),
 						'large'                                     => esc_html__( 'Large', 'gravityforms' ),
+						'large_mobile_friendly'                     => esc_html__( 'Large (mobile friendly)', 'gravityforms' ),
 						'medium'                                    => esc_html__( 'Medium', 'gravityforms' ),
 						'no_card'                                   => esc_html__( 'No Card', 'gravityforms' ),
 						'ok'                                        => esc_html__( 'OK', 'gravityforms' ),

@@ -881,7 +881,9 @@ class GF_Field_List extends GF_Field {
 	/**
 	 * Gets merge tag values.
 	 *
-	 * @since  Unknown
+	 * @since Unknown
+	 * @since 3.2.3 URL encode the rendered list value so separators and selected values are encoded consistently.
+	 *
 	 * @access public
 	 *
 	 * @param array|string $value      The value of the input.
@@ -909,7 +911,9 @@ class GF_Field_List extends GF_Field {
 			$output_format = $format;
 		}
 
-		return $this->get_value_entry_detail( $raw_value, $entry, true, $output_format, 'screen' );
+		$value = $this->get_value_entry_detail( $raw_value, $entry, true, $output_format, 'screen' );
+
+		return $url_encode ? urlencode( $value ) : $value;
 	}
 
 	/**

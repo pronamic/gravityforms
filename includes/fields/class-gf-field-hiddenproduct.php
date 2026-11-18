@@ -67,7 +67,7 @@ class GF_Field_HiddenProduct extends GF_Field {
 		$value = array();
 		if ( is_array( $this->inputs ) ) {
 			foreach ( $this->inputs as $index => $input ) {
-				$input_value = $this->is_form_editor() ? rgar( $input, 'defaultValue' ) : GFCommon::replace_variables_prepopulate( rgar( $input, 'defaultValue' ) );
+				$input_value = $this->is_form_editor() ? rgar( $input, 'defaultValue' ) : GFCommon::replace_variables_prepopulate( rgar( $input, 'defaultValue' ), false, false, false, false, false, 'html', false );
 				if ( rgblank( $input_value ) && $input['id'] == "{$this->id}.2" ) {
 					$input_value = $this->basePrice;
 				}

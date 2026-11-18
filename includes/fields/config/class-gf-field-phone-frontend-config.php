@@ -92,7 +92,7 @@ class GF_Field_Phone_Frontend_Config extends GF_Config {
 	/**
 	 * Get the international phone field configuration.
 	 *
-	 * @since: next
+	 * @since 3.0.0
 	 *
 	 * @return array The configuration array for international phone field.
 	 */

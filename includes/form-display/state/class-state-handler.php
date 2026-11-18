@@ -139,7 +139,7 @@ class State_Handler {
 		gf_do_action( array( 'gform_state_pre_encode', $form_id ), $this, array_keys( $this->state_values[ $form_id ] ), $form_id );
 
 		$hash     = json_encode( $this->state_values[ $form_id ] );
-		$checksum = wp_hash( crc32( $hash ) );
+		$checksum = $this->authenticate( $hash, 'payload' );
 
 		return base64_encode( json_encode( array( $hash, $checksum, $timestamp ) ) );
 	}
@@ -185,7 +185,11 @@ class State_Handler {
 			if ( is_null( $value ) ) {
 				continue;
 			} elseif ( is_array( $value ) ) {
-				$this->add_hashes( $form_id, $key, array_map( 'wp_hash', $value ) );
+				$hashes = array();
+				foreach ( $value as $index => $item ) {
+					$hashes[ $index ] = is_scalar( $item ) || is_null( $item ) ? wp_hash( (string) $item ) : '';
+				}
+				$this->add_hashes( $form_id, $key, $hashes );
 			} else {
 				$this->add_hashes( $form_id, $key, wp_hash( $value ) );
 			}
@@ -279,7 +283,10 @@ class State_Handler {
 	}
 
 	/**
-	 * Populates the state_values property with the given key and hashes.
+	 * Populates the state_values property with purpose-specific authenticators for the given hashes.
+	 *
+	 * Callers, including gform_state_pre_encode callbacks, can continue supplying wp_hash() results.
+	 * Only their state-specific authenticators are included in the public state.
 	 *
 	 * @since 3.0
 	 *
@@ -294,7 +301,36 @@ class State_Handler {
 			return;
 		}
 
-		$this->state_values[ $form_id ][ $key ] = $hashes;
+		$this->state_values[ $form_id ][ $key ] = is_array( $hashes )
+			? array_map( array( $this, 'authenticate_value_hash' ), $hashes )
+			: $this->authenticate_value_hash( $hashes );
+	}
+
+	/**
+	 * Authenticates data for a specific form-state purpose, separate from generic WordPress hashes.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param string $data    The complete data to authenticate.
+	 * @param string $purpose The internal state authentication purpose.
+	 *
+	 * @return string
+	 */
+	private function authenticate( $data, $purpose ) {
+		return hash_hmac( 'sha256', 'gravityforms-state-' . $purpose . '-v1|' . $data, wp_salt( 'auth' ) );
+	}
+
+	/**
+	 * Protects a value hash before it is exposed in public state.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param string $hash The value hash supplied by core or a trusted callback.
+	 *
+	 * @return string An authenticator, or an empty string for an invalid hash.
+	 */
+	private function authenticate_value_hash( $hash ) {
+		return is_string( $hash ) && $hash !== '' ? $this->authenticate( $hash, 'value' ) : '';
 	}
 
 	// # FORM SUBMISSION ------------------------------------------------------------------------------------------------
@@ -329,7 +365,8 @@ class State_Handler {
 			return;
 		}
 
-		$decoded_state = json_decode( base64_decode( $state ), true );
+		$decoded       = base64_decode( $state, true );
+		$decoded_state = is_string( $decoded ) ? json_decode( $decoded, true ) : null;
 		if ( ! $decoded_state || ! is_array( $decoded_state ) ) {
 			$this->increment_invalid_count( $form_id, 'state_input' );
 			GFCommon::log_debug( __METHOD__ . '(): Decoded state is not an array.' );
@@ -337,16 +374,21 @@ class State_Handler {
 			return;
 		}
 
-		$count = count( $decoded_state );
-		if ( 3 !== $count ) {
+		// Validate the envelope before reading its indexes. JSON values can have unexpected types;
+		// reject them before HMAC calculation or hash_equals() can produce warnings or TypeErrors.
+		if ( array_keys( $decoded_state ) !== array( 0, 1, 2 )
+			|| ! is_string( $decoded_state[0] )
+			|| ! is_string( $decoded_state[1] )
+			|| ! is_int( $decoded_state[2] )
+		) {
 			$this->increment_invalid_count( $form_id, 'state_input' );
-			GFCommon::log_debug( __METHOD__ . '(): Decoded state has wrong number of elements.' );
+			GFCommon::log_debug( __METHOD__ . '(): Decoded state has an invalid structure.' );
 
 			return;
 		}
 
-		$checksum = wp_hash( crc32( $decoded_state[0] ) );
-		if ( $checksum !== $decoded_state[1] ) {
+		$checksum = $this->authenticate( $decoded_state[0], 'payload' );
+		if ( ! hash_equals( $checksum, $decoded_state[1] ) ) {
 			$this->increment_invalid_count( $form_id, 'state_input' );
 			GFCommon::log_debug( __METHOD__ . '(): Checksum failed validation.' );
 
@@ -411,10 +453,11 @@ class State_Handler {
 
 		return (
 			empty( $timestamp )
-			|| ! is_numeric( $timestamp )
+			|| ! is_int( $timestamp )
 			|| empty( $hash )
 			|| ! is_string( $hash )
 			|| ! $this->value_matches_state( $timestamp, $hash )
+			|| $timestamp > time()
 			|| (int) $timestamp <= ( time() - $lifespan )
 		);
 	}
@@ -491,12 +534,16 @@ class State_Handler {
 	 * @return bool
 	 */
 	private function is_valid_field_value( $form_id, $key, $value ) {
+		if ( ! is_scalar( $value ) && ! is_null( $value ) ) {
+			return false;
+		}
+
 		$state = $this->parsed_hashes[ $form_id ][ $key ];
 		if ( $this->value_matches_state( $value, $state ) ) {
 			return true;
 		}
 
-		$sanitized_value = wp_kses( $value, wp_kses_allowed_html( 'post' ) );
+		$sanitized_value = wp_kses( (string) $value, wp_kses_allowed_html( 'post' ) );
 
 		return $this->value_matches_state( $sanitized_value, $state );
 	}
@@ -512,14 +559,22 @@ class State_Handler {
 	 * @return bool
 	 */
 	private function value_matches_state( $value, $state ) {
+		if ( ! is_scalar( $value ) && ! is_null( $value ) ) {
+			return false;
+		}
+
 		if ( is_null( $value ) ) {
 			$value = '';
 		}
 
-		$hash           = wp_hash( $value );
-		$is_state_array = is_array( $state );
+		$hash = $this->authenticate_value_hash( wp_hash( (string) $value ) );
+		foreach ( is_array( $state ) ? $state : array( $state ) as $expected ) {
+			if ( is_string( $expected ) && hash_equals( $expected, $hash ) ) {
+				return true;
+			}
+		}
 
-		return ( $is_state_array && in_array( $hash, $state, true ) ) || ( ! $is_state_array && $hash === $state );
+		return false;
 	}
 
 	/**
@@ -677,5 +732,4 @@ class State_Handler {
 		GFCommon::log_debug( __METHOD__ . "(): Clearing cached counts for form #{$form_id} using key {$key}." );
 		GFCache::delete( $key );
 	}
-
 }

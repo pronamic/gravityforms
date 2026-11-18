@@ -1350,6 +1350,32 @@ class GFCommon {
 		return $value;
 	}
 
+	/**
+	 * Formats merge-tag values for output and prevents shortcodes or merge tags within those values from being processed.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param mixed  $value      The replacement value. Non-scalar values render as an empty string.
+	 * @param bool   $url_encode Whether to URL encode the value.
+	 * @param bool   $esc_html   Whether HTML escaping was requested.
+	 * @param string $format     The output format.
+	 * @param bool   $nl2br      Whether HTML output should preserve line breaks.
+	 *
+	 * @return string
+	 */
+	private static function format_untrusted_merge_tag_value( $value, $url_encode, $esc_html, $format, $nl2br = false, $protect = true ) {
+		$value = is_scalar( $value ) ? (string) $value : '';
+		$value = self::format_variable_value( $value, $url_encode, $esc_html || ( $protect && $format === 'html' && ! $url_encode ), $format, $nl2br );
+
+		if ( ! $protect ) {
+			return $value;
+		}
+
+		$value = $format === 'url' ? $value : self::encode_shortcodes( $value );
+
+		return self::encode_merge_tag( $value );
+	}
+
 	public static function replace_variables( $text, $form, $lead, $url_encode = false, $esc_html = true, $nl2br = true, $format = 'html', $aux_data = array() ) {
 
 		// Prevent fatal error for PHP 8.2+.
@@ -1380,7 +1406,12 @@ class GFCommon {
 		 */
 		$data = apply_filters( 'gform_merge_tag_data', $data, $text, $form, $lead );
 
-		$lead = $data['entry'];
+		// The built-in entry namespace always uses the protected entry/field formatters.
+		if ( is_callable( $data['entry'] ) ) {
+			$data['entry'] = call_user_func( $data['entry'], $lead, $form );
+		}
+		$lead          = is_array( $data['entry'] ) ? $data['entry'] : array();
+		$data['entry'] = $lead;
 
 		$text = $format == 'html' && $nl2br ? nl2br( $text ) : $text;
 		$text = apply_filters( 'gform_pre_replace_merge_tags', $text, $form, $lead, $url_encode, $esc_html, $nl2br, $format );
@@ -1402,7 +1433,12 @@ class GFCommon {
 		}
 
 		// Process dynamic merge tags based on auxiliary data.
-		$aux_tags = array_keys( $data );
+		$aux_tags = array_map(
+			static function ( $tag ) {
+				return preg_quote( $tag, '/' );
+			},
+			array_keys( $data )
+		);
 		$pattern  = sprintf( '/{(%s):(.+?)}/', implode( '|', $aux_tags ) );
 
 		preg_match_all( $pattern, $text, $matches, PREG_SET_ORDER );
@@ -1410,12 +1446,20 @@ class GFCommon {
 
 			list( $search, $tag, $prop ) = $match;
 
+			// Numeric entry aliases belong to the normal field merge-tag pass, including modifiers.
+			if ( $tag === 'entry' && preg_match( '/^\d+(?:\.\w+)?(?::.*)?$/s', $prop ) ) {
+				continue;
+			}
+
 			if ( is_callable( $data[ $tag ] ) ) {
 				$data[ $tag ] = call_user_func( $data[ $tag ], $lead, $form );
 			}
 
 			$object  = $data[ $tag ];
 			$replace = rgars( $object, $prop );
+			$replace = $tag === 'entry'
+				? self::format_untrusted_merge_tag_value( $replace, $url_encode, $esc_html, $format, $nl2br )
+				: ( is_scalar( $replace ) ? (string) $replace : '' );
 
 			$text = str_replace( $search, $replace, $text );
 
@@ -1633,23 +1677,18 @@ class GFCommon {
 		return $css_class;
 	}
 
-	public static function replace_variables_prepopulate( $text, $url_encode = false, $entry = false, $esc_html = false, $form = false, $nl2br = false, $format = 'html' ) {
+	public static function replace_variables_prepopulate( $text, $url_encode = false, $entry = false, $esc_html = false, $form = false, $nl2br = false, $format = 'html', $protect = true ) {
 
 		if ( is_string( $text ) && strpos( $text, '{' ) !== false ) {
 
 			//embed url
 			$current_page_url = empty( $entry ) ? GFFormsModel::get_current_page_url() : rgar( $entry, 'source_url' );
+			$current_page_url = is_scalar( $current_page_url ) ? (string) $current_page_url : '';
 			if ( $current_page_url && ! empty( $entry['source_id'] ) && strpos( $current_page_url, admin_url( 'admin-ajax.php' ) ) === 0 ) {
 				$current_page_url = (string) get_permalink( $entry['source_id'] );
 			}
 
-			if ( $esc_html ) {
-				$current_page_url = esc_html( $current_page_url );
-			}
-			if ( $url_encode ) {
-				$current_page_url = urlencode( $current_page_url );
-			}
-			$text = str_replace( '{embed_url}', $current_page_url, $text );
+			$text = str_replace( '{embed_url}', self::format_untrusted_merge_tag_value( $current_page_url, $url_encode, $esc_html, $format, false, $protect ), $text );
 
 			$utc_timestamp   = time();
 			$local_timestamp = self::get_local_timestamp( $utc_timestamp );
@@ -1671,6 +1710,7 @@ class GFCommon {
 					$is_today    = $match[1] === 'today';
 					$full_tag    = $match[0];
 					$date_string = ! $is_today ? rgar( $entry, $match[1] ) : $utc_timestamp;
+					$date_string = is_scalar( $date_string ) ? $date_string : '';
 					$property    = $match[2];
 
 					// $date_string can't be a timestamp; convert to an actual date format.
@@ -1722,7 +1762,7 @@ class GFCommon {
 					    $formatted_date = '';
 					}
 
-					$formatted_date = self::format_variable_value( $formatted_date, $url_encode, $esc_html, $format, false );
+					$formatted_date = self::format_untrusted_merge_tag_value( $formatted_date, $url_encode, $esc_html, $format, false, $protect );
 					$text           = str_replace( $full_tag, $formatted_date, $text );
 				}
 			}
@@ -1730,24 +1770,19 @@ class GFCommon {
 			// ip
 			$request_ip = rgars( $form, 'personalData/preventIP' ) ? '' : GFFormsModel::get_ip();
 			$ip = isset( $entry['ip'] ) ? $entry['ip'] : $request_ip;
-			if ( $esc_html ) {
-				$ip = esc_html( $ip );
-			}
-			$text = str_replace( '{ip}', $url_encode ? urlencode( $ip ) : $ip, $text );
+			$text       = str_replace( '{ip}', self::format_untrusted_merge_tag_value( $ip, $url_encode, $esc_html, $format, false, $protect ), $text );
 
 			//user agent
 			$user_agent = isset( $entry['user_agent'] ) ? $entry['user_agent'] : sanitize_text_field( rgar( $_SERVER, 'HTTP_USER_AGENT' ) );
-			$text       = str_replace( '{user_agent}', self::format_variable_value( $user_agent, $url_encode, $esc_html, $format, $nl2br ), $text );
+			$text       = str_replace( '{user_agent}', self::format_untrusted_merge_tag_value( $user_agent, $url_encode, $esc_html, $format, $nl2br, $protect ), $text );
 
 			//referrer
-			$referer = isset( $_POST['ajax_referer'] ) ? esc_url_raw( urldecode( wp_unslash( $_POST['ajax_referer'] ) ) ) : rgar( $_SERVER, 'HTTP_REFERER' ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			if ( $esc_html ) {
-				$referer = esc_html( $referer );
+			$referer = isset( $_POST['ajax_referer'] ) ? rgar( $_POST, 'ajax_referer' ) : rgar( $_SERVER, 'HTTP_REFERER' ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$referer = is_scalar( $referer ) ? (string) $referer : '';
+			if ( isset( $_POST['ajax_referer'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$referer = esc_url_raw( urldecode( wp_unslash( $referer ) ) );
 			}
-			if ( $url_encode ) {
-				$referer = urlencode( $referer );
-			}
-			$text = str_replace( '{referer}', $referer, $text );
+			$text = str_replace( '{referer}', self::format_untrusted_merge_tag_value( $referer, $url_encode, $esc_html, $format, false, $protect ), $text );
 
 			//embed post and custom fields
 			preg_match_all( "/\{embed_post:(.*?)\}/", $text, $ep_matches, PREG_SET_ORDER );
@@ -1775,8 +1810,8 @@ class GFCommon {
 				foreach ( $ep_matches as $match ) {
 					$full_tag = $match[0];
 					$property = $match[1];
-					$value    = $is_singular ? $post_array[ $property ] : '';
-					$text     = str_replace( $full_tag, $url_encode ? urlencode( $value ) : $value, $text );
+					$value    = $is_singular ? rgar( $post_array, $property ) : '';
+					$text     = str_replace( $full_tag, self::format_untrusted_merge_tag_value( $value, $url_encode, $esc_html, $format, false, $protect ), $text );
 				}
 
 				//custom_field
@@ -1784,7 +1819,7 @@ class GFCommon {
 					$full_tag           = $match[0];
 					$custom_field_name  = $match[1];
 					$custom_field_value = $is_singular && ! empty( $post_array['ID'] ) ? get_post_meta( $post_array['ID'], $custom_field_name, true ) : '';
-					$text               = str_replace( $full_tag, $url_encode ? urlencode( $custom_field_value ) : $custom_field_value, $text );
+					$text               = str_replace( $full_tag, self::format_untrusted_merge_tag_value( $custom_field_value, $url_encode, $esc_html, $format, false, $protect ), $text );
 				}
 			}
 
@@ -1798,7 +1833,7 @@ class GFCommon {
 
 				// Prevent leaking hashed passwords.
 				$value = $property == 'user_pass' ? '' : $current_user->get( $property );
-				$value = $url_encode ? urlencode( $value ) : $value;
+				$value = self::format_untrusted_merge_tag_value( $value, $url_encode, $esc_html, $format, $nl2br, $protect );
 
 				$text = str_replace( $full_tag, $value, $text );
 			}
@@ -1829,7 +1864,7 @@ class GFCommon {
 							break;
 					}
 
-					$value = self::format_variable_value( $value, $url_encode, $esc_html, '', false );
+					$value = self::format_untrusted_merge_tag_value( $value, $url_encode, $esc_html, $format, false, $protect );
 					$text  = str_replace( $full_tag, $value, $text );
 				}
 			}
@@ -1972,7 +2007,7 @@ class GFCommon {
 					}
 
 					if ( $field_value !== false ) {
-						$field_value = self::encode_shortcodes( $field_value );
+						$field_value = self::encode_merge_tag( self::encode_shortcodes( $field_value ) );
 					}
 
 					$field_value = apply_filters( 'gform_merge_tag_filter', $field_value, $merge_tag, $options, $field, $raw_field_value, $format );
@@ -2039,6 +2074,10 @@ class GFCommon {
 					$field_data = GF_Order_Summary::render( $form, $lead, 'pricing-fields-html', $use_text, $use_admin_label );
 					break;
 			}
+
+			// Product names/options can originate from dynamically populated submission values.
+			// The HTML view sanitizes those values independently of the processing user's capabilities.
+			$field_data = self::encode_merge_tag( self::encode_shortcodes( $field_data ) );
 
 			/**
 			 * Filter the markup of the order summary which appears on the Entry Detail, the {all_fields} merge tag and the {pricing_fields} merge tag.
@@ -2130,6 +2169,7 @@ class GFCommon {
 		$subject   = html_entity_decode( GFCommon::replace_variables( rgar( $notification, 'subject' ), $form, $lead, false, false, false, 'text', $data ) );
 		$from      = GFCommon::replace_variables( rgar( $notification, 'from' ), $form, $lead, false, false, false, 'text', $data );
 		$from_name = GFCommon::replace_variables( rgar( $notification, 'fromName' ), $form, $lead, false, false, false, 'text', $data );
+		$from_name = str_replace( array( '&#91;', '&#93;', '&#92;' ), array( '[', ']', '\\' ), $from_name );
 		$bcc       = GFCommon::remove_extra_commas( GFCommon::replace_variables( rgar( $notification, 'bcc' ), $form, $lead, false, false, false, 'text', $data ) );
 		$replyTo   = GFCommon::remove_extra_commas( GFCommon::replace_variables( rgar( $notification, 'replyTo' ), $form, $lead, false, false, false, 'text', $data ) );
 
@@ -2155,6 +2195,10 @@ class GFCommon {
 
 		if ( apply_filters( 'gform_enable_shortcode_notification_message', true, $form, $lead ) ) {
 			$message = do_shortcode( $message );
+		}
+		if ( $message_format === 'text' ) {
+			// Restore literal characters only after core shortcode processing, for plain-text delivery.
+			$message = str_replace( array( '&#91;', '&#93;', '&#091;', '&#093;', '&#92;' ), array( '[', ']', '[', ']', '\\' ), $message );
 		}
 
 		// Allow attachments to be passed as a single path (string) or an array of paths, if string provided, add to array.
@@ -2246,6 +2290,7 @@ class GFCommon {
 
 			// Formatting text message. Removes all tags.
 			$text_message = self::format_text_message( $text_message );
+			$text_message = str_replace( array( '&#91;', '&#93;', '&#091;', '&#093;', '&#92;' ), array( '[', ']', '[', ']', '\\' ), $text_message );
 
 			// Sends text and html messages to send_email()
 			$message = array(
@@ -5761,6 +5806,15 @@ Content-Type: text/html;
 			)
 		);
 
+		// WordPress already unescapes template attributes. Apply the same comparison-only
+		// normalization to protected merge-tag operands without decoding rendered content.
+		if ( strpos( $merge_tag, '&#92;' ) !== false || strpos( $merge_tag, '&#092;' ) !== false ) {
+			$merge_tag = stripcslashes( str_replace( array( '&#92;', '&#092;' ), '\\', $merge_tag ) );
+		}
+		if ( strpos( $value, '&#92;' ) !== false || strpos( $value, '&#092;' ) !== false ) {
+			$value = stripcslashes( str_replace( array( '&#92;', '&#092;' ), '\\', $value ) );
+		}
+
 		$merge_tag = self::maybe_format_numeric( $merge_tag, $condition );
 
 		return RGFormsModel::matches_conditional_operation( $merge_tag, $value, $condition ) ? do_shortcode( $content ) : '';
@@ -7399,6 +7453,11 @@ Content-Type: text/html;
 			$field = GF_Fields::create( $field );
 		}
 
+		// Entry aliases must not expose orphaned compound inputs from an otherwise valid field.
+		if ( stripos( $match[0], '{entry:' ) !== false && strpos( (string) $input_id, '.' ) !== false && ! RGFormsModel::get_input( $field, $input_id ) ) {
+			return $text;
+		}
+
 		// If the field is inside a repeater, get the top level repeater field and set the modifier to limit the values to the specific field ID.
 		$repeater_modifier = '';
 		if ( isset( $field->nestingPath ) && ! empty( $field->nestingPath ) ) {
@@ -7422,8 +7481,6 @@ Content-Type: text/html;
 			$value = '';
 		}
 
-		$value = self::format_variable_value( $value, $url_encode, $esc_html, $format, $nl2br );
-
 		// Modifier will be at index 4 unless used in a conditional shortcode in which case it would be at index 5.
 		$i         = $match[0][0] == '{' ? 4 : 5;
 		$modifier  = strtolower( rgar( $match, $i ) );
@@ -7437,9 +7494,11 @@ Content-Type: text/html;
 			$url_encode = true;
 		}
 
+		$value = self::format_variable_value( $value, $url_encode, $esc_html, $format, $nl2br );
+
 		$value = $field->get_value_merge_tag( $value, $input_id, $lead, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br );
 
-		if ( ! in_array( $field->type, array( 'html', 'section', 'signature' ) ) ) {
+		if ( $format !== 'url' && ! in_array( $field->type, array( 'html', 'section', 'signature' ) ) ) {
 			$value = self::encode_shortcodes( $value );
 		}
 
@@ -7453,6 +7512,7 @@ Content-Type: text/html;
 			} else {
 				$field->set_context_property( 'use_admin_label', in_array( 'admin', $modifiers ) );
 				$value = $format == 'text' ? sanitize_text_field( self::get_label( $field ) ) : esc_html( self::get_label( $field ) );
+				$value = $url_encode ? urlencode( $value ) : $value;
 			}
 		} else if ( $modifier == 'numeric' ) {
 			$number_format = $field->numberFormat ? $field->numberFormat : 'decimal_dot';
@@ -7491,8 +7551,9 @@ Content-Type: text/html;
 	}
 
 	public static function encode_shortcodes( $string ) {
-		$find    = array( '[', ']' );
-		$replace = array( '&#91;', '&#93;' );
+		// WordPress shortcode attributes use stripcslashes(), which can reconstruct markup from hex/octal escapes.
+		$find    = array( '[', ']', '\\' );
+		$replace = array( '&#91;', '&#93;', '&#92;' );
 		$string  = str_replace( $find, $replace, (string) $string );
 
 		return $string;
@@ -7539,10 +7600,44 @@ Content-Type: text/html;
 		 */
 		$sanitize_confirmation_nessage = apply_filters( 'gform_sanitize_confirmation_message', $sanitize_confirmation_nessage );
 		if ( $sanitize_confirmation_nessage ) {
-			$confirmation_message = wp_kses_post( $confirmation_message );
+			$confirmation_message = self::sanitize_merge_tag_output( $confirmation_message );
 		}
 
 		return $confirmation_message;
+	}
+
+	/**
+	 * Sanitizes merged HTML without decoding protected data into shortcode or merge-tag syntax.
+	 *
+	 * WordPress 7.2 introduces an HTML API-based KSES engine that decodes numeric
+	 * character references, including our protected brackets, backslashes, and opening
+	 * braces. Preserve those references through sanitization so subsequent shortcode
+	 * processing cannot execute submitted values. This also supports legacy KSES;
+	 * it does not require opting into either parser.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param string $html The merged HTML to sanitize before shortcode processing.
+	 *
+	 * @return string
+	 */
+	private static function sanitize_merge_tag_output( $html ) {
+		$prefix       = 'gfprotected' . bin2hex( random_bytes( 16 ) );
+		$replacements = array();
+		$html         = preg_replace_callback(
+			'/&#(?:0*(?:91|92|93|123)|x0*(?:5b|5c|5d|7b));/i',
+			static function ( $match ) use ( $prefix, &$replacements ) {
+				// Keep the decoded character visible to URL/CSS validation, rather than hiding it.
+				$character = html_entity_decode( $match[0], ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+				$token     = $prefix . count( $replacements ) . $character . 'gfend';
+				$replacements[ $token ] = $match[0];
+
+				return $token;
+			},
+			$html
+		);
+
+		return strtr( wp_kses_post( $html ), $replacements );
 	}
 
 	/**
@@ -8617,15 +8712,14 @@ Content-Type: text/html;
 
 			// Check if required add-on meets minimum version.
 			if ( version_compare( $installed[ $addon_slug ]['version'], $addon_version, '<' ) ) {
-
-				// translators: 1: current add-on name, 2: required add-on name, 3: minimum required version, 4: currently installed version. 5: latest version if the text latest is used, version number otherwise.
 				$message = sprintf(
-					esc_html__( 'The Gravity Forms %1$s requires %2$s version %3$s or higher for full compatibility. You are currently using version %4$s. Please update %2$s to %5$s version.', 'gravityforms' ),
-						$parent_title,
-						$installed[ $addon_slug ]['name'],
-						$addon_version,
-						$installed[ $addon_slug ]['version'],
-						$version_latest_used ? 'latest' : $addon_version
+					// translators: %1$s: current add-on name. %2$s: required add-on name. %3$s: minimum required version. %4$s: currently installed version.
+					esc_html__( 'The Gravity Forms %1$s requires %2$s version %3$s or higher for full compatibility. You are currently using version %4$s. Please update %2$s.', 'gravityforms' ),
+					$parent_title,
+					$installed[ $addon_slug ]['name'],
+					$addon_version,
+					$installed[ $addon_slug ]['version'],
+					$version_latest_used ? 'latest' : $addon_version
 				);
 
 				self::log_once_per_request( $message . json_encode( $minimum_requirements ) );

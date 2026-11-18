@@ -4656,10 +4656,10 @@ class GFFormsModel {
 				if ( ! is_admin() ) {
 					if ( is_array( $value ) ) {
 						foreach ( $value as &$_value ) {
-							$_value = GFCommon::replace_variables_prepopulate( $_value );
+							$_value = GFCommon::replace_variables_prepopulate( $_value, false, false, false, false, false, 'html', false );
 						}
 					} else {
-						$value = GFCommon::replace_variables_prepopulate( $value );
+						$value = GFCommon::replace_variables_prepopulate( $value, false, false, false, false, false, 'html', false );
 					}
 				}
 				return $value;

@@ -3441,6 +3441,10 @@ abstract class GFAddOn {
 
 					// If form isn't set, use custom value. Otherwise, replace merge tags.
 					$field_value = empty( $form ) ? $generic_field['custom_value'] : GFCommon::replace_variables( $generic_field['custom_value'], $form, $entry, false, false, false, 'text' );
+					if ( ! empty( $form ) ) {
+						// Data-only mappings do not process shortcodes; preserve literal brackets and backslashes.
+						$field_value = str_replace( array( '&#91;', '&#93;', '&#92;' ), array( '[', ']', '\\' ), $field_value );
+					}
 
 				} else {
 
@@ -5734,6 +5738,7 @@ abstract class GFAddOn {
 	 *
 	 * @since Unknown
 	 * @since 2.4.15  Update to improve multisite updates.
+	 * @since 3.2.3 Moved API response minimum requirements check to GFAutoUpgrade.
 	 *
 	 * @param string $plugin_name The plugin filename.  Immediately overwritten.
 	 * @param array  $plugin_data An array of plugin data.
@@ -5748,43 +5753,6 @@ abstract class GFAddOn {
 			$message = $this->compatibility_message();
 			self::display_plugin_message( $message, 'error' );
 		}
-
-		if ( ! $this->_enable_rg_autoupgrade ) {
-			return;
-		}
-
-		GFForms::maybe_display_update_notification( $plugin_name, $plugin_data, $this->get_slug(), $this->_version );
-
-		// Check for Add-on minimum requirements.
-		$minimum_requirements = isset( $plugin_data['minimum_requirements'] ) && is_array( $plugin_data['minimum_requirements'] )
-				? $plugin_data['minimum_requirements']
-				: array();
-
-		$minimum_requirements_evaluation_result = GFCommon::evaluate_minimum_requirements( $minimum_requirements );
-		if ( $minimum_requirements_evaluation_result['block'] == true ) {
-			$plugin_name = $plugin_data['plugin'] ?? '';
-			if ( $plugin_name !== '' ) {
-				// Remove update notification if minimum requirements are not met.
-				add_filter( 'site_transient_update_plugins', function( $value ) use ( $plugin_name ) {
-					if ( isset( $value->response[ $plugin_name ] ) ) {
-						unset( $value->response[ $plugin_name ] );
-					}
-
-					return $value;
-				});
-			}
-
-			$message = $minimum_requirements_evaluation_result['message'];
-			if ( version_compare( $this->_version, $plugin_data['new_version'], '<' ) ) {
-				$details_url         = self_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . urlencode( $this->_slug ) . '&section=changelog&TB_iframe=true&width=600&height=800' );
-				$message_link_text   = sprintf( esc_html__( 'View version %s details', 'gravityforms' ), $plugin_data['new_version'] );
-				$message_link        = sprintf( '<a href="%s" class="thickbox" title="%s">%s</a>', esc_url( $details_url ), esc_attr( $this->_title ), $message_link_text );
-				$message_new_version = sprintf( esc_html__( 'There is a new version of %s available. %s.', 'gravityforms' ), $this->_title, $message_link );
-				$message             = $message_new_version . ' ' . $message;
-			}
-
-			self::display_plugin_message( $message, 'warning' );
-		}
 	}
 
 	/**
@@ -5793,9 +5761,8 @@ abstract class GFAddOn {
 	 * Override this method to display a custom message.
 	 */
 	public function plugin_message() {
-		$message = sprintf( esc_html__( 'Gravity Forms %s is required. Activate it now or %spurchase it today!%s', 'gravityforms' ), $this->_min_gravityforms_version, "<a href='https://www.gravityforms.com'>", '</a>' );
-
-		return $message;
+		// translators: %1$s: The minimum Gravity Forms version required. %2$s: The installed Gravity Forms version.
+		return sprintf( esc_html__( 'Gravity Forms version %1$s or higher is required. You are currently using version %2$s. Please update Gravity Forms.', 'gravityforms' ), $this->_min_gravityforms_version, GFForms::$version );
 	}
 
 	/**
@@ -5818,17 +5785,21 @@ abstract class GFAddOn {
 	 *
 	 * @since Unknown
 	 * @since 2.9.23 Removed $is_error parameter, added $custom_style parameter.
+	 * @since 3.2.3 Added the optional $inactive param.
 	 *
-	 * @param string $message
-	 * @param string $custom_style
+	 * @param string $message      The message to output.
+	 * @param string $custom_style The message style. Should be 'error' or 'warning'.
+	 * @param bool   $inactive     Whether the add-on is inactive.
 	 */
-	public static function display_plugin_message( $message, $custom_style = '' ) {
+	public static function display_plugin_message( $message, $custom_style = '', $inactive = false ) {
+		$status = $inactive ? 'inactive' : 'active';
+
 		switch ( $custom_style ) {
 			case 'warning':
-				echo '<tr class="plugin-update-tr update active"><td colspan="4" class="plugin-update colspanchange"><div class="update-message notice inline notice-warning notice-alt"><p>' . $message . '</p></div></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<tr class="plugin-update-tr update ' . $status . '"><td colspan="4" class="plugin-update colspanchange"><div class="update-message notice inline notice-warning notice-alt"><p>' . $message . '</p></div></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				break;
 			case 'error':
-				echo '<tr class="plugin-update-tr update active"><td colspan="4" class="plugin-update colspanchange"><div class="update-message notice inline notice-error notice-alt"><p>' . $message . '</p></div></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<tr class="plugin-update-tr update ' . $status . '"><td colspan="4" class="plugin-update colspanchange"><div class="update-message notice inline notice-error notice-alt"><p>' . $message . '</p></div></td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				break;
 		}
 	}

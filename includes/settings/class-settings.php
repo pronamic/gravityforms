@@ -1061,8 +1061,9 @@ class Settings {
 			foreach ( $dependency['fields'] as $f => $_field ) {
 
 				// Get field type.
-				$dependency_field                         = $this->get_field( $_field['field'] );
-				$dependency['fields'][ $f ]['field_type'] = rgobj( $dependency_field, 'type' );
+				$dependency_field                          = $this->get_field( $_field['field'] );
+				$dependency['fields'][ $f ]['field_type']  = rgobj( $dependency_field, 'type' );
+				$dependency['fields'][ $f ]['data_format'] = rgobj( $dependency_field, 'data_format' );
 
 				// If field is a checkbox, check options.
 				if ( rgar( $dependency_field, 'type' ) === 'checkbox' ) {
@@ -1150,8 +1151,9 @@ class Settings {
 			foreach ( $dependency['fields'] as $f => $_field ) {
 
 				// Get field type.
-				$dependency_field                         = $this->get_field( $_field['field'] );
-				$dependency['fields'][ $f ]['field_type'] = rgobj( $dependency_field, 'type' );
+				$dependency_field                          = $this->get_field( $_field['field'] );
+				$dependency['fields'][ $f ]['field_type']  = rgobj( $dependency_field, 'type' );
+				$dependency['fields'][ $f ]['data_format'] = rgobj( $dependency_field, 'data_format' );
 
 				// If field is a checkbox, check options.
 				if ( rgar( $dependency_field, 'type' ) === 'checkbox' ) {
@@ -1252,6 +1254,41 @@ class Settings {
 	}
 
 	/**
+	 * Determines whether an array-format checkbox includes one of the dependency values.
+	 *
+	 * Bool-format checkboxes store each choice as its own 1/0 setting. Array-format
+	 * checkboxes store the selected choice names on the checkbox field.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param mixed $selected Selected choice names.
+	 * @param array $values   Dependency values.
+	 *
+	 * @return bool
+	 */
+	private function is_array_checkbox_dependency_met( $selected, $values ) {
+
+		if ( ! is_array( $selected ) ) {
+			$selected = array();
+		}
+
+		$selected = array_map( 'strval', $selected );
+
+		foreach ( $values as $value ) {
+			if ( '_notempty_' === $value && ! empty( $selected ) ) {
+				return true;
+			}
+
+			if ( in_array( (string) $value, $selected, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+	/**
 	 * Determines if the conditions to display a field or section have been met.
 	 *
 	 * @since 2.5
@@ -1295,6 +1332,15 @@ class Settings {
 				if ( ! rgar( $rule, 'values' ) || ( rgar( $rule, 'values' ) && is_array( $rule['values'] ) && $rule['values'][0] == 1 ) ) {
 					$choices        = array_values( rgar( $field, 'choices', array() ) );
 					$rule['values'] = array( rgars( $choices, '0/name' ) );
+				}
+
+				// Array-format checkboxes store selected choice names on the field.
+				if ( rgar( $field, 'data_format' ) === 'array' ) {
+					if ( $this->is_array_checkbox_dependency_met( $this->get_value( $rule['field'] ), $rule['values'] ) ) {
+						$evaluated_rules++;
+					}
+
+					continue;
 				}
 
 				// Loop through values, check for checked checkbox.
@@ -1387,6 +1433,12 @@ class Settings {
 
 		// Get current field value.
 		$current_value = $this->get_value( $dependency_field );
+
+		// Array-format checkboxes store selected choice names on the field.
+		$dependency_field_object = $this->get_field( $dependency_field );
+		if ( rgar( $dependency_field_object, 'type' ) === 'checkbox' && rgar( $dependency_field_object, 'data_format' ) === 'array' ) {
+			return $this->is_array_checkbox_dependency_met( $current_value, $dependency_value );
+		}
 
 		// Loop through dependency values, look for match.
 		foreach ( $dependency_value as $value ) {

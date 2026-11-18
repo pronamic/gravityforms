@@ -133,7 +133,7 @@ class GF_Config_Service_Provider extends GF_Service_Provider {
 		} );
 
 		add_action( 'gform_post_enqueue_scripts', function ( $found_forms, $found_blocks, $post ) use ( $container ) {
-			$form_ids = array_column( $found_forms, 'formId' );
+			$form_ids = array_map( 'absint', array_keys( $found_forms ) );
 			$container->get( self::CONFIG_COLLECTION )->handle( true, array( 'form_ids' => $form_ids ) );
 			self::$is_localized = true;
 		}, 10, 3);

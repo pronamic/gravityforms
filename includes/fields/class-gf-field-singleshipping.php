@@ -97,7 +97,7 @@ class GF_Field_SingleShipping extends GF_Field {
 	}
 
 	public function get_value_default() {
-		$value = $this->is_form_editor() ? $this->defaultValue : GFCommon::replace_variables_prepopulate( $this->defaultValue );
+		$value = $this->is_form_editor() ? $this->defaultValue : GFCommon::replace_variables_prepopulate( $this->defaultValue, false, false, false, false, false, 'html', false );
 		if( rgblank( $value ) ) {
 			$value = $this->basePrice;
 		}

@@ -507,8 +507,11 @@ class GF_Confirmation {
 		foreach ( $confirmation as $key => $value ) {
 			$initial_values[ $key ] = $value;
 		}
-		$initial_values['page']                                  = rgar( $confirmation, 'pageId' );
-		$initial_values['type']                                  = rgar( $confirmation, 'type' ) ? rgar( $confirmation, 'type' ) : 'message';
+		// Only seed page/type for existing confirmations. For new ones, leave them unset so field defaults, filterable via gform_confirmation_settings_fields, apply.
+		if ( ! empty( $confirmation ) ) {
+			$initial_values['page']                                  = rgar( $confirmation, 'pageId' );
+			$initial_values['type']                                  = rgar( $confirmation, 'type' ) ? rgar( $confirmation, 'type' ) : 'message';
+		}
 		$initial_values['confirmation_conditional_logic']        = ! rgar( $confirmation, 'isDefault' );
 		$initial_values['confirmation_conditional_logic_object'] = htmlentities( json_encode( rgget( 'conditionalLogic', $confirmation ) ) );
 

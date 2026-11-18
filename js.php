@@ -501,11 +501,19 @@ if ( ! class_exists( 'GFForms' ) ) {
 		if ( field_settings.indexOf('product_field_setting') === -1 )
 			return;
 
-       var productFields = GetFieldsByType( ['product'] );
+		const parent = getOptionContainer( field );
+		const productFields = GetProductFieldsForField( field, parent );
+		const isRepeaterOption = field.type === 'option' && parent.type === 'repeater';
+		const productFieldIsNotAllowed = ! productFields.some( ( product ) => product.id == field.productField )
+
+		if ( field.type === 'option' && field.productField && GetFieldById( field.productField ) && productFieldIsNotAllowed ) {
+			field.productField = '';
+		}
 
 		jQuery("#gform_no_product_field_message").remove();
 		if (productFields.length < 1) {
-			jQuery("#product_field").hide().after('<div id="gform_no_product_field_message" class="gform-alert gform-alert--error gform-alert--inline"><span class="gform-alert__icon gform-icon gform-icon--circle-error-fine" aria-hidden="true"></span><div class="gform-alert__message-wrap"><p class="gform-alert__message">' + <?php echo json_encode( esc_html__( 'This field is not associated with a product. Please add a Product Field to the form.', 'gravityforms' ) ); ?> + '</p></div></div>');
+			const message = isRepeaterOption ? <?php echo json_encode( esc_html__( 'Add a Product field to this Repeater to use an Option field.', 'gravityforms' ) ); ?> : <?php echo json_encode( esc_html__( 'This field is not associated with a product. Please add a Product Field to the form.', 'gravityforms' ) ); ?>;
+			jQuery("#product_field").empty().hide().after('<div id="gform_no_product_field_message" class="gform-alert gform-alert--error gform-alert--inline"><span class="gform-alert__icon gform-icon gform-icon--circle-error-fine" aria-hidden="true"></span><div class="gform-alert__message-wrap"><p class="gform-alert__message">' + message + '</p></div></div>');
 		}
 		else {
 			var product_field = jQuery("#product_field");
@@ -522,7 +530,9 @@ if ( ! class_exists( 'GFForms' ) ) {
 			}
 
 			//Adds existing product field if it is not found in the list (to prevent confusion)
-			if (!is_selected && field["productField"] != "") {
+			if ( ! is_selected && ( isRepeaterOption || ( field.type === 'option' && ! field.productField ) ) ) {
+				product_field.prepend( jQuery( '<option>', { value: '', text: isRepeaterOption ? <?php echo json_encode( esc_html__( 'Select a Product field in this Repeater', 'gravityforms' ) ); ?> : <?php echo json_encode( esc_html__( 'Select a Product field', 'gravityforms' ) ); ?>, disabled: true, selected: true } ) );
+			} else if (!is_selected && field["productField"] != "") {
 				product_field.append("<option value='" + field["productField"] + "' selected='selected'>[" + <?php echo json_encode( esc_html__( 'Deleted Field', 'gravityforms' ) ); ?> + "]</option>");
 			}
 
@@ -1008,9 +1018,17 @@ console.log( form['fields'] );
 				}
 
 				productDependentFields = GetFieldsByType(["option", "quantity"]);
+				const productParent = getOptionContainer( field );
+
 				for (var i = 0; i < productDependentFields.length; i++) {
-					if (!productDependentFields[i]["productField"])
-						productDependentFields[i]["productField"] = field.id;
+					const dependent = productDependentFields[i];
+
+					if ( dependent.type === 'option' && getOptionContainer( dependent ) !== productParent ) {
+						continue;
+					}
+
+					if ( ! dependent["productField"] )
+						dependent["productField"] = field.id;
 				}
 				break;
 			case "singleshipping" :
@@ -1043,7 +1061,7 @@ console.log( form['fields'] );
 				}
 				field["enablePrice"] = true;
 
-				productFields = GetFieldsByType(["product"]);
+				productFields = GetProductFieldsForField( field );
 				if (productFields.length > 0)
 					field["productField"] = productFields[0]["id"];
 

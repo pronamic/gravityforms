@@ -90,7 +90,7 @@ class GF_Update {
 								<a href="<?php echo esc_url( rgar( $plugin, 'PluginURI' ) ); ?>"><?php esc_html_e( 'Visit plugin page', 'gravityforms' ); ?></a>
 							</div>
 							<?php 
-							$messages = GFForms::get_status_messages( $plugin_path, $plugin, $slug, $installed_version );
+							$messages = GFForms::get_status_messages( $plugin_path, $plugin, $slug, $installed_version, rgar( $update, 'version_info', array() ) );
 							if ( ! empty( $messages) ) {
 								echo self::get_markup_for_status_messages( $messages ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							}

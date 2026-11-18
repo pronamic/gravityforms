@@ -1445,7 +1445,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 *
 	 * Return a value that is safe for the context specified by $format.
 	 *
-	 * @since  Unknown
+	 * @since Unknown
+	 * @since 3.2.3 Apply URL encoding after field-specific HTML formatting is rebuilt from raw values.
+	 *
 	 * @access public
 	 *
 	 * @param string|array $value      The field value. Depending on the location the merge tag is being used the following functions may have already been applied to the value: esc_html, nl2br, and urlencode.
@@ -1495,6 +1497,10 @@ class GF_Field extends stdClass implements ArrayAccess {
 				} else {
 					$return = nl2br( $return );
 				}
+			}
+			// HTML-capable fields rebuild output from raw values rather than the already URL-encoded value.
+			if ( $url_encode && $allowable_tags !== false ) {
+				$return = urlencode( $return );
 			}
 		} else {
 			$return = $value;
@@ -3236,7 +3242,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		if ( ! is_array( $this->inputs ) ) {
 			$default_value = $this->maybe_convert_choice_text_to_value( $this->defaultValue );
 
-			return $this->is_form_editor() ? $default_value : GFCommon::replace_variables_prepopulate( $default_value );
+			return $this->is_form_editor() ? $default_value : GFCommon::replace_variables_prepopulate( $default_value, false, false, false, false, false, 'html', false );
 		}
 
 		$value = array();
@@ -3244,7 +3250,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		foreach ( $this->inputs as $input ) {
 			$default_value = $this->maybe_convert_choice_text_to_value( rgar( $input, 'defaultValue' ) );
 
-			$value[ strval( $input['id'] ) ] = $this->is_form_editor() ? $default_value : GFCommon::replace_variables_prepopulate( $default_value );
+			$value[ strval( $input['id'] ) ] = $this->is_form_editor() ? $default_value : GFCommon::replace_variables_prepopulate( $default_value, false, false, false, false, false, 'html', false );
 		}
 
 		return $value;

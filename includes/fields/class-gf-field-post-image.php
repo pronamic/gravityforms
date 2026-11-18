@@ -293,8 +293,10 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 	/**
 	 * Gets merge tag values.
 	 *
-	 * @since  Unknown
-	 * @since  2.5     Add alt text.
+	 * @since Unknown
+	 * @since 2.5     Add alt text.
+	 * @since 3.2.3 Parse stored image components before applying output and URL encoding.
+	 *
 	 * @access public
 	 *
 	 * @param array|string $value      The value of the input.
@@ -311,23 +313,34 @@ class GF_Field_Post_Image extends GF_Field_Fileupload {
 	 * @return string The processed merge tag.
 	 */
 	public function get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br ) {
-		list( $url, $title, $caption, $description, $alt ) = array_pad( explode( '|:|', $value ), 5, false );
-		switch ( $modifier ) {
+		// Parse the stored carrier before output encoding can consume its separators.
+		list( $url, $title, $caption, $description, $alt ) = array_pad( explode( '|:|', $raw_value ), 5, '' );
+
+		$components = array_intersect( $this->get_modifiers(), array( 'alt', 'title', 'caption', 'description' ) );
+		$component  = empty( $components ) ? $modifier : reset( $components );
+		switch ( $component ) {
 			case 'alt' :
-				return $alt;
+				$value = $alt;
+				break;
 
 			case 'title' :
-				return $title;
+				$value = $title;
+				break;
 
 			case 'caption' :
-				return $caption;
+				$value = $caption;
+				break;
 
 			case 'description' :
-				return $description;
+				$value = $description;
+				break;
 
 			default :
-				return str_replace( ' ', '%20', $url );
+				$value = $url_encode ? $url : str_replace( ' ', '%20', $url );
+				$nl2br = false;
 		}
+
+		return GFCommon::format_variable_value( $value, $url_encode, $esc_html || ( $format === 'html' && ! $url_encode ), $format, $nl2br );
 	}
 
 	/**

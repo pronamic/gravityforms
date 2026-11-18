@@ -402,7 +402,9 @@ class GF_Field_Textarea extends GF_Field {
 	 *
 	 * Return a value that is safe for the context specified by $format.
 	 *
-	 * @since  Unknown
+	 * @since Unknown
+	 * @since 3.2.3 Apply URL encoding after HTML formatting is rebuilt from the raw field value.
+	 *
 	 * @access public
 	 *
 	 * @param string|array $value      The field value. Depending on the location the merge tag is being used the following functions may have already been applied to the value: esc_html, nl2br, and urlencode.
@@ -431,6 +433,9 @@ class GF_Field_Textarea extends GF_Field {
 				$return = nl2br( $return );
 			} else {
 				$return = wpautop( wp_kses( $raw_value, $this->get_entry_allowed_html( $allowable_tags ) ) );
+			}
+			if ( $url_encode ) {
+				$return = urlencode( $return );
 			}
 		} else {
 			$return = $value;

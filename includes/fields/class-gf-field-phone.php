@@ -254,7 +254,7 @@ class GF_Field_Phone extends GF_Field {
 	/**
 	 * Get field CSS class.
 	 *
-	 * @since: next
+	 * @since 3.0.0
 	 *
 	 * @return string
 	 */
@@ -373,7 +373,7 @@ class GF_Field_Phone extends GF_Field {
 	/**
 	 * Get dial codes from the shared countries.json file.
 	 *
-	 * @since: next
+	 * @since 3.0.0
 	 *
 	 * @return array Associative array of iso2 => dialCode.
 	 */
@@ -404,7 +404,7 @@ class GF_Field_Phone extends GF_Field {
 	/**
 	 * Get dial code for a country ISO2 code.
 	 *
-	 * @since: next
+	 * @since 3.0.0
 	 *
 	 * @param string $iso2 The country ISO2 code.
 	 *
@@ -419,7 +419,7 @@ class GF_Field_Phone extends GF_Field {
 	/**
 	 * Get country data (dial code and placeholder) for a country ISO2 code.
 	 *
-	 * @since: next
+	 * @since 3.0.0
 	 *
 	 * @param string $iso2 The country ISO2 code.
 	 *
@@ -737,7 +737,7 @@ class GF_Field_Phone extends GF_Field {
 				'country'   => strtoupper( substr( $decoded['country'], 0, 2 ) ),
 				'national'  => preg_replace( '/[^\d\s\-\(\).]/', '', $decoded['national'] ),
 				'formatted' => wp_kses( $decoded['formatted'], array() ),
-				'e164'      => preg_replace( '/[^\d\+]/', '', $decoded['e164'] )
+				'e164'      => preg_replace( '/[^\d\+]/', '', $decoded['e164'] ),
 			);
 
 			$value = json_encode( $sanitized );
@@ -749,7 +749,8 @@ class GF_Field_Phone extends GF_Field {
 	/**
 	 * Gets the value to be displayed on the entry detail page.
 	 *
-	 * @since: next
+	 * @since 3.0.0
+	 *
 	 * @access public
 	 *
 	 * @param string $value    The field value.
@@ -826,7 +827,8 @@ class GF_Field_Phone extends GF_Field {
 	/**
 	 * Gets the value to be displayed on the entries list page.
 	 *
-	 * @since: next
+	 * @since 3.0.0
+	 *
 	 * @access public
 	 *
 	 * @param string $value    The field value.
@@ -851,7 +853,9 @@ class GF_Field_Phone extends GF_Field {
 	/**
 	 * Gets the merge tag value.
 	 *
-	 * @since: next
+	 * @since 3.0.0
+	 * @since 3.2.3 Apply URL encoding after formatting phone values reconstructed from raw data.
+	 *
 	 * @access public
 	 *
 	 * @param string $value      The merge tag value to be filtered.
@@ -872,21 +876,21 @@ class GF_Field_Phone extends GF_Field {
 			$decoded = $this->to_array( $raw_value );
 			if ( $decoded ) {
 				if ( in_array( 'clean', $this->get_modifiers() ) && ! empty( $decoded['e164'] ) ) {
-					return $this->format_entry_output_value( str_replace( '+', '', $decoded['e164'] ), $format );
+					return $this->format_entry_output_value( str_replace( '+', '', $decoded['e164'] ), $format, $url_encode );
 				}
 				// Support modifiers for object keys, like {Phone:1:country} or {Phone:1:national}
 				if ( $modifier && isset( $decoded[ $modifier ] ) ) {
-					return $this->format_entry_output_value( $decoded[ $modifier ], $format );
+					return $this->format_entry_output_value( $decoded[ $modifier ], $format, $url_encode );
 				}
 				// Default to formatted value with country code prefix
 				$formatted_with_country_code = $this->get_formatted_with_country_code( $decoded );
 				if ( $formatted_with_country_code !== false ) {
-					return $this->format_entry_output_value( $formatted_with_country_code, $format );
+					return $this->format_entry_output_value( $formatted_with_country_code, $format, $url_encode );
 				}
 			}
 		}
 		if ( in_array( 'clean', $this->get_modifiers() ) ) {
-			return $this->format_entry_output_value( preg_replace( '/[^\d]/', '', $value ), $format );
+			return $this->format_entry_output_value( preg_replace( '/[^\d]/', '', $raw_value ), $format, $url_encode );
 		}
 
 		return $this->format_entry_output_value( $value, $format );
@@ -896,14 +900,18 @@ class GF_Field_Phone extends GF_Field {
 	 * Escape Phone values when they are formatted for an HTML output context.
 	 *
 	 * @since 3.1.3
+	 * @since 3.2.3 Escape HTML output to prevent unsafe markup from submitted phone values.
 	 *
 	 * @param mixed  $value  The Phone value.
 	 * @param string $format The requested output format.
+	 * @param bool   $url_encode Whether to URL encode a value rebuilt from raw phone data.
 	 *
 	 * @return mixed
 	 */
-	private function format_entry_output_value( $value, $format ) {
-		return $format === 'html' ? esc_html( (string) $value ) : $value;
+	private function format_entry_output_value( $value, $format, $url_encode = false ) {
+		$value = $format === 'html' ? esc_html( (string) $value ) : $value;
+
+		return $url_encode ? urlencode( $value ) : $value;
 	}
 
 	/**

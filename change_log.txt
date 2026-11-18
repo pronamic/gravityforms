@@ -1,3 +1,21 @@
+### 3.2.3.1
+- Fixed an issue where checking for updates to inactive add-ons made more requests to the Gravity Forms API than required.
+
+### 3.2.3 | 2026-11-17
+- Added security enhancements.
+- Added a Large (mobile friendly) input size to the form block style settings for improved accessibility. 
+- Updated the Option field's Product setting to list only Product fields in the same container.
+- Updated to offer updates for inactive official Gravity Forms Add-Ons.
+- Fixed a performance issue that can occur when `Full_Screen_Handler::get_form_for_display()` is called multiple times during a request.
+- Fixed an issue that causes multiple admin-ajax.php config requests to be sent unnecessarily in some situations.
+- Fixed an issue that prevented setting type and page settings for new confirmations via filter `gform_confirmation_settings_fields`.
+- Fixed an issue where custom fields using non-GravityForms icons do not render in the drag preview when moving the field.
+- Fixed an issue where in some situations, the Next button is changed into a Submit button after a page is revealed by conditional logic.
+- Fixed an issue where the Month and Year dropdown values in the Datepicker are left-aligned in desktop Safari.
+- Fixed an issue where the multi-file uploader isn't functional when the entry detail edit page is accessed using the edit link on the entries list page.
+- Fixed an issue where validation errors could flash or receive focus before a successful AJAX redirect.
+- API: Fixed an issue where a settings field or section that depends on a checkbox with the array data format stayed hidden when the expected choice was selected.
+
 ### 3.2.2 | 2026-11-05
 - Added security enhancements.
 - Added an accessibility improvement to disable animations for users who prefer reduced motion.

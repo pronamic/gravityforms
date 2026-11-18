@@ -590,6 +590,8 @@ if ( class_exists( 'GFForms' ) ) {
 			}
 
 
+			$settings = $this->get_plugin_settings();
+
 			return array(
 				array(
 					'description' => esc_html__( 'The Gravity Forms API allows developers to interact with this install via a JSON REST API.', 'gravityforms' ),
@@ -637,7 +639,7 @@ if ( class_exists( 'GFForms' ) ) {
 							'name'              => 'public_key',
 							'label'             => esc_html__( 'Public API Key', 'gravityforms' ),
 							'type'              => 'text',
-							'default_value'     => substr( wp_hash( site_url() ), 0, 10 ),
+							'default_value'     => isset( $settings['public_key'] ) ? '' : bin2hex( random_bytes( 32 ) ),
 							'class'             => 'medium',
 							'feedback_callback' => array( $this, 'is_valid_public_key' ),
 						),
@@ -645,7 +647,7 @@ if ( class_exists( 'GFForms' ) ) {
 							'name'              => 'private_key',
 							'label'             => esc_html__( 'Private API Key', 'gravityforms' ),
 							'type'              => 'text',
-							'default_value'     => substr( wp_hash( get_bloginfo( 'admin_email' ) ), 0, 15 ),
+							'default_value'     => isset( $settings['private_key'] ) ? '' : bin2hex( random_bytes( 32 ) ),
 							'class'             => 'medium',
 							'feedback_callback' => array( $this, 'is_valid_private_key' )
 						),

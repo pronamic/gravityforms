@@ -216,7 +216,9 @@ class GF_Field_Text extends GF_Field {
 	/**
 	 * Gets merge tag values.
 	 *
-	 * @since  Unknown
+	 * @since Unknown
+	 * @since 3.2.3 Apply URL encoding after HTML formatting is rebuilt from the raw field value.
+	 *
 	 * @access public
 	 *
 	 * @uses GF_Field::get_allowable_tags()
@@ -250,6 +252,10 @@ class GF_Field_Text extends GF_Field {
 				$return = esc_html( $value );
 			} else {
 				$return = wp_kses( $value, $this->get_entry_allowed_html( $allowable_tags ) );
+			}
+			// HTML formatting rebuilds the value from raw data, so apply the requested URL encoding afterwards.
+			if ( $url_encode ) {
+				$return = urlencode( $return );
 			}
 		} else {
 			$return = $value;

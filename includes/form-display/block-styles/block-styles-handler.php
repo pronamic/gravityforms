@@ -49,7 +49,10 @@ class Block_Styles_Handler {
 
 		$color_palette = GFCommon::generate_block_styles_palette( $applied_settings );
 
-		return array(
+		$is_mobile_friendly = 'lgmf' === $applied_settings['inputSize'];
+		$size               = $is_mobile_friendly ? 'lg' : $applied_settings['inputSize'];
+
+		$properties = array(
 			/* Global CSS API: Theme */
 			'gf-color-primary'              => $color_palette['primary']['color'],
 			'gf-color-primary-rgb'          => implode( ', ', $color_palette['primary']['color-rgb'] ),
@@ -110,27 +113,24 @@ class Block_Styles_Handler {
 			'gf-icon-ctrl-select' => "url(\"data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M0.292893 0.292893C0.683417 -0.097631 1.31658 -0.097631 1.70711 0.292893L5 3.58579L8.29289 0.292893C8.68342 -0.0976311 9.31658 -0.0976311 9.70711 0.292893C10.0976 0.683417 10.0976 1.31658 9.70711 1.70711L5.70711 5.70711C5.31658 6.09763 4.68342 6.09763 4.29289 5.70711L0.292893 1.70711C-0.0976311 1.31658 -0.0976311 0.683418 0.292893 0.292893Z' fill='{$color_palette['inside-control-dark']['color-lighter']}'/%3E%3C/svg%3E\")",
 			'gf-icon-ctrl-search' => "url(\"data:image/svg+xml,%3Csvg width='640' height='640' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M256 128c-70.692 0-128 57.308-128 128 0 70.691 57.308 128 128 128 70.691 0 128-57.309 128-128 0-70.692-57.309-128-128-128zM64 256c0-106.039 85.961-192 192-192s192 85.961 192 192c0 41.466-13.146 79.863-35.498 111.248l154.125 154.125c12.496 12.496 12.496 32.758 0 45.254s-32.758 12.496-45.254 0L367.248 412.502C335.862 434.854 297.467 448 256 448c-106.039 0-192-85.962-192-192z' fill='{$color_palette['inside-control-dark']['color-lighter']}'/%3E%3C/svg%3E\")",
 
-			/* Global CSS API: Layout & Spacing */
-			'gf-label-space-y-secondary' => 'var(--gf-label-space-y-' . $applied_settings['inputSize'] . '-secondary)',
-
 			/* Global CSS API: Controls - Default For All Types */
 			'gf-ctrl-border-color' => $applied_settings['inputBorderColor'],
-			'gf-ctrl-size'         => 'var(--gf-ctrl-size-' . $applied_settings['inputSize'] . ')',
+			'gf-ctrl-size'         => 'var(--gf-ctrl-size-' . $size . ')',
 
 			/* Global CSS API: Control - Label */
 			'gf-ctrl-label-color-primary'    => $applied_settings['labelColor'],
 			'gf-ctrl-label-color-secondary'  => $applied_settings['labelColor'],
 
 			/* Global CSS API: Control - Choice (Checkbox, Radio, & Consent) */
-			'gf-ctrl-choice-size'         => 'var(--gf-ctrl-choice-size-' . $applied_settings['inputSize'] . ')',
-			'gf-ctrl-checkbox-check-size' => 'var(--gf-ctrl-checkbox-check-size-' . $applied_settings['inputSize'] . ')',
-			'gf-ctrl-radio-check-size'    => 'var(--gf-ctrl-radio-check-size-' . $applied_settings['inputSize'] . ')',
+			'gf-ctrl-choice-size'         => 'var(--gf-ctrl-choice-size-' . $size . ')',
+			'gf-ctrl-checkbox-check-size' => 'var(--gf-ctrl-checkbox-check-size-' . $size . ')',
+			'gf-ctrl-radio-check-size'    => 'var(--gf-ctrl-radio-check-size-' . $size . ')',
 
 			/* Global CSS API: Control - Button */
-			'gf-ctrl-btn-font-size'              => 'var(--gf-ctrl-btn-font-size-' . $applied_settings['inputSize'] . ')',
-			'gf-ctrl-btn-padding-x'              => 'var(--gf-ctrl-btn-padding-x-' . $applied_settings['inputSize'] . ')',
-			'gf-ctrl-btn-size'                   => 'var(--gf-ctrl-btn-size-' . $applied_settings['inputSize'] . ')',
-			'gf-ctrl-btn-border-color-secondary' => $applied_settings['inputBorderColor'],
+			'gf-ctrl-btn-font-size'               => 'var(--gf-ctrl-btn-font-size-' . $size . ')',
+			'gf-ctrl-btn-padding-x'               => 'var(--gf-ctrl-btn-padding-x-' . $size . ')',
+			'gf-ctrl-btn-size'                    => 'var(--gf-ctrl-btn-size-' . $size . ')',
+			'gf-ctrl-btn-border-color-secondary'  => $applied_settings['inputBorderColor'],
 			'gf-ctrl-btn-bg-color-hover-tertiary' => GFCommon::darken_color( $color_palette['inside-control']['color-darker'], 2 ),
 
 			/* Global CSS API: Field - Choice (Checkbox, Radio, Image, & Consent) */
@@ -142,6 +142,28 @@ class Block_Styles_Handler {
 			/* Global CSS API: Field - Page */
 			'gf-field-pg-steps-number-color' => 'rgba(' . implode( ', ', GFCommon::darken_color( $applied_settings['labelColor'], 0, 'rgb' ) ) . ', 0.8)',
 		);
+
+		// Mobile friendly: targets that are too small use the control size.
+		if ( $is_mobile_friendly ) {
+			$properties['gf-ctrl-choice-size']                       = 'var(--gf-ctrl-size)';
+			$properties['gf-ctrl-checkbox-check-size']               = '26px';
+			$properties['gf-ctrl-radio-check-size']                  = '16px';
+			$properties['gf-ctrl-btn-size-simple']                   = 'var(--gf-ctrl-size)';
+			$properties['gf-ctrl-btn-size-xs']                       = 'var(--gf-ctrl-size)';
+			$properties['gf-ctrl-btn-size-sm']                       = 'var(--gf-ctrl-size)';
+			$properties['gf-ctrl-btn-size-md']                       = 'var(--gf-ctrl-size)';
+			$properties['gf-field-list-btn-size']                    = 'var(--gf-ctrl-size)';
+			$properties['gf-field-list-btn-icon-size']               = '32px';
+			$properties['gf-ctrl-select-dropdown-option-min-height'] = 'var(--gf-ctrl-size)';
+			$properties['gf-ctrl-select-search-height']              = 'var(--gf-ctrl-size)';
+			$properties['gf-ctrl-btn-icon-font-size']                = '26px';
+			$properties['gf-field-date-icon-size']                   = '26px';
+			$properties['gf-field-date-custom-icon-max-height']      = 'var(--gf-field-date-icon-size)';
+			$properties['gf-field-date-custom-icon-max-width']       = 'var(--gf-field-date-icon-size)';
+			$properties['gf-ctrl-file-prog-btn-icon-size']           = '26px';
+		}
+
+		return $properties;
 	}
 
 	private function overriden_fields() {

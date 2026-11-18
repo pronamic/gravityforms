@@ -181,10 +181,6 @@ class Full_Screen_Handler {
 	 * @return string
 	 */
 	public function get_form_for_display( $slug = '' ) {
-		if ( ! empty( self::$form_found[ $slug ] ) ) {
-			return self::$form_found[ $slug ];
-		}
-
 		global $wp;
 
 		$post_slug = empty( $slug ) ? $wp->request : $slug;
@@ -194,11 +190,13 @@ class Full_Screen_Handler {
 			return null;
 		}
 
+		if ( array_key_exists( $post_slug, self::$form_found ) ) {
+			return self::$form_found[ $post_slug ];
+		}
+
 		$form_id = $this->get_form_by_slug( $post_slug );
 
-		if ( ! empty( $form_id ) ) {
-			self::$form_found[ $slug ] = $form_id;
-		}
+		self::$form_found[ $post_slug ] = $form_id ?: null;
 
 		return $form_id;
 	}

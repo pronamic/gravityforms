@@ -1,3 +1,8 @@
+<?php
+// Entry-derived names must use the same safe HTML subset even during an administrator resend.
+$entry_field  = new GF_Field();
+$allowed_html = $entry_field->get_entry_allowed_html();
+?>
 <tr style="background-color:#EAF2FA">
 	<td style="font-family: sans-serif; font-size:12px; padding: 8px 16px;">
 		<strong><?php echo esc_html( $order_summary['labels']['order_label'] ); ?></strong>
@@ -18,14 +23,14 @@
 			<?php foreach ( rgars( $order_summary, 'rows/body', array() ) as $row ) { ?>
 				<tr>
 					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; font-family: sans-serif; font-size:11px;">
-						<strong style="color:#BF461E; font-size:12px; margin-bottom:5px"><?php echo \GFCommon::maybe_wp_kses( rgar( $row, 'name' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
+						<strong style="color:#BF461E; font-size:12px; margin-bottom:5px"><?php echo wp_kses( rgar( $row, 'name' ), $allowed_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
 							<ul style="margin:0">
 						<?php if ( is_array( rgar( $row, 'options' ) ) ) { ?>
 								<?php
 								$count = sizeof( $row['options'] );
 								for ( $i = 0; $i < $count; $i ++ ) {
 									?>
-									<li style="padding:4px 0 4px 0"><?php echo \GFCommon::maybe_wp_kses( rgar( $row['options'][ $i ], 'option_label' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></li>
+									<li style="padding:4px 0 4px 0"><?php echo wp_kses( rgar( $row['options'][ $i ], 'option_label' ), $allowed_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></li>
 								<?php } ?>
 						<?php } ?>
 							</ul>
@@ -48,7 +53,7 @@
 			<?php foreach ( rgars( $order_summary, 'rows/footer', array() ) as $row ) { ?>
 				<tr>
 					<td colspan="2" style="background-color:#F4F4F4; border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; font-size:11px;">&nbsp;</td>
-					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif;font-size:12px;text-align:right;"><?php echo \GFCommon::maybe_wp_kses( rgar( $row, 'name' ) );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif;font-size:12px;text-align:right;"><?php echo wp_kses( rgar( $row, 'name' ), $allowed_html );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 					<td style="border-bottom:1px solid #DFDFDF; border-right:1px solid #DFDFDF; padding:7px; width:155px; font-family: sans-serif; font-size:11px;">
 						<?php echo rgar( $row, 'sub_total_money' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</td>

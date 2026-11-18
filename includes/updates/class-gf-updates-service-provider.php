@@ -57,6 +57,12 @@ class GF_Auto_Updates_Service_Provider extends GF_Service_Provider {
 			$handler->activation_sync();
 		}
 
+		// Priority 9 so inactive add-ons are registered before GFForms::check_update() and GFAutoUpgrade::check_update() run at priority 10.
+		add_filter( 'transient_update_plugins', array( $handler, 'include_inactive_addon_updates' ), 9 );
+		add_filter( 'site_transient_update_plugins', array( $handler, 'include_inactive_addon_updates' ), 9 );
+
+		// AJAX requests do not run the normal update checks. Register add-on changelog handlers before they run at priority 10.
+		add_action( 'wp_ajax_gf_get_changelog', array( $handler, 'init_inactive_addon_updates' ), 9 );
 	}
 
 }

@@ -725,7 +725,9 @@ class GF_Field_Checkbox extends GF_Field {
 	/**
 	 * Gets merge tag values.
 	 *
-	 * @since  Unknown
+	 * @since Unknown
+	 * @since 3.2.3 URL encode checkbox values after rebuilding selected values and prices.
+	 *
 	 * @access public
 	 *
 	 * @uses GFCommon::to_money()
@@ -746,12 +748,6 @@ class GF_Field_Checkbox extends GF_Field {
 	 * @param string       $format     The format that the value should be.
 	 * @param bool         $nl2br      If the nl2br function should be used.
 	 *
-	 * @uses GFCommon::format_post_category()
-	 * @uses GFCommon::format_variable_value()
-	 * @uses GFCommon::implode_non_blank()
-	 * @uses GFCommon::to_money()
-	 * @uses GFFormsModel::is_field_hidden()
-	 *
 	 * @return string The processed merge tag.
 	 */
 	public function get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br ) {
@@ -764,7 +760,7 @@ class GF_Field_Checkbox extends GF_Field {
 		$image_url 	     = in_array( 'img_url', $modifiers );
 
 		if ( is_array( $raw_value ) && (string) intval( $input_id ) != $input_id ) {
-			$items = array( $input_id => $value ); // Float input IDs. (i.e. 4.1 ). Used when targeting specific checkbox items.
+			$items = array( $input_id => rgar( $raw_value, $input_id ) ); // Parse compound values before applying output encoding below.
 		} elseif ( is_array( $raw_value ) ) {
 			$items = $raw_value;
 		} else {
@@ -1287,13 +1283,8 @@ class GF_Field_Checkbox extends GF_Field {
 	 */
 	public function get_value_default() {
 
-		return $this->is_form_editor() ? $this->defaultValue : GFCommon::replace_variables_prepopulate( $this->defaultValue );
-
+		return $this->is_form_editor() ? $this->defaultValue : GFCommon::replace_variables_prepopulate( $this->defaultValue, false, false, false, false, false, 'html', false );
 	}
-
-
-
-
 
 	// # SANITIZATION ---------------------------------------------------------------------------------------------------
 

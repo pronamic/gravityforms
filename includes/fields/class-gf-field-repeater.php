@@ -1266,6 +1266,7 @@ class GF_Field_Repeater extends GF_Field {
 	 * Gets merge tag values.
 	 *
 	 * @since 2.4
+	 * @since 3.2.3 URL encode the fully rendered repeater value for consistent merge-tag output.
 	 *
 	 * @param array|string $value      The value of the input.
 	 * @param string       $input_id   The input ID to use.
@@ -1318,7 +1319,7 @@ class GF_Field_Repeater extends GF_Field {
 			$merge_tag  = $this->get_value_export_recursive( $entry, $input_id, $use_text, false, 0, '    ', $field_ids, $value_only );
 		}
 
-		return $merge_tag;
+		return $url_encode ? urlencode( $merge_tag ) : $merge_tag;
 	}
 
 	/**

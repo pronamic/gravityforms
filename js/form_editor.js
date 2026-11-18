@@ -2965,6 +2965,76 @@ function GetFieldsByType( types ) {
 	return filteredFields;
 }
 
+/**
+ * @function getOptionContainerFromDOM
+ * @description Gets the container for an option field from the DOM. It looks for the closest repeater element or falls back to the form.
+ *
+ * @param {object} field The option field being edited or created.
+ *
+ * @return {object|null} The parent repeater, the form, or null if the field element is not found.
+ */
+function getOptionContainerFromDOM( field ) {
+    const fieldElement = document.getElementById( 'field_' + field.id );
+
+	 if ( ! fieldElement ) {
+        return null;
+    }
+
+    const repeater = fieldElement.parentElement?.closest( '.gfield--type-repeater' );
+
+    return repeater ? GetFieldById( Number( repeater.id.replace( 'field_', '' ) ) ) : form;
+}
+
+/**
+ * @function getOptionContainer
+ * @description Gets the container for an option field. It first tries to find the container from the DOM, and if not found, it falls back to the field's parent or the current repeater drop target.
+ *
+ * @param {object} field The option field being edited or created.
+ *
+ * @return {object} The parent repeater, or the form.
+ */
+function getOptionContainer( field ) {
+    if ( field.type === 'option' ) {
+        const container = getOptionContainerFromDOM( field );
+
+        if ( container ) {
+            return container;
+        }
+    }
+
+    let parent = findFieldAndParentRecursively( form, Number( field.id ) )?.parent;
+
+    if ( ! parent ) {
+        const dropTarget = gform.formEditor.getRepeaterDrop()?.repeaterFieldElement;
+
+        if ( dropTarget ) {
+            parent = GetFieldById( Number( dropTarget.id.replace( 'field_', '' ) ) );
+        }
+    }
+
+    return parent?.type === 'repeater' ? parent : form;
+}
+
+/**
+ * Returns Products in the same container as an Option.
+ * Pass parent when the field is moving into a container it does not belong to yet.
+ *
+ * @param {object} field    The field that needs a Product.
+ * @param {object} [parent] The container to search. Defaults to the field's editor parent.
+ *
+ * @return {Array} Product fields the field may reference.
+ */
+function GetProductFieldsForField( field, parent ) {
+	if ( field.type !== 'option' ) {
+		return GetFieldsByType( [ 'product' ] );
+	}
+
+	const container = parent || getOptionContainer( field );
+	const scope = container.type === 'repeater' ? container : form;
+
+	return ( scope.fields || [] ).filter( ( candidateField ) => candidateField.type === 'product' );
+}
+
 function GetNextFieldId(){
 	var nextFieldId;
 	if ( typeof form.nextFieldId == 'undefined' ) {
@@ -3017,7 +3087,7 @@ function EndAddField(field, fieldString, index){
 
 	const repeaterDrop = gform.formEditor.getRepeaterDrop();
 	const hasInsertIndex = typeof index !== 'undefined';
-	
+
 	if ( repeaterDrop && hasInsertIndex ) {
 		const repeaterElement = repeaterDrop.repeaterFieldElement;
 		$parentElement = jQuery( repeaterElement.querySelector( '.gform-repeater-fields-list' ) );

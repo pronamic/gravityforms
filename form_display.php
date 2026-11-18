@@ -988,11 +988,11 @@ class GFFormDisplay {
 		}
 
 		// allow using the short version in shortcodes.
-		if ( $slug == 'gravity' ) {
+		if ( $slug === 'gravity' ) {
 			$slug = 'gravity-theme';
 		}
 
-		if ( empty( $slug ) || ! in_array( $slug, array( 'legacy', 'gravity-theme', 'orbital' ) ) ) {
+		if ( ! is_string( $slug ) || ! in_array( $slug, array( 'legacy', 'gravity-theme', 'orbital' ), true ) ) {
 			$slug = GFForms::get_default_theme();
 		}
 
@@ -1006,7 +1006,9 @@ class GFFormDisplay {
 		 *
 		 * @return string
 		 */
-		return apply_filters( 'gform_form_theme_slug', $slug, $form );
+		$filtered_slug = apply_filters( 'gform_form_theme_slug', $slug, $form );
+
+		return is_string( $filtered_slug ) && $filtered_slug !== '' ? $filtered_slug : $slug;
 	}
 
 	/**
@@ -1630,6 +1632,11 @@ class GFFormDisplay {
 						"var is_redirect = contents.indexOf('gformRedirect(){') >= 0;" .
 						'var is_form = form_content.length > 0 && ! is_redirect && ! is_confirmation;' .
 						"var mt = parseInt(jQuery('html').css('margin-top'), 10) + parseInt(jQuery('body').css('margin-top'), 10) + 100;" .
+						'if(is_redirect){' .
+						"jQuery('#gform_{$form_id}').append(contents);" .
+						"if(window['gformRedirect']) {gformRedirect();}" .
+						'return;' .
+						'}' .
 						'if(is_form){' .
 						( $should_render_hidden ? "form_content.find('form').css('opacity', 0);" : "" ) .
 						"jQuery('#gform_wrapper_{$form_id}').html(form_content.html());" .
@@ -1639,7 +1646,7 @@ class GFFormDisplay {
 						"jQuery(document).trigger('gform_page_loaded', [{$form_id}, current_page]);" .
 						"window['gf_submitting_{$form_id}'] = false;" .
 						'}' .
-						'else if(!is_redirect){' .
+						'else{' .
 						"var confirmation_content = jQuery(this).contents().find('.GF_AJAX_POSTBACK').html();" .
 						'if(!confirmation_content){' .
 						'confirmation_content = contents;' .
@@ -1650,10 +1657,6 @@ class GFFormDisplay {
 						"if(window.gform && gform.pagination && gform.pagination.removePageQueryArg){gform.pagination.removePageQueryArg({$form_id});}" .
 						"window['gf_submitting_{$form_id}'] = false;" .
 						"wp.a11y.speak(jQuery('#gform_confirmation_message_{$form_id}').text());" .
-						'}' .
-						'else{' .
-						"jQuery('#gform_{$form_id}').append(contents);" .
-						"if(window['gformRedirect']) {gformRedirect();}" .
 						'}' .
 						self::post_render_script( $form_id ) .
 						'} );' .
@@ -1985,11 +1988,12 @@ class GFFormDisplay {
 	}
 
 	public static function gform_footer( $form, $class, $ajax, $field_values, $previous_button, $display_title, $display_description, $tabindex = 1, $theme = null, $style_settings = null, $submission_method = self::SUBMISSION_METHOD_POSTBACK ) {
-		$form_id      = absint( $form['id'] );
-		$footer       = "
-        <div class='" . esc_attr( $class ) . "'>";
-		$button       = rgar( $form, 'button', array( 'type' => 'link' ) );
-		$alt          = rgar( $button, 'text', esc_html__( 'Submit', 'gravityforms' ) );
+		// Page-fragment rendering also reaches this method without the full form's theme resolution.
+		$theme   = self::get_form_theme_slug( array_merge( $form, array( 'theme' => $theme ) ) );
+		$form_id = absint( $form['id'] );
+		$footer  = "<div class='" . esc_attr( $class ) . "'>";
+		$button  = rgar( $form, 'button', array( 'type' => 'link' ) );
+		$alt     = rgar( $button, 'text', esc_html__( 'Submit', 'gravityforms' ) );
 		if ( rgar( $form['button'], 'location' ) && 'inline' == $form['button']['location'] ) {
 			$button_input = '';
 		} else {
@@ -2537,7 +2541,7 @@ class GFFormDisplay {
 		} else {
 			$url = rgar( $confirmation, 'url' );
 			if ( ! empty( $url ) ) {
-				$url = trim( GFCommon::replace_variables( $url, $form, $entry, false, false, true, 'text' ) );
+				$url = trim( GFCommon::replace_variables( $url, $form, $entry, false, false, true, 'url' ) );
 			}
 
 			if ( empty( $url ) ) {
@@ -5958,7 +5962,7 @@ class GFFormDisplay {
 			return $styles;
 		}
 
-		if ( ! is_array( $styles ) ) {
+		if ( is_string( $styles ) ) {
 			$styles = json_decode( $styles, true );
 		}
 
@@ -5966,27 +5970,43 @@ class GFFormDisplay {
 			return array();
 		}
 
-		$whitelist = array(
-			'theme',
-			'inputSize',
-			'inputBorderRadius',
-			'inputBorderColor',
-			'inputBackgroundColor',
-			'inputColor',
-			'inputPrimaryColor',
-			'inputImageChoiceAppearance',
-			'inputImageChoiceStyle',
-			'inputImageChoiceSize',
-			'labelFontSize',
-			'labelColor',
-			'descriptionFontSize',
-			'descriptionColor',
-			'buttonPrimaryBackgroundColor',
-			'buttonPrimaryColor',
+		$schema = array(
+			'theme'                        => array( '', 'legacy', 'gravity', 'gravity-theme', 'orbital' ),
+			'inputSize'                    => array( 'sm', 'md', 'lg', 'lgmf' ),
+			'inputBorderRadius'            => 'number',
+			'inputBorderColor'             => 'color',
+			'inputBackgroundColor'         => 'color',
+			'inputColor'                   => 'color',
+			'inputPrimaryColor'            => 'color',
+			'inputImageChoiceAppearance'   => array( 'card', 'no-card' ),
+			'inputImageChoiceStyle'        => array( 'circle', 'square' ),
+			'inputImageChoiceSize'         => array( 'sm', 'md', 'lg' ),
+			'labelFontSize'                => 'number',
+			'labelColor'                   => 'color',
+			'descriptionFontSize'          => 'number',
+			'descriptionColor'             => 'color',
+			'buttonPrimaryBackgroundColor' => 'color',
+			'buttonPrimaryColor'           => 'color',
 		);
 
-		foreach( $styles as $key => $value ) {
-			if ( ! in_array( $key, $whitelist ) ) {
+		foreach ( $styles as $key => $value ) {
+			if ( ! isset( $schema[ $key ] ) ) {
+				unset( $styles[ $key ] );
+				continue;
+			}
+
+			$type = $schema[ $key ];
+			if ( is_array( $type ) ) {
+				$valid = in_array( $value, $type, true );
+			} elseif ( $type === 'number' ) {
+				// Block controls submit numeric strings, while defaults and filters can supply numbers.
+				$valid = $value === '' || ( is_numeric( $value ) && is_finite( (float) $value ) && (float) $value >= 0 );
+			} else {
+				// Match the three/six-digit hex format supported by the form color utilities.
+				$valid = is_string( $value ) && ( $value === '' || preg_match( '/^#?([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/D', $value ) );
+			}
+
+			if ( ! $valid ) {
 				unset( $styles[ $key ] );
 			}
 		}
@@ -6004,7 +6024,7 @@ class GFFormDisplay {
 	 * @return array|false|string
 	 */
 	public static function get_form_styles( $style_settings ) {
-		$global_styles = apply_filters( 'gform_default_styles', false );
+		$global_styles = self::validate_form_styles( apply_filters( 'gform_default_styles', false ) );
 
 		$form_styles = '';
 
@@ -6013,9 +6033,7 @@ class GFFormDisplay {
 			return false;
 		} else if ( ! empty( $style_settings ) ) {
 			// if we have style settings, merge them with the gform_default_styles filter.
-			if ( ! is_array( $style_settings ) ) {
-				$style_settings = json_decode( $style_settings, true );
-			}
+			$style_settings = self::validate_form_styles( $style_settings );
 			if ( $global_styles !== null ) {
 				$style_settings = array_merge( is_array( $global_styles ) ? $global_styles : array(), is_array( $style_settings ) ? $style_settings : array() );
 			}
@@ -6040,12 +6058,8 @@ class GFFormDisplay {
 	 * @return array Returns the form object with the 'styles' and 'theme' properties set.
 	 */
 	private static function set_form_styles( $form, $style_settings, $form_theme ) {
-		if ( $style_settings === false ) {
-			// Form styles specifically set to false disables inline form css styles.
-			$form_styles = false;
-		} else {
-			$form_styles = !empty( $style_settings ) ? json_decode( $style_settings, true ) : array();
-		}
+		// Preserve the false sentinel that disables inline styles, and reject malformed input before use.
+		$form_styles = self::validate_form_styles( $style_settings );
 
 		// Removing theme from styles for consistency. $form['theme'] should be used instead.
 		if ( $form_styles ) {

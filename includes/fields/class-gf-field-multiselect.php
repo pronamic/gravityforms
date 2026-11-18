@@ -292,7 +292,9 @@ class GF_Field_MultiSelect extends GF_Field {
 	/**
 	 * Format the entry value for when the field/input merge tag is processed.
 	 *
-	 * @since  Unknown
+	 * @since Unknown
+	 * @since 3.2.3 URL encode selected values after formatting them for the requested output context.
+	 *
 	 * @access public
 	 *
 	 * @uses GFCommon::format_post_category()
@@ -332,6 +334,10 @@ class GF_Field_MultiSelect extends GF_Field {
 			foreach ( $items as &$item ) {
 				$item = GFCommon::selection_display( $item, $this, rgar( $entry, 'currency' ), true );
 				$item = GFCommon::format_variable_value( $item, $url_encode, $esc_html, $format );
+			}
+		} elseif ( $url_encode ) {
+			foreach ( $items as &$item ) {
+				$item = GFCommon::format_variable_value( $item, true, $esc_html, $format );
 			}
 		}
 

@@ -15,6 +15,17 @@ var GF_Settings_Dependencies = function ( args ) {
 			var rule = self.args.fields[ i ],
 				inputName = self.args.prefix + '_' + rule.field;
 
+			// Array-format checkboxes post every choice under one name.
+			if ( rule.field_type === 'checkbox' && rule.data_format === 'array' ) {
+				var arrayCheckboxes = document.querySelectorAll( '[name="' + inputName + '[]"]' );
+
+				arrayCheckboxes.forEach( function( checkbox ) {
+					checkbox.addEventListener( 'change', self.evaluateLogic );
+				} );
+
+				continue;
+			}
+
 			// Add event for each checkbox value.
 			if ( rule.field_type === 'checkbox' ) {
 
@@ -105,12 +116,32 @@ var GF_Settings_Dependencies = function ( args ) {
 			}
 		}
 
+		// Array-format checkboxes store the choice name on a shared input.
+		if ( rule.field_type === 'checkbox' && rule.data_format === 'array' ) {
+			const arrayCheckboxes = document.querySelectorAll( '[name="' + inputName + '[]"]' );
+
+			for ( var c = 0; c < arrayCheckboxes.length; c++ ) {
+				if ( ! arrayCheckboxes[ c ].checked ) {
+					continue;
+				}
+
+				for ( var v = 0; v < rule.values.length; v++ ) {
+					if ( '_notempty_' === rule.values[ v ] || rule.values[ v ] == arrayCheckboxes[ c ].value ) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
 		// Handle checkbox field separately.
 		if ( rule.field_type === 'checkbox' ) {
 
 			// Loop through values. If choice is selected, return true.
 			for ( var i = 0; i < rule.values.length; i++ ) {
-				if ( document.querySelector( '[name="' + self.args.prefix + '_' + rule.values[ i ] + '"]' ).value == 1 ) {
+				var checkboxInput = document.querySelector( '[name="' + self.args.prefix + '_' + rule.values[ i ] + '"]' );
+				if ( checkboxInput.value == 1 ) {
 					return true;
 				}
 			}

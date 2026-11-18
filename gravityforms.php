@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: https://gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 3.2.2
+Version: 3.2.3.1
 Requires at least: 6.5
 Requires PHP: 7.4
 Author: Gravity Forms
@@ -257,7 +257,7 @@ class GFForms {
 	 *
 	 * @var string $version The version number.
 	 */
-	public static $version = '3.2.2';
+	public static $version = '3.2.3.1';
 
 	/**
 	 * Handles background upgrade tasks.
@@ -308,8 +308,15 @@ class GFForms {
 
 		if ( defined( 'OSDXP_DASHBOARD_VER' ) ) {
 			// Integration with osDXP.
-			require_once  GF_PLUGIN_DIR_PATH . 'includes/class-gf-osdxp.php';
+			require_once GF_PLUGIN_DIR_PATH . 'includes/class-gf-osdxp.php';
 		}
+
+		/**
+		 * Fires after Gravity Forms and any add-ons have loaded.
+		 *
+		 * @since 3.2.3
+		 */
+		gf_do_action( array( 'gform_post_loaded' ) );
 	}
 
 	/**
@@ -2660,16 +2667,18 @@ class GFForms {
 	 * an update is available. Updates only apply to the Sysetm Settings Updates
 	 * page, WP handles the Plugins page update messages.
 	 *
-	 * @since: 2.9
+	 * @since 2.9
+	 * @since 3.2.3 Added the optional $version_info param.
 	 *
-	 * @param string $plugin_name The plugin filename.
-	 * @param array  $plugin_data The WP plugin header data.
-	 * @param string $slug        The plugin slug
-	 * @param string $version     The current version of the plugin.
+	 * @param string $plugin_name  The plugin filename.
+	 * @param array  $plugin_data  The WP plugin header data.
+	 * @param string $slug         The plugin slug
+	 * @param string $version      The current version of the plugin.
+	 * @param array  $version_info The latest version info for the plugin.
 	 *
 	 * @return array The status messages.
 	 */
-	public static function get_status_messages( $plugin_name, $plugin_data, $slug = '', $version = '' ) {
+	public static function get_status_messages( $plugin_name, $plugin_data, $slug = '', $version = '', $version_info = array() ) {
 		$messages = array();
 
 		if ( empty( $slug ) && $plugin_name !== 'gravityforms/gravityforms.php' ) {
@@ -2683,15 +2692,17 @@ class GFForms {
 			$slug         = 'gravityforms';
 			$version      = GFCommon::$version;
 		} else {
-			$version_info = rgars( $license_info , 'offerings/' . $slug );
-			if ( ! $version_info ) {
-				// If an add-on isn't included in the offerings list yet then exit gracefully.
-				return $messages;
+			if ( empty( $version_info ) ) {
+				$version_info = rgars( $license_info, 'offerings/' . $slug );
+				if ( ! $version_info ) {
+					// If an add-on isn't included in the offerings list yet then exit gracefully.
+					return $messages;
+				}
 			}
 		}
 
-		$valid_key    = rgar( $license_info , 'is_valid_key' );
-		$status       = rgar( $license_info , 'status' );
+		$valid_key    = rgar( $license_info, 'is_valid_key' );
+		$status       = rgar( $license_info, 'status' );
 		$is_available = rgar( $version_info, 'is_available', false );
 
 		if ( 'valid_key' === $status ) {
@@ -2751,7 +2762,7 @@ class GFForms {
 				$messages[] = $unregistered_license_message_env;
 			} else {
 				// If the status is blank, then the license doesn't exists.
-				$status    = ( ! rgblank( $status ) ) ? $status : GF_License_Statuses::NO_LICENSE_KEY;
+				$status     = ( ! rgblank( $status ) ) ? $status : GF_License_Statuses::NO_LICENSE_KEY;
 				$messages[] = GF_License_Statuses::get_message_for_code( $status );
 			}
 		} else {
@@ -2774,18 +2785,27 @@ class GFForms {
 
 		// WordPress handles the update text on the Plugins page but we still need to get it for the updates page.
 		$gfpage = GFForms::get_page();
-		if ( 'updates' == $gfpage ) {
+		if ( 'updates' === $gfpage ) {
 			if ( $valid_key && version_compare( $version, rgar( $version_info, 'version' ), '<' ) ) {
 				$changelog_nonce = wp_create_nonce( 'gf_get_changelog' );
 				$changelog_url   = self_admin_url( 'admin-ajax.php?action=gf_get_changelog&plugin=' . $slug . '&_wpnonce=' . $changelog_nonce . '&TB_iframe=true&width=640&height=808' );
 				$update_url      = wp_nonce_url( self_admin_url( 'update.php?action=upgrade-plugin&plugin=' . urlencode( $plugin_name ) ), 'upgrade-plugin_' . $plugin_name );
-				$messages[]      = sprintf( esc_html__( 'There is a new version of %s available. ', 'gravityforms' ), rgar( $plugin_data, 'Name' ) );
-				if ( ! current_user_can( 'update_plugins' ) || ! $is_available  ) {
-					$messages[] = sprintf( esc_html__( '%1$sView version %2$s details %3$s. ', 'gravityforms' ),
+
+				// translators: The plugin name.
+				$messages[] = sprintf( esc_html__( 'There is a new version of %s available. ', 'gravityforms' ), rgar( $plugin_data, 'Name' ) );
+
+				if ( rgar( $version_info, 'is_minimum_requirements_blocked' ) || ! $is_available || ! current_user_can( 'update_plugins' ) ) {
+					$messages[] = sprintf(
+						// translators: %1$s: Opening a tag, %2$s: Version.  %3$s: Closing a tag.
+						esc_html__( '%1$sView version %2$s details %3$s.', 'gravityforms' ),
 						'<a href="' . $changelog_url . '" class="thickbox open-plugin-details-modal">',
 						rgar( $version_info, 'version' ),
 						'</a>'
-				);
+					);
+
+					if ( ! empty( $version_info['minimum_requirements_message'] ) ) {
+						$messages[] = $version_info['minimum_requirements_message'];
+					}
 				} else {
 					$messages[] = sprintf( esc_html__( '%1$sView version %2$s details %3$s or %4$supdate now%5$s.', 'gravityforms' ),
 						'<a href="' . $changelog_url . '" class="thickbox open-plugin-details-modal">',
@@ -3666,7 +3686,7 @@ class GFForms {
 			return 'entry_list';
 		}
 
-		if ( $page == 'gf_entries' && rgget( 'view' ) == 'entry' && isset( $_POST['screen_mode'] ) && rgpost( 'screen_mode' ) == 'edit' ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( $page === 'gf_entries' && rgget( 'view' ) === 'entry' && ( rgget( 'screen_mode' ) === 'edit' || rgpost( 'screen_mode' ) === 'edit' ) ) {
 			return 'entry_detail_edit';
 		}
 

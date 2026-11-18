@@ -481,7 +481,7 @@ class GF_Field_Radio extends GF_Field {
 	}
 
 	public function get_value_default() {
-		return $this->is_form_editor() ? $this->defaultValue : GFCommon::replace_variables_prepopulate( $this->defaultValue );
+		return $this->is_form_editor() ? $this->defaultValue : GFCommon::replace_variables_prepopulate( $this->defaultValue, false, false, false, false, false, 'html', false );
 	}
 
 	public function get_value_submission( $field_values, $get_from_post_global_var = true ) {
